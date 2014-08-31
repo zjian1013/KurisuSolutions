@@ -58,6 +58,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -66,6 +67,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="KurisuMorgana.cs" />
+    <Compile Include="Extensions.cs" />
     <Compile Include="Morgana.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -90,6 +92,7 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>echo F|xcopy /Y "$(TargetDir)$(ProjectName).exe" "C:\cookies\Leaguesharp\Assemblies"
@@ -98,6 +101,8 @@ echo F|xcopy /Y  "$(ProjectDir)$(ProjectName).csproj" "C:\cookies\Leaguesharp\Bi
 echo F|xcopy /Y  "$(ProjectDir)Morgana.cs" "C:\cookies\Leaguesharp\Binaries\Repositories\Kurisu\trunk\$(ProjectName)"
 echo F|xcopy /Y  "$(ProjectDir)$(ProjectName).cs" "C:\cookies\Leaguesharp\Binaries\Repositories\Kurisu\trunk\$(ProjectName)"
 echo F|xcopy /Y  "$(ProjectDir)Program.cs" "C:\cookies\Leaguesharp\Binaries\Repositories\Kurisu\trunk\$(ProjectName)"
+echo F|xcopy /Y  "$(ProjectDir)Extensions.cs" "C:\cookies\Leaguesharp\Binaries\Repositories\Kurisu\trunk\$(ProjectName)"
+
 
 echo F|xcopy /Y  "$(ProjectDir)App.config" "C:\cookies\Leaguesharp\Binaries\Repositories\Kurisu\trunk\$(ProjectName)"
 echo F|xcopy /Y  "$(ProjectDir)Properties\AssemblyInfo.cs" "C:\cookies\Leaguesharp\Binaries\Repositories\Kurisu\trunk\$(ProjectName)\Properties"</PostBuildEvent>

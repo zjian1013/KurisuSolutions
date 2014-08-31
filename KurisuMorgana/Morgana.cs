@@ -1,5 +1,6 @@
 ﻿using LeagueSharp;
 using LeagueSharp.Common;
+using SharpDX;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,11 +23,11 @@ namespace KurisuMorgana
         public static SpellDataInst qdata = spellbook.GetSpell(SpellSlot.Q);
         public static SpellDataInst wdata = spellbook.GetSpell(SpellSlot.W);
         public static SpellDataInst edata = spellbook.GetSpell(SpellSlot.E);
-        public static SpellDataInst rdata = spellbook.GetSpell(SpellSlot.R);
-
+        public static SpellDataInst rdata = spellbook.GetSpell(SpellSlot.R);            
 
         public static void SetSkills()
         {
+            Extensions.SpellList.AddRange(new[] { q, w, e, r });
             q.SetSkillshot(0.25f, 72f, 1200f, true, SkillshotType.SkillshotLine);
             w.SetSkillshot(0.25f, 175f, 1200f, false, SkillshotType.SkillshotCircle);
         }
@@ -34,17 +35,24 @@ namespace KurisuMorgana
 
         public static void CastCombo(Obj_AI_Base unit)
         {
-            if (KurisuMorgana.Config.Item("useQ").GetValue<bool>())
+            if (KurisuMorgana.Config.SubMenu("combo").Item("useQ").GetValue<bool>())
                 CastSmartQ(unit);
-            if (KurisuMorgana.Config.Item("useW").GetValue<bool>())
+            if (KurisuMorgana.Config.SubMenu("combo").Item("useW").GetValue<bool>())
                 CastSmartW(unit);
 
         }
 
         public static void CastHarass(Obj_AI_Base unit)
         {
-            if (KurisuMorgana.Config.Item("useW2").GetValue<bool>())
-                CastSmartW(unit);
+
+            if (KurisuMorgana.Config.SubMenu("harass").Item("useW2").GetValue<bool>())
+            {
+                if (me.Mana > KurisuMorgana.Config.SubMenu("harass").Item("harassPct").GetValue<Slider>().Value)
+                {
+                    CastSmartW(unit);
+                }
+            }
+                
         }
 
         public static void CastSmartQ(Obj_AI_Base unit)
@@ -64,34 +72,49 @@ namespace KurisuMorgana
 
             if (!w.IsReady())
                 return;
-
-            if (po.Hitchance == HitChance.Immobile)
-                w.Cast(unit, true);
-
-            if (po.Hitchance == HitChance.Low)
-                w.Cast(po.CastPosition);
+            if (q.Collision && KurisuMorgana.Config.SubMenu("combo").Item("useWif").GetValue<bool>())
+                return;
+            if (po.Hitchance == HitChance.High)
+                w.Cast(po.CastPosition, true);
 
         }
 
-        public static void CastSmartE(Obj_AI_Base unit)
+        public static void CastAutoW()
         {
+            foreach (var enemy in Extensions.autoSoilTarget)
+            {
+                var po = w.GetPrediction(enemy);
+                if (po.Hitchance == HitChance.Immobile)
+                    w.Cast(po.CastPosition);
+                        break;
+            }
 
         }
 
-        public static bool HasMana()
+        public static void CastAutoQ()
         {
-            if (qdata.ManaCost < me.Mana)
-                return false;
-            if (wdata.ManaCost < me.Mana)
-                return false;
-            if (edata.ManaCost < me.Mana)
-                return false;
-            if (rdata.ManaCost < me.Mana)
-                return false;
-            else
-                return true;
+            foreach (var enemy in Extensions.autoBindTarget)
+            {
+                var po = q.GetPrediction(enemy);
+                if (po.Hitchance == HitChance.Immobile)
+                    q.Cast(po.CastPosition);
+                break;
+            }
         }
 
+        public static void Laneclear()
+        {
+            var mPos = MinionManager.GetBestCircularFarmLocation(MinionManager.GetMinions(me.Position, w.Range).Select(m => m.ServerPosition.To2D()).ToList(), w.Width, w.Range);
+            if (KurisuMorgana.Config.SubMenu("laneclear").Item("wclear").GetValue<bool>() && w.IsReady())
+            {
+                if (mPos.MinionsHit >= KurisuMorgana.Config.SubMenu("laneclear").Item("wclearNum").GetValue<Slider>().Value && me.Distance(mPos.Position) <= w.Range)
+                {
+                    if (me.Mana > KurisuMorgana.Config.SubMenu("laneclear").Item("wclearPct").GetValue<Slider>().Value)
+                        w.Cast(mPos.Position);
+                }
+            }
+
+        }
 
     }
 }
