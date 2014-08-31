@@ -4,13 +4,28 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{E5D892E6-B247-41E9-BFF8-5922CB25CB73}</ProjectGuid>
+    <ProjectGuid>{BC7341E3-D79B-4554-9F6C-15BC2CCD8B15}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>KurisuNami</RootNamespace>
-    <AssemblyName>KurisuNami</AssemblyName>
+    <RootNamespace>KurisuMorgana</RootNamespace>
+    <AssemblyName>KurisuMorgana</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -41,9 +56,6 @@
     <Reference Include="SharpDX">
       <HintPath>..\..\..\..\..\..\..\cookies\Leaguesharp\Assemblies\System\SharpDX.dll</HintPath>
     </Reference>
-    <Reference Include="SharpDX.Direct3D9">
-      <HintPath>..\..\..\..\..\..\..\cookies\Leaguesharp\Assemblies\System\SharpDX.Direct3D9.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -53,24 +65,42 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Nami.cs" />
-    <Compile Include="NamiLogic.cs" />
+    <Compile Include="KurisuMorgana.cs" />
+    <Compile Include="Morgana.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.5">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.5 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy /Y "$(TargetDir)$(ProjectName).exe" "C:\cookies\Leaguesharp\Assemblies"
+    <PostBuildEvent>echo F|xcopy /Y "$(TargetDir)$(ProjectName).exe" "C:\cookies\Leaguesharp\Assemblies"
 
-xcopy /Y  "$(ProjectDir)$(ProjectName).csproj" "C:\cookies\Leaguesharp\Binaries\Repositories\Kurisu\trunk\$(ProjectName)"
-xcopy /Y  "$(ProjectDir)Nami.cs" "C:\cookies\Leaguesharp\Binaries\Repositories\Kurisu\trunk\$(ProjectName)"
-xcopy /Y  "$(ProjectDir)NamiLogic.cs" "C:\cookies\Leaguesharp\Binaries\Repositories\Kurisu\trunk\$(ProjectName)"
-xcopy /Y  "$(ProjectDir)Program.cs" "C:\cookies\Leaguesharp\Binaries\Repositories\Kurisu\trunk\$(ProjectName)"
-xcopy /Y  "$(ProjectDir)App.config" "C:\cookies\Leaguesharp\Binaries\Repositories\Kurisu\trunk\$(ProjectName)"
-xcopy /Y  "$(ProjectDir)Properties\AssemblyInfo.cs" "C:\cookies\Leaguesharp\Binaries\Repositories\Kurisu\trunk\$(ProjectName)\Properties"</PostBuildEvent>
+echo F|xcopy /Y  "$(ProjectDir)$(ProjectName).csproj" "C:\cookies\Leaguesharp\Binaries\Repositories\Kurisu\trunk\$(ProjectName)"
+echo F|xcopy /Y  "$(ProjectDir)Morgana.cs" "C:\cookies\Leaguesharp\Binaries\Repositories\Kurisu\trunk\$(ProjectName)"
+echo F|xcopy /Y  "$(ProjectDir)$(ProjectName).cs" "C:\cookies\Leaguesharp\Binaries\Repositories\Kurisu\trunk\$(ProjectName)"
+echo F|xcopy /Y  "$(ProjectDir)Program.cs" "C:\cookies\Leaguesharp\Binaries\Repositories\Kurisu\trunk\$(ProjectName)"
+
+echo F|xcopy /Y  "$(ProjectDir)App.config" "C:\cookies\Leaguesharp\Binaries\Repositories\Kurisu\trunk\$(ProjectName)"
+echo F|xcopy /Y  "$(ProjectDir)Properties\AssemblyInfo.cs" "C:\cookies\Leaguesharp\Binaries\Repositories\Kurisu\trunk\$(ProjectName)\Properties"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
