@@ -99,7 +99,7 @@ namespace KurisuFiora
         {
             try
             {
-                Console.WriteLine(usepackets);
+                
                 if (_orbwalker.ActiveMode.ToString() == "Combo")
                 {
                     _target = SimpleTs.GetTarget(750, SimpleTs.DamageType.Physical);
@@ -131,7 +131,21 @@ namespace KurisuFiora
                     SpellSlot spellSlot = Utility.GetSpellSlot(attacker, args.SData.Name);
                     if (spellSlot == SpellSlot.Unknown)
                         incDmg = DamageLib.getDmg(attacker, DamageLib.SpellType.AD);
-                    if (spellSlot == SpellSlot.R && sender.BaseSkinName == "Malphite")
+                    if (spellSlot == SpellSlot.Q && (
+                        sender.BaseSkinName == "Rengar" || sender.BaseSkinName == "Garen" || sender.BaseSkinName == "Nasus" ||
+                        sender.BaseSkinName == "Shyvanna" || sender.BaseSkinName == "Leona" || sender.BaseSkinName == "Gankplank" ||
+                        sender.BaseSkinName == "MissFortune" || sender.BaseSkinName == "Talon"))
+                        useW();
+                    if (spellSlot == SpellSlot.W && (
+                        sender.BaseSkinName == "Sivir" || sender.BaseSkinName == "Renekton" || sender.BaseSkinName == "Darius" ||
+                        sender.BaseSkinName == "Jax"))
+                        useW();                 
+                    if (spellSlot == SpellSlot.R && (
+                        sender.BaseSkinName == "Malphite" || sender.BaseSkinName == "Cassiopeia" || sender.BaseSkinName == "Garen" ||
+                        sender.BaseSkinName == "Graves" || sender.BaseSkinName == "Hecarim" || sender.BaseSkinName == "Jarven" ||  sender.BaseSkinName == "Amumu" ))
+                        useR(sender);
+                    if (spellSlot == SpellSlot.R && (
+                        sender.BaseSkinName == "Jinx" || sender.BaseSkinName == "Ashe") && sender.Distance(_player.ServerPosition) < 700f)
                         useR(sender);
                 }
 
@@ -189,7 +203,7 @@ namespace KurisuFiora
         }
 
 
-        private void useW(double damage)
+        private void useW(double damage = 0)
         {
             int incDamageSlider = _config.Item("wsett").GetValue<Slider>().Value;
             int incDamagePercent = (int)(_player.Health / damage * 100);
