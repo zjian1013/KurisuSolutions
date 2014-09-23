@@ -1,4 +1,4 @@
-using LeagueSharp;
+﻿using LeagueSharp;
 using LeagueSharp.Common;
 using System;
 using System.Collections.Generic;
