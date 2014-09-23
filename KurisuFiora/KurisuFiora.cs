@@ -29,7 +29,7 @@ namespace KurisuFiora
         public KurisuFiora()
         {
             Console.WriteLine("Kurisu assembly is starting...");
-            CustomEvents.Game.OnGameLoad += Game_OnGameLoad;        
+            CustomEvents.Game.OnGameLoad += Game_OnGameLoad;
         }
 
         #region Fiora: OnGameLoad
@@ -55,14 +55,14 @@ namespace KurisuFiora
                 fioraDraws.AddItem(new MenuItem("drawR", "Draw R")).SetValue(new Circle(true, Color.FromArgb(150, Color.MediumTurquoise)));
                 _config.AddSubMenu(fioraDraws);
 
-                
+
                 Menu fioraSpells = new Menu("Fiora: Spells", "combo");
                 fioraSpells.AddItem(new MenuItem("useq", "Use Q")).SetValue(true);
                 fioraSpells.AddItem(new MenuItem("qrange", "Minimum range to q")).SetValue(new Slider(250, 1, (int)q.Range));
                 fioraSpells.AddItem(new MenuItem("usew", "Use W")).SetValue(true);
                 fioraSpells.AddItem(new MenuItem("wsett", "Minimum damage to W")).SetValue(new Slider(50, 1, 200));
                 fioraSpells.AddItem(new MenuItem("usee", "Use E")).SetValue(true);
-                fioraSpells.AddItem(new MenuItem("smana", "Combo min mana % ")).SetValue(new Slider(0, 0, 99));               
+                fioraSpells.AddItem(new MenuItem("smana", "Combo min mana % ")).SetValue(new Slider(0, 0, 99));
                 _config.AddSubMenu(fioraSpells);
 
                 Menu fioraWaltz = new Menu("Fiora: Blade Waltz", "fbw");
@@ -78,7 +78,7 @@ namespace KurisuFiora
 
                 Menu fioraMisc = new Menu("Fiora: Misc", "fmisc");
                 fioraMisc.AddItem(new MenuItem("ksteal", "Kill Steal")).SetValue(true);
-                fioraMisc.AddItem(new MenuItem("usepackets", "Use Packets")).SetValue(true);               
+                fioraMisc.AddItem(new MenuItem("usepackets", "Use Packets")).SetValue(true);
                 fioraMisc.AddItem(new MenuItem("isteal", "Use Ignite")).SetValue(true);
                 fioraMisc.AddItem(new MenuItem("usetiamat", "Use Tiamat/Hydra")).SetValue(true);
                 _config.AddSubMenu(fioraMisc);
@@ -157,7 +157,7 @@ namespace KurisuFiora
             {
                 Game.PrintChat("Error something went wrong with fiora assembly(OnGameSendPacket)");
             }
-            
+
         }
         #endregion
 
@@ -166,7 +166,7 @@ namespace KurisuFiora
         {
             GamePacket packet = new GamePacket(args.PacketData);
 
-            if (args.PacketData[0]  == Packet.S2C.Damage.Header)
+            if (args.PacketData[0] == Packet.S2C.Damage.Header)
             {
                 Packet.S2C.Damage.Struct PDamage = Packet.S2C.Damage.Decoded(args.PacketData);
                 var source = PDamage.SourceNetworkId;
@@ -174,7 +174,7 @@ namespace KurisuFiora
 
                 pTarget = target;
                 pHit = true;
-            }                   
+            }
         }
         #endregion
 
@@ -184,7 +184,7 @@ namespace KurisuFiora
             try
             {
                 if (_config.Item("aadebug").GetValue<bool>())
-                    Console.WriteLine(Orbwalking.LastAATick);             
+                    Console.WriteLine(Orbwalking.LastAATick);
                 if (_orbwalker.ActiveMode.ToString() == "Combo")
                 {
                     _target = SimpleTs.GetTarget(750, SimpleTs.DamageType.Physical);
@@ -213,7 +213,7 @@ namespace KurisuFiora
                 Obj_AI_Hero attacker = ObjectManager.Get<Obj_AI_Hero>().First(n => n.NetworkId == sender.NetworkId);
                 if (attacker != null)
                 {
-                    
+
                     SpellSlot spellSlot = Utility.GetSpellSlot(attacker, args.SData.Name);
                     if (spellSlot == SpellSlot.Unknown)
                         incDmg = DamageLib.getDmg(attacker, DamageLib.SpellType.AD);
@@ -245,12 +245,12 @@ namespace KurisuFiora
             useW(incDmg);
         }
         #endregion
-        
+
         private void useCombo(Obj_AI_Hero target)
         {
-                useE(target);
-                useQ(target);
-                useR(target);
+            useE(target);
+            useQ(target);
+            useR(target);
         }
 
         private static float comboDamage(Obj_AI_Base enemy)
@@ -310,9 +310,9 @@ namespace KurisuFiora
                 if (_player.Spellbook.CanUseSpell(SpellSlot.W) != SpellState.Unknown)
                 {
                     if (w.IsReady() && damage > incDamageSlider)
-                    _player.Spellbook.CastSpell(SpellSlot.W);
+                        _player.Spellbook.CastSpell(SpellSlot.W);
                 }
-                    
+
             }
         }
 
@@ -342,11 +342,11 @@ namespace KurisuFiora
                             if (_config.Item("isteal").GetValue<bool>())
                             {
                                 SpellSlot ignote = Utility.GetSpellSlot(_player, "summonerdot");
-                                _player.SummonerSpellbook.CastSpell(ignote , target);
+                                _player.SummonerSpellbook.CastSpell(ignote, target);
                             }
                             r.CastOnUnit(target, usePackets());
                         }
-                            
+
                     }
                 }
             }
