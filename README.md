@@ -5,18 +5,7 @@ Leaguesharp
 Fiora
 ===========
 
-Simple fiora release. I would reccomend using MasterActivator with this for item support.
-
-* Combo
-  *  Use Q
-  *  Use W
-  *  Use E
-  *  Use R
-  
-* Soon to be implemented
-  *  Damage calculation drawings
-  *  Dodge dangerous spells with R
-  *  Lane/Jungle Clear
+http://www.joduska.me/forum/viewtopic.php?f=15&t=161
   
 Morgana
 ===========
