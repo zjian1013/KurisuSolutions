@@ -188,7 +188,7 @@ namespace KurisuNidalee
 
             if (_orbwalker.ActiveMode.ToString() == "Combo")
                 useCombo(_target);
-            if (_orbwalker.ActiveMode.ToString() == "Combo")
+            if (_orbwalker.ActiveMode.ToString() == "Mixed")
                 useHarass(_target);
 
             if (_orbwalker.ActiveMode.ToString() == "LaneClear")
