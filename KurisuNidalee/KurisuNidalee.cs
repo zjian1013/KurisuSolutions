@@ -1,4 +1,4 @@
-﻿using LeagueSharp;
+using LeagueSharp;
 using LeagueSharp.Common;
 using System;
 using System.Collections.Generic;
@@ -367,7 +367,11 @@ namespace KurisuNidalee
                     if (takedown.IsReady() && e != null && e.Health < qdmg && e.Distance(_player.Position) < takedown.Range)
                         takedown.Cast(e, UsePacket());
                     if (javelin.IsReady() && e != null && e.Health < qdmg)
-                        javelin.Cast(e.Position, UsePacket());
+                    {
+                        PredictionOutput javelinPrediction = javelin.GetPrediction(e);
+                        if (javelinPrediction.Hitchance == HitChance.High)
+                            javelin.Cast(javelinPrediction.CastPosition, UsePacket());
+                    }                       
                     if (pounce.IsReady() && e != null && e.Health < wdmg && e.Distance(_player.Position) < pounce.Range)
                         pounce.Cast(e.Position, UsePacket());
                     if (swipe.IsReady() && e != null && e.Health < edmg && e.Distance(_player.Position) < swipe.Range)
