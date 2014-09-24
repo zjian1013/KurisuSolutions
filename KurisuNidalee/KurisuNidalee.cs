@@ -1,4 +1,4 @@
-using LeagueSharp;
+﻿using LeagueSharp;
 using LeagueSharp.Common;
 using System;
 using System.Collections.Generic;
@@ -63,6 +63,7 @@ namespace KurisuNidalee
         #region OnGameLoad
         private void Game_OnGameLoad(EventArgs args)
         {
+            Game.PrintChat("<font color=\"#FFAF4D\">[</font><font color=\"#FFA333\">KurisuNidalee</font><font color=\"#FFAF4D\">]</font><font color=\"#FF8C00\"> - <u>the Bestial Huntress v1.1</u>  </font>- Kurisu ©");
             try
             {
                 _config = new Menu("Kurisu: Nidaleee", "nidalee", true);
@@ -79,8 +80,8 @@ namespace KurisuNidalee
                 nidaDraws.AddItem(new MenuItem("drawQ", "Draw Q")).SetValue(new Circle(true, Color.FromArgb(150, Color.OrangeRed)));
                 nidaDraws.AddItem(new MenuItem("drawW", "Draw W")).SetValue(new Circle(true, Color.FromArgb(150, Color.OrangeRed)));
                 nidaDraws.AddItem(new MenuItem("drawE", "Draw E")).SetValue(new Circle(true, Color.FromArgb(150, Color.DarkOrange)));
-                nidaDraws.AddItem(new MenuItem(" ", " "));
-                nidaDraws.AddItem(new MenuItem("drawT", "Draw line current target")).SetValue(true);
+                //nidaDraws.AddItem(new MenuItem(" ", " "));
+                //nidaDraws.AddItem(new MenuItem("drawT", "Draw line current target")).SetValue(true);
                 _config.AddSubMenu(nidaDraws);
 
                 Menu nidaSpells = new Menu("Nidalee: Spells", "spells");
@@ -89,10 +90,24 @@ namespace KurisuNidalee
                 nidaSpells.AddItem(new MenuItem(" ", " "));
                 nidaSpells.AddItem(new MenuItem("usecougarq", "Use Takedown")).SetValue(true);
                 nidaSpells.AddItem(new MenuItem("usecougarw", "Use Pounce")).SetValue(true);
+                nidaSpells.AddItem(new MenuItem("pouncerange", "Pounce Min Distance")).SetValue(new Slider(125, 50, 300));
                 nidaSpells.AddItem(new MenuItem("usecougare", "Use Swipe")).SetValue(true);
                 nidaSpells.AddItem(new MenuItem("usecougarr", "Auto Switch Forms")).SetValue(true);
                 _config.AddSubMenu(nidaSpells);
 
+                Menu nidaHeals = new Menu("Nidalee: HealEngine", "spell");
+                var allyHeros = from hero in ObjectManager.Get<Obj_AI_Hero>()
+                               where hero.IsAlly == true
+                              select hero.SkinName;
+                foreach (string a in allyHeros)
+                {
+                    nidaHeals.AddItem(new MenuItem("heal" + a, a)).SetValue(true);
+                    nidaHeals.AddItem(new MenuItem("healpct" + a, a + " heal %")).SetValue(new Slider(50, 0, 100));
+                }
+                nidaHeals.AddItem(new MenuItem("healmanapct", "Minimum Mana %")).SetValue(new Slider(40, 0, 100));
+                _config.AddSubMenu(nidaHeals);
+
+                    
                 Menu nidaHarass = new Menu("Nidalee: Harass", "harass");
                 nidaHarass.AddItem(new MenuItem("usehumanq2", "Use Javelin Toss")).SetValue(true);
                 nidaHarass.AddItem(new MenuItem("humanqpct", "Minimum Mana %")).SetValue(new Slider(70, 0, 100));
@@ -163,6 +178,7 @@ namespace KurisuNidalee
         {
             useKS();
             InitCooldowns();
+            PrimalSurge();
             _target = SimpleTs.GetTarget(1500, SimpleTs.DamageType.Magical);
 
             if (qdata.Name == "JavelinToss")
@@ -172,6 +188,8 @@ namespace KurisuNidalee
 
             if (_orbwalker.ActiveMode.ToString() == "Combo")
                 useCombo(_target);
+            if (_orbwalker.ActiveMode.ToString() == "Combo")
+                useHarass(_target);
 
             if (_orbwalker.ActiveMode.ToString() == "LaneClear")
             {
@@ -183,6 +201,8 @@ namespace KurisuNidalee
                 if (_config.Item("usecougarr").GetValue<bool>())
                     aspectofcougar.Cast();
             }
+
+
             Utility.DrawCircle(_target.Position, _target.BoundingRadius, Color.DarkOrange, 4, 40);
 
         }
@@ -193,7 +213,7 @@ namespace KurisuNidalee
                 GetCooldowns(args);
         }
 
-        private IEnumerable<Obj_AI_Minion> getLaneMinions(Spell spell)
+        private IEnumerable<Obj_AI_Minion> GetLaneMinions(Spell spell)
         {
             string[] jungleMinions = { "AncientGolem", "GreatWraith", "Wraith", "LizardElder", "Golem", "Worm", "Dragon", "GiantWolf" };
             var minionList = from minion in ObjectManager.Get<Obj_AI_Minion>()
@@ -207,16 +227,27 @@ namespace KurisuNidalee
             return minionList;
         }
 
-        private IEnumerable<Obj_AI_Hero> getEnemies(Spell spell)
+        private IEnumerable<Obj_AI_Hero> GetEnemies(Spell spell)
         {
             var heroList = from hero in ObjectManager.Get<Obj_AI_Hero>()
-                           where hero.Distance(_player.Position) < spell.Range && hero.IsEnemy && !hero.IsDead &&
-                                 hero.IsValid && hero.IsValid
-                           select hero;
+                          where hero.Distance(_player.Position) < spell.Range && hero.IsEnemy && !hero.IsDead &&
+                                hero.IsValid && hero.IsValid
+                         select hero;
+
             return heroList;
         }
 
-        private IEnumerable<Obj_AI_Minion> getJungleMinions(Spell spell)
+        private IEnumerable<Obj_AI_Hero> GetHealTargets(Obj_AI_Base target)
+        {
+            var allyList = from hero in ObjectManager.Get<Obj_AI_Hero>()
+                          where hero.IsAlly && hero.Distance(target.Position) < primalsurge.Range && !hero.IsDead &&
+                                hero.IsValid && hero.IsVisible
+                         select hero;
+
+            return allyList;
+        }
+
+        private IEnumerable<Obj_AI_Minion> GetJungleMinions(Spell spell)
         {
             string[] jungleMinions = { "AncientGolem", "GreatWraith", "Wraith", "LizardElder", "Golem", "Worm", "Dragon", "GiantWolf" };
             var jungleList = from minion in ObjectManager.Get<Obj_AI_Minion>()
@@ -245,9 +276,10 @@ namespace KurisuNidalee
                         Items.UseItem(3144);
                 }
 
+                float minPounce = (float)_config.Item("pouncerange").GetValue<Slider>().Value;
                 if (takedown.IsReady() && _config.Item("usecougarq").GetValue<bool>() && target.Distance(_player.Position) < takedown.Range)
                     takedown.Cast(target, UsePacket());
-                if (pounce.IsReady() && _config.Item("usecougarw").GetValue<bool>() && target.Distance(_player.Position) < pounce.Range)
+                if (pounce.IsReady() && _config.Item("usecougarw").GetValue<bool>() && target.Distance(_player.Position) < 750f && target.Distance(_player.Position) > minPounce)
                     pounce.Cast(target.Position, UsePacket());
                 if (swipe.IsReady() && _config.Item("usecougare").GetValue<bool>())
                 {
@@ -275,14 +307,31 @@ namespace KurisuNidalee
 
         private void useHarass(Obj_AI_Base target)
         {
-            int manaPercent = ((int)_player.Mana / (int)_player.MaxMana) * _config.Item("humanqpct").GetValue<Slider>().Value;
+            int actualHeroManaPercent = (int)((_player.Mana / _player.MaxMana) * 100);
+            int minPercent = _config.Item("humanqpct").GetValue<Slider>().Value;
             if (javelin.IsReady() && _config.Item("usehumanq2").GetValue<bool>())
             {
-                // add mana setting
                 PredictionOutput prediction = javelin.GetPrediction(target);
-                if (prediction.Hitchance >= HitChance.Medium && target.Distance(_player.Position) <= javelin.Range)
+                if (prediction.Hitchance >= HitChance.Medium && target.Distance(_player.Position) <= javelin.Range && actualHeroManaPercent > minPercent)
                     javelin.Cast(prediction.CastPosition, true);
             }
+        }
+
+        private void PrimalSurge()
+        {
+            int actualHeroManaPercent = (int)((_player.Mana / _player.MaxMana) * 100);
+            int selfManaPercent = _config.Item("healmanapct").GetValue<Slider>().Value;   
+            foreach (var a in GetHealTargets(_player))
+            {
+
+                if (_config.Item("heal" + a.SkinName).GetValue<bool>())
+                {
+                    int needed = _config.Item("healpct" + a.SkinName).GetValue<Slider>().Value;
+                    int hp = (int)((a.Health / a.MaxHealth) * 100);
+                    if (actualHeroManaPercent > selfManaPercent && !isCougar && hp < needed )
+                        primalsurge.CastOnUnit(a);
+                }
+            }                    
         }
 
         private void useForce(Obj_AI_Base target) // luke
@@ -297,7 +346,7 @@ namespace KurisuNidalee
         {
             int actualHeroManaPercent = (int)((_player.Mana / _player.MaxMana) * 100);
             int minPercent = _config.Item("jgrpct").GetValue<Slider>().Value;
-            var jmobs = getJungleMinions(javelin);
+            var jmobs = GetJungleMinions(javelin);
             if (jmobs.Count() > 0)
             {
                 foreach (Obj_AI_Minion m in jmobs)
@@ -328,7 +377,7 @@ namespace KurisuNidalee
         {
             int actualHeroManaPercent = (int)((_player.Mana / _player.MaxMana) * 100);
             int minPercent = _config.Item("clearpct").GetValue<Slider>().Value;
-            var minions = getLaneMinions(javelin);
+            var minions = GetLaneMinions(javelin);
             if (minions.Count() > 0)
             {
                 foreach (Obj_AI_Minion m in minions)
@@ -357,7 +406,7 @@ namespace KurisuNidalee
         {
             if (_config.Item("useks").GetValue<bool>())
             {
-                foreach (Obj_AI_Hero e in getEnemies(javelin)) // get enemies within javelin range
+                foreach (Obj_AI_Hero e in GetEnemies(javelin)) // get enemies within javelin range
                 {
                     // should get both form q damage
                     var qdmg = DamageLib.getDmg(e, DamageLib.SpellType.Q);
