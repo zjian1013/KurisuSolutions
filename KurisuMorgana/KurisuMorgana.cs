@@ -1,5 +1,6 @@
 ﻿using LeagueSharp;
 using LeagueSharp.Common;
+using SharpDX;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,187 +10,209 @@ using Color = System.Drawing.Color;
 
 namespace KurisuMorgana
 {
-    class KurisuMorgana
+    internal class KurisuMorgana
     {
-        public static Menu Config;
-        public static Obj_AI_Hero unit;
-        public static Obj_AI_Hero me = ObjectManager.Player;
+        private static Menu Config;
+        private static Orbwalking.Orbwalker Orbwalker;
+        private static Obj_AI_Hero Player = ObjectManager.Player;
 
         public KurisuMorgana()
         {
-
-            if (me.BaseSkinName != "Morgana")
-                return;
-            CustomEvents.Game.OnGameLoad += onLoad;
+            Console.WriteLine("Kurisu assembly is loading...");
+            CustomEvents.Game.OnGameLoad += Game_OnGameLoad;
         }
 
-        #region OnLoad
-        private static void onLoad(EventArgs args)
+        private static Spell darkbinding = new Spell(SpellSlot.Q, 1175f);
+        private static Spell tormentsoil = new Spell(SpellSlot.W, 900f);
+        private static Spell blackshield = new Spell(SpellSlot.E, 750f);
+        private static Spell soulshackle = new Spell(SpellSlot.R, 600f);
+
+        private static List<Spell> SpellList = new List<Spell>();
+
+        private void SetSkills()
         {
+            SpellList.AddRange(new[] { darkbinding, tormentsoil, blackshield, soulshackle });
+            darkbinding.SetSkillshot(0.25f, 80f, 1400f, true, SkillshotType.SkillshotLine);
+            tormentsoil.SetSkillshot(0.25f, 175f, 1200f, false, SkillshotType.SkillshotCircle);
+        }
+
+        private void Game_OnGameLoad(EventArgs args)
+        {
+            Game.PrintChat("<font color=\"#BF80FF\">[</font><font color=\"#BF80FF\">KurisuMorgana</font><font color=\"#BF80FF\">]</font><font color=\"#B366FF\"> - <u>the Fallen Angel v1.3</u>  </font>- Kurisu ©");
             try
             {
                 Config = new Menu("Kurisu: Morgana", "morgana", true);
+                Menu morgOrb = new Menu("Orbwalker", "orbwalker");
+                Orbwalker = new Orbwalking.Orbwalker(morgOrb);
+                Config.AddSubMenu(morgOrb);
+           
+                Menu morgTS = new Menu("Target Selector", "target selecter");
+                SimpleTs.AddToMenu(morgTS);
+                Config.AddSubMenu(morgTS);
 
-                #region Tidy : Orbwalker
-                Config.AddSubMenu(new Menu("Orbwalker", "orbwalker"));
-                Morgana.orbwalker = new Orbwalking.Orbwalker(Config.SubMenu("orbwalker"));
+                Menu morgDraws = new Menu("Morgana: Drawings", "drawings");
+                morgDraws.AddItem(new MenuItem("drawQ", "Draw Q")).SetValue(new Circle(true, Color.FromArgb(150, Color.MediumSlateBlue)));
+                morgDraws.AddItem(new MenuItem("drawW", "Draw W")).SetValue(new Circle(false, Color.FromArgb(150, Color.DarkSlateBlue)));
+                morgDraws.AddItem(new MenuItem("drawE", "Draw E")).SetValue(new Circle(true, Color.FromArgb(150, Color.DarkSlateBlue)));
+                morgDraws.AddItem(new MenuItem("drawR", "Draw R")).SetValue(new Circle(true, Color.FromArgb(150, Color.MediumSlateBlue)));
+                Config.AddSubMenu(morgDraws);
 
+                Menu morgBind = new Menu("Morgana: Dark Binding", "bind");
+                morgBind.AddItem(new MenuItem("useq", "Use Q")).SetValue(true);
+                morgBind.AddItem(new MenuItem("minuseq", "Min distance Q")).SetValue(new Slider(50, 50, 250));
+                morgBind.AddItem(new MenuItem("", ""));
+                morgBind.AddItem(new MenuItem("qdash", "Auto Q Dashing")).SetValue(true);
+                morgBind.AddItem(new MenuItem("qimmobile", "Auto Q Immoble")).SetValue(true);
+                morgBind.AddItem(new MenuItem("qgap", "Auto Q Gapcloser")).SetValue(true);
+                Config.AddSubMenu(morgBind);
+
+                Menu morgSoil = new Menu("Morgana: Torment Soil", "soil");
+                morgSoil.AddItem(new MenuItem("usew", "Use W")).SetValue(true);
+                morgSoil.AddItem(new MenuItem("", ""));
+                morgSoil.AddItem(new MenuItem("wimmobile", "Use W only on immobile")).SetValue(true);
+                Config.AddSubMenu(morgSoil);
+
+                Menu morgShield = new Menu("Morgana: Black Shield", "shield");
+                morgShield.AddItem(new MenuItem("usee", "Use E")).SetValue(true);
+                morgShield.AddItem(new MenuItem("minshieldpct", "Minumum mana %")).SetValue(new Slider(40, 0, 100));
+                morgShield.AddItem(new MenuItem("edangerous", "Shield dangerous spells")).SetValue(true);
+                var allies = from hero in ObjectManager.Get<Obj_AI_Hero>()
+                            where hero.IsAlly == true
+                           select hero.SkinName;
+                foreach (string a in allies)
+                    morgShield.AddItem(new MenuItem("shield" + a, a)).SetValue(true);
+
+                Config.AddSubMenu(morgShield);
+
+                #region L# Reqs
+                Game.OnGameUpdate += Game_OnGameUpdate;
+                Obj_AI_Base.OnProcessSpellCast += Game_OnProcessSpellCast;
+                AntiGapcloser.OnEnemyGapcloser += Game_OnGapCloser;
+                Drawing.OnDraw += Game_DrawingOnDraw;
                 #endregion
 
-                #region Tidy: ts Menu
-                var _tsmenu = new Menu("Target Selector", "target selecter");
-                SimpleTs.AddToMenu(_tsmenu);
-                Config.AddSubMenu(_tsmenu);
-
-                #endregion
-
-                #region Tidy: Combo
-                Config.AddSubMenu(new Menu("Combo", "combo"));
-                Config.SubMenu("combo").AddItem(new MenuItem("useQ", "Use Q")).SetValue(true);
-                Config.SubMenu("combo").AddItem(new MenuItem("useW", "Use W")).SetValue(true);
-                Config.SubMenu("combo").AddItem(new MenuItem("useWif", "Use W only if Q Hits")).SetValue(true);
-                Config.SubMenu("combo").AddItem(new MenuItem("usecombo", "Combo active").SetValue(new KeyBind(32, KeyBindType.Press)));
-
-                #endregion
-
-                #region Tidy: Harass
-                Config.AddSubMenu(new Menu("Harass", "harass"));
-                Config.SubMenu("harass").AddItem(new MenuItem("useW2", "Use W")).SetValue(true);
-                Config.SubMenu("harass").AddItem(new MenuItem("useharass", "Harass active").SetValue(new KeyBind('C', KeyBindType.Press)));
-                Config.SubMenu("harass").AddItem(new MenuItem("harassrPct", "Minimum mana % for Harass").SetValue(new Slider(40, 1, 100)));
-
-                #endregion
-
-                #region Tidy: Lanceclear
-                Config.AddSubMenu(new Menu("Laneclear", "laneclear"));
-                Config.SubMenu("laneclear").AddItem(new MenuItem("wclearNum", "Minion hit number for W").SetValue(new Slider(3, 1, 10)));
-                Config.SubMenu("laneclear").AddItem(new MenuItem("wclear", "Use W")).SetValue(true);
-                Config.SubMenu("laneclear").AddItem(new MenuItem("usewclear", "Laneclear active").SetValue(new KeyBind('V', KeyBindType.Press)));
-                Config.SubMenu("laneclear").AddItem(new MenuItem("wclearPct", "Minimum mana % for Laneclear").SetValue(new Slider(40, 1, 100)));
-
-                #endregion
-
-                #region Drawings
-                Config.AddSubMenu(new Menu("Drawings", "drawings"));
-                Config.SubMenu("drawings").AddItem(new MenuItem("drawQ", "Draw Q")).SetValue(new Circle(true, Color.FromArgb(150, Color.DeepSkyBlue)));
-                Config.SubMenu("drawings").AddItem(new MenuItem("drawW", "Draw W")).SetValue(new Circle(false, Color.FromArgb(150, Color.DodgerBlue)));
-                Config.SubMenu("drawings").AddItem(new MenuItem("drawE", "Draw E")).SetValue(new Circle(false, Color.FromArgb(150, Color.LemonChiffon)));
-                Config.SubMenu("drawings").AddItem(new MenuItem("drawR", "Draw R")).SetValue(new Circle(true, Color.FromArgb(150, Color.DeepSkyBlue)));
-                
-                #endregion
-
-                #region Tidy: Extras
-                Config.AddSubMenu(new Menu("Extra", "extra"));
-                Config.SubMenu("extra").AddItem(new MenuItem("autoW", "Auto W on Stunned")).SetValue(true);
-                Config.SubMenu("extra").AddItem(new MenuItem("autoQ", "Auto Q on Stunned")).SetValue(true);
-                Config.SubMenu("extra").AddItem(new MenuItem("autoQGC", "Auto Q on Gapcloser")).SetValue(true);
-
-                #endregion
-
+                SetSkills();
                 Config.AddToMainMenu();
-
             }
             catch (Exception e)
             {
-                //Logger.FailLog("Something wfent wrong with Nami script :(");
-                Console.WriteLine(e.ToString());
+                Console.WriteLine(e);
+                Game.PrintChat("Error occured with morgana assembly(OnLoadMenu)");
             }
-
-            #region Callbacks
-            Morgana.SetSkills();
-
-
-            // Leaguesharp Stuff
-            Drawing.OnDraw += OnDraw;
-            Game.OnGameUpdate += OnGameUpdate;          
-            GameObject.OnCreate += OnCreateObject;
-            GameObject.OnDelete += OnDeleteObject;
-            Obj_AI_Base.OnProcessSpellCast += OnProcessSpell;
-            AntiGapcloser.OnEnemyGapcloser += OnGapcloser;
-
-            #endregion
-  
         }
 
-        #endregion
-
-        #region OnGapCloser
-        /// <summary>
-        /// Gapcloser AutoQ / Not tested!
-        /// </summary>
-        /// <param name="gapcloser"></param>
-        private static void OnGapcloser(ActiveGapcloser gapcloser)
+        private void Game_DrawingOnDraw(EventArgs args)
         {
-            if (Config.SubMenu("extra").Item("autoQGC").GetValue<bool>())
-                Morgana.q.Cast(gapcloser.Sender, true);
-        }
-
-        #endregion
-
-        #region OnDraw
-        private static void OnDraw(EventArgs args)
-        {
-            foreach (var spell in Extensions.SpellList)
+            foreach (var spell in SpellList)
             {
                 var circle = Config.SubMenu("drawings").Item("draw" + spell.Slot.ToString()).GetValue<Circle>();
                 if (circle.Active)
-                    Utility.DrawCircle(me.Position, spell.Range, circle.Color);
+                    Utility.DrawCircle(Player.Position, spell.Range, circle.Color, 5, 55);
+                    
             }
+
         }
 
-        #endregion
-
-        #region OnGameUpdate
-        private static void OnGameUpdate(EventArgs args)
+        private void Game_OnGapCloser(ActiveGapcloser sender)
         {
-            if (Config.SubMenu("extra").Item("autoW").GetValue<bool>())
-                Morgana.CastAutoW();
-            if (Config.SubMenu("extra").Item("autoQ").GetValue<bool>())
-                Morgana.CastAutoQ();
+            if (Config.Item("useq").GetValue<bool>() && Config.Item("qgap").GetValue<bool>())
+                    darkbinding.Cast();
+        }
 
-            if (Config.SubMenu("combo").Item("usecombo").GetValue<KeyBind>().Active)
+        private void Game_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
+        {
+            if (Config.Item("usee").GetValue<bool>() && Config.Item("edangerous").GetValue<bool>())
             {
-                unit = SimpleTs.GetTarget(1175, SimpleTs.DamageType.Magical);
-                Morgana.CastCombo(unit);
+                
+                Obj_AI_Hero attacker = ObjectManager.Get<Obj_AI_Hero>().First(n => n.NetworkId == sender.NetworkId);
+                if (sender.Type == GameObjectType.obj_AI_Hero && sender.IsEnemy)
+                {
+                    Console.WriteLine(args.SData.Name);
+                    if (args.Target.Type == GameObjectType.obj_AI_Hero && args.Target.IsAlly && Player.Distance(args.Target.Position) < blackshield.Range)
+                    {   
+                            Obj_AI_Hero target = ObjectManager.Get<Obj_AI_Hero>().First(n => n.NetworkId == args.Target.NetworkId);
+                            if (target != null && KurisuLib.CCList.Any(cc => cc.Contains(args.SData.Name)) && Config.Item("shield" + target.SkinName).GetValue<bool>())
+                                blackshield.CastOnUnit(target, true);
+                                //Console.WriteLine(target.SkinName);
+                    }
+                   
+                }
             }
+        }
 
-            if (Config.SubMenu("harass").Item("useharass").GetValue<KeyBind>().Active)
+        private void Game_OnGameUpdate(EventArgs args)
+        {
+            Obj_AI_Hero _target = SimpleTs.GetTarget(1150, SimpleTs.DamageType.Magical);
+            DarkBinding(_target);
+            TormentedSoil(_target);
+
+            Utility.DrawCircle(_target.Position, _target.BoundingRadius, Color.MediumSlateBlue);
+        }
+
+        private IEnumerable<Obj_AI_Hero> autoSoilTarget()
+        {
+            var targets = from hero in ObjectManager.Get<Obj_AI_Hero>()
+                         where hero.Team != Player.Team && Vector2.DistanceSquared(Player.Position.To2D(), 
+                               hero.ServerPosition.To2D()) < tormentsoil.Range * tormentsoil.Range
+                        select hero;
+
+            return targets;
+        }
+
+        private IEnumerable<Obj_AI_Hero> GetShackleTargets(GameObject target)
+        {
+            var enemies = from hero in ObjectManager.Get<Obj_AI_Hero>()
+                         where hero.IsEnemy && hero.IsValid &&
+                               hero.Distance(target.Position) < soulshackle.Range
+                        select hero;
+
+            return enemies;
+        }
+
+        private void DarkBinding(Obj_AI_Base target)
+        {
+            PredictionOutput predicition = darkbinding.GetPrediction(target);
+            if (predicition.Hitchance == HitChance.High && Orbwalker.ActiveMode.ToString() == "Combo")
+                if (Config.Item("useq").GetValue<bool>() && darkbinding.IsReady())
+                    darkbinding.Cast(predicition.CastPosition);
+
+            if (predicition.Hitchance == HitChance.Immobile)
+                if (Config.Item("useq").GetValue<bool>() && Config.Item("qimmobile").GetValue<bool>() && darkbinding.IsReady())
+                    darkbinding.Cast(predicition.CastPosition);
+
+            if (predicition.Hitchance == HitChance.Dashing)
+                if (Config.Item("useq").GetValue<bool>() && Config.Item("qdash").GetValue<bool>() && darkbinding.IsReady())
+                    darkbinding.Cast(predicition.CastPosition);
+        }
+
+        private void TormentedSoil(Obj_AI_Base target)
+        {
+            PredictionOutput prediction = tormentsoil.GetPrediction(target);
+            if (prediction.Hitchance == HitChance.Medium)
+                if (Config.Item("usew").GetValue<bool>() && tormentsoil.IsReady() && !Config.Item("wimmobile").GetValue<bool>() && Orbwalker.ActiveMode.ToString() == "Combo")
+                    tormentsoil.Cast(prediction.CastPosition);
+            if (Config.Item("wimmobile").GetValue<bool>())
             {
-                unit = SimpleTs.GetTarget(1175, SimpleTs.DamageType.Magical);
-                Morgana.CastHarass(unit);
+                foreach (var enemy in autoSoilTarget())
+                {
+                    if (prediction.Hitchance == HitChance.Immobile)
+                        tormentsoil.Cast(prediction.CastPosition);
+                }
             }
+        }
 
-            if (Config.SubMenu("laneclear").Item("usewclear").GetValue<KeyBind>().Active)
+        private void SoulShackles()
+        {
+            var targets = GetShackleTargets(Player);
+            if (targets.Count() >= 1)
             {
-                Morgana.Laneclear();
+
             }
-
-        }
-        #endregion
-
-        #region OnProcessSPell
-        private static void OnProcessSpell(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
-        {
-            //throw new NotImplementedExceptions();
         }
 
-        #endregion
 
-        #region OnDeleteObject
-        private static void OnDeleteObject(GameObject sender, EventArgs args)
-        {
-            //throw new NotImplementedExceptions();
-        }
 
-        #endregion
 
-        #region OnCreateObject
-        private static void OnCreateObject(GameObject sender, EventArgs args)
-        {
-            //throw new NotImplementedException();
-        }
-
-        #endregion
 
     }
 }
