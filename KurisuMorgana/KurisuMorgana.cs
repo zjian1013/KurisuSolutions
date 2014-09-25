@@ -116,7 +116,7 @@ namespace KurisuMorgana
         private void Game_OnGapCloser(ActiveGapcloser sender)
         {
             if (Config.Item("useq").GetValue<bool>() && Config.Item("qgap").GetValue<bool>())
-                    darkbinding.Cast(sender);
+                    darkbinding.Cast(sender.Sender);
         }
 
         private void Game_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
