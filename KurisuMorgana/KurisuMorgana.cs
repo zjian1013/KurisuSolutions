@@ -1,4 +1,4 @@
-﻿using LeagueSharp;
+using LeagueSharp;
 using LeagueSharp.Common;
 using SharpDX;
 using System;
@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Color = System.Drawing.Color;
+using KurisuLib = KurisuMorgana.KurisuLib;
 
 namespace KurisuMorgana
 {
