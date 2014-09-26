@@ -351,11 +351,10 @@ namespace KurisuFiora
                     }
                 }*/
 
-
             }
         }
 
-        private void useR(Obj_AI_Base target)
+        private void useR(Obj_AI_Hero target)
         {
             if (target != null)
             {
