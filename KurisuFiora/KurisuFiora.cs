@@ -1,4 +1,4 @@
-﻿using LeagueSharp;
+using LeagueSharp;
 using LeagueSharp.Common;
 using System;
 using System.Collections.Generic;
@@ -267,10 +267,14 @@ namespace KurisuFiora
                 dmg += _player.GetSpellDamage(enemy, SpellSlot.Q);
             if (r.IsReady())
                 dmg += _player.GetSpellDamage(enemy, SpellSlot.R);
-            //if (Items.HasItem(3077))
-            //    dmg += _player.GetSpellDamage(enemy, "ItemTiamatCleave");
-           // if (Items.HasItem(3074))
-            //    dmg += _player.GetSpellDamage(enemy, "ItemTiamatCleave");
+            if (Items.HasItem(3077) && Items.CanUseItem(3077))
+                dmg += _player.GetItemDamage(enemy, Damage.DamageItems.Tiamat);
+            if (Items.HasItem(3074) && Items.CanUseItem(3074))
+                dmg += _player.GetItemDamage(enemy, Damage.DamageItems.Hydra);
+            if (Items.HasItem(3153) && Items.CanUseItem(3153))
+                dmg += _player.GetItemDamage(enemy, Damage.DamageItems.Botrk);
+            if (Items.HasItem(3144) && Items.CanUseItem(3144))
+                dmg += _player.GetItemDamage(enemy, Damage.DamageItems.Bilgewater);
             if (ignote != SpellSlot.Unknown && _config.Item("isteal").GetValue<bool>())
                 dmg += _player.GetSpellDamage(enemy, ignote);
 
