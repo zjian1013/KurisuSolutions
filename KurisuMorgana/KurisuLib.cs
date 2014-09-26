@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -27,7 +27,7 @@ namespace KurisuMorgana
             "Rupture",
             "DariusAxeGrabCone",
             "DianaVortex",
-            "nfectedCleaverMissileCast",
+            "InfectedCleaverMissileCast",
             "DravenDoubleShot",
             "EliseHumanE",
             "EvelynnR",
@@ -35,6 +35,34 @@ namespace KurisuMorgana
             "GalioIdolOfDurand", "GalioResoluteSmite",
             "GnarQ", "GnarW", "GnarR",
             "GragasR", "GragasQ", "GragasE",
+            "HecarimUlt", "HecarimRamp",
+            "HeimerdingerE",
+            "ReapTheWhirlwind", "HowlingGale",
+            "JarvanIVDragonStrike",
+            "JaxCounterStrike",
+            "JayceThunderingBlow",
+            "JinxW", "JinxE",
+            "KarmaQ", "KarmaSpiritBind",
+            "KarthusWallOfPain",
+            "ForcePulse",
+            "JudicatorReckoning",
+            "KogMawVoidOoze",
+            "LeblancSoulShackle",
+            "BlindMonkRKick", "BlindMonkEOne",
+            "LeonaSolarFlare", "LeonaShieldOfDaybreak", "LeonaZenithBlade",
+            "LissandraW", "LissandraR",
+            "LuluW", "LuluQ", "LuluQMissileTwo", "LuluR",
+            "LuxLightBinding", "LuxLightStrikeKugel",
+            "SeismicShard", "Landslide", "UFSlash",
+            "AlZaharNetherGrasp",
+            "MaokaiUnstableGrowth",
+            "MaokaiTrunkLine",
+            "MonkeyKingSpinToWin",
+            "MordekaiserChildrenOfTheGrave",
+            "DarkBindingMissile",
+            "NamiQ", "NamiR",
+            "NasusW",
+            "NautilusAnchorDrag", "NautilusSplashZone", "NautilusGrandLine",
             "Dazzle",
             "ZyraGraspingRoots",
             "Terrify"
@@ -42,7 +70,7 @@ namespace KurisuMorgana
 
         public static List<String> SilenceList = new List<String>()
         {
-            "FiddlesticksDarkWind", "StaticField", "FeralScream"
+            "FiddlesticksDarkWind", "StaticField", "FeralScream", "AlZaharCalloftheVoid"
         };
 
         public static List<String> DangerousList = new List<string>()
@@ -57,14 +85,18 @@ namespace KurisuMorgana
             "CaitlynAceintheHole",
             "CassiopeiaPetrifyingGaze",
             "DariusExecute",
-            "DianaArc",
             "DravenRCast",
             "EvelynnR",
             "EzrealTrueshotBarrage",
-            "Feast",
             "Terrify",
             "GalioIdolOfDurand",
-            "GarenR"
+            "GarenR",
+            "GravesChargeShot",
+            "HecarimUlt",
+            "LissandraR",
+            "LuxMaliceCannon",
+            "UFSlash",                
+            "AlZaharNetherGrasp"
         };
     }
 }
