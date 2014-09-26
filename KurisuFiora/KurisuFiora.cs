@@ -23,7 +23,6 @@ namespace KurisuFiora
         private static readonly List<Spell> spellList = new List<Spell>();
 
         private int pTarget;
-        private int aacount = 0;
         private bool pHit = false;
 
         public KurisuFiora()
@@ -38,10 +37,12 @@ namespace KurisuFiora
             try
             {
 
-                Game.PrintChat("<font color=\"#99FFE6\">[</font><font color=\"#33FFCC\">KurisuFiora</font><font color=\"#99FFE6\">]</font><font color=\"#99FFE6\"> - the Grand Duelist v1.3</font> - Loaded");
+                Game.PrintChat("<font color=\"#CCFFF2\">[KurisuFiora]</font><font color=\"#99FFE6\"> - <u>the Grand Duelist v1.3.1</u></font> - Kurisu ©");
                 spellList.Add(q);
                 spellList.Add(r);
-
+                var enemy = from hero in ObjectManager.Get<Obj_AI_Hero>()
+                            where hero.IsEnemy == true
+                            select hero;               
                 _config = new Menu("KurisuFiora", "fiora", true);
                 _config.AddSubMenu(new Menu("Orbwalker", "orbwalker"));
                 _orbwalker = new Orbwalking.Orbwalker(_config.SubMenu("orbwalker"));
@@ -56,28 +57,49 @@ namespace KurisuFiora
                 _config.AddSubMenu(fioraDraws);
 
 
-                Menu fioraSpells = new Menu("Fiora: Spells", "combo");
+                Menu fioraSpells = new Menu("Fiora: General", "combo");
                 fioraSpells.AddItem(new MenuItem("useq", "Use Q")).SetValue(true);
+                //fioraSpells.AddItem(new MenuItem("useqminion", "Use minion to gapclose")).SetValue(true);
                 fioraSpells.AddItem(new MenuItem("qrange", "Minimum range to q")).SetValue(new Slider(250, 1, (int)q.Range));
-                fioraSpells.AddItem(new MenuItem("usew", "Use W")).SetValue(true);
-                fioraSpells.AddItem(new MenuItem("wsett", "Minimum damage to W")).SetValue(new Slider(50, 1, 200));
                 fioraSpells.AddItem(new MenuItem("usee", "Use E")).SetValue(true);
                 fioraSpells.AddItem(new MenuItem("smana", "Combo min mana % ")).SetValue(new Slider(0, 0, 99));
                 _config.AddSubMenu(fioraSpells);
 
+                Menu fioraParry = new Menu("Fiora: Riposte", "fparry");
+                fioraParry.AddItem(new MenuItem("usew", "Use W")).SetValue(true);
+                fioraParry.AddItem(new MenuItem("wsett", "Minimum damage to W")).SetValue(new Slider(50, 1, 200));
+                fioraParry.AddItem(new MenuItem("wdodge", "Use W on Hiteffect Spells")).SetValue(true);               
+                fioraParry.AddItem(new MenuItem("", ""));
+                foreach (var e in enemy)
+                {
+                    var qdata = e.Spellbook.GetSpell(SpellSlot.Q);
+                    var wdata = e.Spellbook.GetSpell(SpellSlot.W);
+                    var edata = e.Spellbook.GetSpell(SpellSlot.E);
+                    if (KurisuLib.DangerousList.Any(spell => spell.Contains(qdata.SData.Name)))
+                        fioraParry.AddItem(new MenuItem("ws" + e.SkinName, qdata.SData.Name)).SetValue(true);
+                    if (KurisuLib.DangerousList.Any(spell => spell.Contains(wdata.SData.Name)))
+                        fioraParry.AddItem(new MenuItem("ws" + e.SkinName, wdata.SData.Name)).SetValue(true);
+                    if (KurisuLib.DangerousList.Any(spell => spell.Contains(edata.SData.Name)))
+                        fioraParry.AddItem(new MenuItem("ws" + e.SkinName, edata.SData.Name)).SetValue(true);
+                }
+                _config.AddSubMenu(fioraParry);
+
                 Menu fioraWaltz = new Menu("Fiora: Blade Waltz", "fbw");
                 fioraWaltz.AddItem(new MenuItem("user", "Use R")).SetValue(true);
                 fioraWaltz.AddItem(new MenuItem("rdodge", "Dodge dangerous spells")).SetValue(true);
+                fioraWaltz.AddItem(new MenuItem("", ""));                                         
+                foreach (var e in enemy)
+                {
+                    SpellDataInst rdata = e.Spellbook.GetSpell(SpellSlot.R);
+                    Console.WriteLine(rdata.SData.Name);
+                    if (KurisuLib.DangerousList.Any(spell => spell.Contains(rdata.SData.Name)))
+                        fioraWaltz.AddItem(new MenuItem("ds" + e.SkinName, rdata.SData.Name)).SetValue(true);
+                }
+ 
                 _config.AddSubMenu(fioraWaltz);
 
-                Menu fioraClear = new Menu("Fiora: Lane/Jungle Clear", "fclr");
-                //fioraClear.AddItem(new MenuItem("clearq", "Use Q")).SetValue(true);
-                //fioraClear.AddItem(new MenuItem("cleare", "Use E")).SetValue(true);
-                //fioraClear.AddItem(new MenuItem("cmana", "Clear min mana % ")).SetValue(new Slider(55, 0, 99)); 
-                _config.AddSubMenu(fioraClear);
-
                 Menu fioraMisc = new Menu("Fiora: Misc", "fmisc");
-                fioraMisc.AddItem(new MenuItem("ksteal", "Kill Steal")).SetValue(true);
+                //fioraMisc.AddItem(new MenuItem("ksteal", "Killsteal")).SetValue(true);
                 fioraMisc.AddItem(new MenuItem("usepackets", "Use Packets")).SetValue(true);
                 fioraMisc.AddItem(new MenuItem("isteal", "Use Ignite")).SetValue(true);
                 fioraMisc.AddItem(new MenuItem("usetiamat", "Use Tiamat/Hydra")).SetValue(true);
@@ -135,7 +157,7 @@ namespace KurisuFiora
                     Packet.C2S.Cast.Struct PCast = Packet.C2S.Cast.Decoded(args.PacketData);
                     if (PCast.Slot == SpellSlot.E)
                     {
-                        Console.WriteLine("aacancel");
+                        //Console.WriteLine("aacancel");
                         Packet.C2S.Move.Encoded(new Packet.C2S.Move.Struct(0, 0, 3, _orbwalker.GetTarget().NetworkId)).Send();
                         Orbwalking.ResetAutoAttackTimer();
                         if ((Items.HasItem(3077) && Items.CanUseItem(3077) || (Items.HasItem(3074) && Items.CanUseItem(3074)) && _config.Item("usetiamat").GetValue<bool>()))
@@ -146,7 +168,7 @@ namespace KurisuFiora
                                 Items.UseItem(3074);
                                 Packet.C2S.Move.Encoded(new Packet.C2S.Move.Struct(0, 0, 3, _orbwalker.GetTarget().NetworkId)).Send();
                                 Orbwalking.ResetAutoAttackTimer();
-                                Console.WriteLine("aacancel: 2");
+                                //Console.WriteLine("aacancel: 2");
                             });
                         }
 
@@ -180,11 +202,11 @@ namespace KurisuFiora
 
         #region Fiora: OnGameUpdate
         private void Game_OnGameUpdate(EventArgs args)
-        {
+        {        
             try
             {
-                if (_config.Item("aadebug").GetValue<bool>())
-                    Console.WriteLine(Orbwalking.LastAATick);
+                //if (_config.Item("ksteal").GetValue<bool>())
+                //    kSteal();
                 if (_orbwalker.ActiveMode.ToString() == "Combo")
                 {
                     _target = SimpleTs.GetTarget(750, SimpleTs.DamageType.Physical);
@@ -212,33 +234,16 @@ namespace KurisuFiora
             {
                 Obj_AI_Hero attacker = ObjectManager.Get<Obj_AI_Hero>().First(n => n.NetworkId == sender.NetworkId);
                 if (attacker != null)
-                {
-
+                {                   
                     SpellSlot spellSlot = Utility.GetSpellSlot(attacker, args.SData.Name);
                     if (spellSlot == SpellSlot.Unknown)
-                        incDmg = DamageLib.getDmg(attacker, DamageLib.SpellType.AD);
-                    if (spellSlot == SpellSlot.Q && w.IsReady() && (
-                        sender.BaseSkinName == "Rengar" || sender.BaseSkinName == "Garen" || sender.BaseSkinName == "Nasus" ||
-                        sender.BaseSkinName == "Shyvanna" || sender.BaseSkinName == "Leona" || sender.BaseSkinName == "Gankplank" ||
-                        sender.BaseSkinName == "MissFortune" || sender.BaseSkinName == "Talon"))
-                        w.Cast();
-                    if (spellSlot == SpellSlot.W && w.IsReady() && (
-                        sender.BaseSkinName == "Sivir" || sender.BaseSkinName == "Renekton" || sender.BaseSkinName == "Darius" ||
-                        sender.BaseSkinName == "Jax"))
-                        w.Cast();
-                    if (_config.Item("rdodge").GetValue<bool>())
-                    {
-                        if (spellSlot == SpellSlot.R && sender.Distance(_player) < 400f && r.IsReady() && (
-                            sender.BaseSkinName == "Malphite" || sender.BaseSkinName == "Cassiopeia" || sender.BaseSkinName == "Garen" ||
-                            sender.BaseSkinName == "Graves" || sender.BaseSkinName == "Hecarim" || sender.BaseSkinName == "Jarven" ||
-                            sender.BaseSkinName == "Amumu" || sender.BaseSkinName == "Tristana" || sender.BaseSkinName == "Syndra" ||
-                            sender.BaseSkinName == "Darius" || sender.BaseSkinName == "Annie" || sender.BaseSkinName == "Sona" ||
-                            sender.BaseSkinName == "Galio" || sender.BaseSkinName == "Veigar"))
+                        incDmg = _player.GetAutoAttackDamage(attacker);
+                    if (_config.Item("wdodge").GetValue<bool>())
+                        if (KurisuLib.OnHitEffectList.Any(spell => spell.Contains(args.SData.Name)) && w.IsReady())
+                            w.Cast();
+                    if (_config.Item("rdodge").GetValue<bool>() && _config.Item("ds" + sender.SkinName).GetValue<bool>())
+                        if (KurisuLib.DangerousList.Any(spell => spell.Contains(args.SData.Name)) && sender.Distance(_player) < 400f && r.IsReady())
                             r.Cast(sender);
-                        if (spellSlot == SpellSlot.R && r.IsReady() && (
-                            sender.BaseSkinName == "Jinx" || sender.BaseSkinName == "Ashe") && sender.Distance(_player) < 400f)
-                            r.Cast(sender);
-                    }
                 }
 
             }
@@ -259,17 +264,15 @@ namespace KurisuFiora
             var ignote = Utility.GetSpellSlot(_player, "summonerdot");
 
             if (q.IsReady())
-                dmg += DamageLib.getDmg(enemy, DamageLib.SpellType.Q);
-            //if (e.IsReady())
-            //    dmg += DamageLib.getDmg(enemy, DamageLib.SpellType.E);
+                dmg += _player.GetSpellDamage(enemy, SpellSlot.Q);
             if (r.IsReady())
-                dmg += DamageLib.getDmg(enemy, DamageLib.SpellType.R);
-            if (Items.HasItem(3077))
-                dmg += DamageLib.getDmg(enemy, DamageLib.SpellType.TIAMAT);
-            if (Items.HasItem(3074))
-                dmg += DamageLib.getDmg(enemy, DamageLib.SpellType.HYDRA);
+                dmg += _player.GetSpellDamage(enemy, SpellSlot.R);
+            //if (Items.HasItem(3077))
+            //    dmg += _player.GetSpellDamage(enemy, "ItemTiamatCleave");
+           // if (Items.HasItem(3074))
+            //    dmg += _player.GetSpellDamage(enemy, "ItemTiamatCleave");
             if (ignote != SpellSlot.Unknown && _config.Item("isteal").GetValue<bool>())
-                dmg += DamageLib.getDmg(enemy, DamageLib.SpellType.IGNITE);
+                dmg += _player.GetSpellDamage(enemy, ignote);
 
             return (float)dmg;
         }
@@ -326,6 +329,25 @@ namespace KurisuFiora
                     if (_player.Distance(target.ServerPosition) >= minRange)
                         q.Cast(target, usePackets());
                 }
+
+                /*if (_config.Item("useq").GetValue<bool>() && _config.Item("useqminion").GetValue<bool>())
+                {
+                    var pos = from minion in ObjectManager.Get<Obj_AI_Minion>()
+                             where minion.Distance(target.Position) < q.Range &&
+                                   minion.Distance(_player.Position) < q.Range
+                            select minion;
+
+                    if (target.Distance(_player.Position) > q.Range)
+                    {
+                        foreach (var m in pos)
+                        {
+                            q.Cast(m, usePackets());
+                            break;
+                        }
+                    }
+                }*/
+
+
             }
         }
 
@@ -360,8 +382,8 @@ namespace KurisuFiora
 
                 foreach (Obj_AI_Hero e in enemy)
                 {
-                    var qdmg = DamageLib.getDmg(e, DamageLib.SpellType.Q);
-                    var rdmg = DamageLib.getDmg(e, DamageLib.SpellType.R);
+                    var qdmg = _player.GetSpellDamage(e, SpellSlot.Q);
+                    var rdmg = _player.GetSpellDamage(e, SpellSlot.R);
                     if (q.IsReady() && e != null && e.IsValid && e.Health < qdmg)
                         q.CastOnUnit(e, usePackets());
                     if (r.IsReady() && e != null && e.IsValid && e.Health < rdmg)
