@@ -7,7 +7,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Color = System.Drawing.Color;
-using KurisuLib = KurisuMorgana.KurisuLib;
 
 namespace KurisuMorgana
 {
