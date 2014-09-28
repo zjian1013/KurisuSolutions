@@ -63,7 +63,7 @@ namespace KurisuNidalee
         #region OnGameLoad
         private void Game_OnGameLoad(EventArgs args)
         {
-            Game.PrintChat("<font color=\"#FFAF4D\">[</font><font color=\"#FFA333\">Nidalee</font><font color=\"#FFAF4D\">]</font><font color=\"#FF8C00\"> - <u>the Bestial Huntress v1.1</u>  </font>- Kurisu ©");
+            Game.PrintChat("<font color=\"#FFAF4D\">[</font><font color=\"#FFA333\">Nidalee</font><font color=\"#FFAF4D\">]</font><font color=\"#FF8C00\"> - <u>the Bestial Huntress v1.2</u>  </font>- Kurisu ©");
             try
             {
                 _config = new Menu("Kurisu: Nidaleee", "nidalee", true);
@@ -141,11 +141,11 @@ namespace KurisuNidalee
                 nidaMisc.AddItem(new MenuItem("usebw", "Use Bilgewater")).SetValue(true);
                 nidaMisc.AddItem(new MenuItem("useclaim", "Frost Queens")).SetValue(true);
                 nidaMisc.AddItem(new MenuItem(" ", " "));
-                nidaMisc.AddItem(new MenuItem("useks", "Killsteal (Disabled atm)")).SetValue(false);
+                nidaMisc.AddItem(new MenuItem("useks", "Killsteal")).SetValue(true);
                 nidaMisc.AddItem(new MenuItem("swfks", "KS Switch Forms")).SetValue(false);
                 _config.AddSubMenu(nidaMisc);
 
-                _config.AddItem(new MenuItem("useignote", "Use Ignite (Disabled atm)")).SetValue(false);
+                _config.AddItem(new MenuItem("useignote", "Use Ignite")).SetValue(true);
                 _config.AddItem(new MenuItem("usepackets", "Use Packets")).SetValue(true);
 
                 // Add our menu to Main Menu
@@ -179,10 +179,12 @@ namespace KurisuNidalee
 
         private void Game_OnGameUpdate(EventArgs args)
         {
-
+            //useKS();
             InitCooldowns();
             PrimalSurge();
             _target = SimpleTs.GetTarget(1500, SimpleTs.DamageType.Magical);
+
+            Console.WriteLine(ComboDamage(_target));
 
             if (qdata.Name == "JavelinToss")
                 isCougar = false;
@@ -267,17 +269,21 @@ namespace KurisuNidalee
             if (isCougar)
             {
                 if ((Items.CanUseItem(3128) && Items.HasItem(3128) || Items.CanUseItem(3144) && Items.HasItem(3144) ||
-                     Items.CanUseItem(3153) && Items.HasItem(3153)) && TargetHunted(target) && pounce.IsReady() /*&& ComboDamage(target) > target.Health*/)
+                     Items.CanUseItem(3153) && Items.HasItem(3153)) && TargetHunted(target) && pounce.IsReady() && ComboDamage(target) > target.Health)
                 {
                     if (_config.Item("usedfg").GetValue<bool>())
                         Items.UseItem(3128, target);
-                    //if (_config.Item("useignote").GetValue<bool>())
-                    //    _player.SummonerSpellbook.CastSpell(ignote, target);
+                    if (_config.Item("useignote").GetValue<bool>())
+                        _player.SummonerSpellbook.CastSpell(ignote, target);
                     if (_config.Item("usebork").GetValue<bool>())
                         Items.UseItem(3153);
                     if (_config.Item("usebw").GetValue<bool>())
                         Items.UseItem(3144);
                 }
+                else if (TargetHunted(target) && pounce.IsReady() && ComboDamage(target) > target.Health)
+                    if (_config.Item("useignote").GetValue<bool>())
+                        _player.SummonerSpellbook.CastSpell(ignote, target);
+
                 if (Items.CanUseItem(3092) && Items.HasItem(3092) && _config.Item("useclaim").GetValue<bool>())
                     Items.UseItem(3092, target.Position);
 
@@ -337,14 +343,6 @@ namespace KurisuNidalee
                         primalsurge.CastOnUnit(a);
                 }
             }
-        }
-
-        private void useForce(Obj_AI_Base target) // luke
-        {
-            // TODO:
-            // 
-            // check aggro and force cougar on another target if priority target is not in range
-
         }
 
         private void useJungleclear()
@@ -407,41 +405,37 @@ namespace KurisuNidalee
             }
         }
 
-        /*private void useKS()
+        private void useKS()
         {
             if (_config.Item("useks").GetValue<bool>())
             {
-                //var enemyList = GetEnemies(javelin);
-                //if (enemyList.Count() >= 1)
-                //{
                 foreach (Obj_AI_Hero e in GetEnemies(javelin)) // get enemies within javelin range
-                    {
-                        // should get both form q damage
-                        //var qdmg = DamageLib.getDmg(e, DamageLib.SpellType.Q);
-                        //var wdmg = DamageLib.getDmg(e, DamageLib.SpellType.W);
-                        //var edmg = DamageLib.getDmg(e, DamageLib.SpellType.E);
-                        var qdmg = _player.GetSpellDamage(e, SpellSlot.Q);
-                        var wdmg = _player.GetSpellDamage(e, SpellSlot.W);
-                        var edmg = _player.GetSpellDamage(e, SpellSlot.E);
+                {
+                    //var qdmg = Damage.GetSpellDamage(_player, e, SpellSlot.Q);
+                    //var wdmg = Damage.GetSpellDamage(_player, e, SpellSlot.W);
+                    //var edmg = Damage.GetSpellDamage(_player, e, SpellSlot.E);
+                    var qdmg = DamageLib.getDmg(e, DamageLib.SpellType.Q);
+                    var wdmg = DamageLib.getDmg(e, DamageLib.SpellType.W);
+                    var edmg = DamageLib.getDmg(e, DamageLib.SpellType.E);
 
-                        if (takedown.IsReady() && e != null && e.Health < qdmg && e.Distance(_player.Position) < takedown.Range)
-                            takedown.Cast(e, UsePacket());
-                        if (javelin.IsReady() && e != null && e.Health < qdmg)
-                        {
-                            PredictionOutput javelinPrediction = javelin.GetPrediction(e);
-                            if (javelinPrediction.Hitchance == HitChance.High)
-                                javelin.Cast(javelinPrediction.CastPosition, UsePacket());
-                        }
-                        if (pounce.IsReady() && e != null && e.Health < wdmg && e.Distance(_player.Position) < pounce.Range)
-                            pounce.Cast(e.Position, UsePacket());
-                        if (swipe.IsReady() && e != null && e.Health < edmg && e.Distance(_player.Position) < swipe.Range)
-                            swipe.Cast(e.Position, UsePacket());
-                        if (javelin.IsReady() && e.Health < qdmg && e.Distance(_player.Position) <= javelin.Range && _config.Item("swfks").GetValue<bool>())
-                            aspectofcougar.Cast();
+                    if (takedown.IsReady() && e != null && e.Health < qdmg && e.Distance(_player.Position) < takedown.Range)
+                        takedown.Cast(e, UsePacket());
+                    if (javelin.IsReady() && e != null && e.Health < qdmg)
+                    {
+                        PredictionOutput javelinPrediction = javelin.GetPrediction(e);
+                        if (javelinPrediction.Hitchance == HitChance.High)
+                            javelin.Cast(javelinPrediction.CastPosition, UsePacket());
                     }
-                //}
+                    if (pounce.IsReady() && e != null && e.Health < wdmg && e.Distance(_player.Position) < pounce.Range)
+                        pounce.Cast(e.Position, UsePacket());
+                    if (swipe.IsReady() && e != null && e.Health < edmg && e.Distance(_player.Position) < swipe.Range)
+                        swipe.Cast(e.Position, UsePacket());
+                    if (javelin.IsReady() && e.Health < qdmg && e.Distance(_player.Position) <= javelin.Range && _config.Item("swfks").GetValue<bool>())
+                        aspectofcougar.Cast();
+                }
+                
             }
-        }*/
+        }
 
         private static float catQcd = 0, catWcd = 0, catEcd = 0;
         private static float humQcd = 0, humWcd = 0, humEcd = 0;
@@ -463,6 +457,7 @@ namespace KurisuNidalee
             return time + (time * _player.PercentCooldownMod);
         }
 
+
         private static float ComboDamage(Obj_AI_Base enemy)
         {
             // TODO:
@@ -471,20 +466,30 @@ namespace KurisuNidalee
             var damage = 0d;
             var ignote = Utility.GetSpellSlot(_player, "summonderdot");
 
+            //if (takedown.IsReady())
+            //    Damage.GetSpellDamage(_player, enemy, SpellSlot.Q);
+            //if (pounce.IsReady())
+            //    Damage.GetSpellDamage(_player, enemy, SpellSlot.W);
+            //if (swipe.IsReady())
+            //    Damage.GetSpellDamage(_player, enemy, SpellSlot.E);
+            //if (javelin.IsReady() && !isCougar)
+            //    Damage.GetSpellDamage(_player, enemy, SpellSlot.Q);
             if (takedown.IsReady())
-                _player.GetSpellDamage(enemy, SpellSlot.Q);
-            if (pounce.IsReady())
-                _player.GetSpellDamage(enemy, SpellSlot.W);
+                damage += DamageLib.getDmg(enemy, DamageLib.SpellType.Q);
             if (swipe.IsReady())
-                _player.GetSpellDamage(enemy, SpellSlot.E);
+                damage += DamageLib.getDmg(enemy, DamageLib.SpellType.E);
+            if (pounce.IsReady())
+                damage += DamageLib.getDmg(enemy, DamageLib.SpellType.W);
+            if (javelin.IsReady() && !isCougar)
+                damage += DamageLib.getDmg(enemy, DamageLib.SpellType.Q);
             if (ignote != SpellSlot.Unknown && _config.Item("useignite").GetValue<bool>())
-                damage += _player.GetSummonerSpellDamage(enemy, Damage.SummonerSpell.Ignite);
+                damage += DamageLib.getDmg(enemy, DamageLib.SpellType.IGNITE);
             if (Items.HasItem(3128) && Items.CanUseItem(3128) && _config.Item("usedfg").GetValue<bool>())
-                damage += _player.GetItemDamage(enemy, Damage.DamageItems.Dfg);
+                damage += DamageLib.getDmg(enemy, DamageLib.SpellType.DFG);
             if (Items.HasItem(3153) && Items.CanUseItem(3153) && _config.Item("usebork").GetValue<bool>())
-                damage += _player.GetItemDamage(enemy, Damage.DamageItems.Botrk);
+                damage += DamageLib.getDmg(enemy, DamageLib.SpellType.BOTRK);
             if (Items.HasItem(3144) && Items.CanUseItem(3144) && _config.Item("usebw").GetValue<bool>())
-                damage += _player.GetItemDamage(enemy, Damage.DamageItems.Bilgewater);
+                damage += DamageLib.getDmg(enemy, DamageLib.SpellType.BILGEWATER);
             return (float)damage;
         }
 
