@@ -36,7 +36,7 @@ namespace KurisuMorgana
 
         private static void Game_OnGameLoad(EventArgs args)
         {
-            Game.PrintChat("<font color=\"#F2F2F2\">[Morgana]</font><font color=\"#D9D9D9\"> - <u>the Fallen Angel v1.0</u>  </font>- Kurisu ©");
+            Game.PrintChat("<font color=\"#F2F2F2\">[Morgana]</font><font color=\"#D9D9D9\"> - <u>the Fallen Angel v1.0.2</u>  </font>- Kurisu ©");
     
             try
             {
@@ -157,6 +157,8 @@ namespace KurisuMorgana
                         {
                             if (spell.SDataName == args.SData.Name)
                             {
+                                Console.WriteLine(args.SData.Name);
+                                Console.WriteLine(spell.Type);
                                 switch (spell.Type)
                                 {
                                     case Skilltype.Circle:
@@ -176,10 +178,10 @@ namespace KurisuMorgana
                                         }
                                         break;
                                     case Skilltype.Unknown:
-                                        if (Blackshield.IsReady() && sender.Distance(a.Position) <= 100f)
+                                        if (Blackshield.IsReady())
                                             if (_config.Item(spell.SpellMenuName).GetValue<bool>() && _config.Item("shield" + a.SkinName).GetValue<bool>())
                                                 Blackshield.CastOnUnit(a, true);
-                                        //Console.WriteLine("UNKNOWN " + args.SData.Name);
+                                            //Console.WriteLine("Unkown " + spell.SDataName);
                                         break;
                                 }
 
