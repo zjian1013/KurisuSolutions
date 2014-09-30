@@ -68,15 +68,15 @@ namespace KurisuNidalee
             {
                 _config = new Menu("Kurisu: Nidaleee", "nidalee", true);
 
-                Menu nidaOrb = new Menu("Orbwalker", "orbwalker");
+                var nidaOrb = new Menu("Orbwalker", "orbwalker");
                 _orbwalker = new Orbwalking.Orbwalker(nidaOrb);
                 _config.AddSubMenu(nidaOrb);
 
-                Menu nidaTS = new Menu("Target Selector", "target selecter");
+                var nidaTS = new Menu("Target Selector", "target selecter");
                 SimpleTs.AddToMenu(nidaTS);
                 _config.AddSubMenu(nidaTS);
 
-                Menu nidaDraws = new Menu("Nidalee: Drawings", "drawings");
+                var nidaDraws = new Menu("Nidalee: Drawings", "drawings");
                 nidaDraws.AddItem(new MenuItem("drawQ", "Draw Q")).SetValue(new Circle(true, Color.FromArgb(150, Color.OrangeRed)));
                 nidaDraws.AddItem(new MenuItem("drawW", "Draw W")).SetValue(new Circle(true, Color.FromArgb(150, Color.OrangeRed)));
                 nidaDraws.AddItem(new MenuItem("drawE", "Draw E")).SetValue(new Circle(true, Color.FromArgb(150, Color.DarkOrange)));
@@ -85,7 +85,7 @@ namespace KurisuNidalee
                 //nidaDraws.AddItem(new MenuItem("drawT", "Draw line current target")).SetValue(true);
                 _config.AddSubMenu(nidaDraws);
 
-                Menu nidaSpells = new Menu("Nidalee: Spells", "spells");
+                var nidaSpells = new Menu("Nidalee: Spells", "spells");
                 nidaSpells.AddItem(new MenuItem("usehumanq", "Use Javelin Toss")).SetValue(true);
                 nidaSpells.AddItem(new MenuItem("usehumanw", "Use Bushwack")).SetValue(true);
                 nidaSpells.AddItem(new MenuItem(" ", " "));
@@ -96,11 +96,11 @@ namespace KurisuNidalee
                 nidaSpells.AddItem(new MenuItem("usecougarr", "Auto Switch Forms")).SetValue(true);
                 _config.AddSubMenu(nidaSpells);
 
-                Menu nidaHeals = new Menu("Nidalee: HealEngine", "spell");
+                var nidaHeals = new Menu("Nidalee: HealEngine", "spell");
                 var allyHeros = from hero in ObjectManager.Get<Obj_AI_Hero>()
                                 where hero.IsAlly == true
                                 select hero.SkinName;
-                foreach (string a in allyHeros)
+                foreach (var a in allyHeros)
                 {
                     nidaHeals.AddItem(new MenuItem("heal" + a, a)).SetValue(true);
                     nidaHeals.AddItem(new MenuItem("healpct" + a, a + " heal %")).SetValue(new Slider(50, 0, 100));
@@ -109,12 +109,12 @@ namespace KurisuNidalee
                 _config.AddSubMenu(nidaHeals);
 
 
-                Menu nidaHarass = new Menu("Nidalee: Harass", "harass");
+                var nidaHarass = new Menu("Nidalee: Harass", "harass");
                 nidaHarass.AddItem(new MenuItem("usehumanq2", "Use Javelin Toss")).SetValue(true);
                 nidaHarass.AddItem(new MenuItem("humanqpct", "Minimum Mana %")).SetValue(new Slider(70, 0, 100));
                 _config.AddSubMenu(nidaHarass);
 
-                Menu nidaClear = new Menu("Nidalee: Laneclear", "laneclear");
+                var nidaClear = new Menu("Nidalee: Laneclear", "laneclear");
                 nidaClear.AddItem(new MenuItem("clearhumanq", "Use Javelin")).SetValue(false);
                 nidaClear.AddItem(new MenuItem(" ", " "));
                 nidaClear.AddItem(new MenuItem("clearcougarq", "Use Takedown")).SetValue(true);
@@ -124,7 +124,7 @@ namespace KurisuNidalee
                 nidaClear.AddItem(new MenuItem("clearpct", "Minimum Mana %")).SetValue(new Slider(55, 0, 100));
                 _config.AddSubMenu(nidaClear);
 
-                Menu nidaJungle = new Menu("Nidalee: Jungleclear", "jungleclear");
+                var nidaJungle = new Menu("Nidalee: Jungleclear", "jungleclear");
                 nidaJungle.AddItem(new MenuItem("jghumanq", "Use Javelin Toss")).SetValue(true);
                 nidaJungle.AddItem(new MenuItem("jghumanw", "Use Bushwack")).SetValue(true);
                 nidaJungle.AddItem(new MenuItem(" ", " "));
@@ -135,7 +135,7 @@ namespace KurisuNidalee
                 nidaJungle.AddItem(new MenuItem("jgrpct", "Minimum Mana %")).SetValue(new Slider(55, 0, 100));
                 _config.AddSubMenu(nidaJungle);
 
-                Menu nidaMisc = new Menu("Nidalee: Misc", "nidamisc");
+                var nidaMisc = new Menu("Nidalee: Misc", "nidamisc");
                 nidaMisc.AddItem(new MenuItem("usedfg", "Use DFG")).SetValue(true);
                 nidaMisc.AddItem(new MenuItem("usebork", "Use Botrk")).SetValue(true);
                 nidaMisc.AddItem(new MenuItem("usebw", "Use Bilgewater")).SetValue(true);
@@ -179,27 +179,23 @@ namespace KurisuNidalee
 
         private void Game_OnGameUpdate(EventArgs args)
         {
-            //useKS();
-            InitCooldowns();
-            PrimalSurge();
             _target = SimpleTs.GetTarget(1500, SimpleTs.DamageType.Magical);
 
-            Console.WriteLine(ComboDamage(_target));
+            ProcessCooldowns();
+            PrimalSurge();
+            Killsteal();
 
-            if (qdata.Name == "JavelinToss")
-                isCougar = false;
-            else
-                isCougar = true;
+            isCougar = qdata.Name != "JavelinToss";
 
+            if (_target != null)  Console.WriteLine(ComboDamage(_target));
             if (_orbwalker.ActiveMode.ToString() == "Combo")
-                useCombo(_target);
+                UseCombo(_target);
             if (_orbwalker.ActiveMode.ToString() == "Mixed")
                 useHarass(_target);
-
             if (_orbwalker.ActiveMode.ToString() == "LaneClear")
             {
-                useLaneclear();
-                useJungleclear(); 
+                UseLaneclear();
+                UseJungleclear(); 
             }
             if (!isCougar && _target != null && _target.Distance(_player) < 650f && TargetHunted(_target) && _orbwalker.ActiveMode.ToString() == "Combo")
             {
@@ -207,9 +203,7 @@ namespace KurisuNidalee
                     aspectofcougar.Cast();
             }
 
-
-            //Utility.DrawCircle(_target.Position, _target.BoundingRadius, Color.DarkOrange, 4, 40);
-
+            if (_target != null) Utility.DrawCircle(_target.Position, _target.BoundingRadius, Color.OrangeRed, 4, 40);
         }
 
         private void Game_OnProcessSpell(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
@@ -263,9 +257,9 @@ namespace KurisuNidalee
             return jungleList;
         }
 
-        private void useCombo(Obj_AI_Base target)
+        private void UseCombo(Obj_AI_Base target)
         {
-            SpellSlot ignote = Utility.GetSpellSlot(_player, "summonerdot");
+            var ignote = _player.GetSpellSlot("summonerdot");
             if (isCougar)
             {
                 if ((Items.CanUseItem(3128) && Items.HasItem(3128) || Items.CanUseItem(3144) && Items.HasItem(3144) ||
@@ -287,26 +281,28 @@ namespace KurisuNidalee
                 if (Items.CanUseItem(3092) && Items.HasItem(3092) && _config.Item("useclaim").GetValue<bool>())
                     Items.UseItem(3092, target.Position);
 
-                float minPounce = (float)_config.Item("pouncerange").GetValue<Slider>().Value;
+                var minPounce = (float)_config.Item("pouncerange").GetValue<Slider>().Value;
+
                 if (takedown.IsReady() && _config.Item("usecougarq").GetValue<bool>() && target.Distance(_player.Position) < takedown.Range)
                     takedown.Cast(target, UsePacket());
                 if (pounce.IsReady() && _config.Item("usecougarw").GetValue<bool>() && target.Distance(_player.Position) < 750f && target.Distance(_player.Position) > minPounce)
                     pounce.Cast(target.Position, UsePacket());
                 if (swipe.IsReady() && _config.Item("usecougare").GetValue<bool>())
                 {
-                    PredictionOutput prediction = swipe.GetPrediction(target);
+                    var prediction = swipe.GetPrediction(target);
                     if (prediction.Hitchance >= HitChance.High && target.Distance(_player.Position) <= swipe.Range)
                         swipe.Cast(prediction.CastPosition, UsePacket());
                 }
-                PredictionOutput javelinpo = javelin.GetPrediction(target);
-                if (target.Distance(_player.Position) > pounce.Range)
+                if (target.Distance(_player.Position) > pounce.Range && _config.Item("usecougarr").GetValue<bool>())
+                    aspectofcougar.Cast();
+                if (!pounce.IsReady() && javelin.IsReady() && target.Distance(_player.Position) < pounce.Range && _config.Item("usecougarr").GetValue<bool>())
                     aspectofcougar.Cast();
             }
             else
             {
                 if (javelin.IsReady() && _config.Item("usehumanq").GetValue<bool>())
                 {
-                    PredictionOutput prediction = javelin.GetPrediction(target);
+                    var prediction = javelin.GetPrediction(target);
                     if (prediction.Hitchance == HitChance.High && target.Distance(_player.Position) < javelin.Range)
                         javelin.Cast(prediction.CastPosition, true);
                 }
@@ -318,11 +314,11 @@ namespace KurisuNidalee
 
         private void useHarass(Obj_AI_Base target)
         {
-            int actualHeroManaPercent = (int)((_player.Mana / _player.MaxMana) * 100);
-            int minPercent = _config.Item("humanqpct").GetValue<Slider>().Value;
+            var actualHeroManaPercent = (int)((_player.Mana / _player.MaxMana) * 100);
+            var minPercent = _config.Item("humanqpct").GetValue<Slider>().Value;
             if (javelin.IsReady() && _config.Item("usehumanq2").GetValue<bool>())
             {
-                PredictionOutput prediction = javelin.GetPrediction(target);
+                var prediction = javelin.GetPrediction(target);
                 if (prediction.Hitchance >= HitChance.Medium && target.Distance(_player.Position) <= javelin.Range && actualHeroManaPercent > minPercent)
                     javelin.Cast(prediction.CastPosition, true);
             }
@@ -330,29 +326,29 @@ namespace KurisuNidalee
 
         private void PrimalSurge()
         {
-            int actualHeroManaPercent = (int)((_player.Mana / _player.MaxMana) * 100);
-            int selfManaPercent = _config.Item("healmanapct").GetValue<Slider>().Value;
+            var actualHeroManaPercent = (int)((_player.Mana / _player.MaxMana) * 100);
+            var selfManaPercent = _config.Item("healmanapct").GetValue<Slider>().Value;
             foreach (var a in GetHealTargets(_player))
             {
 
                 if (_config.Item("heal" + a.SkinName).GetValue<bool>())
                 {
-                    int needed = _config.Item("healpct" + a.SkinName).GetValue<Slider>().Value;
-                    int hp = (int)((a.Health / a.MaxHealth) * 100);
+                    var needed = _config.Item("healpct" + a.SkinName).GetValue<Slider>().Value;
+                    var hp = (int)((a.Health / a.MaxHealth) * 100);
                     if (actualHeroManaPercent > selfManaPercent && !isCougar && hp < needed)
                         primalsurge.CastOnUnit(a);
                 }
             }
         }
 
-        private void useJungleclear()
+        private void UseJungleclear()
         {
-            int actualHeroManaPercent = (int)((_player.Mana / _player.MaxMana) * 100);
-            int minPercent = _config.Item("jgrpct").GetValue<Slider>().Value;
+            var actualHeroManaPercent = (int)((_player.Mana / _player.MaxMana) * 100);
+            var minPercent = _config.Item("jgrpct").GetValue<Slider>().Value;
             var jmobs = GetJungleMinions(javelin);
             if (jmobs.Count() > 0)
             {
-                foreach (Obj_AI_Minion m in jmobs)
+                foreach (var m in jmobs)
                 {
                     if (isCougar)
                     {
@@ -376,14 +372,14 @@ namespace KurisuNidalee
             }
         }
 
-        private void useLaneclear()
+        private void UseLaneclear()
         {
-            int actualHeroManaPercent = (int)((_player.Mana / _player.MaxMana) * 100);
-            int minPercent = _config.Item("clearpct").GetValue<Slider>().Value;
+            var actualHeroManaPercent = (int)((_player.Mana / _player.MaxMana) * 100);
+            var minPercent = _config.Item("clearpct").GetValue<Slider>().Value;
             var minions = GetLaneMinions(javelin);
             if (minions.Count() > 0)
             {
-                foreach (Obj_AI_Minion m in minions)
+                foreach (var m in minions)
                 {
                     if (isCougar)
                     {
@@ -405,35 +401,38 @@ namespace KurisuNidalee
             }
         }
 
-        private void useKS()
+        private void Killsteal()
         {
             if (_config.Item("useks").GetValue<bool>())
             {
-                foreach (Obj_AI_Hero e in GetEnemies(javelin)) // get enemies within javelin range
+                var enemyList = GetEnemies(javelin);
+                if (enemyList.Count() >= 1)
                 {
-                    //var qdmg = Damage.GetSpellDamage(_player, e, SpellSlot.Q);
-                    //var wdmg = Damage.GetSpellDamage(_player, e, SpellSlot.W);
-                    //var edmg = Damage.GetSpellDamage(_player, e, SpellSlot.E);
-                    var qdmg = DamageLib.getDmg(e, DamageLib.SpellType.Q);
-                    var wdmg = DamageLib.getDmg(e, DamageLib.SpellType.W);
-                    var edmg = DamageLib.getDmg(e, DamageLib.SpellType.E);
-
-                    if (takedown.IsReady() && e != null && e.Health < qdmg && e.Distance(_player.Position) < takedown.Range)
-                        takedown.Cast(e, UsePacket());
-                    if (javelin.IsReady() && e != null && e.Health < qdmg)
+                    foreach (var e in GetEnemies(javelin)) // get enemies within javelin range
                     {
-                        PredictionOutput javelinPrediction = javelin.GetPrediction(e);
-                        if (javelinPrediction.Hitchance == HitChance.High)
-                            javelin.Cast(javelinPrediction.CastPosition, UsePacket());
+                        var qdmg = _player.GetSpellDamage(e, SpellSlot.Q);
+                        var wdmg = _player.GetSpellDamage(e, SpellSlot.W);
+                        var edmg = _player.GetSpellDamage(e, SpellSlot.E);
+
+
+                        if (takedown.IsReady() && e != null && e.Health < qdmg && e.Distance(_player.Position) < takedown.Range)
+                            takedown.Cast(e, UsePacket());
+                        if (javelin.IsReady() && e != null && e.Health < qdmg)
+                        {
+                            var javelinPrediction = javelin.GetPrediction(e);
+                            if (javelinPrediction.Hitchance == HitChance.High)
+                                javelin.Cast(javelinPrediction.CastPosition, UsePacket());
+                        }
+                        if (pounce.IsReady() && e != null && e.Health < wdmg && e.Distance(_player.Position) < pounce.Range)
+                            pounce.Cast(e.Position, UsePacket());
+                        if (swipe.IsReady() && e != null && e.Health < edmg && e.Distance(_player.Position) < swipe.Range)
+                            swipe.Cast(e.Position, UsePacket());
+                        if (javelin.IsReady() && e.Health < qdmg  && e.Distance(_player.Position) <= javelin.Range &&
+                            _config.Item("swfks").GetValue<bool>())
+                            aspectofcougar.Cast();
                     }
-                    if (pounce.IsReady() && e != null && e.Health < wdmg && e.Distance(_player.Position) < pounce.Range)
-                        pounce.Cast(e.Position, UsePacket());
-                    if (swipe.IsReady() && e != null && e.Health < edmg && e.Distance(_player.Position) < swipe.Range)
-                        swipe.Cast(e.Position, UsePacket());
-                    if (javelin.IsReady() && e.Health < qdmg && e.Distance(_player.Position) <= javelin.Range && _config.Item("swfks").GetValue<bool>())
-                        aspectofcougar.Cast();
                 }
-                
+
             }
         }
 
@@ -442,7 +441,7 @@ namespace KurisuNidalee
         private static float _catQcd = 0, _catWcd = 0, _catEcd = 0;
         private static float _humQcd = 0, _humWcd = 0, _humEcd = 0;
 
-        private void InitCooldowns()
+        private void ProcessCooldowns()
         {
             _catQcd = ((catQcd - Game.Time) > 0) ? (catQcd - Game.Time) : 0;
             _catWcd = ((catWcd - Game.Time) > 0) ? (catWcd - Game.Time) : 0;
@@ -452,7 +451,7 @@ namespace KurisuNidalee
             _humEcd = ((humEcd - Game.Time) > 0) ? (humEcd - Game.Time) : 0;
         }
 
-        private static float CalculateCD(float time)
+        private static float CalculateCd(float time)
         {
             return time + (time * _player.PercentCooldownMod);
         }
@@ -460,37 +459,27 @@ namespace KurisuNidalee
 
         private static float ComboDamage(Obj_AI_Base enemy)
         {
-            // TODO:
-            // get comdo damage
-            // calculate combo damage based on hunted target and spear range
             var damage = 0d;
-            var ignote = Utility.GetSpellSlot(_player, "summonderdot");
+            var ignote = _player.GetSpellSlot("summonderdot");
 
-            //if (takedown.IsReady())
-            //    Damage.GetSpellDamage(_player, enemy, SpellSlot.Q);
-            //if (pounce.IsReady())
-            //    Damage.GetSpellDamage(_player, enemy, SpellSlot.W);
-            //if (swipe.IsReady())
-            //    Damage.GetSpellDamage(_player, enemy, SpellSlot.E);
-            //if (javelin.IsReady() && !isCougar)
-            //    Damage.GetSpellDamage(_player, enemy, SpellSlot.Q);
             if (takedown.IsReady())
-                damage += DamageLib.getDmg(enemy, DamageLib.SpellType.Q);
+                damage += _player.GetSpellDamage(enemy, SpellSlot.Q);
             if (swipe.IsReady())
-                damage += DamageLib.getDmg(enemy, DamageLib.SpellType.E);
+                damage += _player.GetSpellDamage(enemy, SpellSlot.E);
             if (pounce.IsReady())
-                damage += DamageLib.getDmg(enemy, DamageLib.SpellType.W);
+                damage += _player.GetSpellDamage(enemy, SpellSlot.W);
             if (javelin.IsReady() && !isCougar)
-                damage += DamageLib.getDmg(enemy, DamageLib.SpellType.Q);
-            if (ignote != SpellSlot.Unknown && _config.Item("useignite").GetValue<bool>())
-                damage += DamageLib.getDmg(enemy, DamageLib.SpellType.IGNITE);
-            if (Items.HasItem(3128) && Items.CanUseItem(3128) && _config.Item("usedfg").GetValue<bool>())
-                damage += DamageLib.getDmg(enemy, DamageLib.SpellType.DFG);
-            if (Items.HasItem(3153) && Items.CanUseItem(3153) && _config.Item("usebork").GetValue<bool>())
-                damage += DamageLib.getDmg(enemy, DamageLib.SpellType.BOTRK);
-            if (Items.HasItem(3144) && Items.CanUseItem(3144) && _config.Item("usebw").GetValue<bool>())
-                damage += DamageLib.getDmg(enemy, DamageLib.SpellType.BILGEWATER);
+                damage += _player.GetSpellDamage(enemy, SpellSlot.Q);
+            if (_player.SummonerSpellbook.CanUseSpell(ignote) == SpellState.Ready )
+                damage += _player.GetSummonerSpellDamage(enemy, Damage.SummonerSpell.Ignite);
+            if (Items.HasItem(3128) && Items.CanUseItem(3128))
+                damage += _player.GetItemDamage(enemy, Damage.DamageItems.Dfg); 
+            if (Items.HasItem(3153) && Items.CanUseItem(3153))
+                damage += _player.GetItemDamage(enemy, Damage.DamageItems.Botrk);
+            if (Items.HasItem(3144) && Items.CanUseItem(3144))
+                damage += _player.GetItemDamage(enemy, Damage.DamageItems.Bilgewater);
             return (float)damage;
+
         }
 
         private void GetCooldowns(GameObjectProcessSpellCastEventArgs spell)
@@ -498,20 +487,20 @@ namespace KurisuNidalee
             if (isCougar)
             {
                 if (spell.SData.Name == "Takedown")
-                    catQcd = Game.Time + CalculateCD(cougarQcd[javelin.Level]);
+                    catQcd = Game.Time + CalculateCd(cougarQcd[javelin.Level]);
                 if (spell.SData.Name == "Pounce")
-                    catWcd = Game.Time + CalculateCD(cougarWcd[bushwack.Level]);
+                    catWcd = Game.Time + CalculateCd(cougarWcd[bushwack.Level]);
                 if (spell.SData.Name == "Swipe")
-                    catEcd = Game.Time + CalculateCD(cougarEcd[primalsurge.Level]);
+                    catEcd = Game.Time + CalculateCd(cougarEcd[primalsurge.Level]);
             }
             else
             {
                 if (spell.SData.Name == "JavelinToss")
-                    humQcd = Game.Time + CalculateCD(humanQcd[javelin.Level]);
+                    humQcd = Game.Time + CalculateCd(humanQcd[javelin.Level]);
                 if (spell.SData.Name == "Bushwhack")
-                    humWcd = Game.Time + CalculateCD(humanWcd[bushwack.Level]);
+                    humWcd = Game.Time + CalculateCd(humanWcd[bushwack.Level]);
                 if (spell.SData.Name == "PrimalSurge")
-                    humEcd = Game.Time + CalculateCD(humanEcd[primalsurge.Level]);
+                    humEcd = Game.Time + CalculateCd(humanEcd[primalsurge.Level]);
             }
         }
 
