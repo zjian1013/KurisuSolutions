@@ -1,4 +1,4 @@
-using LeagueSharp;
+﻿using LeagueSharp;
 using LeagueSharp.Common;
 using System;
 using System.Collections.Generic;
@@ -13,17 +13,17 @@ namespace KurisuFiora
     {
         private static Orbwalking.Orbwalker _orbwalker;
         private static Menu _config;
-        private static Obj_AI_Hero _player = ObjectManager.Player;
+        private static readonly Obj_AI_Hero Player = ObjectManager.Player;
         private static Obj_AI_Hero _target;
 
-        private static Spell q = new Spell(SpellSlot.Q, 600f);
-        private static Spell w = new Spell(SpellSlot.W, float.MaxValue);
-        private static Spell e = new Spell(SpellSlot.E, float.MaxValue);
-        private static Spell r = new Spell(SpellSlot.R, 400f);
-        private static readonly List<Spell> spellList = new List<Spell>();
+        private static readonly Spell Q = new Spell(SpellSlot.Q, 600f);
+        private static readonly Spell W = new Spell(SpellSlot.W, float.MaxValue);
+        private static readonly Spell E = new Spell(SpellSlot.E, float.MaxValue);
+        private static readonly Spell R = new Spell(SpellSlot.R, 400f);
+        private static readonly List<Spell> SpellList = new List<Spell>();
 
-        private int pTarget;
-        private bool pHit = false;
+        private int _packetTargetHit;
+        private bool _packetPlayerHit = false;
 
         public KurisuFiora()
         {
@@ -37,9 +37,9 @@ namespace KurisuFiora
             try
             {
 
-                Game.PrintChat("<font color=\"#CCFFF2\">[KurisuFiora]</font><font color=\"#99FFE6\"> - <u>the Grand Duelist v1.3.1</u></font> - Kurisu ©");
-                spellList.Add(q);
-                spellList.Add(r);
+                Game.PrintChat("<font color=\"#CCFFF2\">[Fiora]</font><font color=\"#99FFE6\"> - <u>the Grand Duelist v1.0</u></font> - Kurisu ©");
+                SpellList.Add(Q);
+                SpellList.Add(R);
                 var enemy = from hero in ObjectManager.Get<Obj_AI_Hero>()
                             where hero.IsEnemy == true
                             select hero;               
@@ -60,7 +60,7 @@ namespace KurisuFiora
                 Menu fioraSpells = new Menu("Fiora: General", "combo");
                 fioraSpells.AddItem(new MenuItem("useq", "Use Q")).SetValue(true);
                 //fioraSpells.AddItem(new MenuItem("useqminion", "Use minion to gapclose")).SetValue(true);
-                fioraSpells.AddItem(new MenuItem("qrange", "Minimum range to q")).SetValue(new Slider(250, 1, (int)q.Range));
+                fioraSpells.AddItem(new MenuItem("qrange", "Minimum range to q")).SetValue(new Slider(250, 1, (int)Q.Range));
                 fioraSpells.AddItem(new MenuItem("usee", "Use E")).SetValue(true);
                 fioraSpells.AddItem(new MenuItem("smana", "Combo min mana % ")).SetValue(new Slider(0, 0, 99));
                 _config.AddSubMenu(fioraSpells);
@@ -91,26 +91,22 @@ namespace KurisuFiora
                 foreach (var e in enemy)
                 {
                     SpellDataInst rdata = e.Spellbook.GetSpell(SpellSlot.R);
-                    Console.WriteLine(rdata.SData.Name);
                     if (KurisuLib.DangerousList.Any(spell => spell.Contains(rdata.SData.Name)))
                         fioraWaltz.AddItem(new MenuItem("ds" + e.SkinName, rdata.SData.Name)).SetValue(true);
                 }
  
                 _config.AddSubMenu(fioraWaltz);
 
-                Menu fioraMisc = new Menu("Fiora: Misc", "fmisc");
-                //fioraMisc.AddItem(new MenuItem("ksteal", "Killsteal")).SetValue(true);
-                fioraMisc.AddItem(new MenuItem("usepackets", "Use Packets")).SetValue(true);
-                fioraMisc.AddItem(new MenuItem("isteal", "Use Ignite")).SetValue(true);
+                Menu fioraMisc = new Menu("Fiora: Misc", "fmisc");            
                 fioraMisc.AddItem(new MenuItem("usetiamat", "Use Tiamat/Hydra")).SetValue(true);
                 _config.AddSubMenu(fioraMisc);
 
                 Menu fioraDebug = new Menu("Fiora: Debug", "fdbg");
-                fioraDebug.AddItem(new MenuItem("aadebug", "ConsoleWrite aa tick")).SetValue(false);
+                //fioraDebug.AddItem(new MenuItem("aadebug", "ConsoleWrite aa tick")).SetValue(false);
                 _config.AddSubMenu(fioraDebug);
 
-                //_config.AddItem(new MenuItem("stickytarg", "Stick to target")).SetValue(true);
-
+                //_config.AddItem(new MenuItem("ksteal", "Killsteal")).SetValue(true);
+                _config.AddItem(new MenuItem("usepackets", "Use Packets")).SetValue(true);
                 _config.AddToMainMenu();
             }
             catch (Exception e)
@@ -133,14 +129,14 @@ namespace KurisuFiora
         #region Fiora: DrawingOnDraw
         private void Drawing_OnDraw(EventArgs args)
         {
-            foreach (var spell in spellList)
+            foreach (var spell in SpellList)
             {
                 var circle = _config.Item("draw" + spell.Slot.ToString()).GetValue<Circle>();
                 if (circle.Active)
-                    Utility.DrawCircle(_player.Position, spell.Range, circle.Color, 5, 55);
+                    Utility.DrawCircle(Player.Position, spell.Range, circle.Color, 5, 55);
             }
 
-            Utility.DrawCircle(_target.Position, _target.BoundingRadius, Color.MediumTurquoise, 5, 55);
+            Utility.DrawCircle(_target.Position, _target.BoundingRadius, Color.OrangeRed, 5, 55);
         }
         #endregion
 
@@ -152,12 +148,11 @@ namespace KurisuFiora
                 if (args.PacketData[0] == 119)
                     args.Process = false;
 
-                if (args.PacketData[0] == 154 && _orbwalker.ActiveMode.ToString() == "Combo")
+                if (args.PacketData[0] != 154 || _orbwalker.ActiveMode.ToString() != "Combo") return;
+                var cast = Packet.C2S.Cast.Decoded(args.PacketData);
+                switch (cast.Slot)
                 {
-                    Packet.C2S.Cast.Struct PCast = Packet.C2S.Cast.Decoded(args.PacketData);
-                    if (PCast.Slot == SpellSlot.E)
-                    {
-                        //Console.WriteLine("aacancel");
+                    case SpellSlot.E:
                         Packet.C2S.Move.Encoded(new Packet.C2S.Move.Struct(0, 0, 3, _orbwalker.GetTarget().NetworkId)).Send();
                         Orbwalking.ResetAutoAttackTimer();
                         if ((Items.HasItem(3077) && Items.CanUseItem(3077) || (Items.HasItem(3074) && Items.CanUseItem(3074)) && _config.Item("usetiamat").GetValue<bool>()))
@@ -171,8 +166,7 @@ namespace KurisuFiora
                                 //Console.WriteLine("aacancel: 2");
                             });
                         }
-
-                    }
+                        break;
                 }
             }
             catch
@@ -186,16 +180,14 @@ namespace KurisuFiora
         #region Fiora: OnGameProccessPacket
         private void Game_OnGameProcessPacket(GamePacketEventArgs args)
         {
-            GamePacket packet = new GamePacket(args.PacketData);
-
             if (args.PacketData[0] == Packet.S2C.Damage.Header)
             {
-                Packet.S2C.Damage.Struct PDamage = Packet.S2C.Damage.Decoded(args.PacketData);
-                var source = PDamage.SourceNetworkId;
-                var target = PDamage.TargetNetworkId;
+                var damage = Packet.S2C.Damage.Decoded(args.PacketData);
+                var source = damage.SourceNetworkId;
+                var target = damage.TargetNetworkId;
 
-                pTarget = target;
-                pHit = true;
+                _packetTargetHit = target;
+                _packetPlayerHit = true;
             }
         }
         #endregion
@@ -206,11 +198,14 @@ namespace KurisuFiora
             try
             {
                 //if (_config.Item("ksteal").GetValue<bool>())
-                //    kSteal();
+                //{
+                //    Killsteal();
+                //}
+
                 if (_orbwalker.ActiveMode.ToString() == "Combo")
                 {
                     _target = SimpleTs.GetTarget(750, SimpleTs.DamageType.Physical);
-                    useCombo(_target);
+                    UseCombo(_target);
                 }
 
                 if (_orbwalker.ActiveMode.ToString() == "LaneClear")
@@ -232,74 +227,97 @@ namespace KurisuFiora
             double incDmg = 0;
             if (sender.Type == GameObjectType.obj_AI_Hero && sender.IsEnemy && args.Target.IsMe)
             {
+
                 Obj_AI_Hero attacker = ObjectManager.Get<Obj_AI_Hero>().First(n => n.NetworkId == sender.NetworkId);
                 if (attacker != null)
-                {                   
-                    SpellSlot spellSlot = Utility.GetSpellSlot(attacker, args.SData.Name);
-                    if (spellSlot == SpellSlot.Unknown)
-                        incDmg = _player.GetAutoAttackDamage(attacker);
-                    if (_config.Item("wdodge").GetValue<bool>())
-                        if (KurisuLib.OnHitEffectList.Any(spell => spell.Contains(args.SData.Name)) && w.IsReady())
-                            w.Cast();
-                    if (_config.Item("rdodge").GetValue<bool>() && _config.Item("ds" + sender.SkinName).GetValue<bool>())
-                        if (KurisuLib.DangerousList.Any(spell => spell.Contains(args.SData.Name)) && sender.Distance(_player) < 400f && r.IsReady())
-                            r.Cast(sender);
-                }
+                {
+                    var slot = attacker.GetSpellSlot(args.SData.Name);
+                    if (slot == SpellSlot.Unknown)
+                    {
+                        incDmg = sender.GetAutoAttackDamage(Player);
+                    }
 
+                }
+              
             }
-            useW(incDmg);
+            UseW(incDmg);
+
+            if (_config.Item("rdodge").GetValue<bool>() && _config.Item("ds" + sender.SkinName).GetValue<bool>())
+                if (KurisuLib.DangerousList.Any(spell => spell.Contains(args.SData.Name)) &&
+                    (sender.Distance(Player) < 400f || Player.Distance(args.End) <= 250f ) && R.IsReady())
+                    R.Cast(sender);
+
+            if (_config.Item("wdodge").GetValue<bool>())
+                if (KurisuLib.OnHitEffectList.Any(spell => spell.Contains(args.SData.Name)) && W.IsReady())
+                    W.Cast();
+
         }
         #endregion
 
-        private void useCombo(Obj_AI_Hero target)
+        private void UseW(double damage)
         {
-            useE(target);
-            useQ(target);
-            useR(target);
+            var incDamageSlider = _config.Item("wsett").GetValue<Slider>().Value;
+            int incDamagePercent = (int)(Player.Health / damage * 100);
+            if (_config.Item("usew").GetValue<bool>())
+            {
+                if (Player.Spellbook.CanUseSpell(SpellSlot.W) != SpellState.Unknown)
+                {
+                    if (W.IsReady() && damage > incDamageSlider)
+                        Player.Spellbook.CastSpell(SpellSlot.W);
+                }
+            }
         }
 
-        private static float comboDamage(Obj_AI_Base enemy)
+        private void UseCombo(Obj_AI_Hero target)
         {
-            var dmg = 0d;
-            var ignote = Utility.GetSpellSlot(_player, "summonerdot");
+            UseE(target);
+            UseQ(target);
+            UseR(target);
+        }
 
-            if (q.IsReady())
-                dmg += _player.GetSpellDamage(enemy, SpellSlot.Q);
-            if (r.IsReady())
-                dmg += _player.GetSpellDamage(enemy, SpellSlot.R);
-            if (Items.HasItem(3077) && Items.CanUseItem(3077))
-                dmg += _player.GetItemDamage(enemy, Damage.DamageItems.Tiamat);
+        private static float ComboDamage(Obj_AI_Base enemy)
+        {
+
+            var dmg = 0d;
+            var ignote = Player.GetSpellSlot("summonerdot");
+
+            if (Q.IsReady())
+                dmg += Player.GetSpellDamage(enemy, SpellSlot.Q);
+            if (R.IsReady())
+                dmg += Player.GetSpellDamage(enemy, SpellSlot.R);
+            if (Items.HasItem(3077) && Items.CanUseItem(3077)) 
+                dmg += Player.GetItemDamage(enemy, Damage.DamageItems.Tiamat);
             if (Items.HasItem(3074) && Items.CanUseItem(3074))
-                dmg += _player.GetItemDamage(enemy, Damage.DamageItems.Hydra);
+                dmg += Player.GetItemDamage(enemy, Damage.DamageItems.Hydra);
             if (Items.HasItem(3153) && Items.CanUseItem(3153))
-                dmg += _player.GetItemDamage(enemy, Damage.DamageItems.Botrk);
+                dmg += Player.GetItemDamage(enemy, Damage.DamageItems.Botrk);
             if (Items.HasItem(3144) && Items.CanUseItem(3144))
-                dmg += _player.GetItemDamage(enemy, Damage.DamageItems.Bilgewater);
-            if (ignote != SpellSlot.Unknown && _config.Item("isteal").GetValue<bool>())
-                dmg += _player.GetSpellDamage(enemy, ignote);
+                dmg += Player.GetItemDamage(enemy, Damage.DamageItems.Bilgewater);
+            if (Player.SummonerSpellbook.CanUseSpell(ignote) == SpellState.Ready)
+                dmg += Player.GetSummonerSpellDamage(enemy, Damage.SummonerSpell.Ignite);
 
             return (float)dmg;
         }
 
-        private bool usePackets()
+        private static bool UsePackets()
         {
             return _config.Item("usepackets").GetValue<bool>();
         }
 
-        private void useE(Obj_AI_Hero target)
+        private void UseE(Obj_AI_Hero target)
         {
             if (target != null)
             {
                 if (_config.Item("usee").GetValue<bool>())
                 {
                     int minMana = _config.Item("smana").GetValue<Slider>().Value;
-                    int actualHeroManaPercent = (int)((_player.Mana / _player.MaxMana) * 100);
-                    if (e.IsReady() && _player.Distance(target.Position) < _player.AttackRange)
+                    int actualHeroManaPercent = (int)((Player.Mana / Player.MaxMana) * 100);
+                    if (E.IsReady() && Player.Distance(target.Position) < Player.AttackRange)
                     {
-                        if (actualHeroManaPercent > minMana && pTarget == target.NetworkId && pHit)
+                        if (actualHeroManaPercent > minMana && _packetTargetHit == target.NetworkId && _packetPlayerHit)
                         {
-                            _player.Spellbook.CastSpell(SpellSlot.E);
-                            pHit = false;
+                            Player.Spellbook.CastSpell(SpellSlot.E);
+                            _packetPlayerHit = false;
                         }
                     }
 
@@ -308,68 +326,36 @@ namespace KurisuFiora
             }
         }
 
-        private void useW(double damage = 0)
-        {
-            int incDamageSlider = _config.Item("wsett").GetValue<Slider>().Value;
-            int incDamagePercent = (int)(_player.Health / damage * 100);
-            if (_config.Item("usew").GetValue<bool>())
-            {
-                if (_player.Spellbook.CanUseSpell(SpellSlot.W) != SpellState.Unknown)
-                {
-                    if (w.IsReady() && damage > incDamageSlider)
-                        _player.Spellbook.CastSpell(SpellSlot.W);
-                }
-
-            }
-        }
-
-        private void useQ(Obj_AI_Hero target)
+        private void UseQ(Obj_AI_Hero target)
         {
             if (target != null && _config.Item("useq").GetValue<bool>())
             {
                 float minRange = _config.Item("qrange").GetValue<Slider>().Value;
-                if (q.IsReady() && _player.Distance(target.ServerPosition) < 600f)
+                if (Q.IsReady() && Player.Distance(target.ServerPosition) < 600f)
                 {
-                    if (_player.Distance(target.ServerPosition) >= minRange)
-                        q.Cast(target, usePackets());
+                    if (Player.Distance(target.ServerPosition) >= minRange)
+                        Q.Cast(target, UsePackets());
                 }
-
-                /*if (_config.Item("useq").GetValue<bool>() && _config.Item("useqminion").GetValue<bool>())
-                {
-                    var pos = from minion in ObjectManager.Get<Obj_AI_Minion>()
-                             where minion.Distance(target.Position) < q.Range &&
-                                   minion.Distance(_player.Position) < q.Range
-                            select minion;
-
-                    if (target.Distance(_player.Position) > q.Range)
-                    {
-                        foreach (var m in pos)
-                        {
-                            q.Cast(m, usePackets());
-                            break;
-                        }
-                    }
-                }*/
-
             }
         }
 
-        private void useR(Obj_AI_Hero target)
+        private void UseR(Obj_AI_Hero target)
         {
             if (target != null)
             {
                 if (_config.Item("user").GetValue<bool>())
                 {
-                    if (r.IsReady() && _player.Distance(target.Position) < r.Range)
+                    if (R.IsReady() && Player.Distance(target.Position) < R.Range)
                     {
-                        if (target.Health <= comboDamage(target))
+                        if (target.Health <= ComboDamage(target))
                         {
                             if (_config.Item("isteal").GetValue<bool>())
                             {
-                                SpellSlot ignote = Utility.GetSpellSlot(_player, "summonerdot");
-                                _player.SummonerSpellbook.CastSpell(ignote, target);
+                                SpellSlot ignote = Utility.GetSpellSlot(Player, "summonerdot");
+                                Player.SummonerSpellbook.CastSpell(ignote, target);
                             }
-                            r.CastOnUnit(target, usePackets());
+
+                            R.CastOnUnit(target, UsePackets());
                         }
 
                     }
@@ -377,20 +363,20 @@ namespace KurisuFiora
             }
         }
 
-        private void kSteal()
+        private void Killsteal()
         {
             if (_config.Item("ksteal").GetValue<bool>())
             {
-                List<Obj_AI_Hero> enemy = ObjectManager.Get<Obj_AI_Hero>().Where(h => h.Team != _player.Team).ToList();
+                List<Obj_AI_Hero> enemy = ObjectManager.Get<Obj_AI_Hero>().Where(h => h.Team != Player.Team).ToList();
 
                 foreach (Obj_AI_Hero e in enemy)
                 {
-                    var qdmg = _player.GetSpellDamage(e, SpellSlot.Q);
-                    var rdmg = _player.GetSpellDamage(e, SpellSlot.R);
-                    if (q.IsReady() && e != null && e.IsValid && e.Health < qdmg)
-                        q.CastOnUnit(e, usePackets());
-                    if (r.IsReady() && e != null && e.IsValid && e.Health < rdmg)
-                        r.CastOnUnit(e, usePackets());
+                    var qdmg = Player.GetSpellDamage(e, SpellSlot.Q);
+                    var rdmg = Player.GetSpellDamage(e, SpellSlot.R);
+                    if (Q.IsReady() && e.Health < qdmg)
+                        Q.CastOnUnit(e, UsePackets());
+                    if (R.IsReady() && e.Health < rdmg)
+                        R.CastOnUnit(e, UsePackets());
                 }
             }
         }
