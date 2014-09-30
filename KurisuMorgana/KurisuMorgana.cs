@@ -162,7 +162,7 @@ namespace KurisuMorgana
                                     case Skilltype.Circle:
                                         if (a.Distance(args.End) <= 250f && Blackshield.IsReady())
                                         {
-                                            if (_config.Item("ss" + spell.SDataName).GetValue<bool>() && _config.Item("shield" + a.SkinName).GetValue<bool>())
+                                            if (_config.Item(spell.SpellMenuName).GetValue<bool>() && _config.Item("shield" + a.SkinName).GetValue<bool>())
                                                 Blackshield.CastOnUnit(a, true);
                                             //Console.WriteLine("Circle " + args.SData.Name);
                                         }
@@ -170,14 +170,14 @@ namespace KurisuMorgana
                                     case Skilltype.Line:
                                         if (a.Distance(args.End) <= 100f && Blackshield.IsReady())
                                         {
-                                            if (_config.Item("ss" + spell.SDataName).GetValue<bool>() && _config.Item("shield" + a.SkinName).GetValue<bool>())
+                                            if (_config.Item(spell.SpellMenuName).GetValue<bool>() && _config.Item("shield" + a.SkinName).GetValue<bool>())
                                                 Blackshield.CastOnUnit(a, true);
                                             //Console.WriteLine("Line " + args.SData.Name);
                                         }
                                         break;
                                     case Skilltype.Unknown:
                                         if (Blackshield.IsReady() && sender.Distance(a.Position) <= 100f)
-                                            if (_config.Item("ss" + spell.SDataName).GetValue<bool>() && _config.Item("shield" + a.SkinName).GetValue<bool>())
+                                            if (_config.Item(spell.SpellMenuName).GetValue<bool>() && _config.Item("shield" + a.SkinName).GetValue<bool>())
                                                 Blackshield.CastOnUnit(a, true);
                                         //Console.WriteLine("UNKNOWN " + args.SData.Name);
                                         break;

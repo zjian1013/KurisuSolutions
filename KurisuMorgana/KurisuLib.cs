@@ -270,7 +270,7 @@ namespace KurisuMorgana
             CcList.Add(
                 new KurisuLib
                 {
-                    HeroName = "Mundo",
+                    HeroName = "DrMundo",
                     SpellMenuName = "Cleaver",
                     Slot = SpellSlot.Q,
                     Type = Skilltype.Line,
