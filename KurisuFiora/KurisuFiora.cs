@@ -106,6 +106,7 @@ namespace KurisuFiora
                 _config.AddSubMenu(fioraDebug);
 
                 //_config.AddItem(new MenuItem("ksteal", "Killsteal")).SetValue(true);
+                _config.AddItem(new MenuItem("isteal", "Use Ignite")).SetValue(true);
                 _config.AddItem(new MenuItem("usepackets", "Use Packets")).SetValue(true);
                 _config.AddToMainMenu();
             }
@@ -194,29 +195,12 @@ namespace KurisuFiora
 
         #region Fiora: OnGameUpdate
         private void Game_OnGameUpdate(EventArgs args)
-        {        
-            try
+        {                 
+            if (_orbwalker.ActiveMode.ToString() == "Combo")
             {
-                //if (_config.Item("ksteal").GetValue<bool>())
-                //{
-                //    Killsteal();
-                //}
-
-                if (_orbwalker.ActiveMode.ToString() == "Combo")
-                {
-                    _target = SimpleTs.GetTarget(750, SimpleTs.DamageType.Physical);
-                    UseCombo(_target);
-                }
-
-                if (_orbwalker.ActiveMode.ToString() == "LaneClear")
-                {
-
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                Game.PrintChat("KurisuFiora: Unexpected Error Occured(OnGameUpdate)");
+                _target = SimpleTs.GetTarget(750, SimpleTs.DamageType.Physical);
+                UseCombo(_target);
+                    
             }
         }
         #endregion
@@ -278,26 +262,37 @@ namespace KurisuFiora
 
         private static float ComboDamage(Obj_AI_Base enemy)
         {
+            var damage = 0d;
+            try
+            {
+                
+                if (enemy != null)
+                {
+                    var ignote = Player.GetSpellSlot("summonerdot");
 
-            var dmg = 0d;
-            var ignote = Player.GetSpellSlot("summonerdot");
+                    if (Q.IsReady())
+                        damage += Player.GetSpellDamage(enemy, SpellSlot.Q);
+                    if (R.IsReady())
+                        damage += Player.GetSpellDamage(enemy, SpellSlot.R);
+                    if (Player.SummonerSpellbook.CanUseSpell(ignote) == SpellState.Ready)
+                        damage += Player.GetSummonerSpellDamage(enemy, Damage.SummonerSpell.Ignite);
+                    if (Items.HasItem(3077) && Items.CanUseItem(3077))
+                        damage += Player.GetItemDamage(enemy, Damage.DamageItems.Tiamat);
+                    if (Items.HasItem(3074) && Items.CanUseItem(3074))
+                        damage += Player.GetItemDamage(enemy, Damage.DamageItems.Hydra);
+                    if (Items.HasItem(3153) && Items.CanUseItem(3153))
+                        damage += Player.GetItemDamage(enemy, Damage.DamageItems.Botrk);
+                    if (Items.HasItem(3144) && Items.CanUseItem(3144))
+                        damage += Player.GetItemDamage(enemy, Damage.DamageItems.Bilgewater);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                Game.PrintChat("Error on combodamage(Fiora)");
+            }
 
-            if (Q.IsReady())
-                dmg += Player.GetSpellDamage(enemy, SpellSlot.Q);
-            if (R.IsReady())
-                dmg += Player.GetSpellDamage(enemy, SpellSlot.R);
-            if (Items.HasItem(3077) && Items.CanUseItem(3077)) 
-                dmg += Player.GetItemDamage(enemy, Damage.DamageItems.Tiamat);
-            if (Items.HasItem(3074) && Items.CanUseItem(3074))
-                dmg += Player.GetItemDamage(enemy, Damage.DamageItems.Hydra);
-            if (Items.HasItem(3153) && Items.CanUseItem(3153))
-                dmg += Player.GetItemDamage(enemy, Damage.DamageItems.Botrk);
-            if (Items.HasItem(3144) && Items.CanUseItem(3144))
-                dmg += Player.GetItemDamage(enemy, Damage.DamageItems.Bilgewater);
-            if (Player.SummonerSpellbook.CanUseSpell(ignote) == SpellState.Ready)
-                dmg += Player.GetSummonerSpellDamage(enemy, Damage.SummonerSpell.Ignite);
-
-            return (float)dmg;
+            return (float)damage;
         }
 
         private static bool UsePackets()
@@ -348,11 +343,11 @@ namespace KurisuFiora
                 {
                     if (R.IsReady() && Player.Distance(target.Position) < R.Range)
                     {
-                        if (target.Health <= ComboDamage(target))
+                        if (ComboDamage(target) > target.Health)
                         {
                             if (_config.Item("isteal").GetValue<bool>())
                             {
-                                SpellSlot ignote = Utility.GetSpellSlot(Player, "summonerdot");
+                                var ignote = Player.GetSpellSlot("summonerdot");
                                 Player.SummonerSpellbook.CastSpell(ignote, target);
                             }
 
