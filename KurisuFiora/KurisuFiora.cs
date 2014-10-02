@@ -240,6 +240,7 @@ namespace KurisuFiora
                 }
               
             }
+
             UseW(incDmg);
 
             if (_config.Item("rdodge").GetValue<bool>() && _config.Item("ds" + sender.SkinName).GetValue<bool>())
