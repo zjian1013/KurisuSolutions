@@ -6,14 +6,15 @@ using LeagueSharp;
 
 namespace KurisuLoader
 {
-    class Program
+    class Root
     {
 
         public static string Player = ObjectManager.Player.SkinName;
         static void Main(string[] args)
         {
-            new Program();
+            new Root();
         }
+
         #region Properties
 
         /// <summary>
@@ -32,7 +33,7 @@ namespace KurisuLoader
         /// </summary>
         private readonly String[] _validFiles =
         {
-            "Assemblies", "Repositories", "KurisuMorgana.dll"
+            "Assemblies", "Repositories", "KurisuMorgana.dll", "KurisuFiora.dll", "KurisuNidalee.dll", "KurisuBlitzcrank.dll"
         };
 
         /// <summary>
@@ -44,7 +45,7 @@ namespace KurisuLoader
 
         #region Helpers
 
-        public Program()
+        public Root()
         {
             // Check Installation
             if (!ValidateInstallation())
