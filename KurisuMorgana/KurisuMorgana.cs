@@ -238,16 +238,20 @@ namespace KurisuMorgana
             var prediction = Darkbinding.GetPrediction(target);
 
             if (prediction.Hitchance == HitChance.High && sbtwKey && highPred)
+            {
                 if (_config.Item("useq").GetValue<bool>() && Darkbinding.IsReady())
                     Darkbinding.Cast(prediction.CastPosition);
-
-            if (prediction.Hitchance == HitChance.Medium && sbtwKey && medPred)
+            }
+            else if (prediction.Hitchance == HitChance.Medium && sbtwKey && medPred)
+            {
                 if (_config.Item("useq").GetValue<bool>() && Darkbinding.IsReady())
                     Darkbinding.Cast(prediction.CastPosition);
-
-            if (prediction.Hitchance <= HitChance.Medium && sbtwKey && lowPred)
+            }
+            else if (prediction.Hitchance <= HitChance.Medium && sbtwKey && lowPred)
+            {
                 if (_config.Item("useq").GetValue<bool>() && Darkbinding.IsReady())
                     Darkbinding.Cast(prediction.CastPosition);
+            }
 
             switch (prediction.Hitchance)
             {
