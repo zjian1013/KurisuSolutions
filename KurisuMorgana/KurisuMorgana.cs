@@ -86,7 +86,7 @@ namespace KurisuMorgana
                 var enemies = ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsEnemy);
                 foreach (var e in enemies)
                 {
-                    foreach (var s in Library.CcList)
+                    foreach (var s in KurisuLib.CcList)
                     {
                         if (s.HeroName == e.SkinName)
                         {
