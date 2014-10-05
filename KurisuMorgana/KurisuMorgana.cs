@@ -1,4 +1,4 @@
-﻿using LeagueSharp;
+using LeagueSharp;
 using LeagueSharp.Common;
 using SharpDX;
 using System;
@@ -10,13 +10,16 @@ namespace KurisuMorgana
 {
     internal class KurisuMorgana
     {
+        private static int LocalVersion = 104;
+
         private static Menu _config;
         private static Orbwalking.Orbwalker _orbwalker;
         private static readonly Obj_AI_Hero Player = ObjectManager.Player;
 
         public KurisuMorgana()
         {
-            Console.WriteLine("Kurisu assembly is loading...");
+            if (Player.BaseSkinName != "Morgana") return;
+            Console.WriteLine("Kurisu assembly is loading......");
             CustomEvents.Game.OnGameLoad += Game_OnGameLoad;
         }
 
@@ -30,18 +33,15 @@ namespace KurisuMorgana
         private static void SetSkills()
         {
             SpellList.AddRange(new[] { Darkbinding, Tormentsoil, Blackshield, Soulshackle });
-            Darkbinding.SetSkillshot(0.25f, 80f, 1400f, true, SkillshotType.SkillshotLine);
+            Darkbinding.SetSkillshot(0.25f, 72f, 1400f, true, SkillshotType.SkillshotLine);
             Tormentsoil.SetSkillshot(0.25f, 175f, 1200f, false, SkillshotType.SkillshotCircle);
         }
 
-        private static void Game_OnGameLoad(EventArgs args)
+        private void Game_OnGameLoad(EventArgs args)
         {
-            Game.PrintChat("<font color=\"#F2F2F2\">[Morgana]</font><font color=\"#D9D9D9\"> - <u>the Fallen Angel v1.0.2</u>  </font>- Kurisu ©");
-    
+            Game.PrintChat("<font color=\"#F2F2F2\">[Morgana]</font><font color=\"#D9D9D9\"> - <u>the Fallen Angel </u>  </font>- Kurisu ©");
             try
             {
-
-
                 _config = new Menu("Kurisu: Morgana", "morgana", true);
                 var morgOrb = new Menu("Orbwalker", "orbwalker");
                 _orbwalker = new Orbwalking.Orbwalker(morgOrb);
@@ -50,7 +50,6 @@ namespace KurisuMorgana
                 var morgTS = new Menu("Target Selector", "target selecter");
                 SimpleTs.AddToMenu(morgTS);
                 _config.AddSubMenu(morgTS);
-
 
                 var morgDraws = new Menu("Morgana: Drawings", "drawings");
 
@@ -62,7 +61,8 @@ namespace KurisuMorgana
 
                 var morgBind = new Menu("Morgana: Dark Binding", "bind");
                 morgBind.AddItem(new MenuItem("useq", "Use Q")).SetValue(true);
-                morgBind.AddItem(new MenuItem("minuseq", "Min distance Q")).SetValue(new Slider(50, 50, 250));
+                morgBind.AddItem(new MenuItem("minuseq", "Min Q Distance")).SetValue(new Slider(50, 50, 250));
+                morgBind.AddItem(new MenuItem("qhitchance", "Q Hitchance")).SetValue(new StringList(new[] { "Low", "Medium", "High" }, 2));
                 morgBind.AddItem(new MenuItem("", ""));
                 morgBind.AddItem(new MenuItem("qdash", "Auto Q Dashing")).SetValue(true);
                 morgBind.AddItem(new MenuItem("qimmobile", "Auto Q Immoble")).SetValue(true);
@@ -81,24 +81,20 @@ namespace KurisuMorgana
                 morgShield.AddItem(new MenuItem("edangerous", "Shield dangerous spells")).SetValue(true);
                 morgShield.AddItem(new MenuItem(" ", " "));
                 var supSpe = new Menu("Supported Spells", "suppspells");
-;
 
                 var allies = ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsAlly).Select(hero => hero.SkinName);
                 var enemies = ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsEnemy);
                 foreach (var e in enemies)
                 {
-
-                    foreach (var s in KurisuLib.CcList)
+                    foreach (var s in Library.CcList)
                     {
                         if (s.HeroName == e.SkinName)
                         {
-                            supSpe.AddItem(new MenuItem(s.SpellMenuName, e.SkinName + " " + s.SpellMenuName)).SetValue(true) ;
+                            supSpe.AddItem(new MenuItem(s.SpellMenuName, e.SkinName + " " + s.SpellMenuName)).SetValue(true);
                             //subMenu.AddItem(new MenuItem("ss" + s.SDataName + s.Slot.ToString(), s.SpellMenuName)).SetValue(true);
                             //subMenu.AddItem(new MenuItem("DangerLevel" + s.SDataName, "Danger Level")).SetValue(new Slider(s.DangerLevel, 0, 5));
                             //supSpe.AddSubMenu(subMenu);
-
                         }
-
                     }
                 }
                 morgShield.AddSubMenu(supSpe);
@@ -108,6 +104,8 @@ namespace KurisuMorgana
                     morgShield.AddItem(new MenuItem("shield" + a, a)).SetValue(true);
                 }
                 _config.AddSubMenu(morgShield);
+
+                _config.AddItem(new MenuItem("combokey", "SBTW Key")).SetValue(new KeyBind(32, KeyBindType.Press));
 
                 #region L# Reqs
                 Game.OnGameUpdate += Game_OnGameUpdate;
@@ -127,7 +125,7 @@ namespace KurisuMorgana
             }
         }
 
-        private static void Game_DrawingOnDraw(EventArgs args)
+        private void Game_DrawingOnDraw(EventArgs args)
         {
             for (var i = 0; i < SpellList.Count; i++)
             {
@@ -136,15 +134,16 @@ namespace KurisuMorgana
                 if (circle.Active)
                     Utility.DrawCircle(Player.Position, spell.Range, circle.Color, 5, 55);
             }
+
         }
 
-        private static void Game_OnGapCloser(ActiveGapcloser sender)
+        private void Game_OnGapCloser(ActiveGapcloser sender)
         {
             if (!_config.Item("useq").GetValue<bool>() || !_config.Item("qgap").GetValue<bool>()) return;
             Darkbinding.Cast(sender.Sender);
         }
 
-        private static void Game_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
+        private void Game_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
         {
             if (_config.Item("usee").GetValue<bool>() && _config.Item("edangerous").GetValue<bool>())
             {
@@ -157,8 +156,6 @@ namespace KurisuMorgana
                         {
                             if (spell.SDataName == args.SData.Name)
                             {
-                                Console.WriteLine(args.SData.Name);
-                                Console.WriteLine(spell.Type);
                                 switch (spell.Type)
                                 {
                                     case Skilltype.Circle:
@@ -166,7 +163,6 @@ namespace KurisuMorgana
                                         {
                                             if (_config.Item(spell.SpellMenuName).GetValue<bool>() && _config.Item("shield" + a.SkinName).GetValue<bool>())
                                                 Blackshield.CastOnUnit(a, true);
-                                            //Console.WriteLine("Circle " + args.SData.Name);
                                         }
                                         break;
                                     case Skilltype.Line:
@@ -174,14 +170,23 @@ namespace KurisuMorgana
                                         {
                                             if (_config.Item(spell.SpellMenuName).GetValue<bool>() && _config.Item("shield" + a.SkinName).GetValue<bool>())
                                                 Blackshield.CastOnUnit(a, true);
-                                            //Console.WriteLine("Line " + args.SData.Name);
                                         }
                                         break;
                                     case Skilltype.Unknown:
-                                        if (Blackshield.IsReady())
-                                            if (_config.Item(spell.SpellMenuName).GetValue<bool>() && _config.Item("shield" + a.SkinName).GetValue<bool>())
-                                                Blackshield.CastOnUnit(a, true);
-                                            //Console.WriteLine("Unkown " + spell.SDataName);
+                                        if (Blackshield.IsReady() && (a.Distance(args.End) <= 600f || a.Distance(sender.Position) <= 600f))
+                                            if (a.SkinName != Player.SkinName &&
+                                                a.Distance(Player.Position) < Blackshield.Range)
+                                            {
+                                                if (_config.Item(spell.SpellMenuName).GetValue<bool>() &&
+                                                    _config.Item("shield" + a.SkinName).GetValue<bool>())
+                                                    Blackshield.CastOnUnit(a, true);
+                                            }
+                                            else
+                                            {
+                                                if (_config.Item(spell.SpellMenuName).GetValue<bool>() &&
+                                                   _config.Item("shield" + a.SkinName).GetValue<bool>())
+                                                    Blackshield.CastOnUnit(a, true);
+                                            }
                                         break;
                                 }
 
@@ -192,16 +197,17 @@ namespace KurisuMorgana
             }
         }
 
-        private static void Game_OnGameUpdate(EventArgs args)
+        private void Game_OnGameUpdate(EventArgs args)
         {
             var target = SimpleTs.GetTarget(1150, SimpleTs.DamageType.Magical);
+
+            Utility.DrawCircle(target.Position, target.BoundingRadius, Color.AntiqueWhite, 5, 50);
+
             DarkBinding(target);
             TormentedSoil(target);
-
-            //Utility.DrawCircle(target.Position, target.BoundingRadius, Color.MediumSlateBlue);
         }
 
-        private static IEnumerable<Obj_AI_Hero> AutoSoilTarget()
+        private IEnumerable<Obj_AI_Hero> AutoSoilTarget()
         {
             var targets = from hero in ObjectManager.Get<Obj_AI_Hero>()
                           where hero.Team != Player.Team && Vector2.DistanceSquared(Player.Position.To2D(),
@@ -211,7 +217,7 @@ namespace KurisuMorgana
             return targets;
         }
 
-        private static IEnumerable<Obj_AI_Hero> GetShackleTargets(GameObject target)
+        private IEnumerable<Obj_AI_Hero> GetShackleTargets(GameObject target)
         {
             var enemies = from hero in ObjectManager.Get<Obj_AI_Hero>()
                           where hero.IsEnemy && hero.IsValid &&
@@ -221,30 +227,43 @@ namespace KurisuMorgana
             return enemies;
         }
 
-        private static void DarkBinding(Obj_AI_Base target)
+        private void DarkBinding(Obj_AI_Base target)
         {
+            var lowPred = _config.Item("qhitchance").GetValue<StringList>().SelectedIndex == 0;
+            var medPred = _config.Item("qhitchance").GetValue<StringList>().SelectedIndex == 1;
+            var highPred = _config.Item("qhitchance").GetValue<StringList>().SelectedIndex == 2;
 
-            var predicition = Darkbinding.GetPrediction(target);
+            bool sbtwKey = _config.Item("combokey").GetValue<KeyBind>().Active;
 
-            if (predicition.Hitchance == HitChance.High && _orbwalker.ActiveMode.ToString() == "Combo")
+            var prediction = Darkbinding.GetPrediction(target);
+
+            if (prediction.Hitchance == HitChance.High && sbtwKey && highPred)
                 if (_config.Item("useq").GetValue<bool>() && Darkbinding.IsReady())
-                    Darkbinding.Cast(predicition.CastPosition);
+                    Darkbinding.Cast(prediction.CastPosition);
 
-            switch (predicition.Hitchance)
+            if (prediction.Hitchance == HitChance.Medium && sbtwKey && medPred)
+                if (_config.Item("useq").GetValue<bool>() && Darkbinding.IsReady())
+                    Darkbinding.Cast(prediction.CastPosition);
+
+            if (prediction.Hitchance <= HitChance.Medium && sbtwKey && lowPred)
+                if (_config.Item("useq").GetValue<bool>() && Darkbinding.IsReady())
+                    Darkbinding.Cast(prediction.CastPosition);
+
+            switch (prediction.Hitchance)
             {
                 case HitChance.Immobile:
                     if (_config.Item("useq").GetValue<bool>() && _config.Item("qimmobile").GetValue<bool>() && Darkbinding.IsReady())
-                        Darkbinding.Cast(predicition.CastPosition);
+                        Darkbinding.Cast(prediction.CastPosition);
                     break;
 
                 case HitChance.Dashing:
                     if (_config.Item("useq").GetValue<bool>() && _config.Item("qdash").GetValue<bool>() && Darkbinding.IsReady())
-                        Darkbinding.Cast(predicition.CastPosition);
+                        Darkbinding.Cast(prediction.CastPosition);
                     break;
             }
         }
 
-        private static void TormentedSoil(Obj_AI_Base target)
+        private void TormentedSoil(Obj_AI_Base target)
         {
             if (_orbwalker.ActiveMode.ToString() == "Combo" && _config.Item("usew").GetValue<bool>())
             {
@@ -272,5 +291,6 @@ namespace KurisuMorgana
 
             }
         }
+
     }
 }
