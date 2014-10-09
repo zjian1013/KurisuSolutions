@@ -133,6 +133,8 @@ namespace KurisuBlitz
                 PredictionOutput prediction = Q.GetPrediction(target);
                 if (keydown)
                 {
+                    if ((target.Distance(_player.Position) > (float)_menu.Item("dneeded").GetValue<Slider>().Value)
+                        && (target.Distance(_player.Position) < (float)_menu.Item("dneeded2").GetValue<Slider>().Value))
                     if (_menu.Item("dograb" + target.SkinName).GetValue<StringList>().SelectedIndex == 0) return;
                     if (prediction.Hitchance == HitChance.High && _menu.Item("hitchance").GetValue<StringList>().SelectedIndex == 2)
                             Q.Cast(prediction.CastPosition);
@@ -153,11 +155,14 @@ namespace KurisuBlitz
                                    Vector2.DistanceSquared(_player.Position.To2D(), e.ServerPosition.To2D()) <
                                    Q.Range * Q.Range && _menu.Item("dograb" + e.SkinName).GetValue<StringList>().SelectedIndex == 2))
             {
-                PredictionOutput prediction = Q.GetPrediction(e);
-                if (prediction.Hitchance == HitChance.Immobile && _menu.Item("immobile").GetValue<bool>())
-                    Q.Cast(prediction.CastPosition);
-                if (prediction.Hitchance == HitChance.Dashing && _menu.Item("dashing").GetValue<bool>())
-                    Q.Cast(prediction.CastPosition);
+                if (e.Distance(_player.Position) > (float)_menu.Item("dneeded").GetValue<Slider>().Value)
+                {
+                    PredictionOutput prediction = Q.GetPrediction(e);
+                    if (prediction.Hitchance == HitChance.Immobile && _menu.Item("immobile").GetValue<bool>())
+                        Q.Cast(prediction.CastPosition);
+                    if (prediction.Hitchance == HitChance.Dashing && _menu.Item("dashing").GetValue<bool>())
+                        Q.Cast(prediction.CastPosition);
+                }
             }
         }
 
@@ -197,6 +202,8 @@ namespace KurisuBlitz
             Menu menuG = new Menu("Blitz: GodHand", "autograb");
             menuG.AddItem(new MenuItem("hitchance", "Hitchance"))
                 .SetValue(new StringList(new[] {"Low", "Medium", "High"}, 2));
+            menuG.AddItem(new MenuItem("dneeded", "Mininum distance to Q")).SetValue(new Slider(255, 0, (int)Q.Range));
+            menuG.AddItem(new MenuItem("dneeded2", "Maximum distance to Q")).SetValue(new Slider((int)Q.Range, 0, (int)Q.Range));
             menuG.AddItem(new MenuItem("dashing", "Auto Q dashing enemies")).SetValue(true);
             menuG.AddItem(new MenuItem("immobile", "Auto Q immobile enemies")).SetValue(true);
             menuG.AddItem(new MenuItem("sep", ""));
