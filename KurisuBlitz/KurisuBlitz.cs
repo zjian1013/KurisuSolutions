@@ -7,8 +7,16 @@ using SharpDX;
 using Color = System.Drawing.Color;
 
 namespace KurisuBlitz
-{
-    class KurisuBlitz
+{  
+    /* Blitz - The God Hand
+     * Revision:101 - 10/10/2014
+     * + added target selector
+     * + should focus selected target
+     * + fixed interruptable spell printing in game
+     * + will only power fist if Q is not avaiable and target is close enough
+     * */
+                                                         
+    internal class KurisuBlitz
     {
         private static Menu _menu;
         private static Obj_AI_Hero _target;
@@ -19,7 +27,7 @@ namespace KurisuBlitz
         private static readonly Spell R = new Spell(SpellSlot.R, 550f);
 
         private static readonly List<Spell> blitzDrawingList = new List<Spell>();
-        private static List<InterruptableSpell> blitzInterruptList = new List<InterruptableSpell>();
+        //private static List<InterruptableSpell> blitzInterruptList = new List<InterruptableSpell>();
 
         public KurisuBlitz()
         {
@@ -54,14 +62,11 @@ namespace KurisuBlitz
             AntiGapcloser.OnEnemyGapcloser += BlitzOnGapcloser;
         }
 
+        // not tested
         private void BlitzOnInterrupt(Obj_AI_Base unit, InterruptableSpell spell)
         {
-            blitzInterruptList.Add(spell);
-
-            Game.PrintChat(spell.SpellName);
             if (_menu.Item("interrupt").GetValue<bool>())
-            {
-                
+            {               
                 if (unit.Distance(_player.Position) < R.Range)
                     R.Cast();
             }
@@ -75,6 +80,8 @@ namespace KurisuBlitz
                 if (circle.Active)
                     Utility.DrawCircle(_player.Position, spell.Range, circle.Color, 5, 55);
             }
+
+            Utility.DrawCircle(_target.Position, _target.BoundingRadius, Color.Red, 1, 1);
         }
 
         private void BlitzOnGapcloser(ActiveGapcloser gapcloser)
@@ -89,8 +96,10 @@ namespace KurisuBlitz
         {
             try
             {
-                // get target
-                _target = SimpleTs.GetTarget(1000, SimpleTs.DamageType.Physical);
+                if (_orbwalker.GetTarget() != null)
+                    _target = (Obj_AI_Hero)_orbwalker.GetTarget();
+                else
+                    _target = SimpleTs.GetTarget(1000, SimpleTs.DamageType.Physical);
 
                 // do KS
                 GodKS();
@@ -112,7 +121,7 @@ namespace KurisuBlitz
                                     e.Team != _player.Team && e.IsValid && !e.IsDead &&
                                     e.Distance(_player.Position) <= _player.AttackRange))
                 {
-                    if (_menu.Item("useE").GetValue<bool>())
+                    if (_menu.Item("useE").GetValue<bool>() && !Q.IsReady())
                         _player.Spellbook.CastSpell(SpellSlot.E);
                 }
             }
@@ -193,6 +202,10 @@ namespace KurisuBlitz
             Menu blitzOrb = new Menu("Blitz: Orbwalker", "orbwalker");
             _orbwalker = new Orbwalking.Orbwalker(blitzOrb);
             _menu.AddSubMenu(blitzOrb);
+
+            Menu blitzTS = new Menu("Blitz: Selector", "tselect");
+            SimpleTs.AddToMenu(blitzTS);
+            _menu.AddSubMenu(blitzTS);
             
             Menu menuD = new Menu("Blitz: Drawings", "drawings");
             menuD.AddItem(new MenuItem("drawQ", "Draw Q")).SetValue(new Circle(true, Color.FromArgb(150, Color.White)));
@@ -206,8 +219,8 @@ namespace KurisuBlitz
             menuG.AddItem(new MenuItem("dneeded2", "Maximum distance to Q")).SetValue(new Slider((int)Q.Range, 0, (int)Q.Range));
             menuG.AddItem(new MenuItem("dashing", "Auto Q dashing enemies")).SetValue(true);
             menuG.AddItem(new MenuItem("immobile", "Auto Q immobile enemies")).SetValue(true);
-            menuG.AddItem(new MenuItem("sep", ""));
             menuG.AddItem(new MenuItem("hneeded", "Dont grab below health %")).SetValue(new Slider(0));
+            menuG.AddItem(new MenuItem("sep", ""));
             
             foreach (
                 var e in
