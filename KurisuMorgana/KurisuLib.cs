@@ -23,13 +23,14 @@ namespace KurisuMorgana
         public string SDataName { get; set; }
         public int DangerLevel { get; set; }
 
-
-        public static List<KurisuLib> CcList = new List<KurisuLib>();
-        public static List<KurisuLib> SilenceList = new List<KurisuLib>();
+        public static List<KurisuLib> GDList = new List<KurisuLib>(); // Generic Dangerous List
+        public static List<KurisuLib> CCList = new List<KurisuLib>(); // Crowd Control List
+        public static List<KurisuLib> SList = new List<KurisuLib>();  // Silence List
 
         static KurisuLib()
         {
-            CcList.Add(
+            #region CCList
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Aatorx",
@@ -39,7 +40,7 @@ namespace KurisuMorgana
                     SDataName = "AatroxQ",
                     DangerLevel = 5
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Aatorx",
@@ -49,7 +50,7 @@ namespace KurisuMorgana
                     SDataName = "AatroxE",
                     DangerLevel = 3
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Ahri",
@@ -59,7 +60,7 @@ namespace KurisuMorgana
                     SDataName = "AhriSeduce",
                     DangerLevel = 5
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Alistar",
@@ -69,7 +70,7 @@ namespace KurisuMorgana
                     SDataName = "Pulverize",
                     DangerLevel = 5
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Alistar",
@@ -78,7 +79,7 @@ namespace KurisuMorgana
                     SDataName = "Headbutt",
                     DangerLevel = 3
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Amumu",
@@ -88,7 +89,7 @@ namespace KurisuMorgana
                     SDataName = "BandageToss",
                     DangerLevel = 5
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Amumu",
@@ -98,7 +99,7 @@ namespace KurisuMorgana
                     SDataName = "CurseoftheSadMummy",
                     DangerLevel = 5
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Anivia",
@@ -108,7 +109,7 @@ namespace KurisuMorgana
                     SDataName = "FlashFrost",
                     DangerLevel = 5
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Anivia",
@@ -118,7 +119,7 @@ namespace KurisuMorgana
                     SDataName = "GlacialStorm",
                     DangerLevel = 3
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Annie",
@@ -128,7 +129,7 @@ namespace KurisuMorgana
                     SDataName = "InfernalGuardian",
                     DangerLevel = 5
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Ashe",
@@ -138,7 +139,7 @@ namespace KurisuMorgana
                     SDataName = "EnchantedCrystalArrow",
                     DangerLevel = 5
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Ashe",
@@ -148,7 +149,7 @@ namespace KurisuMorgana
                     SDataName = "Volley",
                     DangerLevel = 3
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Azir",
@@ -158,7 +159,7 @@ namespace KurisuMorgana
                     SDataName = "AzirE",
                     DangerLevel = 3
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Azir",
@@ -168,7 +169,7 @@ namespace KurisuMorgana
                     SDataName = "AzirR",
                     DangerLevel = 5
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Blitzcrank",
@@ -178,7 +179,7 @@ namespace KurisuMorgana
                     SDataName = "RocketGrab",
                     DangerLevel = 5
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Blitzcrank",
@@ -187,7 +188,7 @@ namespace KurisuMorgana
                     SDataName = "PowerFist",
                     DangerLevel = 3
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Brand",
@@ -197,7 +198,7 @@ namespace KurisuMorgana
                     SDataName = "BrandBlazeMissile",
                     DangerLevel = 3
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Bruam",
@@ -207,7 +208,7 @@ namespace KurisuMorgana
                     SDataName = "BraumQ",
                     DangerLevel = 3
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Bruam",
@@ -217,7 +218,7 @@ namespace KurisuMorgana
                     SDataName = "BraumR",
                     DangerLevel = 5
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Caitlyn",
@@ -227,7 +228,7 @@ namespace KurisuMorgana
                     SDataName = "CaitlynEntrapment",
                     DangerLevel = 3
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Cassiopeia",
@@ -237,7 +238,7 @@ namespace KurisuMorgana
                     SDataName = "CassiopeiaPetrifyingGaze",
                     DangerLevel = 5
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Cho'gath",
@@ -247,7 +248,7 @@ namespace KurisuMorgana
                     SDataName = "Rupture",
                     DangerLevel = 5
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Darius",
@@ -257,7 +258,7 @@ namespace KurisuMorgana
                     SDataName = "DariusAxeGrabCone",
                     DangerLevel = 3
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Diana",
@@ -267,7 +268,7 @@ namespace KurisuMorgana
                     SDataName = "DianaVortex",
                     DangerLevel = 3
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "DrMundo",
@@ -278,7 +279,7 @@ namespace KurisuMorgana
                     DangerLevel = 3
                 });
 
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Draven",
@@ -289,7 +290,7 @@ namespace KurisuMorgana
                     DangerLevel = 3
                 });
 
-            CcList.Add(
+            CCList.Add(
                new KurisuLib
                {
                    HeroName = "Elise",
@@ -300,7 +301,7 @@ namespace KurisuMorgana
                    DangerLevel = 3
                });
 
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Evelynn",
@@ -310,7 +311,7 @@ namespace KurisuMorgana
                     DangerLevel = 5,
                     SDataName = "EvelynnR",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Fizz",
@@ -320,7 +321,7 @@ namespace KurisuMorgana
                     DangerLevel = 5,
                     SDataName = "FizzMarinerDoomMissile",
                 });
-            CcList.Add(
+            CCList.Add(
                  new KurisuLib
                  {
                      HeroName = "Fizz",
@@ -330,7 +331,7 @@ namespace KurisuMorgana
                      DangerLevel = 3,
                      SDataName = "FizzJump",
                  });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Galio",
@@ -340,7 +341,7 @@ namespace KurisuMorgana
                     DangerLevel = 2,
                     SDataName = "GalioResoluteSmite",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Galio",
@@ -350,7 +351,7 @@ namespace KurisuMorgana
                     DangerLevel = 5,
                     SDataName = "GalioIdolOfDurand",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Gnar",
@@ -360,7 +361,7 @@ namespace KurisuMorgana
                     DangerLevel = 2,
                     SDataName = "GnarQ",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Gnar",
@@ -370,7 +371,7 @@ namespace KurisuMorgana
                     DangerLevel = 2,
                     SDataName = "GnarBigQ",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Gnar",
@@ -381,7 +382,7 @@ namespace KurisuMorgana
                     SDataName = "GnarBigW",
                 });
 
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Gnar",
@@ -392,7 +393,7 @@ namespace KurisuMorgana
                     SDataName = "GnarR",
                 });
 
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Gragas",
@@ -402,7 +403,7 @@ namespace KurisuMorgana
                     DangerLevel = 2,
                     SDataName = "GragasQ",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Gragas",
@@ -412,7 +413,7 @@ namespace KurisuMorgana
                     DangerLevel = 2,
                     SDataName = "GragasE",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Gragas",
@@ -423,7 +424,7 @@ namespace KurisuMorgana
                     SDataName = "GragasR",
                 });
 
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Heimerdinger",
@@ -433,7 +434,7 @@ namespace KurisuMorgana
                     DangerLevel = 3,
                     SDataName = "HeimerdingerE",
                 });
-            CcList.Add(
+            CCList.Add(
                  new KurisuLib
                  {
                      HeroName = "Hecarim",
@@ -443,7 +444,7 @@ namespace KurisuMorgana
                      DangerLevel = 5,
                      SDataName = "HecarimUlt",
                  });
-            CcList.Add(
+            CCList.Add(
                   new KurisuLib
                   {
                       HeroName = "Hecarim",
@@ -453,7 +454,7 @@ namespace KurisuMorgana
                       DangerLevel = 3,
                       SDataName = "HecarimRamp",
                   });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Janna",
@@ -463,7 +464,7 @@ namespace KurisuMorgana
                     DangerLevel = 3,
                     SDataName = "HowlingGale",
                 });
-            CcList.Add(
+            CCList.Add(
                  new KurisuLib
                  {
                      HeroName = "Janna",
@@ -472,7 +473,7 @@ namespace KurisuMorgana
                      DangerLevel = 3,
                      SDataName = "ReapTheWhirlwind",
                  });
-            CcList.Add(
+            CCList.Add(
                  new KurisuLib
                  {
                      HeroName = "Jax",
@@ -482,7 +483,7 @@ namespace KurisuMorgana
                      DangerLevel = 5,
                      SDataName = "JaxCounterStrike",
                  });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "JarvanIV",
@@ -492,7 +493,7 @@ namespace KurisuMorgana
                     DangerLevel = 3,
                     SDataName = "JarvanIVDragonStrike",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Jayce",
@@ -501,7 +502,7 @@ namespace KurisuMorgana
                     DangerLevel = 3,
                     SDataName = "JayceThunderingBlow",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Jinx",
@@ -511,7 +512,7 @@ namespace KurisuMorgana
                     DangerLevel = 3,
                     SDataName = "JinxW",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Jinx",
@@ -521,7 +522,7 @@ namespace KurisuMorgana
                     DangerLevel = 4,
                     SDataName = "JinxE",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Karma",
@@ -531,7 +532,7 @@ namespace KurisuMorgana
                     DangerLevel = 2,
                     SDataName = "KarmaQMantra",
                 });
-            CcList.Add(
+            CCList.Add(
                  new KurisuLib
                  {
                      HeroName = "Karma",
@@ -541,7 +542,7 @@ namespace KurisuMorgana
                      SDataName = "KarmaQMantra",
                  });
 
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Kassadin",
@@ -552,7 +553,7 @@ namespace KurisuMorgana
                     SDataName = "ForcePulse",
                 });
 
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Khazix",
@@ -562,7 +563,7 @@ namespace KurisuMorgana
                     DangerLevel = 2,
                     SDataName = "KhazixW",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Kayle",
@@ -571,7 +572,7 @@ namespace KurisuMorgana
                     DangerLevel = 3,
                     SDataName = "JudicatorReckoning",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "KogMaw",
@@ -581,7 +582,7 @@ namespace KurisuMorgana
                     DangerLevel = 2,
                     SDataName = "KogMawVoidOoze",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Leblanc",
@@ -591,7 +592,7 @@ namespace KurisuMorgana
                     DangerLevel = 3,
                     SDataName = "LeblancSoulShackle",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Leblanc",
@@ -601,7 +602,7 @@ namespace KurisuMorgana
                     DangerLevel = 3,
                     SDataName = "LeblancSoulShackleM",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "LeeSin",
@@ -610,7 +611,7 @@ namespace KurisuMorgana
                     DangerLevel = 5,
                     SDataName = "BlindMonkRKick",
                 });
-                            CcList.Add(
+                            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Leona",
@@ -620,7 +621,7 @@ namespace KurisuMorgana
                     DangerLevel = 3,
                     SDataName = "LeonaZenithBlade",
                 });
-            CcList.Add(
+            CCList.Add(
                  new KurisuLib
                  {
                      HeroName = "Leona",
@@ -629,7 +630,7 @@ namespace KurisuMorgana
                      DangerLevel = 3,
                      SDataName = "LeonaShieldOfDaybreak",
                  });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Leona",
@@ -639,7 +640,7 @@ namespace KurisuMorgana
                     DangerLevel = 5,
                     SDataName = "LeonaSolarFlare",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Lissandra",
@@ -649,7 +650,7 @@ namespace KurisuMorgana
                     DangerLevel = 2,
                     SDataName = "LissandraQ",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Lissandra",
@@ -660,7 +661,7 @@ namespace KurisuMorgana
                     SDataName = "LissandraW",
                 });
 
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Lulu",
@@ -670,7 +671,7 @@ namespace KurisuMorgana
                     DangerLevel = 2,
                     SDataName = "LuluQ"
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Lulu",
@@ -680,7 +681,7 @@ namespace KurisuMorgana
                     DangerLevel = 3,
                     SDataName = "LuluQMissileTwo"
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Lux",
@@ -690,7 +691,7 @@ namespace KurisuMorgana
                     DangerLevel = 5,
                     SDataName = "LuxLightBinding",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Lux",
@@ -700,7 +701,7 @@ namespace KurisuMorgana
                     DangerLevel = 3,
                     SDataName = "LuxLightStrikeKugel",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Lux",
@@ -710,7 +711,7 @@ namespace KurisuMorgana
                     DangerLevel = 5,
                     SDataName = "LuxMaliceCannon",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Malphite",
@@ -720,7 +721,7 @@ namespace KurisuMorgana
                     DangerLevel = 5,
                     SDataName = "UFSlash",
                 });
-            CcList.Add(
+            CCList.Add(
                  new KurisuLib
                  {
                      HeroName = "Malphite",
@@ -730,7 +731,7 @@ namespace KurisuMorgana
                      DangerLevel = 3,
                      SDataName = "SismicShard",
                  });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Malzahar",
@@ -739,7 +740,7 @@ namespace KurisuMorgana
                     DangerLevel = 5,
                     SDataName = "AlZaharNetherGrasp",
                 });
-            CcList.Add(
+            CCList.Add(
                  new KurisuLib
                  {
                      HeroName = "Maokai",
@@ -748,7 +749,7 @@ namespace KurisuMorgana
                      DangerLevel = 3,
                      SDataName = "MaokaiUnstableGrowth",
                  });
-            CcList.Add(
+            CCList.Add(
                  new KurisuLib
                  {
                      HeroName = "Maokai",
@@ -757,7 +758,7 @@ namespace KurisuMorgana
                      DangerLevel = 3,
                      SDataName = "MaokaiTrunkLine",
                  });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Morgana",
@@ -767,7 +768,7 @@ namespace KurisuMorgana
                     DangerLevel = 5,
                     SDataName = "DarkBindingMissile",
                 });
-            CcList.Add(
+            CCList.Add(
                  new KurisuLib
                  {
                      HeroName = "Mordekaiser",
@@ -776,7 +777,7 @@ namespace KurisuMorgana
                      DangerLevel = 5,
                      SDataName = "MordekaiserChildrenOfTheGrave",
                  });
-            CcList.Add(
+            CCList.Add(
                  new KurisuLib
                  {
                      HeroName = "Wukong",
@@ -786,7 +787,7 @@ namespace KurisuMorgana
                      DangerLevel = 5,
                      SDataName = "MonkeyKingSpinToWin",
                  });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Nami",
@@ -796,7 +797,7 @@ namespace KurisuMorgana
                     DangerLevel = 3,
                     SDataName = "NamiQ",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Nasus",
@@ -805,7 +806,7 @@ namespace KurisuMorgana
                     DangerLevel = 3,
                     SDataName = "NasusW",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Karthus",
@@ -815,7 +816,7 @@ namespace KurisuMorgana
                     DangerLevel = 3,
                     SDataName = "KarthusWallOfPain",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Nami",
@@ -825,7 +826,7 @@ namespace KurisuMorgana
                     DangerLevel = 2,
                     SDataName = "NamiR",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Nautilus",
@@ -835,7 +836,7 @@ namespace KurisuMorgana
                     DangerLevel = 3,
                     SDataName = "NautilusAnchorDragMissile",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Nautilus",
@@ -845,7 +846,7 @@ namespace KurisuMorgana
                     DangerLevel = 2,
                     SDataName = "NautilusSplashZone",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Nautilus",
@@ -855,7 +856,7 @@ namespace KurisuMorgana
                     SDataName = "NautilusGrandLine",
                 });
 
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Nidalee",
@@ -865,7 +866,7 @@ namespace KurisuMorgana
                     DangerLevel = 3,
                     SDataName = "JavelinToss",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Olaf",
@@ -875,7 +876,7 @@ namespace KurisuMorgana
                     DangerLevel = 2,
                     SDataName = "OlafAxeThrowCast",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Orianna",
@@ -885,7 +886,7 @@ namespace KurisuMorgana
                     DangerLevel = 3,
                     SDataName = "OrianaDissonanceCommand",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Orianna",
@@ -895,7 +896,7 @@ namespace KurisuMorgana
                     DangerLevel = 5,
                     SDataName = "OrianaDetonateCommand",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Quinn",
@@ -905,7 +906,7 @@ namespace KurisuMorgana
                     DangerLevel = 2,
                     SDataName = "QuinnQ",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Rammus",
@@ -915,7 +916,7 @@ namespace KurisuMorgana
                     DangerLevel = 2,
                     SDataName = "PuncturingTaunt",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Rengar",
@@ -926,7 +927,7 @@ namespace KurisuMorgana
                     SDataName = "RengarEFinal",
                 });
 
-            CcList.Add(
+            CCList.Add(
                  new KurisuLib
                  {
                      HeroName = "Fiddlesticks",
@@ -935,7 +936,7 @@ namespace KurisuMorgana
                      DangerLevel = 3,
                      SDataName = "Terrify",
                  });
-            CcList.Add(
+            CCList.Add(
                  new KurisuLib
                  {
                      HeroName = "Renekton",
@@ -944,7 +945,7 @@ namespace KurisuMorgana
                      DangerLevel = 3,
                      SDataName = "RenektonPreExecute",
                  });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Riven",
@@ -954,7 +955,7 @@ namespace KurisuMorgana
                     DangerLevel = 5,
                     SDataName = "RivenMartyr"
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Rumble",
@@ -964,7 +965,7 @@ namespace KurisuMorgana
                     DangerLevel = 2,
                     SDataName = "RumbleGrenade",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Rumble",
@@ -974,7 +975,7 @@ namespace KurisuMorgana
                     DangerLevel = 4,
                     SDataName = "RumbleCarpetBombMissile",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Ryze",
@@ -983,7 +984,7 @@ namespace KurisuMorgana
                     DangerLevel = 3,
                     SDataName = "RunePrison",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Sejuani",
@@ -993,7 +994,7 @@ namespace KurisuMorgana
                     DangerLevel = 3,
                     SDataName = "SejuaniArcticAssault",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Sejuani",
@@ -1003,7 +1004,7 @@ namespace KurisuMorgana
                     DangerLevel = 5,
                     SDataName = "SejuaniGlacialPrisonStart",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Singed",
@@ -1013,7 +1014,7 @@ namespace KurisuMorgana
                     DangerLevel = 2,
                     SDataName = "MegaAdhesive",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Singed",
@@ -1022,7 +1023,7 @@ namespace KurisuMorgana
                     DangerLevel = 2,
                     SDataName = "Fling",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Nocturne",
@@ -1031,7 +1032,7 @@ namespace KurisuMorgana
                     DangerLevel = 3,
                     SDataName = "NocturneUnspeakableHorror",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Shen",
@@ -1041,7 +1042,7 @@ namespace KurisuMorgana
                     DangerLevel = 3,
                     SDataName = "ShenShadowDash",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Shyvana",
@@ -1051,7 +1052,7 @@ namespace KurisuMorgana
                     DangerLevel = 3,
                     SDataName = "ShyvanaTransformCast",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Skarner",
@@ -1061,7 +1062,7 @@ namespace KurisuMorgana
                     DangerLevel = 3,
                     SDataName = "SkarnerFractureMissile",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Skarner",
@@ -1071,7 +1072,7 @@ namespace KurisuMorgana
                     DangerLevel = 5,
                     SDataName = "SkarnerFractureMissile",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Pantheon",
@@ -1080,7 +1081,7 @@ namespace KurisuMorgana
                     DangerLevel = 3,
                     SDataName = "PantheonW",
                 });
-            CcList.Add(
+            CCList.Add(
                  new KurisuLib
                  {
                      HeroName = "Pantheon",
@@ -1089,7 +1090,7 @@ namespace KurisuMorgana
                      DangerLevel = 3,
                      SDataName = "PoppyHeroicCharge",
                  });
-            CcList.Add(
+            CCList.Add(
                  new KurisuLib
                  {
                      HeroName = "Nunu",
@@ -1098,7 +1099,7 @@ namespace KurisuMorgana
                      DangerLevel = 3,
                      SDataName = "Ice Blast",
                  });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Sona",
@@ -1108,7 +1109,7 @@ namespace KurisuMorgana
                     DangerLevel = 5,
                     SDataName = "SonaCrescendo",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Swain",
@@ -1118,7 +1119,7 @@ namespace KurisuMorgana
                     DangerLevel = 3,
                     SDataName = "SwainShadowGrasp",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Syndra",
@@ -1128,7 +1129,7 @@ namespace KurisuMorgana
                     DangerLevel = 5,
                     SDataName = "SyndraE",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Thresh",
@@ -1138,7 +1139,7 @@ namespace KurisuMorgana
                     DangerLevel = 3,
                     SDataName = "ThreshQ",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Thresh",
@@ -1148,7 +1149,7 @@ namespace KurisuMorgana
                     DangerLevel = 3,
                     SDataName = "ThreshEFlay",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Tristana",
@@ -1157,7 +1158,7 @@ namespace KurisuMorgana
                     DangerLevel = 5,
                     SDataName = "BusterShot",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Trundle",
@@ -1166,7 +1167,7 @@ namespace KurisuMorgana
                     DangerLevel = 3,
                     SDataName = "TrundleCircle",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Trundle",
@@ -1175,7 +1176,7 @@ namespace KurisuMorgana
                     DangerLevel = 5,
                     SDataName = "TrundlePain",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Tryndamere",
@@ -1185,7 +1186,7 @@ namespace KurisuMorgana
                     SDataName = "MockingShout",
                 });
 
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Twitch",
@@ -1195,7 +1196,7 @@ namespace KurisuMorgana
                     DangerLevel = 2,
                     SDataName = "TwitchVenomCaskMissile",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Urgot",
@@ -1205,7 +1206,7 @@ namespace KurisuMorgana
                     DangerLevel = 3,
                     SDataName = "UrgotPlasmaGrenadeBoom",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Varus",
@@ -1215,7 +1216,7 @@ namespace KurisuMorgana
                     DangerLevel = 2,
                     SDataName = "VarusE",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Varus",
@@ -1225,7 +1226,7 @@ namespace KurisuMorgana
                     DangerLevel = 5,
                     SDataName = "VarusR",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Veigar",
@@ -1235,7 +1236,7 @@ namespace KurisuMorgana
                     DangerLevel = 5,
                     SDataName = "VeigarEventHorizon",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Velkoz",
@@ -1245,7 +1246,7 @@ namespace KurisuMorgana
                     DangerLevel = 3,
                     SDataName = "VelkozQ",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Velkoz",
@@ -1255,7 +1256,7 @@ namespace KurisuMorgana
                     DangerLevel = 3,
                     SDataName = "VelkozQSplit",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Velkoz",
@@ -1265,7 +1266,7 @@ namespace KurisuMorgana
                     DangerLevel = 3,
                     SDataName = "VelkozE",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Vi",
@@ -1275,7 +1276,7 @@ namespace KurisuMorgana
                     DangerLevel = 3,
                     SDataName = "ViQ",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Vi",
@@ -1284,7 +1285,7 @@ namespace KurisuMorgana
                     DangerLevel = 5,
                     SDataName = "ViR",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Viktor",
@@ -1294,7 +1295,7 @@ namespace KurisuMorgana
                     DangerLevel = 5,
                     SDataName = "ViktorGravitonField",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Vayne",
@@ -1303,7 +1304,7 @@ namespace KurisuMorgana
                     DangerLevel = 3,
                     SDataName = "Vayne Condemn",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Warwick",
@@ -1312,7 +1313,7 @@ namespace KurisuMorgana
                     DangerLevel = 5,
                     SDataName = "InfiniteDuress",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Xerath",
@@ -1322,7 +1323,7 @@ namespace KurisuMorgana
                     DangerLevel = 2,
                     SDataName = "XerathArcaneBarrage2",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Xerath",
@@ -1332,7 +1333,7 @@ namespace KurisuMorgana
                     DangerLevel = 2,
                     SDataName = "XerathMageSpearMissile",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "XinZhao",
@@ -1341,7 +1342,7 @@ namespace KurisuMorgana
                     DangerLevel = 3,
                     SDataName = "XenZhaoComboTarget",
                 });
-            CcList.Add(
+            CCList.Add(
                  new KurisuLib
                  {
                      HeroName = "XinZhao",
@@ -1350,7 +1351,7 @@ namespace KurisuMorgana
                      DangerLevel = 4,
                      SDataName = "XenZhaoSweep",
                  });
-           CcList.Add(
+           CCList.Add(
                  new KurisuLib
                  {
                      HeroName = "XinZhao",
@@ -1360,7 +1361,7 @@ namespace KurisuMorgana
                      DangerLevel = 5,
                      SDataName = "XenZhaoParry",
                  });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Yasuo",
@@ -1370,7 +1371,7 @@ namespace KurisuMorgana
                     DangerLevel = 2,
                     SDataName = "yasuoq2",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Yasuo",
@@ -1380,7 +1381,7 @@ namespace KurisuMorgana
                     DangerLevel = 3,
                     SDataName = "yasuoq3w",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Yasuo",
@@ -1390,7 +1391,7 @@ namespace KurisuMorgana
                     DangerLevel = 2,
                     SDataName = "yasuoq",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Zac",
@@ -1400,7 +1401,7 @@ namespace KurisuMorgana
                     DangerLevel = 2,
                     SDataName = "ZacQ",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Zac",
@@ -1409,7 +1410,7 @@ namespace KurisuMorgana
                     DangerLevel = 5,
                     SDataName = "ZacR",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Zed",
@@ -1418,7 +1419,7 @@ namespace KurisuMorgana
                     DangerLevel = 5,
                     SDataName = "ZedUlt",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Ziggs",
@@ -1428,7 +1429,7 @@ namespace KurisuMorgana
                     DangerLevel = 2,
                     SDataName = "ZiggsW",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Zyra",
@@ -1438,7 +1439,7 @@ namespace KurisuMorgana
                     DangerLevel = 5,
                     SDataName = "ZyraGraspingRoots",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Zyra",
@@ -1448,15 +1449,16 @@ namespace KurisuMorgana
                     DangerLevel = 3,
                     SDataName = "ZyraBrambleZone",
                 });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Taric",
                     SpellMenuName = "Dazzle",
                     Slot = SpellSlot.E,
                     SDataName = "Dazzle",
+                    DangerLevel = 5
                 });
-            CcList.Add(
+            CCList.Add(
                  new KurisuLib
                  {
                      HeroName = "Yoric",
@@ -1465,7 +1467,7 @@ namespace KurisuMorgana
                      DangerLevel = 3,
                      SDataName = "YorickDecayed",
                  });
-            CcList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Yasuo",
@@ -1474,9 +1476,10 @@ namespace KurisuMorgana
                     DangerLevel = 3,
                     SDataName = "YasuoQ3",
                 });
+            #endregion
 
-            // SilenceList
-            SilenceList.Add(
+            #region SList
+            SList.Add(
                 new KurisuLib
                 {
                     HeroName = "Fiddlesticks",
@@ -1485,7 +1488,7 @@ namespace KurisuMorgana
                     DangerLevel = 3,
                     SDataName = "FiddlesticksDarkWind",
                 });
-            SilenceList.Add(
+            SList.Add(
                 new KurisuLib
                 {
                     HeroName = "Blitzcrank",
@@ -1496,7 +1499,7 @@ namespace KurisuMorgana
                     SDataName = "StaticField",
 
                 });
-            SilenceList.Add(
+            SList.Add(
                 new KurisuLib
                 {
                     HeroName = "Chogath",
@@ -1507,7 +1510,7 @@ namespace KurisuMorgana
                     SDataName = "FeralScream",
 
                 });
-            SilenceList.Add(
+            SList.Add(
                 new KurisuLib
                 {
                     HeroName = "Malzahar",
@@ -1517,7 +1520,7 @@ namespace KurisuMorgana
                     DangerLevel = 3,
                     SDataName = "AlZaharCalloftheVoid",
                 });
-            SilenceList.Add(
+            SList.Add(
                 new KurisuLib
                 {
                     HeroName = "Talon",
@@ -1526,7 +1529,7 @@ namespace KurisuMorgana
                     DangerLevel = 3,
                     SDataName = "TalonCutthroat",
                 });
-           SilenceList.Add(
+           SList.Add(
                 new KurisuLib
                 {
                     HeroName = "Garen",
@@ -1535,7 +1538,7 @@ namespace KurisuMorgana
                     DangerLevel = 3,
                     SDataName = "GarenQ",
                 });
-          SilenceList.Add(
+          SList.Add(
                 new KurisuLib
                 {
                     HeroName = "Viktor",
@@ -1544,7 +1547,7 @@ namespace KurisuMorgana
                     DangerLevel = 3,
                     SDataName = "ViktorChaosStorm",
                 });
-         SilenceList.Add(
+         SList.Add(
                 new KurisuLib
                 {
                     HeroName = "Soraka",
@@ -1554,6 +1557,11 @@ namespace KurisuMorgana
                     DangerLevel = 2,
                     SDataName = "SorakaE",
                 });
+            #endregion
+
+            #region GDList
+
+            #endregion
         }        
     }
 }
