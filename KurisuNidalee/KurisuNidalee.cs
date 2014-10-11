@@ -175,7 +175,7 @@ namespace KurisuNidalee
             Config.AddItem(new MenuItem("usepackets", "Use Packets")).SetValue(true);
             Config.AddToMainMenu();
 
-            Game.PrintChat("<font color=\"#FFAF4D\">[</font><font color=\"#FFA333\">Nidalee</font><font color=\"#FFAF4D\">]</font><font color=\"#FF8C00\"> - <u>the Bestial Huntress v1.2</u>  </font>- Kurisu ©");
+            Game.PrintChat("<font color=\"#FFAF4D\">[</font><font color=\"#FFA333\">Nidalee</font><font color=\"#FFAF4D\">]</font><font color=\"#FF8C00\"> - <u>the Bestial Huntress Rev106</u>  </font>- Kurisu");
 
         }
         #endregion
