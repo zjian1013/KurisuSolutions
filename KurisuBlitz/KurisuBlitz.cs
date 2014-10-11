@@ -66,9 +66,14 @@ namespace KurisuBlitz
         private void BlitzOnInterrupt(Obj_AI_Base unit, InterruptableSpell spell)
         {
             if (_menu.Item("interrupt").GetValue<bool>())
-            {               
-                if (unit.Distance(_player.Position) < R.Range)
-                    R.Cast();
+            {   if (unit.Distance(_player.Position) < Q.Range)
+                {
+                    Q.Cast(unit);        
+                }else{
+                    if (unit.Distance(_player.Position) < R.Range){
+                        R.Cast();
+                    }
+                }
             }
         }
 
@@ -84,13 +89,6 @@ namespace KurisuBlitz
             Utility.DrawCircle(_target.Position, _target.BoundingRadius, Color.Red, 1, 1);
         }
 
-        private void BlitzOnGapcloser(ActiveGapcloser gapcloser)
-        {
-            if (_menu.Item("gapcloser").GetValue<bool>())
-            {
-                Q.Cast(gapcloser.Sender);
-            }
-        }
 
         private void BlitzOnUpdate(EventArgs args)
         {
