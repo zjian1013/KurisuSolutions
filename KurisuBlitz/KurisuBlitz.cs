@@ -59,7 +59,7 @@ namespace KurisuBlitz
             Interrupter.OnPossibleToInterrupt += BlitzOnInterrupt;
 
             // OnGapCloser
-            AntiGapcloser.OnEnemyGapcloser += BlitzOnGapcloser;
+            //AntiGapcloser.OnEnemyGapcloser += BlitzOnGapcloser;
         }
 
         // not tested
