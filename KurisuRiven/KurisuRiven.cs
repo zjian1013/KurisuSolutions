@@ -3,9 +3,29 @@ using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
 using SharpDX;
+using Color = System.Drawing.Color;
 
 namespace KurisuRiven
 {
+
+                    
+    /*   _____ _             
+     *  | __  |_|_ _ ___ ___ 
+     *  |    -| | | | -_|   |
+     *  |__|__|_|\_/|___|_|_|
+     *  
+     * Revision 095: 14/10/2014
+     * + W should no longer miss
+     * + Windslash tweaks
+     * + Tiamat range required 300 (from 600)
+     * + Lag free drawings and world to screen drawings
+     * + Fixed Runic blade passive not correctly counting
+     * + Q gapclose (not tested x.x)
+     * 
+     * 
+     * Revision 090: 14/10/2014
+     * + Beta Release            
+     */
     internal class KurisuRiven
     {
         private static Menu _config;
@@ -18,33 +38,27 @@ namespace KurisuRiven
         private static Spell E = new Spell(SpellSlot.E, 390f);
         private static Spell R = new Spell(SpellSlot.R, 900f);
 
-
         public KurisuRiven()
         {
-            try
-            {
-                Console.WriteLine("Riven is loaded!");
+                Console.WriteLine("KurisuRiven is loaded!");
                 CustomEvents.Game.OnGameLoad += Game_OnGameLoad;
-            }
-            catch (Exception ex)
-            {
-                //Game.PrintChat(ex.Message);
-                Console.WriteLine(ex.ToString());
-            }
         }
 
-        private static bool combo;
-        private static float range;
-        private static int edelay;
 
+        #region Riven: OnGameLoad
         private void Game_OnGameLoad(EventArgs args)
         {
             try
             {
-                Game.PrintChat("Riven loaded!");
+                Game.PrintChat("Riven: Loaded!");
+                Game.PrintChat("Riven: This is an early test R logic is not perfect yet, if you have any questions/concerns contact me on IRC. ");
+                Game.PrintChat("If you enjoyed this assembly and would like to support me and my future wok I accept donations to my paypal: xrobinsong@gmail.com. ");
+                Game.PrintChat("Happy pwning dem noobs =)");
+
                 Game.OnGameUpdate += Game_OnGameUpdate;
-                Drawing.OnDraw += Game_OnDraw;
                 Game.OnGameProcessPacket += Game_OnGameProcessPacket;
+                Drawing.OnDraw += Game_OnDraw;
+                //Obj_AI_Base.OnPlayAnimation += Obj_AI_Base_OnPlayAnimation;
                 Obj_AI_Base.OnProcessSpellCast += Obj_AI_Base_OnProcessSpellCast;
 
                 _config = new Menu("KurisuRiven", "kriven", true);
@@ -54,7 +68,12 @@ namespace KurisuRiven
                 _config.AddSubMenu(menuOrb);
 
                 Menu menuD = new Menu("Draw Settings: ", "dsettings");
-
+                menuD.AddItem(new MenuItem("drawaa", "Draw aa range")).SetValue(true);
+                menuD.AddItem(new MenuItem("drawp", "Draw passive count")).SetValue(true);
+                menuD.AddItem(new MenuItem("drawjs", "Draw jumpsots")).SetValue(true);
+                menuD.AddItem(new MenuItem("drawt", "Draw target")).SetValue(true);
+                menuD.AddItem(new MenuItem("drawkill", "Draw killable")).SetValue(true);
+                _config.AddSubMenu(menuD);
 
                 Menu menuC = new Menu("Combo Settings: ", "csettings");
                 menuC.AddItem(new MenuItem("usevalor", "Use E logic")).SetValue(true);
@@ -83,21 +102,98 @@ namespace KurisuRiven
             }
         }
 
-        private void Game_OnDraw(EventArgs args)
+        #endregion
+
+        #region Riven : OnPlayAnimation
+        //private void Obj_AI_Base_OnPlayAnimation(GameObject sender, GameObjectPlayAnimationEventArgs args)
+        //{
+            //combo = _config.Item("combokey").GetValue<KeyBind>().Active;
+
+            //if (!sender.IsMe) return;
+
+            //if (args.Animation.Contains("Spell1a"))
+            //{
+            //    if (combo)
+            //    {             
+            //        var movePos = 
+            //    }
+            //}
+        //}
+
+        #endregion
+       
+        #region Riven : OnGameUpdate
+
+        private static bool combo;
+        private static float range;
+        private static int runicBladeCount;
+        private static int triCleaveCount;
+        private void Game_OnGameUpdate(EventArgs args)
         {
-            
+            _tstarget = SimpleTs.GetTarget(R.Range, SimpleTs.DamageType.Physical);
+
+            AutoW();
+            WindSlash();
+
+            if (_config.Item("combokey").GetValue<KeyBind>().Active)
+                CastCombo(_tstarget);
+
+            BuffInstance[] buffs = _player.Buffs;
+            foreach (var b in buffs)
+            {
+                if (b.Name == "rivenpassiveaaboost")
+                    runicBladeCount = b.Count;
+                if (b.Name == "RivenTriCleave")
+                    triCleaveCount = b.Count;
+            }
+
+            if (!_player.HasBuff("rivenpassiveaaboost", true))
+                runicBladeCount = 0;
+            if (!Q.IsReady())
+                triCleaveCount = 0;
+         }
+
+        #endregion
+
+        #region Riven : OnDraw
+        private void Game_OnDraw(EventArgs args)
+        {        
+            if (_config.Item("drawaa").GetValue<bool>() && !_player.IsDead)
+                Utility.DrawCircle(_player.Position, _player.AttackRange, Color.Khaki, 1, 1);
+            if (_config.Item("drawp").GetValue<bool>() && !_player.IsDead)
+            {
+                var wts = Drawing.WorldToScreen(_player.Position);
+                Drawing.DrawText(wts[0]-35, wts[1]+30, Color.Khaki, "Passive: " +runicBladeCount);
+                Drawing.DrawText(wts[0] - 35, wts[1] + 10, Color.Khaki, "Q: " + triCleaveCount);
+            }
+            if (_config.Item("drawt").GetValue<bool>() && _tstarget != null && !_tstarget.IsDead)
+            {
+                Utility.DrawCircle(_tstarget.Position, _tstarget.BoundingRadius, Color.Red, 1, 1);
+            }
+            if (_config.Item("drawkill").GetValue<bool>() && _tstarget != null && !_tstarget.IsDead)
+            {
+                var wts = Drawing.WorldToScreen(_tstarget.Position);
+                if (ComboDamage(_tstarget) > _tstarget.Health)                   
+                    Drawing.DrawText(wts[0], wts[1], Color.Red, "Killable");
+                else
+                {
+                    Drawing.DrawText(wts[0]-15, wts[1]-10, Color.Orange, "Harass target!");
+                }
+            }
         }
+        #endregion
 
-        
+        #region Riven : OnProcessSpell
+        private static int valdelay;
+        private static int tridelay;
 
-        // incomplete
         private void Obj_AI_Base_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
         {
             if (!sender.IsMe) return;
             switch (args.SData.Name)
             {
                 case "RivenTriCleave":
-                    //qdelay = Environment.TickCount;
+                    tridelay = Environment.TickCount;
                     break;
                 case "RivenMartyr":
                     Orbwalking.LastAATick = 0;
@@ -109,26 +205,30 @@ namespace KurisuRiven
                 case "RivenFeint":
                     //edelay = Environment.TickCount;
                     Orbwalking.LastAATick = 0;
-                    if (_tstarget.Distance(_player.Position) <= 600f)
+                    valdelay = Environment.TickCount;
+                    if (_tstarget.Distance(_player.Position) <= 300f)
                     {
                         if (Items.HasItem(3077) && Items.CanUseItem(3077))
                             Items.UseItem(3077);
                         if (Items.HasItem(3074) && Items.CanUseItem(3074))
                             Items.UseItem(3074);
                     }
+                    if (triCleaveCount == 2 && _player.HasBuff("rivenwindslashready", true))
+                    {
+                         PredictionOutput rPos = R.GetPrediction(_tstarget, true);
+                         if (rPos.Hitchance >= HitChance.Medium)
+                             R.Cast(rPos.CastPosition, true);
+                    }
+                    break;
+                case "rivenizunablade":
+                    Q.Cast(_tstarget.Position, true);
                     break;
             }
         }
 
-        private static void UseItems(Obj_AI_Base target)
-        {
-            foreach (var i in _items.Where(i => Items.CanUseItem(i) && Items.HasItem(i)))
-            {
-                if (_player.Distance(target, true) <= Q.Range * Q.Range)
-                    Items.UseItem(i);
-            }
-        }
-
+        #endregion
+     
+        #region Riven : OnProcessPacket
         private void Game_OnGameProcessPacket(GamePacketEventArgs args)
         {
             combo = _config.Item("combokey").GetValue<KeyBind>().Active;
@@ -159,7 +259,7 @@ namespace KurisuRiven
                         UseItems(trueTarget);
                         Q.Cast(trueTarget.Position, true);
                     }
-                }
+                }  
             }
 
             if (packet.Header == 56 && packet.Size() == 9)
@@ -176,35 +276,21 @@ namespace KurisuRiven
 
                     if (_player.Distance(_orbwalker.GetTarget().Position) <= range + 25 && Orbwalking.Move)
                     {
-                        Vector3 triPos = truetarget.Position + _player.Position -
+                        Vector3 movePos = truetarget.Position + _player.Position -
                                          Vector3.Normalize(_player.Position)*
                                          (_player.Distance(truetarget.Position) + 57);
 
                         if (combo && method2)
                         {
-                            Packet.C2S.Move.Encoded(new Packet.C2S.Move.Struct(triPos.X, triPos.Y, 3,
+                            Packet.C2S.Move.Encoded(new Packet.C2S.Move.Struct(movePos.X, movePos.Y, 3,
                                 _orbwalker.GetTarget().NetworkId)).Send();
                             Orbwalking.LastAATick = 0;
                         }
                         else if (combo && method1)
                         {
-                            _player.IssueOrder(GameObjectOrder.MoveTo, new Vector3(triPos.X, triPos.Y, triPos.Z));
+                            _player.IssueOrder(GameObjectOrder.MoveTo, new Vector3(movePos.X, movePos.Y, movePos.Z));
                             Orbwalking.LastAATick = 0;
                         }
-                    }
-                }
-            }
-
-            if (packet.Header == 97) // move
-            {
-                packet.Position = 12;
-                if (packet.ReadInteger() == _player.NetworkId)
-                {
-                    Orbwalking.Move = true;
-                    if (Orbwalking.Move && combo && _orbwalker.GetTarget().IsValid &&
-                        _player.Distance(_orbwalker.GetTarget().Position) < range + 25)
-                    {
-                        // hmmmm
                     }
                 }
             }
@@ -220,27 +306,9 @@ namespace KurisuRiven
             }
         }
 
-        private static int runicBladeCount;
-        private void Game_OnGameUpdate(EventArgs args)
-        {
-            _tstarget = SimpleTs.GetTarget(R.Range, SimpleTs.DamageType.Physical);
+        #endregion
 
-            if (_config.Item("combokey").GetValue<KeyBind>().Active)
-                CastCombo(_tstarget);
-
-            AutoW();
-            WindSlash();
-
-            var buffs = _player.Buffs;
-            foreach (var b in buffs.Where(b => b.Name == "rivenpassiveaaboost"))
-            {
-                runicBladeCount = b.Count;    
-            }
-
-            if (!_player.HasBuff("rivenpassiveaaboost"))
-                runicBladeCount = 0;
-        }
-
+        #region Riven : Combo
         private void CastCombo(Obj_AI_Base target)
         {
             if (target != null && target.IsValid)
@@ -265,15 +333,31 @@ namespace KurisuRiven
                         }
                             
                     }
-                    if (W.IsReady() && (!Items.HasItem(3074) || !Items.CanUseItem(3074)) && ( !Items.HasItem(3077) || !Items.CanUseItem(3077)))
-                        W.Cast();
+                    if (W.IsReady() && (!Items.HasItem(3074) || !Items.CanUseItem(3074)) &&
+                        (!Items.HasItem(3077) || !Items.CanUseItem(3077)))
+                    {
+                        if (target.Distance(_player.Position) < W.Range)
+                            W.Cast();
+                    }
+                       
                     if (Q.IsReady() && !E.IsReady() && _player.Distance(target.Position) > Q.Range)
                     {
-                        if (edelay + 300 < Environment.TickCount)
-                            Q.Cast(target.Position);
+                        if (valdelay + 300 < Environment.TickCount && tridelay + 1.7 < Environment.TickCount)
+                            Q.Cast(target.Position, true);
                     }
 
                 }
+            }
+        }
+
+        #endregion
+
+        private static void UseItems(Obj_AI_Base target)
+        {
+            foreach (var i in _items.Where(i => Items.CanUseItem(i) && Items.HasItem(i)))
+            {
+                if (_player.Distance(target, true) <= Q.Range * Q.Range)
+                    Items.UseItem(i);
             }
         }
 
@@ -297,12 +381,14 @@ namespace KurisuRiven
                             R.Cast(rPos.CastPosition, true);
                         else if (ComboDamage(e) >= e.Health)
                             R.Cast(rPos.CastPosition);
+
                     }
                 }
 
             }
 
         }
+
         private static readonly int[] _items = { 3077, 3074, 3144, 3153, 3142, 3112 };
         private static readonly int[] runicbladePassive =
         {
