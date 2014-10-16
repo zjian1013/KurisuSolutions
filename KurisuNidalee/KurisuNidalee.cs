@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using LeagueSharp;
@@ -12,6 +12,9 @@ namespace KurisuNidalee
      * |   | |_|_| |___| |___ ___ 
      * | | | | | . | .'| | -_| -_|
      * |_|___|_|___|__,|_|___|___|
+     * 
+     * Revision: 106-1 10/16/2014
+     * + Fixed autoheal healing when recalling
      * 
      * Revision: 106 - 11/10/2014
      * + Hitchance now adjusts based on range
@@ -311,7 +314,7 @@ namespace KurisuNidalee
                                 hero.IsValid && hero.IsVisible)) 
             {
 
-                if (Config.Item("heal" + hero.SkinName).GetValue<bool>())
+                if (Config.Item("heal" + hero.SkinName).GetValue<bool>() && !Me.HasBuff("Recall"))
                 {
                     var needed = Config.Item("healpct" +hero.SkinName).GetValue<Slider>().Value;
                     var hp = (int)((hero.Health / hero.MaxHealth) * 100);
