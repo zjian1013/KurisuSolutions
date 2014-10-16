@@ -64,7 +64,7 @@ namespace KurisuRiven
         {
             try
             {
-                Game.PrintChat("Riven: Loaded! Rev:09633");
+                Game.PrintChat("Riven: Loaded! Rev:09634");
                 Game.PrintChat("Riven: This is an early test some stuff may not be perfect yet, if you have any questions/concerns contact me on IRC/Forums. ");
                 Game.OnGameUpdate += Game_OnGameUpdate;
                 Game.OnGameProcessPacket += Game_OnGameProcessPacket;
@@ -168,7 +168,7 @@ namespace KurisuRiven
                 Drawing.DrawText(wts[0] - 35, wts[1] + 30, Color.Khaki, "Passive: " + runicBladeCount);
                 Drawing.DrawText(wts[0] - 35, wts[1] + 10, Color.Khaki, "Q: " + triCleaveCount);
             }
-            if (_config.Item("debugtrue").GetValue<bool>() && !_tstarget.IsDead)
+            if (_config.Item("debugtrue").GetValue<bool>() && !_tstarget.IsDead && _tstarget != null)
             {
                 Utility.DrawCircle(_tstarget.Position, range + 25, Color.Orange, 1, 1);
             }
@@ -221,7 +221,7 @@ namespace KurisuRiven
                 case "RivenMartyr":
                     Orbwalking.LastAATick = 0;
                     UseItems(target);
-                    Utility.DelayAction.Add(Game.Ping + 125, delegate
+                    /*Utility.DelayAction.Add(Game.Ping + 125, delegate
                     {
                         UseItems(target);
                         if (target.Distance(_player.Position) < range + 25 &&
@@ -230,7 +230,7 @@ namespace KurisuRiven
                             if (Q.IsReady() && triCleaveCount < 1)
                                 Q.Cast(target.Position);
                         }
-                    });
+                    }); */
                     break;
                 case "ItemTiamatCleave":
                     Orbwalking.LastAATick = 0;
@@ -413,7 +413,7 @@ namespace KurisuRiven
                 PredictionOutput rPos = R.GetPrediction(e, true);
                 if (rPos.Hitchance >= HitChance.Medium && _player.HasBuff("RivenFengShuiEngine", true))
                 {
-                    if (e.Health < RR + RA)
+                    if (e.Health < RR)
                         R.Cast(rPos.CastPosition, true);
                     else if (e.Health < RR + RA * 2 + RQ * 1 && _config.Item("wslash").GetValue<StringList>().SelectedIndex == 1)
                         R.Cast(rPos.CastPosition);
