@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
@@ -366,7 +366,7 @@ namespace KurisuRiven
                     {
                         if (E.IsReady() && _config.Item("usevalor").GetValue<bool>())
                             E.Cast(target.Position);
-                        if (E.IsReady() &&_config.Item("waitvalor").GetValue<bool>()))
+                        if (E.IsReady() &&_config.Item("waitvalor").GetValue<bool>())
                             CheckR(target);
                     }
 
