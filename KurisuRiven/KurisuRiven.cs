@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
@@ -254,9 +254,18 @@ namespace KurisuRiven
                 case "RivenFengShuiEngine":
                     if (target.Distance(_player.Position) < W.Range)
                     {
-                        Utility.DelayAction.Add(Game.Ping + 75, () => W.Cast());
+                        if (W.IsReady())
+                            Utility.DelayAction.Add(Game.Ping + 75, () => W.Cast());
                     }
                     break;
+                case "rivenizunablade":
+                    if (target.Distance(_player.Position, true) < Q.Range*Q.Range)
+                    {
+                        if (Q.IsReady())
+                            Q.Cast(target.Position);
+                    }
+                    break;
+
             }
 
         }
@@ -346,38 +355,45 @@ namespace KurisuRiven
         #region Riven : Combo
         private void CastCombo(Obj_AI_Base target)
         {
-            if (target != null && target.IsValid && _player.CanCast)
+            if (target != null && target.IsValid)
             {
-                if (_player.Distance(target.Position) > range + 25 ||
-                    _player.Health * _player.MaxHealth / 100 <= 45)
+                try
                 {
-                    if (E.IsReady() && _config.Item("usevalor").GetValue<bool>())
-                        E.Cast(target.Position);
-                    if (_config.Item("waitvalor").GetValue<bool>())
-                        CheckR(target);
-                }
 
-                if (!_config.Item("waitvalor").GetValue<bool>())
-                    CheckR(target);
 
-                if (W.IsReady() && (!Items.HasItem(3074) || !Items.CanUseItem(3074)) &&
-                    (!Items.HasItem(3077) || !Items.CanUseItem(3077)))
-                {
-                    if (target.Distance(_player.Position) < W.Range)
-                        W.Cast();
-                }
-
-                if (Q.IsReady() && !E.IsReady() && _player.Distance(target.Position) > Q.Range)
-                {
-                    if (valdelay + Game.Ping + 150 < Environment.TickCount && tridelay + Game.Ping + 100 < Environment.TickCount)
+                    if (_player.Distance(target.Position) > range + 25 ||
+                        _player.Health*_player.MaxHealth/100 <= 45)
                     {
-                        if (triCleaveCount < _config.Item("qsett").GetValue<Slider>().Value)
-                            Q.Cast(target.Position, true);
+                        if (E.IsReady() && _config.Item("usevalor").GetValue<bool>())
+                            E.Cast(target.Position);
+                        if (E.IsReady() &&_config.Item("waitvalor").GetValue<bool>()))
+                            CheckR(target);
+                    }
+
+                    if (!_config.Item("waitvalor").GetValue<bool>())
+                        CheckR(target);
+
+                    if (W.IsReady() && (!Items.HasItem(3074) || !Items.CanUseItem(3074)) &&
+                        (!Items.HasItem(3077) || !Items.CanUseItem(3077)))
+                    {
+                        if (target.Distance(_player.Position) < W.Range)
+                            W.Cast();
+                    }
+
+                    if (Q.IsReady() && !E.IsReady() && _player.Distance(target.Position) > Q.Range)
+                    {
+                        if (valdelay + Game.Ping + 150 < Environment.TickCount &&
+                            tridelay + Game.Ping + 100 < Environment.TickCount)
+                        {
+                            if (triCleaveCount < _config.Item("qsett").GetValue<Slider>().Value)
+                                Q.Cast(target.Position, true);
+                        }
                     }
                 }
-
-
-
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
             }
         }
 
