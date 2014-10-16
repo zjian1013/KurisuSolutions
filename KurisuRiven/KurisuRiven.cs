@@ -12,7 +12,10 @@ namespace KurisuRiven
      *  |    -| | | | -_|   |
      *  |__|__|_|\_/|___|_|_|
      *  
-     * Rivision 0963: 15/10/20144
+     * Revision 09633: 16/10/2014
+     * + E -> R Fix
+     * 
+     * Revision 0963: 15/10/20144
      * + Added Q limit for gapclose
      * + Windslash rework
      * + Delay management (hopefully this fixes some connection issues)
@@ -34,9 +37,8 @@ namespace KurisuRiven
      * + Fixed Runic blade passive not correctly counting
      * + Q gapclose (not tested x.x)
      * 
-     * 
      * Revision 090: 14/10/2014
-     * + Beta Release            
+     * + Test Release            
      */
     internal class KurisuRiven
     {
@@ -62,7 +64,7 @@ namespace KurisuRiven
         {
             try
             {
-                Game.PrintChat("Riven: Loaded! Rev.096");
+                Game.PrintChat("Riven: Loaded! Rev:09633");
                 Game.PrintChat("Riven: This is an early test some stuff may not be perfect yet, if you have any questions/concerns contact me on IRC/Forums. ");
                 Game.OnGameUpdate += Game_OnGameUpdate;
                 Game.OnGameProcessPacket += Game_OnGameProcessPacket;
@@ -92,6 +94,7 @@ namespace KurisuRiven
                 Menu menuC = new Menu("Combo Settings: ", "csettings");
                 menuC.AddItem(new MenuItem("usevalor", "Use E logic")).SetValue(true);
                 menuC.AddItem(new MenuItem("useblade", "Use R logic")).SetValue(true);
+                menuC.AddItem(new MenuItem("waitvalor", "Wait for E (Ult)")).SetValue(true);
                 menuC.AddItem(new MenuItem("bladewhen", "Use R when: ")).SetValue(new StringList(new[] { "Easykill", "Normalkill", "Hardkill" }, 2));
                 menuC.AddItem(new MenuItem("wslash", "Windslash: ")).SetValue(new StringList(new[] { "Only Kill", "Max Damage" }, 0));
                 menuC.AddItem(new MenuItem("blockanim", "Block Q animimation (fun)")).SetValue(false);
@@ -350,9 +353,12 @@ namespace KurisuRiven
                 {
                     if (E.IsReady() && _config.Item("usevalor").GetValue<bool>())
                         E.Cast(target.Position);
+                    if (_config.Item("waitvalor").GetValue<bool>())
+                        CheckR(target);
                 }
 
-                CheckR(target);
+                if (!_config.Item("waitvalor").GetValue<bool>())
+                    CheckR(target);
 
                 if (W.IsReady() && (!Items.HasItem(3074) || !Items.CanUseItem(3074)) &&
                     (!Items.HasItem(3077) || !Items.CanUseItem(3077)))
