@@ -12,6 +12,14 @@ namespace KurisuRiven
      *  |    -| | | | -_|   |
      *  |__|__|_|\_/|___|_|_|
      *  
+     * Revision 097: 16/10/2014
+     * + Should be more stable
+     * + Started working on 2nd combo not finished
+     * 
+     * Revision 0964: 16/10/2014
+     * + Fixed menu glitch
+     * + Trying to fix atr issues (why so many commits)
+     * 
      * Revision 09633: 16/10/2014
      * + E -> R Fix
      * 
@@ -64,7 +72,7 @@ namespace KurisuRiven
         {
             try
             {
-                Game.PrintChat("Riven: Loaded! Rev:09634");
+                Game.PrintChat("Riven: Loaded! Revision: 097");
                 Game.PrintChat("Riven: This is an early test some stuff may not be perfect yet, if you have any questions/concerns contact me on IRC/Forums. ");
                 Game.OnGameUpdate += Game_OnGameUpdate;
                 Game.OnGameProcessPacket += Game_OnGameProcessPacket;
@@ -97,13 +105,16 @@ namespace KurisuRiven
                 menuC.AddItem(new MenuItem("waitvalor", "Wait for E (Ult)")).SetValue(true);
                 menuC.AddItem(new MenuItem("bladewhen", "Use R when: ")).SetValue(new StringList(new[] { "Easykill", "Normalkill", "Hardkill" }, 2));
                 menuC.AddItem(new MenuItem("wslash", "Windslash: ")).SetValue(new StringList(new[] { "Only Kill", "Max Damage" }, 0));
-                menuC.AddItem(new MenuItem("blockanim", "Block Q animimation (fun)")).SetValue(false);
+                menuC.AddItem(new MenuItem("qsett", "Q gapclose limit")).SetValue(new Slider(1, 1, 3));
                 menuC.AddItem(new MenuItem("cancelanim", "Q Cancel type: ")).SetValue(new StringList(new[] { "Move", "Packet" }));
+                menuC.AddItem(new MenuItem("blockanim", "Block Q animimation (fun)")).SetValue(false);
                 _config.AddSubMenu(menuC);
 
-                Menu menuO = new Menu("Other Settings: ", "osettings");
-                menuO.AddItem(new MenuItem("autow", "Auto W min targets")).SetValue(new Slider(3, 1, 5));
-                menuO.AddItem(new MenuItem("qsett", "Q gapclose limit")).SetValue(new Slider(1, 1, 3));
+                Menu menuO = new Menu("Extra Settings: ", "osettings");
+                menuO.AddItem(new MenuItem("useautow", "Enable auto W")).SetValue(true);
+                menuO.AddItem(new MenuItem("autow", "Auto W min targets")).SetValue(new Slider(3, 1, 5));              
+                menuO.AddItem(new MenuItem("useautows", "Enable auto Windslash")).SetValue(true);
+                menuO.AddItem(new MenuItem("autows", "Windslash if damage dealt %")).SetValue(new Slider(65, 1));
                 _config.AddSubMenu(menuO);
 
 
@@ -168,39 +179,52 @@ namespace KurisuRiven
                 Drawing.DrawText(wts[0] - 35, wts[1] + 30, Color.Khaki, "Passive: " + runicBladeCount);
                 Drawing.DrawText(wts[0] - 35, wts[1] + 10, Color.Khaki, "Q: " + triCleaveCount);
             }
-            if (_config.Item("debugtrue").GetValue<bool>() && !_tstarget.IsDead && _tstarget != null)
+            if (_config.Item("debugtrue").GetValue<bool>())
             {
-                Utility.DrawCircle(_tstarget.Position, range + 25, Color.Orange, 1, 1);
-            }
-
-            if (_config.Item("drawt").GetValue<bool>() && _tstarget != null && !_tstarget.IsDead)
-            {
-                Utility.DrawCircle(_tstarget.Position, _tstarget.BoundingRadius, Color.Red, 1, 1);
-                Utility.DrawCircle(_tstarget.Position, _player.AttackRange + E.Range, Color.Red, 1, 1);
-            }
-            if (_config.Item("drawkill").GetValue<bool>() && _tstarget != null && !_tstarget.IsDead)
-            {
-                var ts = _tstarget;
-                var wts = Drawing.WorldToScreen(_tstarget.Position);
-
-                CheckDamage(ts);
-                if (ts.Health < (float)(RA + RQ + RQ * 2 + RW + RI + RItems))
-                    Drawing.DrawText(wts[0] - 20, wts[1] + 40, Color.OrangeRed, "Kill!");
-                else if (ts.Health < (float)(RA * 2 + RQ * 2 + RW + RItems))
-                    Drawing.DrawText(wts[0] - 40, wts[1] + 40, Color.OrangeRed, "Easy Kill!");
-                else if (ts.Health < (float)(RA * 2 + RQ * 2 + RW + RI + RItems))
-                    Drawing.DrawText(wts[0] - 40, wts[1] + 40, Color.OrangeRed, "FullCombo Kill!");
-                else if (ts.Health < (float)(RA * 3 + RQ * 3 + RW + RI + RItems))
-                    Drawing.DrawText(wts[0] - 40, wts[1] + 40, Color.OrangeRed, "FullCombo Hard Kill!");
-                else
+                if (_tstarget != null && !_tstarget.IsCharging && !_player.IsDead)
                 {
-                    Drawing.DrawText(wts[0] - 40, wts[1] + 40, Color.OrangeRed, "Cant Kill!");
+                    Utility.DrawCircle(_tstarget.Position, range + 25, Color.Orange, 1, 1);
                 }
             }
-            if (_config.Item("debugdmg").GetValue<bool>() && _tstarget != null && !_tstarget.IsDead && !_player.IsDead)
+
+            if (_config.Item("drawt").GetValue<bool>())
             {
-                var wts = Drawing.WorldToScreen(_tstarget.Position);
-                Drawing.DrawText(wts[0] - 75, wts[1] + 60, Color.Orange, "Combo Damage: " + (float)(RA * 3 + RQ * 3 + RW + RI + RItems));
+                if (_tstarget != null && !_tstarget.IsDead && !_player.IsDead)
+                {
+                    Utility.DrawCircle(_tstarget.Position, _tstarget.BoundingRadius, Color.Red, 1, 1);
+                    Utility.DrawCircle(_tstarget.Position, _player.AttackRange + E.Range, Color.Red, 1, 1);
+                }
+            }
+            if (_config.Item("drawkill").GetValue<bool>())
+            {
+                if (_tstarget != null && !_tstarget.IsDead && !_player.IsDead)
+                {
+                    var ts = _tstarget;
+                    var wts = Drawing.WorldToScreen(_tstarget.Position);
+
+                    CheckDamage(ts);
+                    if (ts.Health < (float) (RA + RQ + RQ*2 + RW + RI + RItems))
+                        Drawing.DrawText(wts[0] - 20, wts[1] + 40, Color.OrangeRed, "Kill!");
+                    else if (ts.Health < (float) (RA*2 + RQ*2 + RW + RItems))
+                        Drawing.DrawText(wts[0] - 40, wts[1] + 40, Color.OrangeRed, "Easy Kill!");
+                    else if (ts.Health < (float) (RA*2 + RQ*2 + RW + RI + RItems))
+                        Drawing.DrawText(wts[0] - 40, wts[1] + 40, Color.OrangeRed, "FullCombo Kill!");
+                    else if (ts.Health < (float) (RA*3 + RQ*3 + RW + RI + RItems))
+                        Drawing.DrawText(wts[0] - 40, wts[1] + 40, Color.OrangeRed, "FullCombo Hard Kill!");
+                    else
+                    {
+                        Drawing.DrawText(wts[0] - 40, wts[1] + 40, Color.OrangeRed, "Cant Kill!");
+                    }
+                }
+            }
+            if (_config.Item("debugdmg").GetValue<bool>())
+            {
+                if (_tstarget != null && !_tstarget.IsDead && !_player.IsDead)
+                {
+                    var wts = Drawing.WorldToScreen(_tstarget.Position);
+                    Drawing.DrawText(wts[0] - 75, wts[1] + 60, Color.Orange,
+                        "Combo Damage: " + (float) (RA*3 + RQ*3 + RW + RI + RItems));
+                }
             }
         }
         #endregion
@@ -357,46 +381,60 @@ namespace KurisuRiven
         {
             if (target != null && target.IsValid)
             {
-                try
+                if (_player.Distance(target.Position) > range + 25 ||
+                    _player.Health*_player.MaxHealth/100 <= 45)
                 {
-
-
-                    if (_player.Distance(target.Position) > range + 25 ||
-                        _player.Health*_player.MaxHealth/100 <= 45)
-                    {
-                        if (E.IsReady() && _config.Item("usevalor").GetValue<bool>())
-                            E.Cast(target.Position);
-                        if (E.IsReady() &&_config.Item("waitvalor").GetValue<bool>())
-                            CheckR(target);
-                    }
-
-                    if (!_config.Item("waitvalor").GetValue<bool>())
+                    if (E.IsReady() && _config.Item("usevalor").GetValue<bool>())
+                        E.Cast(target.Position);
+                    if (E.IsReady() &&_config.Item("waitvalor").GetValue<bool>())
                         CheckR(target);
-
-                    if (W.IsReady() && (!Items.HasItem(3074) || !Items.CanUseItem(3074)) &&
-                        (!Items.HasItem(3077) || !Items.CanUseItem(3077)))
-                    {
-                        if (target.Distance(_player.Position) < W.Range)
-                            W.Cast();
-                    }
-
-                    if (Q.IsReady() && !E.IsReady() && _player.Distance(target.Position) > Q.Range)
-                    {
-                        if (valdelay + Game.Ping + 150 < Environment.TickCount &&
-                            tridelay + Game.Ping + 100 < Environment.TickCount)
-                        {
-                            if (triCleaveCount < _config.Item("qsett").GetValue<Slider>().Value)
-                                Q.Cast(target.Position, true);
-                        }
-                    }
                 }
-                catch (Exception e)
+
+                if (!_config.Item("waitvalor").GetValue<bool>())
+                    CheckR(target);
+
+                if (W.IsReady() && (!Items.HasItem(3074) || !Items.CanUseItem(3074)) &&
+                    (!Items.HasItem(3077) || !Items.CanUseItem(3077)))
                 {
-                    Console.WriteLine(e);
+                    if (target.Distance(_player.Position) < W.Range)
+                        W.Cast();
                 }
+
+                if (Q.IsReady() && !E.IsReady() && _player.Distance(target.Position) > Q.Range)
+                {
+                    if (valdelay + Game.Ping + 150 < Environment.TickCount &&
+                        tridelay + Game.Ping + 100 < Environment.TickCount)
+                    {
+                        if (triCleaveCount < _config.Item("qsett").GetValue<Slider>().Value)
+                            Q.Cast(target.Position, true);
+                    }
+                }                
             }
         }
 
+        #endregion
+
+        #region Riven : Combo2
+
+        // not done
+        private void CastCombo2(Obj_AI_Base target)
+        {
+            if (_player.Distance(target.Position) > range + 25)
+            {
+                /*var flashy = _player.GetSpellSlot("summonerflash");
+                    if (_player.SummonerSpellbook.CanUseSpell(flashy) == SpellState.Ready)
+                        _player.SummonerSpellbook.CastSpell(flashy, target.Position); */
+            }
+
+            else if (W.IsReady() && target.Distance(_player.Position) < W.Range)
+                CheckR(target);
+                
+            if (R.IsReady() && _player.HasBuff("RivenFengShuiEngine", true)) // utli on
+            {
+                if (triCleaveCount == 2)
+                    E.Cast(target.Position);
+            }
+        }
         #endregion
 
         #region Riven : WindSlash
@@ -410,14 +448,21 @@ namespace KurisuRiven
                                 e.Team != _player.Team && e.IsValid && !e.IsDead && !e.IsInvulnerable &&
                                 e.Distance(_player.Position) < R.Range))
             {
+                CheckDamage(e);
                 PredictionOutput rPos = R.GetPrediction(e, true);
-                if (rPos.Hitchance >= HitChance.Medium && _player.HasBuff("RivenFengShuiEngine", true))
+                if (R.IsReady() && rPos.Hitchance >= HitChance.Medium && _player.HasBuff("RivenFengShuiEngine", true))
                 {
+                    int wsneed = _config.Item("autows").GetValue<Slider>().Value;
+                    int wslash = _config.Item("wslash").GetValue<StringList>().SelectedIndex;
                     if (e.Health < RR)
                         R.Cast(rPos.CastPosition, true);
-                    else if (e.Health < RR + RA * 2 + RQ * 1 && _config.Item("wslash").GetValue<StringList>().SelectedIndex == 1)
+                    else if (e.Health < RR + RA * 2 + RQ * 1 && wslash == 1)
                         R.Cast(rPos.CastPosition);
-
+                    else if (RR/e.MaxHealth*100 > e.Health/e.MaxHealth*wsneed && wslash == 1)
+                    {
+                        if (_config.Item("useautows").GetValue<bool>())
+                            R.Cast(rPos.CastPosition);
+                    }                       
                 }
             }
 
@@ -531,7 +576,13 @@ namespace KurisuRiven
                             en.Team != _player.Team && en.IsValid && !en.IsDead &&
                             en.Distance(_player.Position) < W.Range);
             if (getenemies.Count() >= _config.Item("autow").GetValue<Slider>().Value)
-                W.Cast();
+            {
+                if (W.IsReady() && _config.Item("useautow").GetValue<bool>())
+                {
+                    W.Cast();
+                }
+            }
+                
         }
     }
 }
