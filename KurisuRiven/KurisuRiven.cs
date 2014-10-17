@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
@@ -225,7 +225,6 @@ namespace KurisuRiven
                     {
                         Drawing.DrawText(wts[0] - 40, wts[1] + 40, Color.OrangeRed, "Cant Kill!");
                     }
-
                 }
             }
             if (_config.Item("debugdmg").GetValue<bool>())
@@ -294,7 +293,7 @@ namespace KurisuRiven
                     break;
                 case "RivenFengShuiEngine":
                     UseItems(target);
-                    if (W.IsReady())
+                    if (W.IsReady() && combo)
                         Utility.DelayAction.Add(Game.Ping + 75, () => W.Cast());
                     break;
                 case "rivenizunablade":
