@@ -225,7 +225,7 @@ namespace KurisuRiven
                     {
                         Drawing.DrawText(wts[0] - 40, wts[1] + 40, Color.OrangeRed, "Cant Kill!");
                     }
-                    Game.PrintChat((UA*4).ToString());
+
                 }
             }
             if (_config.Item("debugdmg").GetValue<bool>())
