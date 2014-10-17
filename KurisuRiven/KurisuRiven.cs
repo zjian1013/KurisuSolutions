@@ -282,11 +282,11 @@ namespace KurisuRiven
                                 Items.UseItem(3074);
                         }
                     });
-                    if (R.IsReady() && ultiOn && wslash == 1)
+                    if (R.IsReady() && ultiOn && wslash == 1 && _config.Item("useblade").GetValue<bool>())
                     {
-                        if (triCleaveCount == 2 && target.Health < (float)(UA*2 + UW + RR + RI + RItems))
+                        if (triCleaveCount == 2 && target.Health < (float)(UA*2 + UQ*2 + UW + RR + RI + RItems))
                             R.Cast(target.Position, true);
-                        if (triCleaveCount <= 1 && target.Health < (float) (RA + RQ + RW + RI + RItems))
+                        if (triCleaveCount <= 1 && target.Health < (float) (RA*2 + RQ*2 + RW + RI + RItems))
                             R.Cast(target.Position, true);
                     }
                         
@@ -435,6 +435,7 @@ namespace KurisuRiven
         #region Riven : WindSlash
         private static void WindSlash()
         {
+            if (!_config.Item("useblade").GetValue<bool>()) return;
             foreach (
                 var e in
                     ObjectManager.Get<Obj_AI_Hero>()
@@ -445,23 +446,24 @@ namespace KurisuRiven
             {
                 CheckDamage(e);
                 PredictionOutput rPos = R.GetPrediction(e, true);
-                if (R.IsReady() && rPos.Hitchance >= HitChance.Medium && _player.HasBuff("RivenFengShuiEngine", true))
+                if (R.IsReady() && rPos.Hitchance >= HitChance.Medium &&
+                    _player.HasBuff("RivenFengShuiEngine", true)) 
                 {
                     int wsneed = _config.Item("autows").GetValue<Slider>().Value;
                     int wslash = _config.Item("wslash").GetValue<StringList>().SelectedIndex;
                     if (e.Health < RR)
                         R.Cast(rPos.CastPosition, true);
-                    else if (e.Health < RR + RA * 2 + RQ * 1 && wslash == 1)
+                    else if (e.Health < RR + RA*2 + RQ*1 && wslash == 1)
                         R.Cast(rPos.CastPosition);
                     else if (RR/e.MaxHealth*100 > e.Health/e.MaxHealth*wsneed && wslash == 1)
                     {
                         if (_config.Item("useautows").GetValue<bool>())
                             R.Cast(rPos.CastPosition);
-                    }                       
+                    }
                 }
             }
-
         }
+
         #endregion
 
         private static readonly int[] _items = { 3144, 3153, 3142, 3112 };
