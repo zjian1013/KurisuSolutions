@@ -12,6 +12,11 @@ namespace KurisuRiven
      *  |    -| | | | -_|   |
      *  |__|__|_|\_/|___|_|_|
      *  
+     * Revision 0981: 18/10/2014
+     * + Fixed major late game error when arround post level 17/18
+     *   where the combo/assembly would just spaz out do nothing
+     * + No longer uses items in jungle
+     *   
      * Reision 098: 18/10/2014
      * + Does not Q gapclose pre level 3 for technical reasons
      * + Windslash if Enemies hit >= setting (3)
@@ -92,12 +97,11 @@ namespace KurisuRiven
         {
             try
             {
-                Game.PrintChat("Riven: Loaded! Revision: 098");
+                Game.PrintChat("Riven: Loaded! Revision: 0981");
                 Game.PrintChat("Riven: This is an early test some stuff may not be perfect yet, if you have any questions/concerns contact me on IRC/Forums. ");
                 Game.OnGameUpdate += Game_OnGameUpdate;
                 Game.OnGameProcessPacket += Game_OnGameProcessPacket;
                 Drawing.OnDraw += Game_OnDraw;
-                //Obj_AI_Base.OnPlayAnimation += Obj_AI_Base_OnPlayAnimation;
                 Obj_AI_Base.OnProcessSpellCast += Obj_AI_Base_OnProcessSpellCast;
 
                 _config = new Menu("KurisuRiven", "kriven", true);
@@ -136,7 +140,7 @@ namespace KurisuRiven
                 menuO.AddItem(new MenuItem("useautows", "Enable auto Windslash")).SetValue(true);
                 menuO.AddItem(new MenuItem("autows", "Windslash if damage dealt %")).SetValue(new Slider(65, 1));
                 menuO.AddItem(new MenuItem("autows2", "Windslash if targets hit >=")).SetValue(new Slider(3, 2, 5));
-                menuO.AddItem(new MenuItem("qdelay", "Advance Q Delay")).SetValue(new Slider(80, 0, 150));
+                menuO.AddItem(new MenuItem("qdelay", "Q Delay Mode ammount")).SetValue(new Slider(50, 0, 250));
                 menuO.AddItem(new MenuItem("blockanim", "Block Q animimation (fun)")).SetValue(false);
                 _config.AddSubMenu(menuO);
 
@@ -159,22 +163,34 @@ namespace KurisuRiven
 
         private static bool combo;
         private static bool clear;
-        private static float range;
+        private static float truerange;
         private static int runicbladecount;
         private static int tricleavecount;
         private void Game_OnGameUpdate(EventArgs args)
         {
-            _target = SimpleTs.GetTarget(R.Range, SimpleTs.DamageType.Physical);
-
-            if (_config.Item("combokey").GetValue<KeyBind>().Active)
+            try
             {
-                if (!_player.IsStunned)
-                    CastCombo(_target);
-            }
+                _target = SimpleTs.GetTarget(R.Range, SimpleTs.DamageType.Physical);
 
-            AutoW();
-            WindSlash();
-            RefreshBuffs();                      
+                if (_config.Item("combokey").GetValue<KeyBind>().Active)
+                {
+                    if (!_player.IsStunned)
+                        CastCombo(_target);
+                }
+
+                if (!_player.IsStunned)
+                {
+                    AutoW();
+                    WindSlash();                   
+                }
+
+                RefreshBuffs();
+            }
+            catch (Exception ex)
+            {
+                //Game.PrintChat(ex.Message);
+                Console.WriteLine(ex);
+            }
         }
 
         #endregion
@@ -192,9 +208,9 @@ namespace KurisuRiven
             }
             if (_config.Item("debugtrue").GetValue<bool>())
             {
-                if (_target != null && !_target.IsCharging && !_player.IsDead)
+                if (_target != null && !_target.IsDead && !_player.IsDead)
                 {
-                    Utility.DrawCircle(_target.Position, range + 25, Color.Orange, 1, 1);
+                    Utility.DrawCircle(_target.Position, truerange + 25, Color.Orange, 1, 1);
                 }
             }
 
@@ -219,9 +235,9 @@ namespace KurisuRiven
                         Drawing.DrawText(wts[0] - 40, wts[1] + 40, Color.OrangeRed, "Easy Kill!");
                     else if ((float)(UA * 2 + UQ * 2 + UW + RI + RR + RItems) > ts.Health)
                         Drawing.DrawText(wts[0] - 40, wts[1] + 40, Color.OrangeRed, "Full Combo Kill!");
-                    else if ((float)(UA * 3 + UQ * 3 + UW + RR + RI + RItems) > ts.Health)
+                    else if ((float)(UA * 6 + UQ * 3 + UW + RR + RI + RItems) > ts.Health)
                         Drawing.DrawText(wts[0] - 40, wts[1] + 40, Color.OrangeRed, "Full Combo Hard Kill!");
-                    else if ((float)(UA * 6 + UQ * 3 + UW + RR + RI + RItems) < ts.Health)
+                    else 
                     {
                         Drawing.DrawText(wts[0] - 40, wts[1] + 40, Color.OrangeRed, "Cant Kill!");
                     }
@@ -314,7 +330,7 @@ namespace KurisuRiven
             clear = _config.Item("clearkey").GetValue<KeyBind>().Active;
             var delay = _config.Item("qdelay").GetValue<Slider>().Value;
 
-            range = _player.AttackRange + _player.Distance(_player.BBox.Minimum) + 1;
+            truerange = _player.AttackRange + _player.Distance(_player.BBox.Minimum) + 1;
 
             GamePacket packet = new GamePacket(args.PacketData);
 
@@ -355,7 +371,6 @@ namespace KurisuRiven
                 if (sourceId == _player.NetworkId && (dmgType == 4 || dmgType == 3) &&
                     JungleMinions.Any(name => trueTarget.Name.StartsWith(name)))
                 {
-                    UseItems(trueTarget);
                     Q.Cast(trueTarget.Position, true);
                 }
 
@@ -371,7 +386,7 @@ namespace KurisuRiven
                     Obj_AI_Hero truetarget = ObjectManager.GetUnitByNetworkId<Obj_AI_Hero>(targetId);
 
                     int method = _config.Item("cancelanim").GetValue<StringList>().SelectedIndex;
-                    if (_player.Distance(_orbwalker.GetTarget().Position) <= range + 25 && Orbwalking.Move)
+                    if (_player.Distance(_orbwalker.GetTarget().Position) <= truerange + 25 && Orbwalking.Move)
                     {
                         Vector3 movePos = truetarget.Position + _player.Position -
                                          Vector3.Normalize(_player.Position) *
@@ -407,7 +422,7 @@ namespace KurisuRiven
                     Obj_AI_Minion truetarget = ObjectManager.GetUnitByNetworkId<Obj_AI_Minion>(targetId);
 
                     int method = _config.Item("cancelanim").GetValue<StringList>().SelectedIndex;                 
-                    if (_player.Distance(_orbwalker.GetTarget().Position) <= range + 25 && Orbwalking.Move)
+                    if (_player.Distance(_orbwalker.GetTarget().Position) <= truerange + 25 && Orbwalking.Move)
                     {
                         Vector3 movePos = truetarget.Position + _player.Position -
                                          Vector3.Normalize(_player.Position) *
@@ -439,9 +454,9 @@ namespace KurisuRiven
         #region Riven : Combo
         private void CastCombo(Obj_AI_Base target)
         {
-            if (target != null && target.IsValid)
+            if (target != null && target.IsValid && target.IsVisible)
             {
-                if (_player.Distance(target.Position) > range + 25 ||
+                if (_player.Distance(target.Position) > truerange + 25 ||
                     _player.Health * _player.MaxHealth / 100 <= 45 /*&& !R.IsReady()*/)
                 {
                     if (E.IsReady() && _config.Item("usevalor").GetValue<bool>())
@@ -450,17 +465,19 @@ namespace KurisuRiven
                         CheckR(target);
                 }
 
-                else if (W.IsReady() && target.Distance(_player.Position) < W.Range)
+                else if (W.IsReady() && Q.IsReady() && target.Distance(_player.Position) < W.Range)
                 {
                     CheckR(target);
-                    if (R.IsReady() && _player.HasBuff("RivenFengShuiEngine", true)) // utli on
-                    {
-                        if (tricleavecount == 2)
-                            E.Cast(target.Position);
-                    }
+                    W.Cast();
                 }
 
-                if (W.IsReady() && (!Items.HasItem(3074) || !Items.CanUseItem(3074)) &&
+                if (R.IsReady() && E.IsReady() && _player.HasBuff("RivenFengShuiEngine", true)) // utli on
+                {
+                    if (tricleavecount == 2)
+                        E.Cast(target.Position);
+                }
+
+                if (W.IsReady() && !E.IsReady() && (!Items.HasItem(3074) || !Items.CanUseItem(3074)) &&
                     (!Items.HasItem(3077) || !Items.CanUseItem(3077)))
                 {
                     if (target.Distance(_player.Position) < W.Range)
@@ -527,7 +544,7 @@ namespace KurisuRiven
         private static readonly int[] _items = { 3144, 3153, 3142, 3112 };
         private static readonly int[] runicbladePassive =
         {
-            20, 20, 25, 25, 25, 30, 30, 30, 35, 35, 35, 40, 40, 40, 45, 45, 45, 50
+            20, 20, 25, 25, 25, 30, 30, 30, 35, 35, 35, 40, 40, 40, 45, 45, 45, 50, 50
         };
 
         private static readonly string[] JungleMinions =
@@ -631,7 +648,7 @@ namespace KurisuRiven
                     switch (index.SelectedIndex)
                     {
                         case 2:
-                            if ((float) (UA*3 + UQ*3 + UW + RR + RI + RItems) > target.Health)
+                            if ((float) (UA*6 + UQ*3 + UW + RR + RI + RItems) > target.Health)
                             {
                                 R.Cast();
                                 if (_config.Item("useignote").GetValue<bool>())
