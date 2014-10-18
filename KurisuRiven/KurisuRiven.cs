@@ -174,7 +174,7 @@ namespace KurisuRiven
 
                 if (_config.Item("combokey").GetValue<KeyBind>().Active)
                 {
-                    if (!_player.IsStunned || !_player.IsRooted || _player.IsImmovable)
+                    if (!_player.IsStunned || !_player.IsRooted || !_player.IsImmovable)
                         CastCombo(_target);
                 }
 
