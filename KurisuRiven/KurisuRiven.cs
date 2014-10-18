@@ -97,7 +97,7 @@ namespace KurisuRiven
         {
             try
             {
-                Game.PrintChat("Riven: Loaded! Revision: 0981");
+                Game.PrintChat("Riven: Loaded! Revision: 0982");
                 Game.PrintChat("Riven: This is an early test some stuff may not be perfect yet, if you have any questions/concerns contact me on IRC/Forums. ");
                 Game.OnGameUpdate += Game_OnGameUpdate;
                 Game.OnGameProcessPacket += Game_OnGameProcessPacket;
@@ -174,7 +174,7 @@ namespace KurisuRiven
 
                 if (_config.Item("combokey").GetValue<KeyBind>().Active)
                 {
-                    if (!_player.IsStunned)
+                    if (!_player.IsStunned || !_player.IsRooted || _player.IsImmovable)
                         CastCombo(_target);
                 }
 
@@ -265,6 +265,7 @@ namespace KurisuRiven
 
         private void Obj_AI_Base_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
         {
+            Console.WriteLine(RR);
             var target = _target;
             var ultiOn = _player.HasBuff("RivenFengShuiEngine", true);
             var wslash = _config.Item("wslash").GetValue<StringList>().SelectedIndex;
@@ -281,16 +282,15 @@ namespace KurisuRiven
                 case "ItemTiamatCleave":
                     Orbwalking.LastAATick = 0;
                     Utility.DelayAction.Add(Game.Ping + 75, () => UseItems(target));
-                    if (W.IsReady() && combo)
+                    if (W.IsReady() && combo && _player.Distance(target.Position) < W.Range)
                         Utility.DelayAction.Add(Game.Ping + 75, () => W.Cast());
                     break;
-                case "RivenFeint":  
-                    Orbwalking.LastAATick = 0;
+                case "RivenFeint":                     
                     valdelay = Environment.TickCount;
                     if (combo) Utility.DelayAction.Add(Game.Ping + 50, () => UseItems(target));
                     Utility.DelayAction.Add(Game.Ping + 125, delegate
                     {
-                        if (target.Distance(_player.Position) <= _player.AttackRange + 25 && combo)
+                        if (combo && target.Distance(_player.Position) < W.Range)
                         {
                             if (Items.HasItem(3077) && Items.CanUseItem(3077))
                                 Items.UseItem(3077);
@@ -298,11 +298,12 @@ namespace KurisuRiven
                                 Items.UseItem(3074);
                         }
                     });
+                    Orbwalking.LastAATick = 0;
                     if (R.IsReady() && ultiOn && wslash == 1 && _config.Item("useblade").GetValue<bool>())
                     {
-                        if (tricleavecount == 2 && target.Health < (float)(UA * 2 + UQ * 2 + UW + RR + RI + RItems))
+                        if (tricleavecount == 2)
                             R.Cast(target.Position, true);
-                        if (tricleavecount <= 1 && target.Health < (float)(RA * 2 + RQ * 2 + RW + RI + RItems))
+                        if (tricleavecount <= 1)
                             R.Cast(target.Position, true);
                     }
 
@@ -465,7 +466,8 @@ namespace KurisuRiven
                         CheckR(target);
                 }
 
-                else if (W.IsReady() && Q.IsReady() && target.Distance(_player.Position) < W.Range)
+                if (W.IsReady() && Q.IsReady() && E.IsReady() 
+                    && target.Distance(_player.Position) < W.Range)
                 {
                     CheckR(target);
                     W.Cast();
