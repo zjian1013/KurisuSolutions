@@ -303,8 +303,8 @@ namespace KurisuRiven
                     {
                         if (tricleavecount == 2)
                             R.Cast(target.Position, true);
-                        if (tricleavecount <= 1)
-                            R.Cast(target.Position, true);
+                        //if (tricleavecount <= 1)
+                        //    R.Cast(target.Position, true);
                     }
 
                     break;
