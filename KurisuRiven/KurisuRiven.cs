@@ -192,9 +192,6 @@ namespace KurisuRiven
             Menu menuJ = new Menu("Farm/Clear Settings: ", "jsettings");
             menuJ.AddItem(new MenuItem("jungleE", "Use E (Jungle)")).SetValue(true);
             menuJ.AddItem(new MenuItem("jungleW", "Use W (Jungle)")).SetValue(true);
-            menuJ.AddItem(new MenuItem("sep", " "));
-            menuJ.AddItem(new MenuItem("clearE", "Use E (Laneclear)")).SetValue(false);
-            menuJ.AddItem(new MenuItem("clearW", "Use W (Laneclear)")).SetValue(false);
             _config.AddSubMenu(menuJ);
 
             _config.AddItem(new MenuItem("tsmode", "Riven Mode:"))
@@ -395,7 +392,6 @@ namespace KurisuRiven
         {
             bool combo = _config.Item("combokey").GetValue<KeyBind>().Active;
             bool clear = _config.Item("clearkey").GetValue<KeyBind>().Active;
-            bool farm = _config.Item("clearkey2").GetValue<KeyBind>().Active;
 
             _truerange = _player.AttackRange + _player.Distance(_player.BBox.Minimum) + 1;
 
@@ -411,6 +407,7 @@ namespace KurisuRiven
 
             if (packet.Header == 101 && (combo ||  _autokill + qincrement > _now))
             {
+                Game.PrintChat("LoL");
                 packet.Position = 16;
                 int sourceId = packet.ReadInteger();
 
