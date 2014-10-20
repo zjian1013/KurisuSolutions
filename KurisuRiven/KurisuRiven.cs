@@ -407,7 +407,6 @@ namespace KurisuRiven
 
             if (packet.Header == 101 && (combo ||  _autokill + qincrement > _now))
             {
-                Game.PrintChat("LoL");
                 packet.Position = 16;
                 int sourceId = packet.ReadInteger();
 
