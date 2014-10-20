@@ -12,6 +12,11 @@ namespace KurisuRiven
      *  |    -| | | | -_|   |
      *  |__|__|_|\_/|___|_|_|
      *  
+     * Revision 0985: 29/10/2014
+     * + Ultimate overkill fix
+     * + Fixed AA damage caclulations
+     * + Fixed R check.
+     * 
      * Revision 0984: 19/10/2014
      * + Updated target selctor <3.
      * + Removed older target seletor since it was redundant.
@@ -120,7 +125,7 @@ namespace KurisuRiven
         private static readonly double eincrement = TimeSpan.FromMilliseconds(300).TotalSeconds;
 
         private static readonly int[] _items = { 3144, 3153, 3142, 3112 };
-        private static readonly int[] _runicassive =
+        private static readonly int[] _runicpassive =
         {
             20, 20, 25, 25, 25, 30, 30, 30, 35, 35, 35, 40, 40, 40, 45, 45, 45, 50, 50
         };
@@ -138,7 +143,7 @@ namespace KurisuRiven
         private void Game_OnGameLoad(EventArgs args)
         {
             _ts = new TargetSelector(_r.Range, TargetSelector.TargetingMode.NearMouse);
-            Game.PrintChat("Riven: Loaded! Revision: 0984");
+            Game.PrintChat("Riven: Loaded! Revision: 0985");
             Game.PrintChat("Riven: If you have any questions/concerns contact me on IRC/Forums. Laneclear will be added in time. ");
             Game.OnGameUpdate += Game_OnGameUpdate;
             Game.OnGameProcessPacket += Game_OnGameProcessPacket;
@@ -150,6 +155,11 @@ namespace KurisuRiven
             Menu menuOrb = new Menu("Orbwalker", "orbwalker");
             _orbwalker = new Orbwalking.Orbwalker(menuOrb);
             _config.AddSubMenu(menuOrb);
+
+            Menu menuK = new Menu("Keybind Settings: ", "ksettings");
+            menuK.AddItem(new MenuItem("combokey", "Combo")).SetValue(new KeyBind(32, KeyBindType.Press));
+            menuK.AddItem(new MenuItem("clearkey", "Jungleclear")).SetValue(new KeyBind(86, KeyBindType.Press));
+            _config.AddSubMenu(menuK);
 
             Menu menuD = new Menu("Draw Settings: ", "dsettings");
             menuD.AddItem(new MenuItem("drawaa", "Draw aa range")).SetValue(true);
@@ -179,16 +189,17 @@ namespace KurisuRiven
             menuO.AddItem(new MenuItem("blockanim", "Block Q animimation (fun)")).SetValue(false);
             _config.AddSubMenu(menuO);
 
-            Menu menuJ = new Menu("Jungle Settings: ", "jsettings");
-            menuJ.AddItem(new MenuItem("jungleE", "Use E")).SetValue(true);           
-            menuJ.AddItem(new MenuItem("jungleW", "Use W")).SetValue(true);
+            Menu menuJ = new Menu("Farm/Clear Settings: ", "jsettings");
+            menuJ.AddItem(new MenuItem("jungleE", "Use E (Jungle)")).SetValue(true);
+            menuJ.AddItem(new MenuItem("jungleW", "Use W (Jungle)")).SetValue(true);
+            menuJ.AddItem(new MenuItem("sep", " "));
+            menuJ.AddItem(new MenuItem("clearE", "Use E (Laneclear)")).SetValue(false);
+            menuJ.AddItem(new MenuItem("clearW", "Use W (Laneclear)")).SetValue(false);
             _config.AddSubMenu(menuJ);
 
             _config.AddItem(new MenuItem("tsmode", "Riven Mode:"))
                 .SetValue(
                     new StringList(new[] { "LowHP", "MostAD", "MostAP", "Closest", "NearMouse", "LessAttack", "LessCast" }));
-            _config.AddItem(new MenuItem("combokey", "Combo")).SetValue(new KeyBind(32, KeyBindType.Press));
-            _config.AddItem(new MenuItem("clearkey", "Jungleclear")).SetValue(new KeyBind(86, KeyBindType.Press));
             _config.AddToMainMenu();
 
             _r.SetSkillshot(0.25f, 300f, 120f, false, SkillshotType.SkillshotCone);
@@ -221,13 +232,15 @@ namespace KurisuRiven
                 if (_jungle)
                 {
                     var target = _orbwalker.GetTarget();
-                    if (JungleMinions.Any(name => target.Name.StartsWith(name)))
+                    if (target != null && JungleMinions.Any(name => target.Name.StartsWith(name) && target.IsValid && target.IsVisible))
                     {
-                        if (!_e.IsReady() && !_config.Item("jungleE").GetValue<bool>()) return;
+                        if (!_e.IsReady() || !_config.Item("jungleE").GetValue<bool>()) return;
                         _e.Cast(Game.CursorPos);
-                        if (!_w.IsReady() && !_config.Item("jungleW").GetValue<bool>()) return;
-                            if (target.Distance(_player.Position) < _w.Range)
-                                _w.Cast();
+
+                        if (!_w.IsReady() || !_config.Item("jungleW").GetValue<bool>()) return;
+
+                        if (target.Distance(_player.Position) < _w.Range)
+                            _w.Cast();
                     }
                 }
 
@@ -237,7 +250,7 @@ namespace KurisuRiven
                     return;
 
                 AutoW();
-                WindSlash();                   
+                WindSlash();   
                 
             }
             catch (Exception ex)
@@ -254,19 +267,20 @@ namespace KurisuRiven
         /// <param name="args"></param>
         private void Game_OnDraw(EventArgs args)
         {
+
             if (_config.Item("drawaa").GetValue<bool>() && !_player.IsDead)
-                Utility.DrawCircle(_player.Position, _player.AttackRange + 25, Color.Khaki, 3, 20);
+                Utility.DrawCircle(_player.Position, _player.AttackRange + 25, Color.White, 1, 1);
             if (_config.Item("drawp").GetValue<bool>() && !_player.IsDead)
             {
                 var wts = Drawing.WorldToScreen(_player.Position);
-                Drawing.DrawText(wts[0] - 35, wts[1] + 30, Color.Khaki, "Passive: " + _runiccount);
-                Drawing.DrawText(wts[0] - 35, wts[1] + 10, Color.Khaki, "Q: " + _cleavecount);
+                Drawing.DrawText(wts[0] - 35, wts[1] + 30, Color.White, "Passive: " + _runiccount);
+                Drawing.DrawText(wts[0] - 35, wts[1] + 10, Color.White, "Q: " + _cleavecount);
             }
             if (_config.Item("debugtrue").GetValue<bool>())
             {
-                if (_target != null && !_target.IsDead && !_player.IsDead)
+                if (!_player.IsDead)
                 {
-                    Utility.DrawCircle(_target.Position, _truerange + 25, Color.Orange, 1, 1);
+                    Utility.DrawCircle(_player.Position, _truerange + 25, Color.Yellow, 1, 1);
                 }
             }
 
@@ -283,20 +297,18 @@ namespace KurisuRiven
                 if (_target != null && !_target.IsDead && !_player.IsDead)
                 {
                     var ts = _target;
-                    CheckDamage(ts);
                     var wts = Drawing.WorldToScreen(_target.Position);
                     if ((float) (_ra + _rq*2 + _rw + _ri + _ritems) > ts.Health) 
                         Drawing.DrawText(wts[0] - 20, wts[1] + 40, Color.OrangeRed, "Kill!");
                     else if ((float) (_ra*2 + _rq*2 + _rw + _ritems) > ts.Health)
                         Drawing.DrawText(wts[0] - 40, wts[1] + 40, Color.OrangeRed, "Easy Kill!");
-                    else if ((float) (_ua*2 + _uq*2 + _uw + _ri + _rr + _ritems) > ts.Health) 
+                    else if ((float) (_ua*3 + _uq*2 + _uw + _ri + _rr + _ritems) > ts.Health) 
                         Drawing.DrawText(wts[0] - 40, wts[1] + 40, Color.OrangeRed, "Full Combo Kill!");
-                    else if ((float) (_ua*6 + _uq*3 + _uw + _rr + _ri + _ritems) > ts.Health) 
+                    else if ((float) (_ua*3 + _uq*3 + _uw + _rr + _ri + _ritems) > ts.Health) 
                         Drawing.DrawText(wts[0] - 40, wts[1] + 40, Color.OrangeRed, "Full Combo Hard Kill!");
-                    else 
-                    {
+                    else if ((float) (_ua*3 + _uq*3 + _uw + _rr + _ri + _ritems) < ts.Health) 
                         Drawing.DrawText(wts[0] - 40, wts[1] + 40, Color.OrangeRed, "Cant Kill!");
-                    }
+
                 }
             }
             if (_config.Item("debugdmg").GetValue<bool>())
@@ -309,7 +321,7 @@ namespace KurisuRiven
                             "Combo Damage: " + (float) (_ra*3 + _rq*3 + _rw + _rr + _ri + _ritems));
                     else
                         Drawing.DrawText(wts[0] - 75, wts[1] + 60, Color.Orange,
-                            "Combo Damage: " + (float) (_ua*6 + _uq*3 + _uw + _rr + _ri + _ritems));
+                            "Combo Damage: " + (float) (_ua*3 + _uq*3 + _uw + _rr + _ri + _ritems));
                 }
             }
         }
@@ -348,7 +360,7 @@ namespace KurisuRiven
                     if (_combo || _autokill + qincrement > _now) Utility.DelayAction.Add(Game.Ping + 50, () => UseItems(target));
                     Utility.DelayAction.Add(Game.Ping + 125, delegate
                     {
-                        if (_combo && target.Distance(_player.Position) < _w.Range)
+                        if ((_combo || _autokill + qincrement > _now)  && target.Distance(_player.Position) < _w.Range)
                         {
                             if (Items.HasItem(3077) && Items.CanUseItem(3077))
                                 Items.UseItem(3077);
@@ -383,6 +395,7 @@ namespace KurisuRiven
         {
             bool combo = _config.Item("combokey").GetValue<KeyBind>().Active;
             bool clear = _config.Item("clearkey").GetValue<KeyBind>().Active;
+            bool farm = _config.Item("clearkey2").GetValue<KeyBind>().Active;
 
             _truerange = _player.AttackRange + _player.Distance(_player.BBox.Minimum) + 1;
 
@@ -456,9 +469,12 @@ namespace KurisuRiven
                                 _player.IssueOrder(GameObjectOrder.MoveTo, new Vector3(movePos.X, movePos.Y, movePos.Z));
                                 Orbwalking.LastAATick = 0;
                                 break;
-                            case 2:
-                                _player.IssueOrder(GameObjectOrder.MoveTo, new Vector3(movePos.X, movePos.Y, movePos.Z));
-                                Utility.DelayAction.Add(Game.Ping + 75, () => Orbwalking.LastAATick = 0);
+                            case 2:                               
+                                Utility.DelayAction.Add(75, delegate
+                                {
+                                    _player.IssueOrder(GameObjectOrder.MoveTo, new Vector3(movePos.X, movePos.Y, movePos.Z));
+                                    Orbwalking.LastAATick = 0;
+                                });
                                 break;
                         }
                     }
@@ -482,7 +498,7 @@ namespace KurisuRiven
                         if (JungleMinions.Any(name => truetarget.Name.StartsWith(name)))
                         {
                             Packet.C2S.Move.Encoded(new Packet.C2S.Move.Struct(movePos.X, movePos.Y, 3, _orbwalker.GetTarget().NetworkId)).Send();
-                            Utility.DelayAction.Add(Game.Ping, () => Orbwalking.LastAATick = 0);
+                            Utility.DelayAction.Add(Game.Ping + 70, () => Orbwalking.LastAATick = 0);
                         }
                     }
 
@@ -530,8 +546,8 @@ namespace KurisuRiven
             bool _ultion = _player.HasBuff("RivenFengShuiEngine", true);
             if (target != null && target.IsValid && target.IsVisible)
             {
-                if (_player.Distance(target.Position) > _truerange + 25 ||
-                    _player.Health * _player.MaxHealth / 100 <= 45 )
+                if (_player.Distance(target.Position) > _truerange ||
+                    ((_player.Health/_player.MaxHealth)*100) <= 45) 
                 {
                     if (_e.IsReady() && _config.Item("usevalor").GetValue<bool>())
                         _e.Cast(target.Position);
@@ -576,6 +592,7 @@ namespace KurisuRiven
         /// </summary>
         private static void WindSlash()
         {
+            bool _ultion = _player.HasBuff("RivenFengShuiEngine", true);
             int wsneed = _config.Item("autows").GetValue<Slider>().Value;
             int wslash = _config.Item("wslash").GetValue<StringList>().SelectedIndex;
 
@@ -590,8 +607,7 @@ namespace KurisuRiven
             {
                 CheckDamage(e);
                 PredictionOutput rPos = _r.GetPrediction(e, true);
-                if (_r.IsReady() && rPos.Hitchance >= HitChance.Medium &&
-                    _player.HasBuff("RivenFengShuiEngine", true))
+                if (_r.IsReady() && rPos.Hitchance >= HitChance.Medium && _ultion)
                 {
                     if (_config.Item("useautows").GetValue<bool>() && wslash == 1)
                     {
@@ -605,19 +621,19 @@ namespace KurisuRiven
                             _r.Cast(rPos.CastPosition);
                     }
                     
-                    if (e.Health < _rr)
+                    else if (e.Health < _rr)
                         _r.Cast(rPos.CastPosition, true);
                 }
 
-                if (_q.IsReady() && e.Health < _rq && _player.Distance(_target.Position) < 300f)
+                if (_q.IsReady() && e.Health < _rq && _player.Distance(_target.Position) < _q.Range)
                     _q.Cast(_target.Position, true);
-                else if (_q.IsReady() && e.Health < _rq + _ra*2 + _ri)
+                else if (_q.IsReady() && e.Health < _rq + _ra * 2 + _ri && _player.Distance(_target.Position) < _q.Range)
                 {
                     _target = e;
                     _autokill = TimeSpan.FromMilliseconds(Environment.TickCount).TotalSeconds;
 
                 }
-                else if (_q.IsReady() && e.Health < _rq*2 + _ri) 
+                else if (_q.IsReady() && e.Health < _rq*2 + _ri && _player.Distance(_target.Position) < _q.Range) 
                 {
                     _target = e;
                     _autokill = TimeSpan.FromMilliseconds(Environment.TickCount).TotalSeconds;
@@ -627,7 +643,7 @@ namespace KurisuRiven
         }
       
         /// <summary>
-        /// Item Manager
+        /// Item Handler
         /// </summary>
         /// <param name="target"></param>
         private static void UseItems(Obj_AI_Base target)
@@ -640,13 +656,14 @@ namespace KurisuRiven
         }
 
         /// <summary>
-        /// Damage Checker
+        /// Damage Handler
         /// </summary>
         /// <param name="target"></param>
         private static void CheckDamage(Obj_AI_Base target)
         {
             if (target != null)
             {
+
                 //int count = _runiccount;
                 SpellSlot ignite = _player.GetSpellSlot("summonerdot");
 
@@ -659,7 +676,7 @@ namespace KurisuRiven
                 double BRK = Items.HasItem(3153) && Items.CanUseItem(3153) ? _player.GetItemDamage(target, Damage.DamageItems.Botrk) : 0;
 
                 _rr = _player.GetSpellDamage(target, SpellSlot.R);
-                _ra = AA*(_runicassive[_player.Level]/100)*3;
+                _ra = AA + (AA * (_runicpassive[_player.Level] / 100));
                 _rq = _q.IsReady() ? DamageQ(target) : 0;
                 _rw = _w.IsReady() ? _player.GetSpellDamage(target, SpellSlot.W) : 0;
                 _ri = _player.SummonerSpellbook.CanUseSpell(ignite) == SpellState.Ready ? _player.GetSummonerSpellDamage(target, Damage.SummonerSpell.Ignite) : 0;
@@ -668,10 +685,10 @@ namespace KurisuRiven
 
                 if (_r.IsReady())
                 {
-                    _ua = _ra + _player.CalcDamage(target, Damage.DamageType.Physical, AA*0.2);
-                    _uq = _rq + _player.CalcDamage(target, Damage.DamageType.Physical, AA*0.2*0.7);
-                    _uw = _rw + _player.CalcDamage(target, Damage.DamageType.Physical, AA*0.2*1);
-                    _rr = _rr + _player.CalcDamage(target, Damage.DamageType.Physical, AA*0.2);
+                    _ua = _ra + _player.CalcDamage(target, Damage.DamageType.Physical, _player.BaseAttackDamage+_player.FlatPhysicalDamageMod*0.2);
+                    _uq = _rq + _player.CalcDamage(target, Damage.DamageType.Physical, _player.BaseAttackDamage+_player.FlatPhysicalDamageMod*0.2*0.7);
+                    _uw = _rw + _player.CalcDamage(target, Damage.DamageType.Physical, _player.BaseAttackDamage+_player.FlatPhysicalDamageMod*0.2*1);
+                    _rr = _rr + _player.CalcDamage(target, Damage.DamageType.Physical, _player.BaseAttackDamage+_player.FlatPhysicalDamageMod*0.2);
                 }
                 else
                 {
@@ -707,39 +724,42 @@ namespace KurisuRiven
         /// <param name="target"></param>
         private void CheckR(Obj_AI_Base target)
         {
-            var index = _config.Item("bladewhen").GetValue<StringList>();
-            if (target != null && target.IsValid && target.Type == _player.Type && _config.Item("useblade").GetValue<bool>())
+            bool _utlion = _player.HasBuff("RivenFengShuiEngine", true);
+            StringList index = _config.Item("bladewhen").GetValue<StringList>();
+
+            // so we dont auto cast R when killsteal(autokill) takes over
+            bool combo = _config.Item("combokey").GetValue<KeyBind>().Active;
+
+            if (target != null && target.IsValid && target.Type == _player.Type &&
+                _config.Item("useblade").GetValue<bool>() && combo) 
             {
                 CheckDamage(target);
-                if (!_player.HasBuff("RivenFengShuiEngine", true))
+                switch (index.SelectedIndex)
                 {
-                    switch (index.SelectedIndex)
-                    {
-                        case 2:
-                            if ((float) (_ua*6 + _uq*3 + _uw + _rr + _ri + _ritems) > target.Health)
-                            {
-                                _r.Cast();
-                                if (_config.Item("useignote").GetValue<bool>())
-                                    CastIgnite(target);
-                            }
-                            break;
-                        case 1:
-                            if ((float) (_ra*3 + _rq*3 + _rw + _rr + _ri + _ritems) > target.Health)
-                            {
-                                _r.Cast();
-                                if (_config.Item("useignote").GetValue<bool>())
-                                    CastIgnite(target);
-                            }
-                            break;
-                        case 0:
-                            if ((float) (_ra*2 + _rq*2 + _rw + _rr + _ri + _ritems) > target.Health)
-                            {
-                                _r.Cast();
-                                if (_config.Item("useignote").GetValue<bool>())
-                                    CastIgnite(target);
-                            }
-                            break;
-                    }
+                    case 2:
+                        if ((float) (_ua*3 + _uq*3 + _uw + _rr + _ri + _ritems) > target.Health && !_utlion) 
+                        {
+                            _r.Cast();
+                            if (_config.Item("useignote").GetValue<bool>())
+                                CastIgnite(target);
+                        }
+                        break;
+                    case 1:
+                        if ((float) (_ra*3 + _rq*3 + _rw + _rr + _ri + _ritems) > target.Health && !_utlion) 
+                        {
+                            _r.Cast();
+                            if (_config.Item("useignote").GetValue<bool>() && _q.IsReady() )
+                                CastIgnite(target);
+                        }
+                        break;
+                    case 0:
+                        if ((float) (_ra*2 + _rq*2 + _rw + _rr + _ri + _ritems) > target.Health && !_utlion) 
+                        {
+                            _r.Cast();
+                            if (_config.Item("useignote").GetValue<bool>() && _q.IsReady())
+                                CastIgnite(target);
+                        }
+                        break;
                 }
             }
         }
