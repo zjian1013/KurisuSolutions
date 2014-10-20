@@ -221,7 +221,7 @@ namespace KurisuRiven
                 if (_jungle)
                 {
                     var target = _orbwalker.GetTarget();
-                    if (JungleMinions.Any(name => target.Name.StartsWith(name)))
+                    if (target != null && JungleMinions.Any(name => target.Name.StartsWith(name) && target.IsValid && target.IsVisible))
                     {
                         if (!_e.IsReady() && !_config.Item("jungleE").GetValue<bool>()) return;
                         _e.Cast(Game.CursorPos);
@@ -289,7 +289,7 @@ namespace KurisuRiven
                         Drawing.DrawText(wts[0] - 20, wts[1] + 40, Color.OrangeRed, "Kill!");
                     else if ((float) (_ra*2 + _rq*2 + _rw + _ritems) > ts.Health)
                         Drawing.DrawText(wts[0] - 40, wts[1] + 40, Color.OrangeRed, "Easy Kill!");
-                    else if ((float) (_ua*2 + _uq*2 + _uw + _ri + _rr + _ritems) > ts.Health) 
+                    else if ((float) (_ua*3 + _uq*3 + _uw + _ri + _rr + _ritems) > ts.Health) 
                         Drawing.DrawText(wts[0] - 40, wts[1] + 40, Color.OrangeRed, "Full Combo Kill!");
                     else if ((float) (_ua*6 + _uq*3 + _uw + _rr + _ri + _ritems) > ts.Health) 
                         Drawing.DrawText(wts[0] - 40, wts[1] + 40, Color.OrangeRed, "Full Combo Hard Kill!");
@@ -348,7 +348,7 @@ namespace KurisuRiven
                     if (_combo || _autokill + qincrement > _now) Utility.DelayAction.Add(Game.Ping + 50, () => UseItems(target));
                     Utility.DelayAction.Add(Game.Ping + 125, delegate
                     {
-                        if (_combo && target.Distance(_player.Position) < _w.Range)
+                        if ((_combo || _autokill + qincrement > _now) && target.Distance(_player.Position) < _w.Range)
                         {
                             if (Items.HasItem(3077) && Items.CanUseItem(3077))
                                 Items.UseItem(3077);
