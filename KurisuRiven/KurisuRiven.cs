@@ -542,7 +542,7 @@ namespace KurisuRiven
             bool _ultion = _player.HasBuff("RivenFengShuiEngine", true);
             if (target != null && target.IsValid && target.IsVisible)
             {
-                if (_player.Distance(target.Position) > _truerange ||
+                if (_player.Distance(target.Position) > _truerange + _e.Range ||
                     ((_player.Health/_player.MaxHealth)*100) <= 45) 
                 {
                     if (_e.IsReady() && _config.Item("usevalor").GetValue<bool>())
