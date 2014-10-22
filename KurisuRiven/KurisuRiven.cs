@@ -12,7 +12,10 @@ namespace KurisuRiven
      *  |    -| | | | -_|   |
      *  |__|__|_|\_/|___|_|_|
      *  
-     * Revision 0985: 29/10/2014
+     * Revision 0985-2: 22/10/2014
+     * + Fixed wasting valor when target was already in range.
+     *
+     * Revision 0985: 21/10/2014
      * + Ultimate overkill fix
      * + Fixed AA damage caclulations
      * + Fixed R check.
@@ -143,8 +146,8 @@ namespace KurisuRiven
         private void Game_OnGameLoad(EventArgs args)
         {
             _ts = new TargetSelector(_r.Range, TargetSelector.TargetingMode.NearMouse);
-            Game.PrintChat("Riven: Loaded! Revision: 0985");
-            Game.PrintChat("Riven: If you have any questions/concerns contact me on IRC/Forums. Laneclear will be added in time. ");
+            Game.PrintChat("Riven: Loaded! Revision: 0985-2");
+            Game.PrintChat("Riven: If you have any questions/concerns contact me on IRC/Forums. Would happily accept donations -- xrobinsong@gmail.com");
             Game.OnGameUpdate += Game_OnGameUpdate;
             Game.OnGameProcessPacket += Game_OnGameProcessPacket;
             Drawing.OnDraw += Game_OnDraw;
