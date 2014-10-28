@@ -604,21 +604,15 @@ namespace KurisuRiven
                 }
 
                 if (_r.IsReady() && _e.IsReady() && _ultion)
-                {
-                    if (_cleavecount == 2)
+                {                    if (_cleavecount == 2)
                         _e.Cast(_cursormode ? Game.CursorPos : target.Position);
                 }
 
 
-                if (!Items.HasItem(3077) || !Items.CanUseItem(3077))
-                {
-                    if ((!Items.HasItem(3074) || !Items.CanUseItem(3074)))
-                    {
-                        if (_player.Distance(_cursormode ? Game.CursorPos : target.Position) < _w.Range)
-                            if (_w.IsReady())
-                                _w.Cast();
-                    }
-                }
+                if (_player.Distance(_cursormode ? Game.CursorPos : target.Position) < _w.Range)
+                    if (_w.IsReady())
+                        _w.Cast();
+
 
                 if (_q.IsReady() && !_e.IsReady() &&
                     _player.Distance(_cursormode ? Game.CursorPos : target.Position) > _q.Range && target.IsValid)
