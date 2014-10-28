@@ -12,6 +12,15 @@ namespace KurisuRiven
      *  |    -| | | | -_|   |
      *  |__|__|_|\_/|___|_|_|
      *  
+     * + In Porgress: Fixing ATR as much as possible.
+     *                Laneclear.
+     * 
+     * Revision 099: 28/10/2014
+     * + Fixed W
+     * + Fixed Jungle clear speed if you go into advance settings 
+     *   and tick "Set reccomended values" remember this only affects Delay mode and jungling
+     * + Fixed combo damage saying 0 combo damage when not in range.
+     *   
      * Revision 0989: 26/10/2014
      * + Fixed items, bortk may not work but who uses that
      * + Target selector reverted back to SimpleTS
@@ -155,7 +164,7 @@ namespace KurisuRiven
         /// <param name="args"></param>
         private void Game_OnGameLoad(EventArgs args)
         {
-            Game.PrintChat("Riven: Loaded! Revision: 0989");
+            Game.PrintChat("Riven: Loaded! Revision: 099");
             Game.PrintChat("Riven: If you have any questions/concerns contact me on IRC/Forums.");
             Game.OnGameUpdate += Game_OnGameUpdate;
             Game.OnGameProcessPacket += Game_OnGameProcessPacket;
@@ -221,10 +230,12 @@ namespace KurisuRiven
             menuJ.AddItem(new MenuItem("jsep1", "==== Jungle Settings"));
             menuJ.AddItem(new MenuItem("jungleE", "Use E (Jungle)")).SetValue(true);
             menuJ.AddItem(new MenuItem("jungleW", "Use W (Jungle)")).SetValue(true);
+            menuJ.AddItem(new MenuItem("jsep2", "==== Farm Settings"));
             _config.AddSubMenu(menuJ);
 
             Menu menuA = new Menu("Advance Settings: ", "asettings");
             menuA.AddItem(new MenuItem("asep1", "==== QA Settings"));
+            menuA.AddItem(new MenuItem("autoconfig", "Set recommended values")).SetValue(false);
             menuA.AddItem(new MenuItem("qcdelay", "Cancel delay: ")).SetValue(new Slider(0, 0, 1200));
             menuA.AddItem(new MenuItem("aareset", "Auto reset delay: ")).SetValue(new Slider(0, 0, 1200));
             menuA.AddItem(new MenuItem("asep2", "==== Donate? :)"));
@@ -253,21 +264,29 @@ namespace KurisuRiven
                 var _combo = _config.Item("combokey").GetValue<KeyBind>().Active;
                 var _jungle = _config.Item("clearkey").GetValue<KeyBind>().Active;
                 var _qtime = _config.Item("qqdelay").GetValue<Slider>().Value;
-                bool cursormode = _config.Item("cursormode").GetValue<bool>();
+                var _cursormode = _config.Item("cursormode").GetValue<bool>();
+                var _auto = _config.Item("autoconfig").GetValue<bool>();
 
 
                 _now = TimeSpan.FromMilliseconds(Environment.TickCount).TotalSeconds;
                 _extraqtime = TimeSpan.FromMilliseconds(_qtime).TotalSeconds;
                 _target = SimpleTs.GetSelectedTarget() ?? SimpleTs.GetTarget(750, SimpleTs.DamageType.Physical);
 
-                if (_player.IsStunned)
+                if (_auto)
+                {
+                    _config.Item("aareset").SetValue(new Slider(Game.Ping + 70, 0, 1200));
+                    _config.Item("qcdelay").SetValue(new Slider(Game.Ping + 8, 0, 1200));
+                }
+
+                if (_player.HasBuffOfType(BuffType.Stun) || _player.HasBuffOfType(BuffType.Knockup) ||
+                    _player.HasBuffOfType(BuffType.Knockback) || _player.HasBuffOfType(BuffType.Silence)) 
                     return;
 
                 if (_combo|| _killsteal + _extraqtime > _now)
                 {
                     if (SimpleTs.GetSelectedTarget() != null && _target.Distance(_player.Position) > 750)
                         return;
-                    CastCombo(cursormode ? _player : _target);
+                    CastCombo(_cursormode ? _player : _target);
                 }
 
                 if (_jungle)
@@ -378,7 +397,9 @@ namespace KurisuRiven
             var _combo = _config.Item("combokey").GetValue<KeyBind>().Active;
             var _wslash = _config.Item("wslash").GetValue<StringList>().SelectedIndex;
 
-            if (!sender.IsMe || _player.IsStunned) return;
+            if (!sender.IsMe || _player.HasBuffOfType(BuffType.Stun) || _player.HasBuffOfType(BuffType.Knockup) ||
+                _player.HasBuffOfType(BuffType.Knockback) || _player.HasBuffOfType(BuffType.Silence))
+                return;
             switch (args.SData.Name)
             {
                 case "RivenTriCleave":
@@ -413,8 +434,6 @@ namespace KurisuRiven
                     break;
                 case "RivenFengShuiEngine":
                     Orbwalking.LastAATick = 0;
-                    if (_w.IsReady() && _player.Distance(cursormode ? _player.Position : target.Position) < _w.Range)
-                        Utility.DelayAction.Add(Game.Ping + 120, () => _w.Cast());
                     break;
                 case "rivenizunablade":
                     if (_q.IsReady())
@@ -438,7 +457,9 @@ namespace KurisuRiven
 
             GamePacket packet = new GamePacket(args.PacketData);
 
-            if (_player.IsStunned) return;
+            if (_player.HasBuffOfType(BuffType.Stun) || _player.HasBuffOfType(BuffType.Knockup) ||
+                _player.HasBuffOfType(BuffType.Knockback) || _player.HasBuffOfType(BuffType.Silence))
+                return;
             if (packet.Header == 176) 
             {
                 packet.Position = 1;
@@ -535,7 +556,7 @@ namespace KurisuRiven
 
                         if (JungleMinions.Any(name => truetarget.Name.StartsWith(name)))
                         {
-                            Utility.DelayAction.Add(cdelay, () => Packet.C2S.Move.Encoded(new Packet.C2S.Move.Struct(movePos.X, movePos.Y, 3, _orbwalker.GetTarget().NetworkId)).Send());
+                            Utility.DelayAction.Add(cdelay, () => _player.IssueOrder(GameObjectOrder.MoveTo, new Vector3(movePos.X, movePos.Y, movePos.Z)));
                             Utility.DelayAction.Add(caareset, () => Orbwalking.LastAATick = 0);
                         }
                     }
@@ -593,7 +614,8 @@ namespace KurisuRiven
                     if (_e.IsReady() && _config.Item("usevalor").GetValue<bool>())
                         _e.Cast(_cursormode ? Game.CursorPos : target.Position);
                     if (_q.IsReady() && _cleavecount <= 1 && !_ultion && _config.Item("waitvalor").GetValue<bool>())
-                       Utility.DelayAction.Add(Game.Ping + 85, () => CheckR(_cursormode ? _player : target));
+                       //Utility.DelayAction.Add(Game.Ping + 85, () => CheckR(_cursormode ? _player : target));
+                        CheckR(_cursormode ? _player : target);
                 }
                 
                 if (_w.IsReady() && _q.IsReady() && _e.IsReady()
@@ -637,16 +659,20 @@ namespace KurisuRiven
             var wsneed = _config.Item("autows").GetValue<Slider>().Value;
             var wslash = _config.Item("wslash").GetValue<StringList>().SelectedIndex;
 
+            if (_player.HasBuffOfType(BuffType.Stun) || _player.HasBuffOfType(BuffType.Knockup) ||
+                _player.HasBuffOfType(BuffType.Knockback) || _player.HasBuffOfType(BuffType.Silence))
+                return;
+
             if (!_config.Item("useblade").GetValue<bool>()) return;
             foreach (
                 var e in
                     ObjectManager.Get<Obj_AI_Hero>()
                         .Where(
                             e =>
-                                e.Team != _player.Team && e.IsValid && !e.IsDead && !e.IsInvulnerable &&
-                                e.Distance(_player.Position) < _r.Range))
+                                e.Team != _player.Team && e.IsValid && !e.IsDead && !e.IsInvulnerable && e.IsVisible))
             {
-                CheckDamage(cursormode ? _player  : e);
+
+                CheckDamage(cursormode ? _player : e);
                 PredictionOutput rPos = _r.GetPrediction(cursormode ? _player : e, true);
                 if (_r.IsReady() && rPos.Hitchance >= HitChance.Medium && ultion)
                 {
