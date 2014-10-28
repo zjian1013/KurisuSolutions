@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
+using System.Collections.Generic;
 using SharpDX;
 using Color = System.Drawing.Color;
 
@@ -12,14 +13,12 @@ namespace KurisuRiven
      *  |    -| | | | -_|   |
      *  |__|__|_|\_/|___|_|_|
      *  
-     * + In Porgress: Fixing ATR as much as possible.
-     *                Laneclear.
-     * 
      * Revision 099: 28/10/2014
      * + Fixed W
      * + Fixed Jungle clear speed if you go into advance settings 
      *   and tick "Set reccomended values" remember this only affects Delay mode and jungling
      * + Fixed combo damage saying 0 combo damage when not in range.
+     * + Laneclear added enjoy!
      *   
      * Revision 0989: 26/10/2014
      * + Fixed items, bortk may not work but who uses that
@@ -183,7 +182,7 @@ namespace KurisuRiven
 
             Menu menuK = new Menu("Keybind Settings: ", "ksettings");
             menuK.AddItem(new MenuItem("combokey", "Combo")).SetValue(new KeyBind(32, KeyBindType.Press));
-            menuK.AddItem(new MenuItem("clearkey", "Jungleclear")).SetValue(new KeyBind(86, KeyBindType.Press));
+            menuK.AddItem(new MenuItem("clearkey", "Jungleclear/Lane")).SetValue(new KeyBind(86, KeyBindType.Press));
             _config.AddSubMenu(menuK);
 
             Menu menuD = new Menu("Draw Settings: ", "dsettings");
@@ -228,9 +227,13 @@ namespace KurisuRiven
 
             Menu menuJ = new Menu("Farm/Clear Settings: ", "jsettings");
             menuJ.AddItem(new MenuItem("jsep1", "==== Jungle Settings"));
-            menuJ.AddItem(new MenuItem("jungleE", "Use E (Jungle)")).SetValue(true);
-            menuJ.AddItem(new MenuItem("jungleW", "Use W (Jungle)")).SetValue(true);
+            menuJ.AddItem(new MenuItem("jungleE", "Use E ")).SetValue(true);
+            menuJ.AddItem(new MenuItem("jungleW", "Use W ")).SetValue(true);
+            menuJ.AddItem(new MenuItem("jungleQ", "Use Q")).SetValue(true);
             menuJ.AddItem(new MenuItem("jsep2", "==== Farm Settings"));
+            menuJ.AddItem(new MenuItem("farmE", "Use E")).SetValue(true);
+            menuJ.AddItem(new MenuItem("farmW", "Use W")).SetValue(true);
+            menuJ.AddItem(new MenuItem("farmQ", "Use Q")).SetValue(true);
             _config.AddSubMenu(menuJ);
 
             Menu menuA = new Menu("Advance Settings: ", "asettings");
@@ -294,15 +297,43 @@ namespace KurisuRiven
                     var target = _orbwalker.GetTarget();
                     if (target != null && JungleMinions.Any(name => target.Name.StartsWith(name) && target.IsValid && target.IsVisible))
                     {
-                        if (!_e.IsReady() || !_config.Item("jungleE").GetValue<bool>()) return;
-                        _e.Cast(Game.CursorPos);
+                        if (_e.IsReady() && _config.Item("jungleE").GetValue<bool>())
+                        {
+                            _e.Cast(Game.CursorPos);
+                        }
 
-                        if (!_w.IsReady() || !_config.Item("jungleW").GetValue<bool>()) return;
+                        if (_w.IsReady() && _config.Item("jungleW").GetValue<bool>())
+                        {
+                            if (target.Distance(_player.Position) < _w.Range)
+                                _w.Cast();
+                        }
+                    }
 
-                        if (target.Distance(_player.Position) < _w.Range)
-                            _w.Cast();
+                    else if (target != null && target.Name.StartsWith("Minion") && target.IsValid && target.IsVisible)
+                    {
+                        if (!_e.IsReady() || !_config.Item("farmE").GetValue<bool>()) return;
+                        if (_q.IsReady() && _cleavecount >= 1)
+                            _e.Cast(Game.CursorPos);
+                    }
+
+                    if (!_w.IsReady() || !_config.Item("farmW").GetValue<bool>()) return;
+
+                    List<Obj_AI_Minion> minions =
+                        ObjectManager.Get<Obj_AI_Minion>()
+                            .Where(m => m.Name.StartsWith("Minion") && !m.IsDead && m.IsValid && m.IsVisible && m.Distance(_player.Position) < _w.Range)
+                            .ToList();
+
+                    if (minions.Count() > 2)
+                    {
+                        if (Items.HasItem(3077) && Items.CanUseItem(3077))
+                            Items.UseItem(3077);
+                        if (Items.HasItem(3074) && Items.CanUseItem(3074))
+                            Items.UseItem(3074);
+                        _w.Cast();
                     }
                 }
+
+
 
                 AutoW();
                 WindSlash();
@@ -400,6 +431,7 @@ namespace KurisuRiven
             if (!sender.IsMe || _player.HasBuffOfType(BuffType.Stun) || _player.HasBuffOfType(BuffType.Knockup) ||
                 _player.HasBuffOfType(BuffType.Knockback) || _player.HasBuffOfType(BuffType.Silence))
                 return;
+
             switch (args.SData.Name)
             {
                 case "RivenTriCleave":
@@ -460,6 +492,7 @@ namespace KurisuRiven
             if (_player.HasBuffOfType(BuffType.Stun) || _player.HasBuffOfType(BuffType.Knockup) ||
                 _player.HasBuffOfType(BuffType.Knockback) || _player.HasBuffOfType(BuffType.Silence))
                 return;
+
             if (packet.Header == 176) 
             {
                 packet.Position = 1;
@@ -495,13 +528,24 @@ namespace KurisuRiven
                 int dmgType = packet.ReadByte();
 
                 Obj_AI_Minion trueTarget = ObjectManager.GetUnitByNetworkId<Obj_AI_Minion>(targetId);
-                if (sourceId == _player.NetworkId && (dmgType == 4 || dmgType == 3) &&
-                    JungleMinions.Any(name => trueTarget.Name.StartsWith(name)) && _q.IsReady())
+                if (sourceId == _player.NetworkId && (dmgType == 4 || dmgType == 3))
                 {
-                    _q.Cast(trueTarget.Position, true);
+                    if (JungleMinions.Any(name => trueTarget.Name.StartsWith(name)) && _q.IsReady() &&
+                        _config.Item("jungleQ").GetValue<bool>()) 
+                    {
+                        _q.Cast(trueTarget.Position, true);
+                    }
+                    else if (trueTarget.Name.StartsWith("Minion") && _q.IsReady() &&
+                             _config.Item("farmQ").GetValue<bool>()) 
+                    {
+                        if (_cleavecount == 2)
+                            _q.Cast(Game.CursorPos);
+                        else
+                            _q.Cast(trueTarget.Position, true);
+                    }
                 }
-
             }
+        
 
             var cdelay = _config.Item("qcdelay").GetValue<Slider>().Value;
             var caareset = _config.Item("aareset").GetValue<Slider>().Value;
@@ -555,6 +599,12 @@ namespace KurisuRiven
                                           Vector3.Normalize(_player.Position)*(_player.Distance(truetarget.Position) + 63);
 
                         if (JungleMinions.Any(name => truetarget.Name.StartsWith(name)))
+                        {
+                            Utility.DelayAction.Add(cdelay, () => _player.IssueOrder(GameObjectOrder.MoveTo, new Vector3(movePos.X, movePos.Y, movePos.Z)));
+                            Utility.DelayAction.Add(caareset, () => Orbwalking.LastAATick = 0);
+                        }
+
+                        if (JungleMinions.Any(name => truetarget.Name.StartsWith("Minion")))
                         {
                             Utility.DelayAction.Add(cdelay, () => _player.IssueOrder(GameObjectOrder.MoveTo, new Vector3(movePos.X, movePos.Y, movePos.Z)));
                             Utility.DelayAction.Add(caareset, () => Orbwalking.LastAATick = 0);
@@ -671,8 +721,9 @@ namespace KurisuRiven
                             e =>
                                 e.Team != _player.Team && e.IsValid && !e.IsDead && !e.IsInvulnerable && e.IsVisible))
             {
-
+                if (e == null) continue;
                 CheckDamage(cursormode ? _player : e);
+
                 PredictionOutput rPos = _r.GetPrediction(cursormode ? _player : e, true);
                 if (_r.IsReady() && rPos.Hitchance >= HitChance.Medium && ultion)
                 {
@@ -860,7 +911,7 @@ namespace KurisuRiven
             {
                 if (_w.IsReady() && _config.Item("useautow").GetValue<bool>())
                 {
-                    //_w.Cast();
+                    _w.Cast();
                 }
             }
 
