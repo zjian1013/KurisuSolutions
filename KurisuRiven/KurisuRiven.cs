@@ -244,12 +244,7 @@ namespace KurisuRiven
             menuA.AddItem(new MenuItem("asep2", "==== Donate? :)"));
             menuA.AddItem(new MenuItem("asep3", "xrobinsong@gmail.com"));
 
-
             _config.AddSubMenu(menuA);
-
-            _config.AddItem(new MenuItem("tsmode", "Riven Mode:"))
-                .SetValue(
-                    new StringList(new[] { "LowHP", "MostAD", "MostAP", "Closest", "NearMouse", "LessAttack", "LessCast" }));
             _config.AddToMainMenu();
 
             _r.SetSkillshot(0.25f, 300f, 120f, false, SkillshotType.SkillshotCone);
