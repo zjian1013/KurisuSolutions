@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+using System;
 using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
+using System.Collections.Generic;
 using SharpDX;
 using Color = System.Drawing.Color;
 
@@ -44,13 +44,14 @@ namespace KurisuBlitz
         public KurisuBlitz()
         {
             
-            if (_player.BaseSkinName != "Blitzcrank") return;
             Console.WriteLine("Blitzcrank assembly is loading...");
             CustomEvents.Game.OnGameLoad += BlitzOnLoad;
         }
 
         private void BlitzOnLoad(EventArgs args)
         {
+            if (_player.BaseSkinName != "Blitzcrank") return;
+
             // Set Q Prediction
             Q.SetSkillshot(0.25f, 70f, 1800f, true, SkillshotType.SkillshotLine);
 
@@ -79,19 +80,20 @@ namespace KurisuBlitz
         {
             if (!_menu.Item("gapcloser").GetValue<bool>()) return;
 
-            foreach (var a in ObjectManager.Get<Obj_AI_Hero>().Where(a => a.Team == _player.Team && !a.IsDead))
+            foreach (
+                var a in
+                    ObjectManager.Get<Obj_AI_Hero>()
+                        .Where(a => a.IsValid && a.IsVisible && !a.IsDead && a.Team == _player.Team))
             {
-                var rand = new Random();
-                var perp = new Vector2(gapcloser.End.X, -gapcloser.End.Y);
 
-                var modi = (float)rand.NextDouble(-0.3, 0.3);
-                var qpos = perp*modi - gapcloser.End.To2D();
+                var senderPos = gapcloser.End;
+                var validPos = senderPos - Vector3.Normalize(_player.Position - senderPos)*Q.Range;
 
-                if (_player.Distance(qpos) < a.Distance(qpos))
+                if (_player.Distance(validPos) > a.Distance(a.Position))
                 {
-                    if (_player.Distance(qpos) > Q.Range) return;
-                    Q.Cast(gapcloser.End, true);
-                }                          
+                    if (_player.Distance(validPos) > 200f)
+                        Q.Cast(senderPos);
+                }
             }
         }
 
