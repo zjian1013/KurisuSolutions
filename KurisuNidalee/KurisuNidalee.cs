@@ -254,7 +254,7 @@ namespace KurisuNidalee
                 if (Items.CanUseItem(3092) && Items.HasItem(3092) && Config.Item("useclaim").GetValue<bool>())
                     Items.UseItem(3092, target.Position);
                 if (takedown.IsReady() && Config.Item("usecougarq").GetValue<bool>() && target.Distance(Me.Position) < takedown.Range)
-                    takedown.CastOnUnit(target, Packets());
+                    takedown.CastOnUnit(Me, Packets());
                 if (pounce.IsReady() && Config.Item("usecougarw").GetValue<bool>() && target.Distance(Me.Position) < 750f && target.Distance(Me.Position) > minPounce)
                     pounce.Cast(target.Position, Packets());
                 if (swipe.IsReady() && Config.Item("usecougare").GetValue<bool>())
@@ -351,7 +351,7 @@ namespace KurisuNidalee
                             pounce.Cast(m.Position);
                     if (Config.Item("jgcougarq").GetValue<bool>() && m.Distance(Me.Position) < takedown.Range)
                         if (takedown.IsReady())
-                            takedown.CastOnUnit(m);
+                            takedown.CastOnUnit(Me);
                 }
                 else
                 {
@@ -394,7 +394,7 @@ namespace KurisuNidalee
                             pounce.Cast(m.Position);
                     if (Config.Item("clearcougarq").GetValue<bool>() && m.Distance(Me.Position) < takedown.Range)
                         if (takedown.IsReady())
-                            takedown.CastOnUnit(m);
+                            takedown.CastOnUnit(Me);
                 }
                 else
                 {
@@ -426,7 +426,7 @@ namespace KurisuNidalee
 
 
                 if (takedown.IsReady() && e != null && e.Health < qdmg && e.Distance(Me.Position) < takedown.Range)
-                    takedown.CastOnUnit(e, Packets());
+                    takedown.CastOnUnit(Me, Packets());
                 if (javelin.IsReady() && e != null && e.Health < qdmg)
                 {
                     var javelinPrediction = javelin.GetPrediction(e);
