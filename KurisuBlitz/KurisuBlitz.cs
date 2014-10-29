@@ -1,8 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
-using System.Collections.Generic;
 using SharpDX;
 using Color = System.Drawing.Color;
 
@@ -129,10 +129,7 @@ namespace KurisuBlitz
         {
             try
             {
-                if (_orbwalker.GetTarget() != null)
-                    _target = (Obj_AI_Hero)_orbwalker.GetTarget();
-                else
-                    _target = SimpleTs.GetTarget(1000, SimpleTs.DamageType.Physical);
+                _target = SimpleTs.GetSelectedTarget() ?? SimpleTs.GetTarget(1000, SimpleTs.DamageType.Physical);
 
                 // do KS
                 GodKS(Q);
@@ -171,6 +168,8 @@ namespace KurisuBlitz
         private void TheGodHand(Obj_AI_Base target)
         {
             bool keydown = _menu.Item("combokey").GetValue<KeyBind>().Active;
+            if (SimpleTs.GetSelectedTarget() != null && _target.Distance(_player.Position) > 1000)
+                return;
 
             if (target != null && Q.IsReady())
             {
