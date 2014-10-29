@@ -316,7 +316,7 @@ namespace KurisuRiven
                 };
 
                 if (_q.IsReady() && _btimer < 1.2 && qpassives.Any(p => _player.HasBuff(p, true)))
-                    if (_config.Item("keepqalive").GetValue<bool>())
+                    if (_config.Item("keepqalive").GetValue<bool>() && !_player.HasBuff("Recall"))
                         _q.Cast(Game.CursorPos);
 
                 if (!_q.IsReady())
