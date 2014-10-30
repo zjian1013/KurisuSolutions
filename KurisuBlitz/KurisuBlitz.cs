@@ -14,6 +14,11 @@ namespace KurisuBlitz
      *  |_____|___|___|  |__|__|__,|_|_|___|
      *                               
      * Blitz - The God Hand
+     * 
+     * Revision: 104 30/10/2014
+     * + Fixed powerfist (E)
+     * + Lag free drawings
+     * 
      * Revision: 103 - 13/10/2014
      * + Added Q,E Killsteal
      * + New KS Menu
@@ -54,6 +59,7 @@ namespace KurisuBlitz
 
             // Set Q Prediction
             Q.SetSkillshot(0.25f, 70f, 1800f, true, SkillshotType.SkillshotLine);
+            
 
             // Drawing List
             blitzDrawingList.Add(Q);
@@ -114,7 +120,7 @@ namespace KurisuBlitz
             {
                 var circle = _menu.SubMenu("drawings").Item("draw" + spell.Slot).GetValue<Circle>();
                 if (circle.Active)
-                    Utility.DrawCircle(_player.Position, spell.Range, circle.Color, 5, 55);
+                    Utility.DrawCircle(_player.Position, spell.Range, circle.Color, 1, 1);
             }
 
             if (_target != null)
@@ -142,20 +148,25 @@ namespace KurisuBlitz
                 if (actualHealthPercent < actualHealthSetting) return;
 
                 // use the god hand
-                TheGodHand(_target);
+
+                if (SimpleTs.GetSelectedTarget() == null || !(_target.Distance(_player.Position) > 750))
+                {
+                    TheGodHand(_target);
+                }
 
                 // powerfist that hoe
-                foreach (
-                    var e in
-                        ObjectManager.Get<Obj_AI_Hero>()
-                            .Where(
-                                e =>
-                                    e.Team != _player.Team && e.IsValid && !e.IsDead &&
-                                    e.Distance(_player.Position) <= _player.AttackRange))
-                {
-                    if (_menu.Item("useE").GetValue<bool>() && !Q.IsReady())
-                        _player.Spellbook.CastSpell(SpellSlot.E);
-                }
+                    foreach (
+                        var e in
+                            ObjectManager.Get<Obj_AI_Hero>()
+                                .Where(
+                                    e =>
+                                        e.Team != _player.Team && e.IsValid && !e.IsDead &&
+                                        e.Distance(_player.Position) <= _player.AttackRange))
+                    {
+                        if (_menu.Item("useE").GetValue<bool>() && !Q.IsReady())
+                            E.CastOnUnit(_player);
+                    }
+                
             }
             catch (Exception ex)
             {
@@ -277,7 +288,6 @@ namespace KurisuBlitz
             _menu.AddItem(new MenuItem("gapcloser", "Smart anti gapcloser")).SetValue(true);
             _menu.AddItem(new MenuItem("interrupt", "Interrupt spells")).SetValue(true);
             _menu.AddItem(new MenuItem("useE", "Powerfist after grab")).SetValue(true);
-            _menu.AddItem(new MenuItem("killsteal", "Killsteal with ult")).SetValue(false);
             _menu.AddItem(new MenuItem("combokey", "Combo Key")).SetValue(new KeyBind(32, KeyBindType.Press));
             _menu.AddToMainMenu();
 
