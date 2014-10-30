@@ -12,6 +12,9 @@ namespace KurisuNidalee
      * | | | | | . | .'| | -_| -_|
      * |_|___|_|___|__,|_|___|___|
      * 
+     * Revison 106-3 30/10/2014
+     * + Can change hitchance in menu now
+     * 
      * Revision 106-2 21/10/2014
      * + Spellchecks
      * + Fixed some spells casting with packets even when
@@ -47,8 +50,7 @@ namespace KurisuNidalee
     internal class KurisuNidalee
     {
         public KurisuNidalee()
-        {
-            //if (Me.BaseSkinName != "Nidalee") return;
+        {          
             Console.WriteLine("Kurisu assembly is loading...");
             CustomEvents.Game.OnGameLoad += Initialize;
         }
@@ -84,7 +86,8 @@ namespace KurisuNidalee
 
         #region Nidalee: Initialize
         private void Initialize(EventArgs args)
-        {            
+        {
+            if (Me.BaseSkinName != "Nidalee") return;
             NidaMenu();
 
             cougarList.AddRange(new[] { takedown, pounce, swipe });
@@ -122,6 +125,7 @@ namespace KurisuNidalee
             Config.AddSubMenu(nidaKeys);
 
             var nidaSpells = new Menu("Nidalee: Spells", "spells");
+            nidaSpells.AddItem(new MenuItem("hitchance", "Hitchance")).SetValue(new StringList(new[] { "Low", "Medium", "High" }, 2));
             nidaSpells.AddItem(new MenuItem("usehumanq", "Use Javelin Toss")).SetValue(true);
             nidaSpells.AddItem(new MenuItem("usehumanw", "Use Bushwack")).SetValue(true);
             nidaSpells.AddItem(new MenuItem(" ", " "));
@@ -226,8 +230,9 @@ namespace KurisuNidalee
         #region Nidalee: SBTW
         private void UseCombo(Obj_AI_Base target)
         {
-            SpellSlot ignote = Me.GetSpellSlot("summonerdot");
-            float minPounce = Config.Item("pouncerange").GetValue<Slider>().Value;
+            var ignote = Me.GetSpellSlot("summonerdot");
+            var minPounce = Config.Item("pouncerange").GetValue<Slider>().Value;
+            var hitchance = Config.Item("hitchance").GetValue<StringList>().SelectedIndex;
 
             if (Kitty)
             {
@@ -272,11 +277,25 @@ namespace KurisuNidalee
             }
             else
             {
-                if (javelin.IsReady() && Config.Item("usehumanq").GetValue<bool>())
+                if (javelin.IsReady() && target.Distance(Me.Position) < javelin.Range && Config.Item("usehumanq").GetValue<bool>())
                 {
                     var prediction = javelin.GetPrediction(target);
-                    if (prediction.Hitchance >= HitChance.Medium && target.Distance(Me.Position) < javelin.Range)
-                        javelin.Cast(prediction.CastPosition, Packets());
+
+                    switch (hitchance)
+                    {
+                        case 0:
+                            if (prediction.Hitchance >= HitChance.Low)
+                                javelin.Cast(prediction.CastPosition, Packets());
+                            break;
+                        case 1:
+                            if (prediction.Hitchance >= HitChance.Medium)
+                                javelin.Cast(prediction.CastPosition, Packets());
+                            break;
+                        case 2:
+                            if (prediction.Hitchance >= HitChance.High)
+                                javelin.Cast(prediction.CastPosition, Packets());
+                            break;
+                    }
                 }
 
                 if (bushwack.IsReady() && Config.Item("usehumanw").GetValue<bool>() && target.Distance(Me.Position) <= bushwack.Range)
@@ -290,11 +309,28 @@ namespace KurisuNidalee
         {
             var actualHeroManaPercent = (int)((Me.Mana / Me.MaxMana) * 100);
             var minPercent = Config.Item("humanqpct").GetValue<Slider>().Value;
+            var hitchance = Config.Item("hitchance").GetValue<StringList>().SelectedIndex;
             if (!Kitty && javelin.IsReady() && Config.Item("usehumanq2").GetValue<bool>())
             {
                 var prediction = javelin.GetPrediction(target);
-                if (prediction.Hitchance >= HitChance.Medium && target.Distance(Me.Position) <= javelin.Range && actualHeroManaPercent > minPercent)
-                    javelin.Cast(prediction.CastPosition, Packets());
+                if (target.Distance(Me.Position) <= javelin.Range && actualHeroManaPercent > minPercent)
+                {
+                    switch (hitchance)
+                    {
+                        case 0:
+                            if (prediction.Hitchance >= HitChance.Low)
+                                javelin.Cast(prediction.CastPosition, Packets());
+                            break;
+                        case 1:
+                            if (prediction.Hitchance >= HitChance.Medium)
+                                javelin.Cast(prediction.CastPosition, Packets());
+                            break;
+                        case 2:
+                            if (prediction.Hitchance >= HitChance.High)
+                                javelin.Cast(prediction.CastPosition, Packets());
+                            break;
+                    }
+                }                    
             }
         }
 
