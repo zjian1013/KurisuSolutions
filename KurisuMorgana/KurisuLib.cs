@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using LeagueSharp;
 using LeagueSharp.Common;
 using System.Collections.Generic;
@@ -85,7 +85,7 @@ namespace KurisuMorgana
                     HeroName = "Amumu",
                     SpellMenuName = "Bandage Toss",
                     Slot = SpellSlot.Q,
-                    Type = Skilltype.Circle,
+                    Type = Skilltype.Line,
                     SDataName = "BandageToss",
                     DangerLevel = 5
                 });
@@ -134,7 +134,7 @@ namespace KurisuMorgana
                 {
                     HeroName = "Ashe",
                     SpellMenuName = "Crystal Arrow",
-                    Slot = SpellSlot.W,
+                    Slot = SpellSlot.R,
                     Type = Skilltype.Line,
                     SDataName = "EnchantedCrystalArrow",
                     DangerLevel = 5
@@ -1525,6 +1525,7 @@ namespace KurisuMorgana
                 {
                     HeroName = "Talon",
                     SpellMenuName = "Cutthroat",
+                    Type = Skilltype.Unknown,
                     Slot = SpellSlot.E,
                     DangerLevel = 3,
                     SDataName = "TalonCutthroat",
@@ -1543,6 +1544,7 @@ namespace KurisuMorgana
                 {
                     HeroName = "Viktor",
                     SpellMenuName = "Chaos Storm",
+                    Type = Skilltype.Circle,
                     Slot = SpellSlot.R,
                     DangerLevel = 3,
                     SDataName = "ViktorChaosStorm",
