@@ -571,6 +571,7 @@ namespace KurisuNidalee
         #region Nidalee: On Draw
         private void NidaleeOnDraw(EventArgs args)
         {
+
             if (Target != null) Utility.DrawCircle(Target.Position, Target.BoundingRadius, Color.Red, 1, 1);
 
             foreach (var spell in cougarList)
@@ -590,35 +591,47 @@ namespace KurisuNidalee
             if (!Config.Item("drawcds").GetValue<bool>()) return;
 
             var wts = Drawing.WorldToScreen(Me.Position);
-            if (Me.IsDead || Me.Level < 3) return;
+
             if (!Kitty) // lets show cooldown timers for the opposite form :)
             {
-                if (CQ == 0)
-                    Drawing.DrawText(wts[0] - 80, wts[1], Color.White, "Q Ready");
+                if (Me.Spellbook.CanUseSpell(SpellSlot.Q) == SpellState.NotLearned)
+                    Drawing.DrawText(wts[0] - 80, wts[1], Color.White, "Q: Null");
+                else if (CQ == 0)
+                    Drawing.DrawText(wts[0] - 80, wts[1], Color.White, "Q: Ready");
                 else
                     Drawing.DrawText(wts[0] - 80, wts[1], Color.Orange, "Q: " + CQ.ToString("0.0"));
-                if (CW == 0)
-                    Drawing.DrawText(wts[0] - 30, wts[1] + 30, Color.White, "W Ready");
+                if (Me.Spellbook.CanUseSpell(SpellSlot.W) == SpellState.NotLearned)
+                    Drawing.DrawText(wts[0] - 30, wts[1] + 30, Color.White, "W: Null");
+                else if (CW == 0)
+                    Drawing.DrawText(wts[0] - 30, wts[1] + 30, Color.White, "W: Ready");
                 else
                     Drawing.DrawText(wts[0] - 30, wts[1] + 30, Color.Orange, "W: " + CW.ToString("0.0"));
-                if (CE == 0)
-                    Drawing.DrawText(wts[0], wts[1], Color.White, "E Ready");
+                if (Me.Spellbook.CanUseSpell(SpellSlot.E) == SpellState.NotLearned)
+                    Drawing.DrawText(wts[0], wts[1], Color.White, "E: Null");
+                else if (CE == 0)
+                    Drawing.DrawText(wts[0], wts[1], Color.White, "E: Ready");
                 else
                     Drawing.DrawText(wts[0], wts[1], Color.Orange, "E: " + CE.ToString("0.0"));
 
             }
             else
             {
-                if (HQ == 0)
-                    Drawing.DrawText(wts[0] - 80, wts[1], Color.White, "Q Ready");
+                if (Me.Spellbook.CanUseSpell(SpellSlot.Q) == SpellState.NotLearned)
+                    Drawing.DrawText(wts[0] - 80, wts[1], Color.White, "Q: Null");
+                else if (HQ == 0)
+                    Drawing.DrawText(wts[0] - 80, wts[1], Color.White, "Q: Ready");
                 else
                     Drawing.DrawText(wts[0] - 80, wts[1], Color.Orange, "Q: " + HQ.ToString("0.0"));
-                if (HW == 0)
-                    Drawing.DrawText(wts[0] - 30, wts[1] + 30, Color.White, "W Ready");
+                if (Me.Spellbook.CanUseSpell(SpellSlot.W) == SpellState.NotLearned)
+                    Drawing.DrawText(wts[0] - 30, wts[1] + 30, Color.White, "W: Null");
+                else if (HW == 0)
+                    Drawing.DrawText(wts[0] - 30, wts[1] + 30, Color.White, "W: Ready");
                 else
                     Drawing.DrawText(wts[0] - 30, wts[1] + 30, Color.Orange, "W: " + HW.ToString("0.0"));
-                if (HE == 0)
-                    Drawing.DrawText(wts[0], wts[1], Color.White, "E Ready");
+                if (Me.Spellbook.CanUseSpell(SpellSlot.E) == SpellState.NotLearned)
+                    Drawing.DrawText(wts[0], wts[1], Color.White, "E: Null");
+                else if (HE == 0)
+                    Drawing.DrawText(wts[0], wts[1], Color.White, "E: Ready");
                 else
                     Drawing.DrawText(wts[0], wts[1], Color.Orange, "E: " + HE.ToString("0.0"));
 
