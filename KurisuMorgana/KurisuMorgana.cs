@@ -1,4 +1,3 @@
-using System.Linq.Expressions;
 using LeagueSharp;
 using LeagueSharp.Common;
 using SharpDX;
@@ -14,7 +13,10 @@ namespace KurisuMorgana
      * | | | | . |  _| . | .'|   | .'|
      * |_|_|_|___|_| |_  |__,|_|_|__,|
      *               |___|            
-     *               
+     * Revision: 105-2 30/10/2014
+     * + Added option to delay black shield
+     * + Black shield should work (does for me)
+     * 
      * Revision: 105-1 - 10/10/2014
      * + Lag free drawings
      * + Current target is now red (was white)
@@ -51,7 +53,7 @@ namespace KurisuMorgana
 
         public KurisuMorgana()
         {
-            if (_player.BaseSkinName != "Morgana") return;
+            
             Console.WriteLine("Kurisu assembly is loading......");
             CustomEvents.Game.OnGameLoad += Game_OnGameLoad;
         }
@@ -72,6 +74,9 @@ namespace KurisuMorgana
 
         private void Game_OnGameLoad(EventArgs args)
         {
+            if (_player.BaseSkinName != "Morgana") 
+                return;
+
             Initialize();
             SetSkills();
             MorganaMenu();
@@ -172,7 +177,7 @@ namespace KurisuMorgana
 
         private void Game_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
         {
-
+            var sdelay = _config.Item("delaye").GetValue<Slider>().Value;
             if (_config.Item("usee").GetValue<bool>() && _config.Item("edangerous").GetValue<bool>())
             {
                 if (sender.Type == GameObjectType.obj_AI_Hero && sender.IsEnemy)
@@ -184,6 +189,7 @@ namespace KurisuMorgana
                         {
                             if (spell.SDataName == args.SData.Name)
                             {
+                                Console.WriteLine(spell.Type);
                                 switch (spell.Type)
                                 {
                                     case Skilltype.Circle:
@@ -191,14 +197,22 @@ namespace KurisuMorgana
                                         {
                                             if (_config.Item(spell.SpellMenuName).GetValue<bool>() &&
                                                 _config.Item("shield" + a.SkinName).GetValue<bool>())
-                                                Blackshield.CastOnUnit(a, UsePackets());
+                                                    if (sdelay > 0)
+                                                        Utility.DelayAction.Add(sdelay,
+                                                            () => Blackshield.Cast(a.Position, UsePackets()));
+                                                    else
+                                                        Blackshield.Cast(a, UsePackets());
                                         }
                                         break;
                                     case Skilltype.Line:
                                         if (a.Distance(args.End) <= 100f && Blackshield.IsReady())
                                         {
                                             if (_config.Item(spell.SpellMenuName).GetValue<bool>() && _config.Item("shield" + a.SkinName).GetValue<bool>())
-                                                Blackshield.CastOnUnit(a, UsePackets());
+                                                    if (sdelay > 0)
+                                                        Utility.DelayAction.Add(sdelay,
+                                                            () => Blackshield.Cast(a.Position, UsePackets()));
+                                                    else
+                                                        Blackshield.Cast(a, UsePackets());
                                         }
                                         break;
                                     case Skilltype.Unknown:
@@ -208,13 +222,21 @@ namespace KurisuMorgana
                                             {
                                                 if (_config.Item(spell.SpellMenuName).GetValue<bool>() &&
                                                     _config.Item("shield" + a.SkinName).GetValue<bool>())
-                                                    Blackshield.CastOnUnit(a, UsePackets());
+                                                    if (sdelay > 0)
+                                                        Utility.DelayAction.Add(sdelay,
+                                                            () => Blackshield.Cast(a, UsePackets()));
+                                                    else
+                                                        Blackshield.Cast(a, UsePackets());
                                             }
                                             else
                                             {
                                                 if (_config.Item(spell.SpellMenuName).GetValue<bool>() &&
                                                    _config.Item("shield" + a.SkinName).GetValue<bool>())
-                                                    Blackshield.CastOnUnit(a, UsePackets());
+                                                    if (sdelay > 0)
+                                                        Utility.DelayAction.Add(sdelay,
+                                                            () => Blackshield.Cast(a.Position, UsePackets()));
+                                                    else
+                                                        Blackshield.Cast(a, UsePackets());
                                             }
                                         break;
                                 }
@@ -261,6 +283,7 @@ namespace KurisuMorgana
 
             var morgShield = new Menu("Morgana: Black Shield", "shield");
             morgShield.AddItem(new MenuItem("usee", "Enable")).SetValue(true);
+            morgShield.AddItem(new MenuItem("delaye", "Delay in MS")).SetValue(new Slider(0, 0, 300));
             morgShield.AddItem(new MenuItem("minshieldpct", "Minumum mana %")).SetValue(new Slider(40));
             morgShield.AddItem(new MenuItem("edangerous", "Shield dangerous spells")).SetValue(true);
             morgShield.AddItem(new MenuItem(" ", " "));
@@ -271,7 +294,7 @@ namespace KurisuMorgana
                 {
                     if (s.HeroName == e.SkinName)
                     {
-                        supSpe.AddItem(new MenuItem(s.SpellMenuName, e.SkinName + " " + s.SpellMenuName)).SetValue(true);
+                        supSpe.AddItem(new MenuItem(s.SpellMenuName, s.Slot + " " + s.SpellMenuName)).SetValue(true);
                         //supSpe.AddItem(new MenuItem(s.SpellMenuName + "dl", s.SpellMenuName + " Danger Level"))
                         //    .SetValue(new Slider(s.DangerLevel, 0, 5));
                     }
@@ -287,7 +310,7 @@ namespace KurisuMorgana
             _config.AddItem(new MenuItem("combokey", "Combo Key")).SetValue(new KeyBind(32, KeyBindType.Press));
             _config.AddToMainMenu();
 
-            Game.PrintChat("<font color=\"#F2F2F2\">[Morgana]</font><font color=\"#D9D9D9\"> - <u>the Fallen Angel </u>  </font>- Kurisu ©");
+            Game.PrintChat("<font color=\"#F2F2F2\">[Morgana]</font><font color=\"#D9D9D9\"> - <u>the Fallen Angel </u>  </font>- by Kurisu");
         }
 
         private void Initialize()
