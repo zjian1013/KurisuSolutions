@@ -11,64 +11,13 @@ namespace KurisuRiven
      *  | __  |_|_ _ ___ ___ 
      *  |    -| | | | -_|   |
      *  |__|__|_|\_/|___|_|_|
-     * 
-     * Revision 0993: 31/10/2014
-     * + Should never try to combo dead targets
-     * + New expiremental lane farming
-     * + Hopefully ATR is gone now
-     * 
-     * Revisioin 0991: 28/10/2014
-     * + New Q timer
-     * + Added option to keep Q's alive
-     * + Added Interrupter (W & 3rd Q)
-     * + Added AntiGapCloser (W)
-     * + Fixed Windlash not casting when R Logic was off
-     * + Fixed Windsash not casting when Mode set to "Only Kill"
-     * + Assembly will now only load if you are Riven
-     * 
-     * Revision 099: 28/10/2014
-     * + Fixed W
-     * + Fixed Jungle clear speed if you go into advance settings 
-     *   and tick "Set reccomended values" remember this only affects Delay mode and jungling
-     * + Fixed combo damage saying 0 combo damage when not in range.
-     * + Laneclear added enjoy!
-     *   
-     * Revision 0989: 26/10/2014
-     * + Fixed items, bortk may not work but who uses that
-     * + Target selector reverted back to SimpleTS
-     * + Can now focus selected target (yay?)
-     * + Tiamat/hydra canceling should be better.
-     * + Will now only ult if Q is ready and q count <= 1
-     * + Ignite will now only use post 6 with ulti on.
-     * + Added Q gapclose delay setting.
-     * + Brought back advance Q settings for "Delay" Cancel mode
-     *   set cancel mode to "Delay" and tweak away. Note: these
-     *   settings may effect jungling so use cautiously  
-     * + Windslash prediction should be better when in "Max Damage" mode
-     * + Fixed wasting valor sometimes when target was already in range
-     *
-     * Revision 0985: 21/10/2014
-     * + Ultimate overkill fix
-     * + Fixed AA damage caclulations
-     * + Fixed R check.
-     * 
-     * Revision 0984: 19/10/2014
-     * + Updated target selctor <3.
-     * + Removed older target seletor since it was redundant.
-     * + Added E/W in jungle clear (E's to mouse cursor)
-     * + Q gapclosing has been reworked and now works at level 1 again.
-     *   limiter has ben removed will try to use less q's as possible,
-     *   this should result in more Q weaving.
-     * + Will ignore Q weaving if target can die (LowHP).
-     * + Removed delay setting from Q and set with my personal delay prefference
-     *   this just confused to many people.
-     * 
+     *  
      * Revision 0981: 18/10/2014
      * + Fixed major late game error when arround post level 17/18
      *   where the combo/assembly would just spaz out do nothing
      * + No longer uses items in jungle
      *   
-     * Revision 098: 18/10/2014
+     * Reision 098: 18/10/2014
      * + Does not Q gapclose pre level 3 for technical reasons
      * + Windslash if Enemies hit >= setting (3)
      * + Jungle Q->AA Improved significantly
@@ -126,6 +75,15 @@ namespace KurisuRiven
      */
     internal class KurisuRiven
     {
+        private static Menu _config;
+        private static Obj_AI_Hero _target;
+        private static readonly Obj_AI_Hero _player = ObjectManager.Player;
+        private static Orbwalking.Orbwalker _orbwalker;
+
+        private static Spell Q = new Spell(SpellSlot.Q, 280f);
+        private static Spell W = new Spell(SpellSlot.W, 260f);
+        private static Spell E = new Spell(SpellSlot.E, 390f);
+        private static Spell R = new Spell(SpellSlot.R, 900f);
 
         public KurisuRiven()
         {
@@ -133,447 +91,258 @@ namespace KurisuRiven
             CustomEvents.Game.OnGameLoad += Game_OnGameLoad;
         }
 
-        #region Riven : Main
-        private static Menu config;
-        private static Obj_AI_Minion orbtarget;
-        private static Obj_AI_Hero enemy, stg;
-        private static readonly Obj_AI_Hero _player = ObjectManager.Player;
-        private static Orbwalking.Orbwalker _orbwalker;
 
-        private static int vrdelay;
-        private static int bwdelay;
-        private static int runiccount;
-        private static int cleavecount;
-
-        private static double ritems;
-        private static double ua, uq, uw;
-        private static double ra, rq, rw, rr, ri;
-        private static float truerange;
-
-        private static readonly Spell _e = new Spell(SpellSlot.E, 390f);
-        private static readonly Spell _q = new Spell(SpellSlot.Q, 280f);
-        private static readonly Spell _w = new Spell(SpellSlot.W, 260f);
-        private static readonly Spell _r = new Spell(SpellSlot.R, 900f);
-
-        private static double now;
-        private static double killsteal;
-        private static double extraqtime;
-        private static double extraetime;
-
-        private static bool ultion, useblade, use_auto_wind;
-        private static bool use_combo, use_clear, use_cursor;
-        private static int gaptime, wslash, wsneed, bladewhen;
-        private static int cdelay, aadelay;
-
-        private static float qtimer, qremm;
-        private static readonly int[] items = { 3144, 3153, 3142, 3112 };
-        private static readonly int[] runicpassive =
-        {
-            20, 20, 25, 25, 25, 30, 30, 30, 35, 35, 35, 40, 40, 40, 45, 45, 45, 50, 50
-        };
-
-        private static readonly string[] jungleminions =
-        {
-            "AncientGolem", "GreatWraith", "Wraith", "LizardElder", "Golem", "Worm", "Dragon", "GiantWolf" 
-        
-        };
-
-        #endregion
-
-        #region Riven : OnGameLoad
+        #region Riven: OnGameLoad
         private void Game_OnGameLoad(EventArgs args)
         {
-            if (_player.BaseSkinName != "Riven") return;
+            try
+            {
+                Game.PrintChat("Riven: Loaded! Revision: 0982");
+                Game.PrintChat("Riven: This is an early test some stuff may not be perfect yet, if you have any questions/concerns contact me on IRC/Forums. ");
+                Game.OnGameUpdate += Game_OnGameUpdate;
+                Game.OnGameProcessPacket += Game_OnGameProcessPacket;
+                Drawing.OnDraw += Game_OnDraw;
+                Obj_AI_Base.OnProcessSpellCast += Obj_AI_Base_OnProcessSpellCast;
 
-            Initialize();
+                _config = new Menu("KurisuRiven", "kriven", true);
 
-            Game.PrintChat("Riven: Loaded! Revision: 0993");
-            Game.PrintChat("Riven: If you have any questions/concerns contact me on IRC/Forums.");
+                Menu menuTS = new Menu("Target Selector", "tselector");
+                SimpleTs.AddToMenu(menuTS);
+                _config.AddSubMenu(menuTS);
 
-            config = new Menu("KurisuRiven", "kriven", true);
+                Menu menuOrb = new Menu("Orbwalker", "orbwalker");
+                _orbwalker = new Orbwalking.Orbwalker(menuOrb);
+                _config.AddSubMenu(menuOrb);
 
-            Menu menuTS = new Menu("Selector: ", "tselect");
-            SimpleTs.AddToMenu(menuTS);
-            config.AddSubMenu(menuTS);
+                Menu menuD = new Menu("Draw Settings: ", "dsettings");
+                menuD.AddItem(new MenuItem("drawaa", "Draw aa range")).SetValue(true);
+                menuD.AddItem(new MenuItem("drawp", "Draw passive count")).SetValue(true);
+                menuD.AddItem(new MenuItem("drawt", "Draw target")).SetValue(true);
+                menuD.AddItem(new MenuItem("drawkill", "Draw killable")).SetValue(true);
+                menuD.AddItem(new MenuItem("debugdmg", "Debug combo damage")).SetValue(false);
+                menuD.AddItem(new MenuItem("debugtrue", "Debug true range")).SetValue(false);
+                _config.AddSubMenu(menuD);
 
-            Menu menuOrb = new Menu("Orbwalker: ", "orbwalker");
-            _orbwalker = new Orbwalking.Orbwalker(menuOrb);
-            config.AddSubMenu(menuOrb);
+                Menu menuC = new Menu("Combo Settings: ", "csettings");
+                menuC.AddItem(new MenuItem("usevalor", "Use E logic")).SetValue(true);
+                menuC.AddItem(new MenuItem("useblade", "Use R logic")).SetValue(true);
+                menuC.AddItem(new MenuItem("waitvalor", "Wait for E (Ult)")).SetValue(true);
+                menuC.AddItem(new MenuItem("bladewhen", "Use R when: ")).SetValue(new StringList(new[] { "Easykill", "Normalkill", "Hardkill" }, 2));
+                menuC.AddItem(new MenuItem("wslash", "Windslash: ")).SetValue(new StringList(new[] { "Only Kill", "Max Damage" }, 1));
+                menuC.AddItem(new MenuItem("qsett", "Q gapclose limit")).SetValue(new Slider(1, 1, 3));
+                menuC.AddItem(new MenuItem("cancelanim", "Q Cancel type: ")).SetValue(new StringList(new[] { "Move", "Packet", "Delay" }));
+                _config.AddSubMenu(menuC);
 
-            Menu menuD = new Menu("Draw Settings: ", "dsettings");
-            menuD.AddItem(new MenuItem("dsep1", "==== Drawing Settings"));
-            menuD.AddItem(new MenuItem("drawaa", "Draw aa range")).SetValue(true);
-            menuD.AddItem(new MenuItem("drawp", "Draw passive count")).SetValue(true);
-            menuD.AddItem(new MenuItem("drawt", "Draw target")).SetValue(true);
-            menuD.AddItem(new MenuItem("drawkill", "Draw killable")).SetValue(true);
-            menuD.AddItem(new MenuItem("dsep2", "==== Debug Settings"));
-            menuD.AddItem(new MenuItem("debugdmg", "Debug combo damage")).SetValue(false);
-            menuD.AddItem(new MenuItem("debugtrue", "Debug true range")).SetValue(false);
-            config.AddSubMenu(menuD);
+                Menu menuO = new Menu("Extra Settings: ", "osettings");
+                menuO.AddItem(new MenuItem("useignote", "Use Ignite (Works)")).SetValue(true);
+                menuO.AddItem(new MenuItem("useautow", "Enable auto W")).SetValue(true);
+                menuO.AddItem(new MenuItem("autow", "Auto W min targets")).SetValue(new Slider(3, 1, 5));
+                menuO.AddItem(new MenuItem("useautows", "Enable auto Windslash")).SetValue(true);
+                menuO.AddItem(new MenuItem("autows", "Windslash if damage dealt %")).SetValue(new Slider(65, 1));
+                menuO.AddItem(new MenuItem("autows2", "Windslash if targets hit >=")).SetValue(new Slider(3, 2, 5));
+                menuO.AddItem(new MenuItem("qdelay", "Q Delay Mode ammount")).SetValue(new Slider(50, 0, 250));
+                menuO.AddItem(new MenuItem("blockanim", "Block Q animimation (fun)")).SetValue(false);
+                _config.AddSubMenu(menuO);
 
-            Menu menuC = new Menu("Combo Settings: ", "csettings");
-            menuC.AddItem(new MenuItem("csep1", "==== E Settings"));
-            menuC.AddItem(new MenuItem("usevalor", "Use E logic")).SetValue(true);
-            menuC.AddItem(new MenuItem("valorhealth", "Health % to use E")).SetValue(new Slider(40));
-            menuC.AddItem(new MenuItem("waitvalor", "Wait for E (Ult)")).SetValue(true);
-            menuC.AddItem(new MenuItem("csep2", "==== R Settings"));
-            menuC.AddItem(new MenuItem("useblade", "Use R logic")).SetValue(true);
-            menuC.AddItem(new MenuItem("bladewhen", "Use R when: "))
-                .SetValue(new StringList(new[] { "Easykill", "Normalkill", "Hardkill" }, 2));
-            menuC.AddItem(new MenuItem("wslash", "Windslash: "))
-                .SetValue(new StringList(new[] { "Only Kill", "Max Damage" }, 1));
-            menuC.AddItem(new MenuItem("csep3", "==== Q Settings"));
-            menuC.AddItem(new MenuItem("blockanim", "Block Q animimation (fun)")).SetValue(false);
-            menuC.AddItem(new MenuItem("cancelanim", "Q Cancel type: "))
-                .SetValue(new StringList(new[] { "Move", "Packet", "Delay" }));
-            menuC.AddItem(new MenuItem("qqdelay", "Q Gapclose delay (mili): ")).SetValue(new Slider(1000, 0, 3000));
+                _config.AddItem(new MenuItem("combokey", "Combo")).SetValue(new KeyBind(32, KeyBindType.Press));
+                _config.AddItem(new MenuItem("clearkey", "Jungleclear")).SetValue(new KeyBind(86, KeyBindType.Press));
+                _config.AddToMainMenu();
 
-            config.AddSubMenu(menuC);
-
-            Menu menuO = new Menu("Extra Settings: ", "osettings");
-            menuO.AddItem(new MenuItem("osep2", "==== Extra Settings"));
-            menuO.AddItem(new MenuItem("useignote", "Use Ignite")).SetValue(true);
-            menuO.AddItem(new MenuItem("useautow", "Enable auto W")).SetValue(true);
-            menuO.AddItem(new MenuItem("autow", "Auto W min targets")).SetValue(new Slider(3, 1, 5));
-            menuO.AddItem(new MenuItem("osep1", "==== Windslash Settings"));
-            menuO.AddItem(new MenuItem("useautows", "Enable auto Windslash")).SetValue(true);
-            menuO.AddItem(new MenuItem("autows", "Windslash if damage dealt %")).SetValue(new Slider(65, 1));
-            menuO.AddItem(new MenuItem("autows2", "Windslash if targets hit >=")).SetValue(new Slider(3, 2, 5));
-            menuO.AddItem(new MenuItem("osep3", "==== Interrupt Settings"));
-            menuO.AddItem(new MenuItem("interrupter", "Enable Interrupter")).SetValue(true);
-            menuO.AddItem(new MenuItem("InterruptQ3", "Interrupt with 3rd Q")).SetValue(true);
-            menuO.AddItem(new MenuItem("InterruptW", "Interrupt with W")).SetValue(true);
-            config.AddSubMenu(menuO);
-
-            Menu menuJ = new Menu("Farm/Clear Settings: ", "jsettings");
-            menuJ.AddItem(new MenuItem("jsep1", "==== Jungle Settings"));
-            menuJ.AddItem(new MenuItem("jungleE", "Use E ")).SetValue(true);
-            menuJ.AddItem(new MenuItem("jungleW", "Use W ")).SetValue(true);
-            menuJ.AddItem(new MenuItem("jungleQ", "Use Q")).SetValue(true);
-            menuJ.AddItem(new MenuItem("jsep2", "==== Farm Settings"));
-            menuJ.AddItem(new MenuItem("farmE", "Use E")).SetValue(true);
-            menuJ.AddItem(new MenuItem("farmW", "Use W")).SetValue(true);
-            menuJ.AddItem(new MenuItem("farmQ", "Use Q")).SetValue(true);
-            config.AddSubMenu(menuJ);
-
-            Menu menuA = new Menu("Advance Settings: ", "asettings");
-            menuA.AddItem(new MenuItem("asep1", "==== QA Settings"));
-            menuA.AddItem(new MenuItem("autoconfig", "Set recommended values")).SetValue(false);
-            menuA.AddItem(new MenuItem("qcdelay", "Cancel delay: ")).SetValue(new Slider(0, 0, 1200));
-            menuA.AddItem(new MenuItem("aareset", "Auto reset delay: ")).SetValue(new Slider(0, 0, 1200));
-            menuA.AddItem(new MenuItem("asep4", "==== Dont Use In Game"));
-            menuA.AddItem(new MenuItem("cursormode", "Cursor debug mode")).SetValue(false);
-            menuA.AddItem(new MenuItem("asep2", "==== Donate? :)"));
-            menuA.AddItem(new MenuItem("asep3", "xrobinsong@gmail.com"));
-
-            config.AddItem(new MenuItem("combokey", "Combo Key")).SetValue(new KeyBind(32, KeyBindType.Press));
-            config.AddItem(new MenuItem("clearkey", "Clear Key")).SetValue(new KeyBind(86, KeyBindType.Press));
-
-
-            config.AddSubMenu(menuA);
-            config.AddToMainMenu();
-
-            _r.SetSkillshot(0.25f, 300f, 120f, false, SkillshotType.SkillshotCone);
-        }
-
-        #endregion
-
-        #region Riven: Initialize
-
-        private void Initialize()
-        {
-            // On Game Draw
-            Drawing.OnDraw += Game_OnDraw;
-
-            // On Game Update
-            Game.OnGameUpdate += Game_OnGameUpdate;
-
-            // On Game Process Packet
-            Game.OnGameProcessPacket += Game_OnGameProcessPacket;
-
-            // On Possible Interrupter
-            Interrupter.OnPossibleToInterrupt += Interrupter_OnPossibleToInterrupt;
-
-            //On Enemy Gapcloser
-            AntiGapcloser.OnEnemyGapcloser += AntiGapcloser_OnEnemyGapcloser;
-
-            // On Game Process Spell Cast
-            Obj_AI_Base.OnProcessSpellCast += Obj_AI_Base_OnProcessSpellCast;
-
+                R.SetSkillshot(0.25f, 300f, 120f, false, SkillshotType.SkillshotCone);
+            }
+            catch (Exception ex)
+            {
+                //Game.PrintChat(ex.Message);
+                Console.WriteLine(ex.ToString());
+            }
         }
 
         #endregion
 
         #region Riven : OnGameUpdate
+
+        private static bool combo;
+        private static bool clear;
+        private static float truerange;
+        private static int runicbladecount;
+        private static int tricleavecount;
         private void Game_OnGameUpdate(EventArgs args)
         {
-
-            if (use_combo || killsteal + extraqtime > now)
+            try
             {
-                if (stg != null && stg.Distance(_player.Position) > 750f)
-                    return;
-                CastCombo(use_cursor ? _player : enemy); 
+                _target = SimpleTs.GetTarget(R.Range, SimpleTs.DamageType.Physical);
+
+                if (_config.Item("combokey").GetValue<KeyBind>().Active)
+                {
+                    if (!_player.IsStunned || !_player.IsRooted || !_player.IsImmovable)
+                        CastCombo(_target);
+                }
+
+                if (!_player.IsStunned)
+                {
+                    AutoW();
+                    WindSlash();                   
+                }
+
+                RefreshBuffs();
             }
-
-            if (stg != null && stg.Distance(_player.Position) > 750f)
-                CheckDamage(stg);
-
-            if (config.Item("autoconfig").GetValue<bool>())
+            catch (Exception ex)
             {
-                config.Item("aareset").SetValue(new Slider(Game.Ping + 70, 0, 1200));
-                config.Item("qcdelay").SetValue(new Slider(Game.Ping + 8, 0, 1200));
+                //Game.PrintChat(ex.Message);
+                Console.WriteLine(ex);
             }
-
-            Clear();
-            AutoW();
-            Requisites();
-            RefreshBuffs();
-            WindSlash();          
         }
 
         #endregion
 
-        #region Riven : Requisites
-        private void Requisites()
-        {
-            now = TimeSpan.FromMilliseconds(Environment.TickCount).TotalSeconds;
-
-            stg = SimpleTs.GetSelectedTarget();
-            enemy = stg.IsValidTarget() ? stg : SimpleTs.GetTarget(750, SimpleTs.DamageType.Physical);
-
-            truerange = _player.AttackRange + _player.Distance(_player.BBox.Minimum) + 1;
-
-            qtimer = (qremm - Game.Time > 0) ? (qremm - Game.Time) : 0;
-
-            ultion = _player.HasBuff("RivenFengShuiEngine", true);
-
-            wsneed = config.Item("autows").GetValue<Slider>().Value;
-            gaptime = config.Item("qqdelay").GetValue<Slider>().Value;
-            cdelay = config.Item("qcdelay").GetValue<Slider>().Value;
-            aadelay = config.Item("aareset").GetValue<Slider>().Value;
-
-            use_combo = config.Item("combokey").GetValue<KeyBind>().Active;
-            use_clear = config.Item("clearkey").GetValue<KeyBind>().Active;
-            use_auto_wind = config.Item("useautows").GetValue<bool>();
-
-            bladewhen = config.Item("bladewhen").GetValue<StringList>().SelectedIndex;
-            wslash = config.Item("wslash").GetValue<StringList>().SelectedIndex;
-
-            use_cursor = config.Item("cursormode").GetValue<bool>();
-            useblade = config.Item("useblade").GetValue<bool>();
-
-            extraqtime = TimeSpan.FromMilliseconds(gaptime).TotalSeconds;
-            extraetime = TimeSpan.FromMilliseconds(300).TotalSeconds;
-        }
-
-        #endregion
-
-        #region Riven : On Draw
+        #region Riven : OnDraw
         private void Game_OnDraw(EventArgs args)
         {
-
-            if (config.Item("drawaa").GetValue<bool>() && !_player.IsDead)
-                Utility.DrawCircle(_player.Position, _player.AttackRange + 25, Color.White, 1, 1);
-            if (config.Item("drawp").GetValue<bool>() && !_player.IsDead)
+            if (_config.Item("drawaa").GetValue<bool>() && !_player.IsDead)
+                Utility.DrawCircle(_player.Position, _player.AttackRange + 25, Color.Khaki, 3, 20);
+            if (_config.Item("drawp").GetValue<bool>() && !_player.IsDead)
             {
                 var wts = Drawing.WorldToScreen(_player.Position);
-                Drawing.DrawText(wts[0] - 35, wts[1] + 30, Color.White, "Passive: " + runiccount);
-                if (_player.Spellbook.CanUseSpell(SpellSlot.Q) == SpellState.NotLearned)
-                    Drawing.DrawText(wts[0] - 35, wts[1] + 10, Color.White, "Q: Not Learned!");
-                else if (qtimer <= 0)
-                    Drawing.DrawText(wts[0] - 35, wts[1] + 10, Color.White, "Q: Ready");
-                else
-                    Drawing.DrawText(wts[0] - 35, wts[1] + 10, Color.White, "Q: " + qtimer.ToString("0.0"));
-
+                Drawing.DrawText(wts[0] - 35, wts[1] + 30, Color.Khaki, "Passive: " + runicbladecount);
+                Drawing.DrawText(wts[0] - 35, wts[1] + 10, Color.Khaki, "Q: " + tricleavecount);
             }
-            if (config.Item("debugtrue").GetValue<bool>())
+            if (_config.Item("debugtrue").GetValue<bool>())
             {
-                if (!_player.IsDead)
+                if (_target != null && !_target.IsDead && !_player.IsDead)
                 {
-                    Utility.DrawCircle(_player.Position, truerange + 25, Color.Yellow, 1, 1);
+                    Utility.DrawCircle(_target.Position, truerange + 25, Color.Orange, 1, 1);
                 }
             }
 
-            if (config.Item("drawt").GetValue<bool>())
+            if (_config.Item("drawt").GetValue<bool>())
             {
-                if (enemy != null && !enemy.IsDead && !_player.IsDead)
+                if (_target != null && !_target.IsDead && !_player.IsDead)
                 {
-                    Utility.DrawCircle(enemy.Position, enemy.BoundingRadius, Color.Red, 1, 1);
-                    Utility.DrawCircle(enemy.Position, _player.AttackRange + _e.Range, Color.Red, 1, 1);
+                    Utility.DrawCircle(_target.Position, _target.BoundingRadius, Color.Red, 1, 1);
+                    Utility.DrawCircle(_target.Position, _player.AttackRange + E.Range, Color.Red, 1, 1);
                 }
             }
-            if (config.Item("drawkill").GetValue<bool>())
+            if (_config.Item("drawkill").GetValue<bool>())
             {
-                if (enemy != null && !enemy.IsDead && !_player.IsDead)
+                if (_target != null && !_target.IsDead && !_player.IsDead)
                 {
-                    var ts = enemy;
-                    var wts = Drawing.WorldToScreen(enemy.Position);
-                    if ((float)(ra + rq * 2 + rw + ri + ritems) > ts.Health)
+                    var ts = _target;
+                    CheckDamage(ts);
+                    var wts = Drawing.WorldToScreen(_target.Position);
+                    if ((float)(RA + RQ * 2 + RW + RI + RItems) > ts.Health)
                         Drawing.DrawText(wts[0] - 20, wts[1] + 40, Color.OrangeRed, "Kill!");
-                    else if ((float)(ra * 2 + rq * 2 + rw + ritems) > ts.Health)
+                    else if ((float)(RA * 2 + RQ * 2 + RW + RItems) > ts.Health)
                         Drawing.DrawText(wts[0] - 40, wts[1] + 40, Color.OrangeRed, "Easy Kill!");
-                    else if ((float)(ua * 3 + uq * 2 + uw + ri + rr + ritems) > ts.Health)
+                    else if ((float)(UA * 2 + UQ * 2 + UW + RI + RR + RItems) > ts.Health)
                         Drawing.DrawText(wts[0] - 40, wts[1] + 40, Color.OrangeRed, "Full Combo Kill!");
-                    else if ((float)(ua * 3 + uq * 3 + uw + rr + ri + ritems) > ts.Health)
+                    else if ((float)(UA * 6 + UQ * 3 + UW + RR + RI + RItems) > ts.Health)
                         Drawing.DrawText(wts[0] - 40, wts[1] + 40, Color.OrangeRed, "Full Combo Hard Kill!");
-                    else if ((float)(ua * 3 + uq * 3 + uw + rr + ri +ritems) < ts.Health)
+                    else 
+                    {
                         Drawing.DrawText(wts[0] - 40, wts[1] + 40, Color.OrangeRed, "Cant Kill!");
-
+                    }
                 }
             }
-            if (config.Item("debugdmg").GetValue<bool>())
+            if (_config.Item("debugdmg").GetValue<bool>())
             {
-                if (enemy != null && !enemy.IsDead && !_player.IsDead)
+                if (_target != null && !_target.IsDead && !_player.IsDead)
                 {
-                    var wts = Drawing.WorldToScreen(enemy.Position);
-                    if (!_r.IsReady())
+                    var wts = Drawing.WorldToScreen(_target.Position);
+                    if (!R.IsReady())
                         Drawing.DrawText(wts[0] - 75, wts[1] + 60, Color.Orange,
-                            "Combo Damage: " + (float)(ra * 3 + rq * 3 + rw + rr + ri + ritems));
+                            "Combo Damage: " + (float)(RA * 3 + RQ * 3 + RW + RR + RI + RItems));
                     else
                         Drawing.DrawText(wts[0] - 75, wts[1] + 60, Color.Orange,
-                            "Combo Damage: " + (float)(ua * 3 + uq * 3 + uw + rr + ri + ritems));
-                }
-            }
-
-        }
-
-        #endregion
-
-        #region Riven : Clear
-        private void Clear()
-        {
-            if (!use_clear) return;
-
-            var target = _orbwalker.GetTarget();                            
-            if (target.IsValidTarget(_w.Range) && jungleminions.Any(name => target.Name.StartsWith(name)))
-            {
-                if (_w.IsReady() && config.Item("jungleW").GetValue<bool>())
-                    _w.Cast();
-            }
-
-            else if (target.IsValidTarget(_q.Range) && target.Name.StartsWith("Minion"))
-            {
-                if (!_e.IsReady() || !config.Item("farmE").GetValue<bool>()) return;
-                if (_q.IsReady() && cleavecount >= 1)
-                    _e.Cast(Game.CursorPos);
-            }
-
-            if (_w.IsReady() && config.Item("farmW").GetValue<bool>())
-            {
-                var minions = ObjectManager.Get<Obj_AI_Minion>().Where(m => m.IsValidTarget(_w.Range)).ToList();
-
-                if (minions.Count() > 2)
-                {
-                    if (Items.HasItem(3077) && Items.CanUseItem(3077))
-                        Items.UseItem(3077);
-                    if (Items.HasItem(3074) && Items.CanUseItem(3074))
-                        Items.UseItem(3074);
-                    _w.Cast();
+                            "Combo Damage: " + (float)(UA * 6 + UQ * 3 + UW + RR + RI + RItems));
                 }
             }
         }
-
         #endregion
 
-        #region Riven : AntiGapcloser
-        private void AntiGapcloser_OnEnemyGapcloser(ActiveGapcloser gapcloser)
-        {
-            if (gapcloser.Sender.Type == _player.Type && gapcloser.Sender.IsValid)
-                if (gapcloser.Sender.Distance(_player.Position) < _w.Range && _w.IsReady())
-                    _w.Cast();
-        }
-        #endregion
-
-        #region Riven : Interrupter
-        private void Interrupter_OnPossibleToInterrupt(Obj_AI_Base sender, InterruptableSpell spell)
-        {
-            if (!config.Item("interuppter").GetValue<bool>())
-                return;
-
-            if (sender.Type == _player.Type && sender.IsValid && sender.Distance(_player.Position) < _q.Range)
-                if (_q.IsReady() && cleavecount == 2 && config.Item("InterruptQ3").GetValue<bool>())
-                    _q.Cast(sender.Position, true);
-
-            if (sender.Type == _player.Type && sender.IsValid && sender.Distance(_player.Position) < _w.Range)
-                if (_w.IsReady() && config.Item("InterruptW").GetValue<bool>())
-                    _w.Cast();
-        }
-        #endregion
-
-        #region Riven : OnProcessSpellCast
+        #region Riven : OnProcessSpell
+        private static int valdelay;
+        private static int tridelay;
 
         private void Obj_AI_Base_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
         {
+            Console.WriteLine(RR);
+            var target = _target;
+            var ultiOn = _player.HasBuff("RivenFengShuiEngine", true);
+            var wslash = _config.Item("wslash").GetValue<StringList>().SelectedIndex;
 
-            var target = enemy;
-
-            if (!sender.IsMe)
-                return;
-            if (args.SData.Name.Contains("BasicAttack"))
-                orbtarget = (Obj_AI_Minion) args.Target;
+            if (!sender.IsMe) return;
             switch (args.SData.Name)
             {
                 case "RivenTriCleave":
-                    bwdelay = Environment.TickCount;   
-                    if (cleavecount < 1)
-                        qremm = Game.Time + (13 + (13 * _player.PercentCooldownMod));
-        
+                    tridelay = Environment.TickCount;
                     break;
                 case "RivenMartyr":
                     Orbwalking.LastAATick = 0;
-                    if (_q.IsReady() && (use_combo || killsteal + extraqtime > now))
-                        Utility.DelayAction.Add(Game.Ping + 75, () => _q.Cast(use_cursor ? Game.CursorPos : target.Position, true));
-                    if (_q.IsReady() && use_clear)
-                        Utility.DelayAction.Add(Game.Ping + 75, () => _q.Cast(_orbwalker.GetTarget(), true));
                     break;
                 case "ItemTiamatCleave":
                     Orbwalking.LastAATick = 0;
+                    Utility.DelayAction.Add(Game.Ping + 75, () => UseItems(target));
+                    if (W.IsReady() && combo && _player.Distance(target.Position) < W.Range)
+                        Utility.DelayAction.Add(Game.Ping + 75, () => W.Cast());
                     break;
-                case "RivenFeint":
-                    vrdelay = Environment.TickCount;
-                    _useitems(use_cursor ? _player : target);
-                    if (!ultion && (use_combo || killsteal + extraqtime > now))
+                case "RivenFeint":                     
+                    valdelay = Environment.TickCount;
+                    if (combo) Utility.DelayAction.Add(Game.Ping + 50, () => UseItems(target));
+                    Utility.DelayAction.Add(Game.Ping + 125, delegate
                     {
-                        if (Items.HasItem(3077) && Items.CanUseItem(3077))
-                            Items.UseItem(3077);
-                        if (Items.HasItem(3074) && Items.CanUseItem(3074))
-                            Items.UseItem(3074);
-                    }
-                    Orbwalking.LastAATick = 0;
-                    if (_r.IsReady()  && (use_combo || killsteal + extraqtime > now) && useblade)
-                    {
-                        if (ultion && wslash == 1)
+                        if (combo && target.Distance(_player.Position) < W.Range)
                         {
-                            PredictionOutput po = _r.GetPrediction(target);
-                            if (cleavecount == 2 && po.Hitchance >= HitChance.Medium)
-                                _r.Cast(use_cursor ? Game.CursorPos : target.Position, true);
+                            if (Items.HasItem(3077) && Items.CanUseItem(3077))
+                                Items.UseItem(3077);
+                            if (Items.HasItem(3074) && Items.CanUseItem(3074))
+                                Items.UseItem(3074);
                         }
+                    });
+                    Orbwalking.LastAATick = 0;
+                    if (R.IsReady() && ultiOn && wslash == 1 && _config.Item("useblade").GetValue<bool>())
+                    {
+                        if (tricleavecount == 2)
+                            R.Cast(target.Position, true);
+                        //if (tricleavecount <= 1)
+                        //    R.Cast(target.Position, true);
                     }
+
                     break;
                 case "RivenFengShuiEngine":
-                    Orbwalking.LastAATick = 0;
+                    //Utility.DelayAction.Add(Game.Ping + 75, () => UseItems(target));
+                    //if (W.IsReady() && combo && target.Distance(_player.Position) < W.Range)
+                    //    Utility.DelayAction.Add(Game.Ping + 75, () => W.Cast());
                     break;
                 case "rivenizunablade":
-                    if (_q.IsReady())
-                        _q.Cast(use_cursor ? Game.CursorPos : target.Position, true);
+                    if (Q.IsReady())
+                        Q.Cast(target.Position, true);
                     break;
+
             }
+
         }
+
         #endregion
 
         #region Riven : OnProcessPacket
         private void Game_OnGameProcessPacket(GamePacketEventArgs args)
         {
+            combo = _config.Item("combokey").GetValue<KeyBind>().Active;
+            clear = _config.Item("clearkey").GetValue<KeyBind>().Active;
+            var delay = _config.Item("qdelay").GetValue<Slider>().Value;
+
+            truerange = _player.AttackRange + _player.Distance(_player.BBox.Minimum) + 1;
+
             GamePacket packet = new GamePacket(args.PacketData);
 
-            if (packet.Header == 0xb0)
+            if (packet.Header == 176) // block q anim
             {
                 packet.Position = 1;
-                if (packet.ReadInteger() == _player.NetworkId && config.Item("blockanim").GetValue<bool>())
+                if (packet.ReadInteger() == _player.NetworkId && _config.Item("blockanim").GetValue<bool>())
                     args.Process = false;
             }
 
-            if (packet.Header == 0x65 && (use_combo || killsteal + extraqtime > now))
+            if (packet.Header == 101 && combo)
             {
                 packet.Position = 16;
                 int sourceId = packet.ReadInteger();
@@ -582,16 +351,15 @@ namespace KurisuRiven
                 int targetId = packet.ReadInteger();
                 int dmgType = packet.ReadByte();
 
-                var trueTarget = ObjectManager.GetUnitByNetworkId<Obj_AI_Hero>(targetId);
-
-                if (sourceId == _player.NetworkId && (dmgType == 4 || dmgType == 3) && _q.IsReady())
+                Obj_AI_Hero trueTarget = ObjectManager.GetUnitByNetworkId<Obj_AI_Hero>(targetId);
+                if (sourceId == _player.NetworkId && (dmgType == 4 || dmgType == 3))
                 {
-                    _useitems(trueTarget);
-                    _q.Cast(stg.IsValidTarget() ? stg.Position : trueTarget.Position , true);
+                    UseItems(trueTarget);
+                    Q.Cast(trueTarget.Position, true);
                 }
             }
 
-            if (packet.Header == 0x65 && use_clear)
+            if (packet.Header == 101 && clear) 
             {
                 packet.Position = 16;
                 int sourceId = packet.ReadInteger();
@@ -601,71 +369,51 @@ namespace KurisuRiven
                 int dmgType = packet.ReadByte();
 
                 Obj_AI_Minion trueTarget = ObjectManager.GetUnitByNetworkId<Obj_AI_Minion>(targetId);
-                if (sourceId == _player.NetworkId && (dmgType == 4 || dmgType == 3))
+                if (sourceId == _player.NetworkId && (dmgType == 4 || dmgType == 3) &&
+                    JungleMinions.Any(name => trueTarget.Name.StartsWith(name)))
                 {
-                    if (jungleminions.Any(name => trueTarget.Name.StartsWith(name)) && _q.IsReady() &&
-                        config.Item("jungleQ").GetValue<bool>())
-                    {
-                        _q.Cast(trueTarget.Position, true);
-                    }
-
-                    var minionList =
-                        ObjectManager.Get<Obj_AI_Minion>()
-                            .Where(x => x.Name.StartsWith("Minion") && x.IsValidTarget(800) && x != orbtarget)
-                            .ToList();
-
-                    if (minionList.Any() && _q.IsReady())
-                    {
-                        if (!config.Item("farmQ").GetValue<bool>()) return;
-
-                        foreach (var minion in minionList)
-                        {
-                            if (_e.IsReady() && cleavecount >= 1 && config.Item("jungleE").GetValue<bool>())
-                                _e.Cast(minion.Position);
-
-                            _q.Cast(minion.Position, true);
-                            _orbwalker.ForceTarget(minion);
-                        }
-
-                    }
+                    Q.Cast(trueTarget.Position, true);
                 }
+
             }
 
-            if (packet.Header == 56 && packet.Size() == 9 && (use_combo || killsteal + extraqtime > now))
+            if (packet.Header == 56 && packet.Size() == 9 && combo)
             {
                 packet.Position = 1;
                 int sourceId = packet.ReadInteger();
                 if (sourceId == _player.NetworkId)
                 {
                     int targetId = _orbwalker.GetTarget().NetworkId;
-                    int method = config.Item("cancelanim").GetValue<StringList>().SelectedIndex;
-
                     Obj_AI_Hero truetarget = ObjectManager.GetUnitByNetworkId<Obj_AI_Hero>(targetId);
+
+                    int method = _config.Item("cancelanim").GetValue<StringList>().SelectedIndex;
                     if (_player.Distance(_orbwalker.GetTarget().Position) <= truerange + 25 && Orbwalking.Move)
                     {
                         Vector3 movePos = truetarget.Position + _player.Position -
-                                         Vector3.Normalize(_player.Position) * (_player.Distance(truetarget.Position) + 57);
+                                         Vector3.Normalize(_player.Position) *
+                                         (_player.Distance(truetarget.Position) + 57);
 
-                        switch (method)
+                        if (method == 1)
                         {
-                            case 1:
-                                Packet.C2S.Move.Encoded(new Packet.C2S.Move.Struct(movePos.X, movePos.Y, 3, _orbwalker.GetTarget().NetworkId)).Send();
-                                Orbwalking.LastAATick = 0;
-                                break;
-                            case 0:
-                                _player.IssueOrder(GameObjectOrder.MoveTo, new Vector3(movePos.X, movePos.Y, movePos.Z));
-                                Orbwalking.LastAATick = 0;
-                                break;
-                            case 2:
-                                Utility.DelayAction.Add(cdelay, () => _player.IssueOrder(GameObjectOrder.MoveTo, new Vector3(movePos.X, movePos.Y, movePos.Z)));
-                                Utility.DelayAction.Add(aadelay, () => Orbwalking.LastAATick = 0);
-                                break;
+                            Packet.C2S.Move.Encoded(new Packet.C2S.Move.Struct(movePos.X, movePos.Y, 3, _orbwalker.GetTarget().NetworkId)).Send();
+                            Orbwalking.LastAATick = 0;
+                        }
+                        else if (method == 0)
+                        {
+                            _player.IssueOrder(GameObjectOrder.MoveTo, new Vector3(movePos.X, movePos.Y, movePos.Z));
+                            Orbwalking.LastAATick = 0;
+                        }
+                        else if (method == 2)
+                        {
+                            _player.IssueOrder(GameObjectOrder.MoveTo, new Vector3(movePos.X, movePos.Y, movePos.Z));
+                            //Packet.C2S.Move.Encoded(new Packet.C2S.Move.Struct(movePos.X, movePos.Y, 3, _orbwalker.GetTarget().NetworkId)).Send();
+                            Utility.DelayAction.Add(Game.Ping + delay, () => Orbwalking.LastAATick = 0);
                         }
                     }
                 }
             }
 
-            if (packet.Header == 56 && packet.Size() == 9 && use_clear)
+            if (packet.Header == 56 && packet.Size() == 9 && clear)
             {
                 packet.Position = 1;
                 int sourceId = packet.ReadInteger();
@@ -674,21 +422,17 @@ namespace KurisuRiven
                     int targetId = _orbwalker.GetTarget().NetworkId;
                     Obj_AI_Minion truetarget = ObjectManager.GetUnitByNetworkId<Obj_AI_Minion>(targetId);
 
+                    int method = _config.Item("cancelanim").GetValue<StringList>().SelectedIndex;                 
                     if (_player.Distance(_orbwalker.GetTarget().Position) <= truerange + 25 && Orbwalking.Move)
                     {
                         Vector3 movePos = truetarget.Position + _player.Position -
-                                          Vector3.Normalize(_player.Position) * (_player.Distance(truetarget.Position) + 63);
+                                         Vector3.Normalize(_player.Position) *
+                                         (_player.Distance(truetarget.Position) + 63);
 
-                        if (jungleminions.Any(name => truetarget.Name.StartsWith(name)))
+                        if (JungleMinions.Any(name => truetarget.Name.StartsWith(name)))
                         {
-                            Utility.DelayAction.Add(cdelay, () => _player.IssueOrder(GameObjectOrder.MoveTo, new Vector3(movePos.X, movePos.Y, movePos.Z)));
-                            Utility.DelayAction.Add(aadelay, () => Orbwalking.LastAATick = 0);
-                        }
-
-                        if (jungleminions.Any(name => truetarget.Name.StartsWith("Minion")))
-                        {
-                            Utility.DelayAction.Add(cdelay, () => _player.IssueOrder(GameObjectOrder.MoveTo, new Vector3(movePos.X, movePos.Y, movePos.Z)));
-                            Utility.DelayAction.Add(aadelay, () => Orbwalking.LastAATick = 0);
+                            Packet.C2S.Move.Encoded(new Packet.C2S.Move.Struct(movePos.X, movePos.Y, 3, _orbwalker.GetTarget().NetworkId)).Send();
+                            Utility.DelayAction.Add(Game.Ping + delay, () => Orbwalking.LastAATick = 0);
                         }
                     }
 
@@ -705,239 +449,240 @@ namespace KurisuRiven
                 }
             }
         }
+
         #endregion
 
-        #region Riven : Combo Logic
+        #region Riven : Combo
         private void CastCombo(Obj_AI_Base target)
         {
-            var healthvalor = config.Item("valorhealth").GetValue<Slider>().Value;
-            if (target.IsValidTarget())
+            if (target != null && target.IsValid && target.IsVisible)
             {
-                if (_player.Distance(use_cursor ? Game.CursorPos : target.Position) > truerange + 25 ||
-                    ((_player.Health / _player.MaxHealth) * 100) <= healthvalor)
+                if (_player.Distance(target.Position) > truerange + 25 ||
+                    _player.Health * _player.MaxHealth / 100 <= 45 /*&& !R.IsReady()*/)
                 {
-                    if (_e.IsReady() && config.Item("usevalor").GetValue<bool>())
-                        _e.Cast(use_cursor ? Game.CursorPos : target.Position);
-                    if (_q.IsReady() && cleavecount <= 1 && config.Item("waitvalor").GetValue<bool>())
-                        CheckR(use_cursor ? _player : target);
+                    if (E.IsReady() && _config.Item("usevalor").GetValue<bool>())
+                        E.Cast(target.Position);
+                    if (_config.Item("waitvalor").GetValue<bool>())
+                        CheckR(target);
                 }
 
-                if (_w.IsReady() && _q.IsReady() && _e.IsReady()
-                    && _player.Distance(use_cursor ? _player.Position : target.Position) < _w.Range + 20)
+                if (W.IsReady() && Q.IsReady() && E.IsReady() 
+                    && target.Distance(_player.Position) < W.Range)
                 {
-                    if (cleavecount <= 1)
-                        if (!use_cursor) CheckR(target);
+                    CheckR(target);
+                    W.Cast();
                 }
 
-                if (_r.IsReady() && _e.IsReady() && ultion)
+                if (R.IsReady() && E.IsReady() && _player.HasBuff("RivenFengShuiEngine", true)) // utli on
                 {
-                    if (cleavecount == 2)
-                        _e.Cast(use_cursor ? Game.CursorPos : target.Position);
+                    if (tricleavecount == 2)
+                        E.Cast(target.Position);
                 }
 
-
-                if (_player.Distance(use_cursor ? Game.CursorPos : target.Position) < _w.Range)
-                    if (_w.IsReady())
-                        _w.Cast();
-
-                if (_q.IsReady() && !_e.IsReady() &&
-                    _player.Distance(use_cursor ? Game.CursorPos : target.Position) > _q.Range)
+                if (W.IsReady() && !E.IsReady() && (!Items.HasItem(3074) || !Items.CanUseItem(3074)) &&
+                    (!Items.HasItem(3077) || !Items.CanUseItem(3077)))
                 {
-                    if (TimeSpan.FromMilliseconds(bwdelay).TotalSeconds + extraqtime < now &&
-                        TimeSpan.FromMilliseconds(vrdelay).TotalSeconds + extraetime < now)
+                    if (target.Distance(_player.Position) < W.Range)
+                        W.Cast();
+                }
+
+                if (Q.IsReady() && !E.IsReady() && _player.Distance(target.Position) > Q.Range)
+                {
+                    if (valdelay + Game.Ping + 150 < Environment.TickCount &&
+                        tridelay + Game.Ping + 100 < Environment.TickCount && _player.Level >= 3)
                     {
-                        _q.Cast(target.Position, true);
+                        if (tricleavecount < _config.Item("qsett").GetValue<Slider>().Value)
+                            Q.Cast(target.Position, true);
+                    }
+                }
+
+                if (W.IsReady() && !E.IsReady() && !Q.IsReady())
+                {
+                    if (_player.Distance(target.Position) < W.Range)
+                        W.Cast();
+                }
+            }
+        }
+
+        #endregion
+
+        #region Riven : WindSlash
+        private static void WindSlash()
+        {
+            if (!_config.Item("useblade").GetValue<bool>()) return;
+            foreach (
+                var e in
+                    ObjectManager.Get<Obj_AI_Hero>()
+                        .Where(
+                            e =>
+                                e.Team != _player.Team && e.IsValid && !e.IsDead && !e.IsInvulnerable &&
+                                e.Distance(_player.Position) < R.Range))
+            {
+                CheckDamage(e);
+                PredictionOutput rPos = R.GetPrediction(e, true);
+                if (R.IsReady() && rPos.Hitchance >= HitChance.Medium &&
+                    _player.HasBuff("RivenFengShuiEngine", true))
+                {
+                    if (rPos.AoeTargetsHitCount >= _config.Item("autows2").GetValue<Slider>().Value)
+                        R.Cast(rPos.CastPosition, true); 
+                    int wsneed = _config.Item("autows").GetValue<Slider>().Value;
+                    int wslash = _config.Item("wslash").GetValue<StringList>().SelectedIndex;
+                    if (e.Health < RR)
+                        R.Cast(rPos.CastPosition, true);
+                    else if (e.Health < RR + RA * 2 + RQ * 1 && wslash == 1)
+                        R.Cast(rPos.CastPosition);
+                    else if (RR / e.MaxHealth * 100 > e.Health / e.MaxHealth * wsneed && wslash == 1)
+                    {
+                        if (_config.Item("useautows").GetValue<bool>())
+                            R.Cast(rPos.CastPosition);
                     }
                 }
             }
         }
+
         #endregion
 
-        #region Riven : Buff Handler
 
-        private void RefreshBuffs()
+        private static readonly int[] _items = { 3144, 3153, 3142, 3112 };
+        private static readonly int[] runicbladePassive =
+        {
+            20, 20, 25, 25, 25, 30, 30, 30, 35, 35, 35, 40, 40, 40, 45, 45, 45, 50, 50
+        };
+
+        private static readonly string[] JungleMinions =
+        {
+            "AncientGolem", "GreatWraith", "Wraith", "LizardElder", "Golem", "Worm", "Dragon", "GiantWolf" 
+        
+        };
+
+        private static void RefreshBuffs()
         {
             var buffs = _player.Buffs;
-
             foreach (var b in buffs)
             {
                 if (b.Name == "rivenpassiveaaboost")
-                    runiccount = b.Count;
+                    runicbladecount = b.Count;
                 if (b.Name == "RivenTriCleave")
-                    cleavecount = b.Count;
+                    tricleavecount = b.Count;
             }
-
             if (!_player.HasBuff("rivenpassiveaaboost", true))
-                runiccount = 0;
-            if (!_q.IsReady())
-                cleavecount = 0;
+                runicbladecount = 0;
+            if (!Q.IsReady())
+                tricleavecount = 0;
         }
 
-        #endregion
-
-        #region Riven : Windlsash/KS Logic
-        private static void WindSlash()
+        private static void UseItems(Obj_AI_Base target)
         {
-            if (!ultion) return;
-            foreach (var e in ObjectManager.Get<Obj_AI_Hero>().Where(e => e.IsValidTarget(_r.Range)))
+            foreach (var i in _items.Where(i => Items.CanUseItem(i) && Items.HasItem(i)))
             {
-                CheckDamage(use_cursor ? _player : e);
-                var hitcount = config.Item("autows2").GetValue<Slider>().Value;
-
-                PredictionOutput prediction = _r.GetPrediction(use_cursor ? _player : e, true);
-                if (_r.IsReady() && use_auto_wind)
-                {
-                    if (wslash == 1)
-                    {
-                        if (prediction.AoeTargetsHitCount >= hitcount)
-                            _r.Cast(prediction.CastPosition, true);
-                        else if (rr / e.MaxHealth * 100 > e.Health / e.MaxHealth * wsneed)
-                        {
-                            if (prediction.Hitchance >= HitChance.Medium)
-                                _r.Cast(prediction.CastPosition);
-                        }
-                        else if (e.Health < rr + ra * 2 + rq * 1)
-                        {
-                            if (prediction.Hitchance >= HitChance.Medium)
-                                _r.Cast(prediction.CastPosition);
-                        }
-                    }
-                    else if (wslash == 0 && e.Health < rr)
-                    {
-                        if (prediction.Hitchance >= HitChance.Medium)
-                            _r.Cast(prediction.CastPosition);
-                    }
-                }
-
-                if (_q.IsReady() && e.Health < rq && _player.Distance(enemy.Position) < _q.Range)
-                    _q.Cast(enemy.Position, true);
-                else if (_q.IsReady() && e.Health < rq + ra * 2 + ri &&
-                         _player.Distance(enemy.Position) < _q.Range)
-                {
-                    enemy = e;
-                    killsteal = TimeSpan.FromMilliseconds(Environment.TickCount).TotalSeconds;
-
-                }
-                else if (_q.IsReady() && e.Health < rq * 2 + ri && _player.Distance(enemy.Position) < _q.Range)
-                {
-                    enemy = e;
-                    killsteal = TimeSpan.FromMilliseconds(Environment.TickCount).TotalSeconds;
-                }
-            }
-        }
-
-        #endregion
-
-        #region Riven : Item Handler
-        private static void _useitems(Obj_AI_Base target)
-        {
-            foreach (var i in items.Where(i => Items.CanUseItem(i) && Items.HasItem(i)))
-            {
-                if (target.IsValidTarget(_e.Range + _r.Range))
+                if (_player.Distance(target, true) <= Q.Range * Q.Range)
                     Items.UseItem(i);
             }
-        }
-        #endregion
-
-        #region Riven : DamageHandler
-        private static void CheckDamage(Obj_AI_Base target)
-        {
-            if (target == null) return;
-
-            var ignite = _player.GetSpellSlot("summonerdot");
-            double aa = _player.GetAutoAttackDamage(target);
-
-            double tmt = Items.HasItem(3077) && Items.CanUseItem(3077) ? _player.GetItemDamage(target, Damage.DamageItems.Tiamat) : 0;
-            double hyd = Items.HasItem(3074) && Items.CanUseItem(3074) ? _player.GetItemDamage(target, Damage.DamageItems.Hydra) : 0;
-            double bwc = Items.HasItem(3144) && Items.CanUseItem(3144) ? _player.GetItemDamage(target, Damage.DamageItems.Bilgewater) : 0;
-            double brk = Items.HasItem(3153) && Items.CanUseItem(3153) ? _player.GetItemDamage(target, Damage.DamageItems.Botrk) : 0;
-
-            rr = _player.GetSpellDamage(target, SpellSlot.R);
-            ra = aa + (aa * (runicpassive[_player.Level] / 100));
-            rq = _q.IsReady() ? DamageQ(target) : 0;
-            rw = _w.IsReady() ? _player.GetSpellDamage(target, SpellSlot.W) : 0;
-            ri = _player.SummonerSpellbook.CanUseSpell(ignite) == SpellState.Ready ? _player.GetSummonerSpellDamage(target, Damage.SummonerSpell.Ignite) : 0;
-
-            ritems = tmt + hyd + bwc + brk;
-
-            ua = _r.IsReady()
-                ? ra +
-                  _player.CalcDamage(target, Damage.DamageType.Physical,
-                      _player.BaseAttackDamage + _player.FlatPhysicalDamageMod * 0.2)
-                : ua;
-
-            uq = _r.IsReady()
-                ? rq +
-                  _player.CalcDamage(target, Damage.DamageType.Physical,
-                      _player.BaseAttackDamage + _player.FlatPhysicalDamageMod * 0.2 * 0.7)
-                : uq;
-
-            uw = _r.IsReady()
-                ? rw +
-                  _player.CalcDamage(target, Damage.DamageType.Physical,
-                      _player.BaseAttackDamage + _player.FlatPhysicalDamageMod * 0.2 * 1)
-                : uw;
-
-            rr = _r.IsReady()
-                ? rr +
-                  _player.CalcDamage(target, Damage.DamageType.Physical,
-                      _player.BaseAttackDamage + _player.FlatPhysicalDamageMod * 0.2)
-                : rr;
         }
 
         public static float DamageQ(Obj_AI_Base target)
         {
             double dmg = 0;
-            if (_q.IsReady())
+            if (Q.IsReady())
             {
                 dmg += _player.CalcDamage(_player, Damage.DamageType.Physical,
-                    -10 + (_q.Level * 20) +
-                    (0.35 + (_q.Level * 0.05)) * (_player.FlatPhysicalDamageMod + _player.BaseAttackDamage));
-            }
+                    -10 + (Q.Level * 20) +
+                    (0.35 + (Q.Level * 0.05)) * (_player.FlatPhysicalDamageMod + _player.BaseAttackDamage));
 
+            }
             return (float)dmg;
+        }
+
+        #region Riven : Check Damage
+        private static double RItems;
+        private static double UA, UQ, UW;
+        private static double RA, RQ, RW, RR, RI;
+        private static void CheckDamage(Obj_AI_Base target)
+        {
+            if (target != null)
+            {
+                var count = runicbladecount;
+                var ignite = _player.GetSpellSlot("summonerdot");
+
+                if (count == 0) count = 1;
+                double AA = _player.GetAutoAttackDamage(target);
+
+                RR = _player.GetSpellDamage(target, SpellSlot.R);
+                RA = AA * runicbladePassive[_player.Level] / 100 * 3;
+                RQ = Q.IsReady() ? DamageQ(target) : 0;
+                RW = W.IsReady() ? _player.GetSpellDamage(target, SpellSlot.W) : 0;
+                RI = _player.SummonerSpellbook.CanUseSpell(ignite) == SpellState.Ready ? _player.GetSummonerSpellDamage(target, Damage.SummonerSpell.Ignite) : 0;
+
+
+                double TMT = Items.HasItem(3077) && Items.CanUseItem(3077) ? _player.GetItemDamage(target, Damage.DamageItems.Tiamat) : 0;
+                double HYD = Items.HasItem(3074) && Items.CanUseItem(3074) ? _player.GetItemDamage(target, Damage.DamageItems.Hydra) : 0;
+                double BWC = Items.HasItem(3144) && Items.CanUseItem(3144) ? _player.GetItemDamage(target, Damage.DamageItems.Bilgewater) : 0;
+                double BRK = Items.HasItem(3153) && Items.CanUseItem(3153) ? _player.GetItemDamage(target, Damage.DamageItems.Botrk) : 0;
+
+                RItems = TMT + HYD + BWC + BRK;
+
+                if (R.IsReady())
+                {
+                    UA = RA + _player.CalcDamage(target, Damage.DamageType.Physical, AA * 0.2);
+                    UQ = RQ + _player.CalcDamage(target, Damage.DamageType.Physical, AA * 0.2 * 0.7);
+                    UW = RW + _player.CalcDamage(target, Damage.DamageType.Physical, AA * 0.2 * 1);
+                    RR = RR + _player.CalcDamage(target, Damage.DamageType.Physical, AA * 0.2);
+                }
+                else
+                {
+                    UA = RA;
+                    UQ = RQ;
+                    UW = RW;
+                }
+            }
         }
         #endregion
 
-        #region Riven : Ultimate Handler
+        #region Riven: CheckR
         private void CheckR(Obj_AI_Base target)
         {
-            if (target.IsValidTarget() && useblade && use_combo)
+            var index = _config.Item("bladewhen").GetValue<StringList>();
+            if (target != null && target.IsValid && target.Type == _player.Type && _config.Item("useblade").GetValue<bool>())
             {
-                switch (bladewhen)
+                CheckDamage(target);
+                if (!_player.HasBuff("RivenFengShuiEngine", true))
                 {
-                    case 2:
-                        if ((float) (ua*3 + uq*3 + uw + rr + ri + ritems) > target.Health && !ultion)
-                        {
-                            _r.Cast();
-                            if (config.Item("useignote").GetValue<bool>() && _r.IsReady())
-                                CastIgnite(target);
-                        }
-                        break;
-                    case 1:
-                        if ((float) (ra*3 + rq*3 + rw + rr + ri + ritems) > target.Health && !ultion)
-                        {
-                            _r.Cast();
-                            if (config.Item("useignote").GetValue<bool>() && _r.IsReady())
-                                CastIgnite(target);
-                        }
-                        break;
-                    case 0:
-                        if ((float) (ra*2 + rq*2 + rw + rr + ri + ritems) > target.Health && !ultion)
-                        {
-                            _r.Cast();
-                        }
-                        break;
+                    switch (index.SelectedIndex)
+                    {
+                        case 2:
+                            if ((float) (UA*6 + UQ*3 + UW + RR + RI + RItems) > target.Health)
+                            {
+                                R.Cast();
+                                if (_config.Item("useignote").GetValue<bool>())
+                                    CastIgnite(target);
+                            }
+                            break;
+                        case 1:
+                            if ((float) (RA*3 + RQ*3 + RW + RR + RI + RItems) > target.Health)
+                            {
+                                R.Cast();
+                                if (_config.Item("useignote").GetValue<bool>())
+                                    CastIgnite(target);
+                            }
+                            break;
+                        case 0:
+                            if ((float) (RA*2 + RQ*2 + RW + RR + RI + RItems) > target.Health)
+                            {
+                                R.Cast();
+                                if (_config.Item("useignote").GetValue<bool>())
+                                    CastIgnite(target);
+                            }
+                            break;
+                    }
                 }
             }
         }
 
         #endregion
 
-        #region Riven : Ignote Handler
         private static void CastIgnite(Obj_AI_Base target)
         {
-            if (target.IsValidTarget(600))
+            if (target != null && target.IsValid)
             {
                 var ignote = _player.GetSpellSlot("summonerdot");
                 if (_player.SummonerSpellbook.CanUseSpell(ignote) == SpellState.Ready)
@@ -946,22 +691,24 @@ namespace KurisuRiven
                 }
             }
         }
-        #endregion
 
-        #region Riven : AutoW
+
         private void AutoW()
         {
-            var getenemies = ObjectManager.Get<Obj_AI_Hero>().Where(en => en.IsValidTarget(_w.Range));
-            if (getenemies.Count() >= config.Item("autow").GetValue<Slider>().Value)
+            var getenemies =
+                ObjectManager.Get<Obj_AI_Hero>()
+                    .Where(
+                        en =>
+                            en.Team != _player.Team && en.IsValid && !en.IsDead &&
+                            en.Distance(_player.Position) < W.Range);
+            if (getenemies.Count() >= _config.Item("autow").GetValue<Slider>().Value)
             {
-                if (_w.IsReady() && config.Item("useautow").GetValue<bool>())
+                if (W.IsReady() && _config.Item("useautow").GetValue<bool>())
                 {
-                    _w.Cast();
+                    W.Cast();
                 }
             }
 
         }
-
-        #endregion
     }
 }
