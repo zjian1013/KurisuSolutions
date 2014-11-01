@@ -14,6 +14,7 @@ namespace KurisuRiven
      * 
      * Revision 0994: 1/11/2014
      * + Fixed targeting
+     * + Fixed killsteal
      * 
      * Revision 0993: 31/10/2014
      * + Should never try to combo dead targets
@@ -186,104 +187,98 @@ namespace KurisuRiven
         #region  OnGameLoad
         private void Game_OnGameLoad(EventArgs args)
         {
-            try
-            {
-                if (_player.BaseSkinName != "Riven") return;
+            if (_player.BaseSkinName != "Riven") return;
 
-                Initialize();
+            Initialize();
 
-                Game.PrintChat("Riven Revision: 0994 Loaded");
+            Game.PrintChat("Riven Revision: 0994 Loaded");
 
-                config = new Menu("KurisuRiven", "kriven", true);
+            config = new Menu("KurisuRiven", "kriven", true);
 
-                Menu menuTS = new Menu("Selector: ", "tselect");
-                SimpleTs.AddToMenu(menuTS);
-                config.AddSubMenu(menuTS);
+            Menu menuTS = new Menu("Selector: ", "tselect");
+            SimpleTs.AddToMenu(menuTS);
+            config.AddSubMenu(menuTS);
 
-                Menu menuOrb = new Menu("Orbwalker: ", "orbwalker");
-                _orbwalker = new Orbwalking.Orbwalker(menuOrb);
-                config.AddSubMenu(menuOrb);
+            Menu menuOrb = new Menu("Orbwalker: ", "orbwalker");
+            _orbwalker = new Orbwalking.Orbwalker(menuOrb);
+            config.AddSubMenu(menuOrb);
 
-                Menu menuD = new Menu("Draw Settings: ", "dsettings");
-                menuD.AddItem(new MenuItem("dsep1", "==== Drawing Settings"));
-                menuD.AddItem(new MenuItem("drawaa", "Draw aa range")).SetValue(true);
-                menuD.AddItem(new MenuItem("drawp", "Draw passive count")).SetValue(true);
-                menuD.AddItem(new MenuItem("drawt", "Draw target")).SetValue(true);
-                menuD.AddItem(new MenuItem("drawkill", "Draw killable")).SetValue(true);
-                menuD.AddItem(new MenuItem("dsep2", "==== Debug Settings"));
-                menuD.AddItem(new MenuItem("debugdmg", "Debug combo damage")).SetValue(false);
-                menuD.AddItem(new MenuItem("debugtrue", "Debug true range")).SetValue(false);
-                config.AddSubMenu(menuD);
+            Menu menuD = new Menu("Draw Settings: ", "dsettings");
+            menuD.AddItem(new MenuItem("dsep1", "==== Drawing Settings"));
+            menuD.AddItem(new MenuItem("drawaa", "Draw aa range")).SetValue(true);
+            menuD.AddItem(new MenuItem("drawp", "Draw passive count")).SetValue(true);
+            menuD.AddItem(new MenuItem("drawt", "Draw target")).SetValue(true);
+            menuD.AddItem(new MenuItem("drawkill", "Draw killable")).SetValue(true);
+            menuD.AddItem(new MenuItem("dsep2", "==== Debug Settings"));
+            menuD.AddItem(new MenuItem("debugdmg", "Debug combo damage")).SetValue(false);
+            menuD.AddItem(new MenuItem("debugtrue", "Debug true range")).SetValue(false);
+            config.AddSubMenu(menuD);
 
-                Menu menuC = new Menu("Combo Settings: ", "csettings");
-                menuC.AddItem(new MenuItem("csep1", "==== E Settings"));
-                menuC.AddItem(new MenuItem("usevalor", "Use E logic")).SetValue(true);
-                menuC.AddItem(new MenuItem("valorhealth", "Health % to use E")).SetValue(new Slider(40));
-                menuC.AddItem(new MenuItem("waitvalor", "Wait for E (Ult)")).SetValue(true);
-                menuC.AddItem(new MenuItem("csep2", "==== R Settings"));
-                menuC.AddItem(new MenuItem("useblade", "Use R logic")).SetValue(true);
-                menuC.AddItem(new MenuItem("bladewhen", "Use R when: "))
-                    .SetValue(new StringList(new[] { "Easykill", "Normalkill", "Hardkill" }, 2));
-                menuC.AddItem(new MenuItem("wslash", "Windslash: "))
-                    .SetValue(new StringList(new[] { "Only Kill", "Max Damage" }, 1));
-                menuC.AddItem(new MenuItem("csep3", "==== Q Settings"));
-                menuC.AddItem(new MenuItem("blockanim", "Block Q animimation (fun)")).SetValue(false);
-                menuC.AddItem(new MenuItem("cancelanim", "Q Cancel type: "))
-                    .SetValue(new StringList(new[] { "Move", "Packet", "Delay" }));
-                menuC.AddItem(new MenuItem("qqdelay", "Q Gapclose delay (mili): ")).SetValue(new Slider(1000, 0, 3000));
+            Menu menuC = new Menu("Combo Settings: ", "csettings");
+            menuC.AddItem(new MenuItem("csep1", "==== E Settings"));
+            menuC.AddItem(new MenuItem("usevalor", "Use E logic")).SetValue(true);
+            menuC.AddItem(new MenuItem("valorhealth", "Health % to use E")).SetValue(new Slider(40));
+            menuC.AddItem(new MenuItem("waitvalor", "Wait for E (Ult)")).SetValue(true);
+            menuC.AddItem(new MenuItem("csep2", "==== R Settings"));
+            menuC.AddItem(new MenuItem("useblade", "Use R logic")).SetValue(true);
+            menuC.AddItem(new MenuItem("bladewhen", "Use R when: "))
+                .SetValue(new StringList(new[] { "Easykill", "Normalkill", "Hardkill" }, 2));
+            menuC.AddItem(new MenuItem("wslash", "Windslash: "))
+                .SetValue(new StringList(new[] { "Only Kill", "Max Damage" }, 1));
+            menuC.AddItem(new MenuItem("csep3", "==== Q Settings"));
+            menuC.AddItem(new MenuItem("blockanim", "Block Q animimation (fun)")).SetValue(false);
+            menuC.AddItem(new MenuItem("cancelanim", "Q Cancel type: "))
+                .SetValue(new StringList(new[] { "Move", "Packet", "Delay" }));
+            menuC.AddItem(new MenuItem("qqdelay", "Q Gapclose delay (mili): ")).SetValue(new Slider(1000, 0, 3000));
 
-                config.AddSubMenu(menuC);
+            config.AddSubMenu(menuC);
 
-                Menu menuO = new Menu("Extra Settings: ", "osettings");
-                menuO.AddItem(new MenuItem("osep2", "==== Extra Settings"));
-                menuO.AddItem(new MenuItem("useignote", "Use Ignite")).SetValue(true);
-                menuO.AddItem(new MenuItem("useautow", "Enable auto W")).SetValue(true);
-                menuO.AddItem(new MenuItem("autow", "Auto W min targets")).SetValue(new Slider(3, 1, 5));
-                menuO.AddItem(new MenuItem("osep1", "==== Windslash Settings"));
-                menuO.AddItem(new MenuItem("useautows", "Enable auto Windslash")).SetValue(true);
-                menuO.AddItem(new MenuItem("autows", "Windslash if damage dealt %")).SetValue(new Slider(65, 1));
-                menuO.AddItem(new MenuItem("autows2", "Windslash if targets hit >=")).SetValue(new Slider(3, 2, 5));
-                menuO.AddItem(new MenuItem("osep3", "==== Interrupt Settings"));
-                menuO.AddItem(new MenuItem("interrupter", "Enable Interrupter")).SetValue(true);
-                menuO.AddItem(new MenuItem("InterruptQ3", "Interrupt with 3rd Q")).SetValue(true);
-                menuO.AddItem(new MenuItem("InterruptW", "Interrupt with W")).SetValue(true);
-                config.AddSubMenu(menuO);
+            Menu menuO = new Menu("Extra Settings: ", "osettings");
+            menuO.AddItem(new MenuItem("osep2", "==== Extra Settings"));
+            menuO.AddItem(new MenuItem("useignote", "Use Ignite")).SetValue(true);
+            menuO.AddItem(new MenuItem("useautow", "Enable auto W")).SetValue(true);
+            menuO.AddItem(new MenuItem("autow", "Auto W min targets")).SetValue(new Slider(3, 1, 5));
+            menuO.AddItem(new MenuItem("osep1", "==== Windslash Settings"));
+            menuO.AddItem(new MenuItem("useautows", "Enable auto Windslash")).SetValue(true);
+            menuO.AddItem(new MenuItem("autows", "Windslash if damage dealt %")).SetValue(new Slider(65, 1));
+            menuO.AddItem(new MenuItem("autows2", "Windslash if targets hit >=")).SetValue(new Slider(3, 2, 5));
+            menuO.AddItem(new MenuItem("osep3", "==== Interrupt Settings"));
+            menuO.AddItem(new MenuItem("interrupter", "Enable Interrupter")).SetValue(true);
+            menuO.AddItem(new MenuItem("InterruptQ3", "Interrupt with 3rd Q")).SetValue(true);
+            menuO.AddItem(new MenuItem("InterruptW", "Interrupt with W")).SetValue(true);
+            config.AddSubMenu(menuO);
 
-                Menu menuJ = new Menu("Farm/Clear Settings: ", "jsettings");
-                menuJ.AddItem(new MenuItem("jsep1", "==== Jungle Settings"));
-                menuJ.AddItem(new MenuItem("jungleE", "Use E ")).SetValue(true);
-                menuJ.AddItem(new MenuItem("jungleW", "Use W ")).SetValue(true);
-                menuJ.AddItem(new MenuItem("jungleQ", "Use Q")).SetValue(true);
-                menuJ.AddItem(new MenuItem("jsep2", "==== Farm Settings"));
-                menuJ.AddItem(new MenuItem("farmE", "Use E")).SetValue(true);
-                menuJ.AddItem(new MenuItem("farmW", "Use W")).SetValue(true);
-                menuJ.AddItem(new MenuItem("farmQ", "Use Q")).SetValue(true);
-                config.AddSubMenu(menuJ);
+            Menu menuJ = new Menu("Farm/Clear Settings: ", "jsettings");
+            menuJ.AddItem(new MenuItem("jsep1", "==== Jungle Settings"));
+            menuJ.AddItem(new MenuItem("jungleE", "Use E ")).SetValue(true);
+            menuJ.AddItem(new MenuItem("jungleW", "Use W ")).SetValue(true);
+            menuJ.AddItem(new MenuItem("jungleQ", "Use Q")).SetValue(true);
+            menuJ.AddItem(new MenuItem("jsep2", "==== Farm Settings"));
+            menuJ.AddItem(new MenuItem("farmE", "Use E")).SetValue(true);
+            menuJ.AddItem(new MenuItem("farmW", "Use W")).SetValue(true);
+            menuJ.AddItem(new MenuItem("farmQ", "Use Q")).SetValue(true);
+            config.AddSubMenu(menuJ);
 
-                Menu menuA = new Menu("Advance Settings: ", "asettings");
-                menuA.AddItem(new MenuItem("asep1", "==== QA Settings"));
-                menuA.AddItem(new MenuItem("autoconfig", "Set recommended values")).SetValue(false);
-                menuA.AddItem(new MenuItem("qcdelay", "Cancel delay: ")).SetValue(new Slider(0, 0, 1200));
-                menuA.AddItem(new MenuItem("aareset", "Auto reset delay: ")).SetValue(new Slider(0, 0, 1200));
-                menuA.AddItem(new MenuItem("asep4", "==== Dont Use In Game"));
-                menuA.AddItem(new MenuItem("cursormode", "Cursor debug mode")).SetValue(false);
-                menuA.AddItem(new MenuItem("asep2", "==== Donate? :)"));
-                menuA.AddItem(new MenuItem("asep3", "xrobinsong@gmail.com"));
+            Menu menuA = new Menu("Advance Settings: ", "asettings");
+            menuA.AddItem(new MenuItem("asep1", "==== QA Settings"));
+            menuA.AddItem(new MenuItem("autoconfig", "Set recommended values")).SetValue(false);
+            menuA.AddItem(new MenuItem("qcdelay", "Cancel delay: ")).SetValue(new Slider(0, 0, 1200));
+            menuA.AddItem(new MenuItem("aareset", "Auto reset delay: ")).SetValue(new Slider(0, 0, 1200));
+            menuA.AddItem(new MenuItem("asep4", "==== Dont Use In Game"));
+            menuA.AddItem(new MenuItem("cursormode", "Cursor debug mode")).SetValue(false);
+            menuA.AddItem(new MenuItem("asep2", "==== Donate? :)"));
+            menuA.AddItem(new MenuItem("asep3", "xrobinsong@gmail.com"));
 
-                config.AddItem(new MenuItem("combokey", "Combo Key")).SetValue(new KeyBind(32, KeyBindType.Press));
-                config.AddItem(new MenuItem("clearkey", "Clear Key")).SetValue(new KeyBind(86, KeyBindType.Press));
+            config.AddItem(new MenuItem("combokey", "Combo Key")).SetValue(new KeyBind(32, KeyBindType.Press));
+            config.AddItem(new MenuItem("clearkey", "Clear Key")).SetValue(new KeyBind(86, KeyBindType.Press));
 
 
-                config.AddSubMenu(menuA);
-                config.AddToMainMenu();
+            config.AddSubMenu(menuA);
+            config.AddToMainMenu();
 
-                _r.SetSkillshot(0.25f, 300f, 120f, false, SkillshotType.SkillshotCone);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                Game.PrintChat("Error Load: " + e.Message);
-            }
+            _r.SetSkillshot(0.25f, 300f, 120f, false, SkillshotType.SkillshotCone);
+            
+
         }
 
         #endregion
@@ -317,7 +312,6 @@ namespace KurisuRiven
         #region  OnGameUpdate
         private void Game_OnGameUpdate(EventArgs args)
         {
-
             CheckDamage(use_cursor ? _player : enemy);
 
             if (use_combo || killsteal + extraqtime > now)
@@ -344,40 +338,34 @@ namespace KurisuRiven
         #region  Requisites
         private void Requisites()
         {
-            try
-            {
-                now = TimeSpan.FromMilliseconds(Environment.TickCount).TotalSeconds;
+            now = TimeSpan.FromMilliseconds(Environment.TickCount).TotalSeconds;
 
-                enemy = SimpleTs.GetTarget(750, SimpleTs.DamageType.Physical);
+            enemy = SimpleTs.GetTarget(750, SimpleTs.DamageType.Physical);
 
-                truerange = _player.AttackRange + _player.Distance(_player.BBox.Minimum) + 1;
+            truerange = _player.AttackRange + _player.Distance(_player.BBox.Minimum) + 1;
 
-                qtimer = (qremm - Game.Time > 0) ? (qremm - Game.Time) : 0;
+            qtimer = (qremm - Game.Time > 0) ? (qremm - Game.Time) : 0;
 
-                ultion = _player.HasBuff("RivenFengShuiEngine", true);
+            ultion = _player.HasBuff("RivenFengShuiEngine", true);
 
-                wsneed = config.Item("autows").GetValue<Slider>().Value;
-                gaptime = config.Item("qqdelay").GetValue<Slider>().Value;
-                cdelay = config.Item("qcdelay").GetValue<Slider>().Value;
-                aadelay = config.Item("aareset").GetValue<Slider>().Value;
+            wsneed = config.Item("autows").GetValue<Slider>().Value;
+            gaptime = config.Item("qqdelay").GetValue<Slider>().Value;
+            cdelay = config.Item("qcdelay").GetValue<Slider>().Value;
+            aadelay = config.Item("aareset").GetValue<Slider>().Value;
 
-                use_combo = config.Item("combokey").GetValue<KeyBind>().Active;
-                use_clear = config.Item("clearkey").GetValue<KeyBind>().Active;
-                use_auto_wind = config.Item("useautows").GetValue<bool>();
+            use_combo = config.Item("combokey").GetValue<KeyBind>().Active;
+            use_clear = config.Item("clearkey").GetValue<KeyBind>().Active;
+            use_auto_wind = config.Item("useautows").GetValue<bool>();
 
-                bladewhen = config.Item("bladewhen").GetValue<StringList>().SelectedIndex;
-                wslash = config.Item("wslash").GetValue<StringList>().SelectedIndex;
+            bladewhen = config.Item("bladewhen").GetValue<StringList>().SelectedIndex;
+            wslash = config.Item("wslash").GetValue<StringList>().SelectedIndex;
 
-                use_cursor = config.Item("cursormode").GetValue<bool>();
-                useblade = config.Item("useblade").GetValue<bool>();
+            use_cursor = config.Item("cursormode").GetValue<bool>();
+            useblade = config.Item("useblade").GetValue<bool>();
 
-                extraqtime = TimeSpan.FromMilliseconds(gaptime).TotalSeconds;
-                extraetime = TimeSpan.FromMilliseconds(300).TotalSeconds;
-            }
-            catch (Exception e)
-            {
-                LogError("Requisites", e);
-            }
+            extraqtime = TimeSpan.FromMilliseconds(gaptime).TotalSeconds;
+            extraetime = TimeSpan.FromMilliseconds(300).TotalSeconds;
+
         }
 
         #endregion
@@ -385,121 +373,105 @@ namespace KurisuRiven
         #region  On Draw
         private void Game_OnDraw(EventArgs args)
         {
-            try
+            if (config.Item("drawaa").GetValue<bool>() && !_player.IsDead)
+                Utility.DrawCircle(_player.Position, _player.AttackRange + 25, Color.White, 1, 1);
+            if (config.Item("drawp").GetValue<bool>() && !_player.IsDead)
             {
-                if (config.Item("drawaa").GetValue<bool>() && !_player.IsDead)
-                    Utility.DrawCircle(_player.Position, _player.AttackRange + 25, Color.White, 1, 1);
-                if (config.Item("drawp").GetValue<bool>() && !_player.IsDead)
+                var wts = Drawing.WorldToScreen(_player.Position);
+                Drawing.DrawText(wts[0] - 35, wts[1] + 30, Color.White, "Passive: " + runiccount);
+                if (_player.Spellbook.CanUseSpell(SpellSlot.Q) == SpellState.NotLearned)
+                    Drawing.DrawText(wts[0] - 35, wts[1] + 10, Color.White, "Q: Not Learned!");
+                else if (qtimer <= 0)
+                    Drawing.DrawText(wts[0] - 35, wts[1] + 10, Color.White, "Q: Ready");
+                else
+                    Drawing.DrawText(wts[0] - 35, wts[1] + 10, Color.White, "Q: " + qtimer.ToString("0.0"));
+
+            }
+            if (config.Item("debugtrue").GetValue<bool>())
+            {
+                if (!_player.IsDead)
                 {
-                    var wts = Drawing.WorldToScreen(_player.Position);
-                    Drawing.DrawText(wts[0] - 35, wts[1] + 30, Color.White, "Passive: " + runiccount);
-                    if (_player.Spellbook.CanUseSpell(SpellSlot.Q) == SpellState.NotLearned)
-                        Drawing.DrawText(wts[0] - 35, wts[1] + 10, Color.White, "Q: Not Learned!");
-                    else if (qtimer <= 0)
-                        Drawing.DrawText(wts[0] - 35, wts[1] + 10, Color.White, "Q: Ready");
+                    Utility.DrawCircle(_player.Position, truerange + 25, Color.Yellow, 1, 1);
+                }
+            }
+
+            if (config.Item("drawt").GetValue<bool>())
+            {
+                if (enemy != null && !enemy.IsDead && !_player.IsDead)
+                {
+                    Utility.DrawCircle(enemy.Position, enemy.BoundingRadius, Color.Red, 1, 1);
+                    Utility.DrawCircle(enemy.Position, _player.AttackRange + _e.Range, Color.Red, 1, 1);
+                }
+            }
+            if (config.Item("drawkill").GetValue<bool>())
+            {
+                if (enemy != null && !enemy.IsDead && !_player.IsDead)
+                {
+                    var ts = enemy;
+                    var wts = Drawing.WorldToScreen(enemy.Position);
+                    if ((float)(ra + rq * 2 + rw + ri + ritems) > ts.Health)
+                        Drawing.DrawText(wts[0] - 20, wts[1] + 40, Color.OrangeRed, "Kill!");
+                    else if ((float)(ra * 2 + rq * 2 + rw + ritems) > ts.Health)
+                        Drawing.DrawText(wts[0] - 40, wts[1] + 40, Color.OrangeRed, "Easy Kill!");
+                    else if ((float)(ua * 3 + uq * 2 + uw + ri + rr + ritems) > ts.Health)
+                        Drawing.DrawText(wts[0] - 40, wts[1] + 40, Color.OrangeRed, "Full Combo Kill!");
+                    else if ((float)(ua * 3 + uq * 3 + uw + rr + ri + ritems) > ts.Health)
+                        Drawing.DrawText(wts[0] - 40, wts[1] + 40, Color.OrangeRed, "Full Combo Hard Kill!");
+                    else if ((float)(ua * 3 + uq * 3 + uw + rr + ri +ritems) < ts.Health)
+                        Drawing.DrawText(wts[0] - 40, wts[1] + 40, Color.OrangeRed, "Cant Kill!");
+
+                }
+            }
+
+            if (config.Item("debugdmg").GetValue<bool>())
+            {
+                if (enemy != null && !enemy.IsDead && !_player.IsDead)
+                {
+                    var wts = Drawing.WorldToScreen(enemy.Position);
+                    if (!_r.IsReady())
+                        Drawing.DrawText(wts[0] - 75, wts[1] + 60, Color.Orange,
+                            "Combo Damage: " + (float)(ra * 3 + rq * 3 + rw + rr + ri + ritems));
                     else
-                        Drawing.DrawText(wts[0] - 35, wts[1] + 10, Color.White, "Q: " + qtimer.ToString("0.0"));
-
-                }
-                if (config.Item("debugtrue").GetValue<bool>())
-                {
-                    if (!_player.IsDead)
-                    {
-                        Utility.DrawCircle(_player.Position, truerange + 25, Color.Yellow, 1, 1);
-                    }
-                }
-
-                if (config.Item("drawt").GetValue<bool>())
-                {
-                    if (enemy != null && !enemy.IsDead && !_player.IsDead)
-                    {
-                        Utility.DrawCircle(enemy.Position, enemy.BoundingRadius, Color.Red, 1, 1);
-                        Utility.DrawCircle(enemy.Position, _player.AttackRange + _e.Range, Color.Red, 1, 1);
-                    }
-                }
-                if (config.Item("drawkill").GetValue<bool>())
-                {
-                    if (enemy != null && !enemy.IsDead && !_player.IsDead)
-                    {
-                        var ts = enemy;
-                        var wts = Drawing.WorldToScreen(enemy.Position);
-                        if ((float)(ra + rq * 2 + rw + ri + ritems) > ts.Health)
-                            Drawing.DrawText(wts[0] - 20, wts[1] + 40, Color.OrangeRed, "Kill!");
-                        else if ((float)(ra * 2 + rq * 2 + rw + ritems) > ts.Health)
-                            Drawing.DrawText(wts[0] - 40, wts[1] + 40, Color.OrangeRed, "Easy Kill!");
-                        else if ((float)(ua * 3 + uq * 2 + uw + ri + rr + ritems) > ts.Health)
-                            Drawing.DrawText(wts[0] - 40, wts[1] + 40, Color.OrangeRed, "Full Combo Kill!");
-                        else if ((float)(ua * 3 + uq * 3 + uw + rr + ri + ritems) > ts.Health)
-                            Drawing.DrawText(wts[0] - 40, wts[1] + 40, Color.OrangeRed, "Full Combo Hard Kill!");
-                        else if ((float)(ua * 3 + uq * 3 + uw + rr + ri +ritems) < ts.Health)
-                            Drawing.DrawText(wts[0] - 40, wts[1] + 40, Color.OrangeRed, "Cant Kill!");
-
-                    }
-                }
-
-                if (config.Item("debugdmg").GetValue<bool>())
-                {
-                    if (enemy != null && !enemy.IsDead && !_player.IsDead)
-                    {
-                        var wts = Drawing.WorldToScreen(enemy.Position);
-                        if (!_r.IsReady())
-                            Drawing.DrawText(wts[0] - 75, wts[1] + 60, Color.Orange,
-                                "Combo Damage: " + (float)(ra * 3 + rq * 3 + rw + rr + ri + ritems));
-                        else
-                            Drawing.DrawText(wts[0] - 75, wts[1] + 60, Color.Orange,
-                                "Combo Damage: " + (float)(ua * 3 + uq * 3 + uw + rr + ri + ritems));
-                    }
+                        Drawing.DrawText(wts[0] - 75, wts[1] + 60, Color.Orange,
+                            "Combo Damage: " + (float)(ua * 3 + uq * 3 + uw + rr + ri + ritems));
                 }
             }
-            catch (Exception e)
-            {
-                LogError("Drawings", e);
-            }
-
         }
-
         #endregion
 
         #region  Clear
         private void Clear()
         {
-            try
+            if (!use_clear) return;
+
+            var target = _orbwalker.GetTarget();                            
+            if (target.IsValidTarget(_w.Range) && jungleminions.Any(name => target.Name.StartsWith(name)))
             {
-                if (!use_clear) return;
+                if (_w.IsReady() && config.Item("jungleW").GetValue<bool>())
+                    _w.Cast();
+            }
 
-                var target = _orbwalker.GetTarget();                            
-                if (target.IsValidTarget(_w.Range) && jungleminions.Any(name => target.Name.StartsWith(name)))
+            else if (target.IsValidTarget(_q.Range) && target.Name.StartsWith("Minion"))
+            {
+                if (!_e.IsReady() || !config.Item("farmE").GetValue<bool>()) return;
+                if (_q.IsReady() && cleavecount >= 1)
+                    _e.Cast(Game.CursorPos);
+            }
+
+            if (_w.IsReady() && config.Item("farmW").GetValue<bool>())
+            {
+                var minions = ObjectManager.Get<Obj_AI_Minion>().Where(m => m.IsValidTarget(_w.Range)).ToList();
+
+                if (minions.Count() > 2)
                 {
-                    if (_w.IsReady() && config.Item("jungleW").GetValue<bool>())
-                        _w.Cast();
-                }
-
-                else if (target.IsValidTarget(_q.Range) && target.Name.StartsWith("Minion"))
-                {
-                    if (!_e.IsReady() || !config.Item("farmE").GetValue<bool>()) return;
-                    if (_q.IsReady() && cleavecount >= 1)
-                        _e.Cast(Game.CursorPos);
-                }
-
-                if (_w.IsReady() && config.Item("farmW").GetValue<bool>())
-                {
-                    var minions = ObjectManager.Get<Obj_AI_Minion>().Where(m => m.IsValidTarget(_w.Range)).ToList();
-
-                    if (minions.Count() > 2)
-                    {
-                        if (Items.HasItem(3077) && Items.CanUseItem(3077))
-                            Items.UseItem(3077);
-                        if (Items.HasItem(3074) && Items.CanUseItem(3074))
-                            Items.UseItem(3074);
-                        _w.Cast();
-                    }
+                    if (Items.HasItem(3077) && Items.CanUseItem(3077))
+                        Items.UseItem(3077);
+                    if (Items.HasItem(3074) && Items.CanUseItem(3074))
+                        Items.UseItem(3074);
+                    _w.Cast();
                 }
             }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                LogError("Clear", e);
-            }
+
         }
 
         #endregion
@@ -533,66 +505,58 @@ namespace KurisuRiven
 
         private void Obj_AI_Base_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
         {
+            var target = enemy;
 
-            try
+            if (!sender.IsMe)
+                return;
+            if (args.SData.Name.Contains("BasicAttack"))
+                orbtarget = (Obj_AI_Minion) args.Target;
+            switch (args.SData.Name)
             {
-                var target = enemy;
-
-                if (!sender.IsMe)
-                    return;
-                if (args.SData.Name.Contains("BasicAttack"))
-                    orbtarget = (Obj_AI_Minion) args.Target;
-                switch (args.SData.Name)
-                {
-                    case "RivenTriCleave":
-                        bwdelay = Environment.TickCount;   
-                        if (cleavecount < 1)
-                            qremm = Game.Time + (13 + (13 * _player.PercentCooldownMod));
+                case "RivenTriCleave":
+                    bwdelay = Environment.TickCount;   
+                    if (cleavecount < 1)
+                        qremm = Game.Time + (13 + (13 * _player.PercentCooldownMod));
         
-                        break;
-                    case "RivenMartyr":
-                        Orbwalking.LastAATick = 0;
-                        if (_q.IsReady() && (use_combo || killsteal + extraqtime > now))
-                            Utility.DelayAction.Add(Game.Ping + 75, () => _q.Cast(use_cursor ? Game.CursorPos : target.Position, true));
-                        if (_q.IsReady() && use_clear)
-                            Utility.DelayAction.Add(Game.Ping + 75, () => _q.Cast(_orbwalker.GetTarget(), true));
-                        break;
-                    case "ItemTiamatCleave":
-                        Orbwalking.LastAATick = 0;
-                        break;
-                    case "RivenFeint":
-                        vrdelay = Environment.TickCount;
-                        _useitems(use_cursor ? _player : target);
-                        if (!ultion && (use_combo || killsteal + extraqtime > now))
+                    break;
+                case "RivenMartyr":
+                    Orbwalking.LastAATick = 0;
+                    if (_q.IsReady() && (use_combo || killsteal + extraqtime > now))
+                        Utility.DelayAction.Add(Game.Ping + 75, () => _q.Cast(use_cursor ? Game.CursorPos : target.Position, true));
+                    if (_q.IsReady() && use_clear)
+                        Utility.DelayAction.Add(Game.Ping + 75, () => _q.Cast(_orbwalker.GetTarget(), true));
+                    break;
+                case "ItemTiamatCleave":
+                    Orbwalking.LastAATick = 0;
+                    break;
+                case "RivenFeint":
+                    vrdelay = Environment.TickCount;
+                    _useitems(use_cursor ? _player : target);
+                    if (!ultion && (use_combo || killsteal + extraqtime > now))
+                    {
+                        if (Items.HasItem(3077) && Items.CanUseItem(3077))
+                            Items.UseItem(3077);
+                        if (Items.HasItem(3074) && Items.CanUseItem(3074))
+                            Items.UseItem(3074);
+                    }
+                    Orbwalking.LastAATick = 0;
+                    if (_r.IsReady()  && (use_combo || killsteal + extraqtime > now) && useblade)
+                    {
+                        if (ultion && wslash == 1)
                         {
-                            if (Items.HasItem(3077) && Items.CanUseItem(3077))
-                                Items.UseItem(3077);
-                            if (Items.HasItem(3074) && Items.CanUseItem(3074))
-                                Items.UseItem(3074);
+                            PredictionOutput po = _r.GetPrediction(target);
+                            if (cleavecount == 2 && po.Hitchance >= HitChance.Medium)
+                                _r.Cast(use_cursor ? Game.CursorPos : target.Position, true);
                         }
-                        Orbwalking.LastAATick = 0;
-                        if (_r.IsReady()  && (use_combo || killsteal + extraqtime > now) && useblade)
-                        {
-                            if (ultion && wslash == 1)
-                            {
-                                PredictionOutput po = _r.GetPrediction(target);
-                                if (cleavecount == 2 && po.Hitchance >= HitChance.Medium)
-                                    _r.Cast(use_cursor ? Game.CursorPos : target.Position, true);
-                            }
-                        }
-                        break;
-                    case "RivenFengShuiEngine":
-                        Orbwalking.LastAATick = 0;
-                        break;
-                    case "rivenizunablade":
-                        if (_q.IsReady())
-                            _q.Cast(use_cursor ? Game.CursorPos : target.Position, true);
-                        break;
-                }
-            }
-            catch (Exception e)
-            {
-                LogError("OnProcessSpellCast", e);
+                    }
+                    break;
+                case "RivenFengShuiEngine":
+                    Orbwalking.LastAATick = 0;
+                    break;
+                case "rivenizunablade":
+                    if (_q.IsReady())
+                        _q.Cast(use_cursor ? Game.CursorPos : target.Position, true);
+                    break;
             }
         }
 
@@ -601,152 +565,145 @@ namespace KurisuRiven
         #region  OnProcessPacket
         private void Game_OnGameProcessPacket(GamePacketEventArgs args)
         {
-            try
+            GamePacket packet = new GamePacket(args.PacketData);
+
+            if (packet.Header == 0xb0)
             {
-                GamePacket packet = new GamePacket(args.PacketData);
+                packet.Position = 1;
+                if (packet.ReadInteger() == _player.NetworkId && config.Item("blockanim").GetValue<bool>())
+                    args.Process = false;
+            }
 
-                if (packet.Header == 0xb0)
+            if (packet.Header == 0x65 && (use_combo || killsteal + extraqtime > now))
+            {
+                packet.Position = 16;
+                int sourceId = packet.ReadInteger();
+
+                packet.Position = 1;
+                int targetId = packet.ReadInteger();
+                int dmgType = packet.ReadByte();
+
+                var trueTarget = ObjectManager.GetUnitByNetworkId<Obj_AI_Hero>(targetId);
+
+                if (sourceId == _player.NetworkId && (dmgType == 4 || dmgType == 3) && _q.IsReady())
                 {
-                    packet.Position = 1;
-                    if (packet.ReadInteger() == _player.NetworkId && config.Item("blockanim").GetValue<bool>())
-                        args.Process = false;
+                    _useitems(trueTarget);
+                    _q.Cast(trueTarget.Position , true);
                 }
+            }
 
-                if (packet.Header == 0x65 && (use_combo || killsteal + extraqtime > now))
+            if (packet.Header == 0x65 && use_clear)
+            {
+                packet.Position = 16;
+                int sourceId = packet.ReadInteger();
+
+                packet.Position = 1;
+                int targetId = packet.ReadInteger();
+                int dmgType = packet.ReadByte();
+
+                Obj_AI_Minion trueTarget = ObjectManager.GetUnitByNetworkId<Obj_AI_Minion>(targetId);
+                if (sourceId == _player.NetworkId && (dmgType == 4 || dmgType == 3))
                 {
-                    packet.Position = 16;
-                    int sourceId = packet.ReadInteger();
-
-                    packet.Position = 1;
-                    int targetId = packet.ReadInteger();
-                    int dmgType = packet.ReadByte();
-
-                    var trueTarget = ObjectManager.GetUnitByNetworkId<Obj_AI_Hero>(targetId);
-
-                    if (sourceId == _player.NetworkId && (dmgType == 4 || dmgType == 3) && _q.IsReady())
+                    if (jungleminions.Any(name => trueTarget.Name.StartsWith(name)) && _q.IsReady() &&
+                        config.Item("jungleQ").GetValue<bool>())
                     {
-                        _useitems(trueTarget);
-                        _q.Cast(trueTarget.Position , true);
+                        _q.Cast(trueTarget.Position, true);
                     }
-                }
 
-                if (packet.Header == 0x65 && use_clear)
-                {
-                    packet.Position = 16;
-                    int sourceId = packet.ReadInteger();
+                    var minionList =
+                        ObjectManager.Get<Obj_AI_Minion>()
+                            .Where(x => x.Name.StartsWith("Minion") && x.IsValidTarget(800) && x != orbtarget)
+                            .ToList();
 
-                    packet.Position = 1;
-                    int targetId = packet.ReadInteger();
-                    int dmgType = packet.ReadByte();
-
-                    Obj_AI_Minion trueTarget = ObjectManager.GetUnitByNetworkId<Obj_AI_Minion>(targetId);
-                    if (sourceId == _player.NetworkId && (dmgType == 4 || dmgType == 3))
+                    if (minionList.Any() && _q.IsReady())
                     {
-                        if (jungleminions.Any(name => trueTarget.Name.StartsWith(name)) && _q.IsReady() &&
-                            config.Item("jungleQ").GetValue<bool>())
+                        if (!config.Item("farmQ").GetValue<bool>()) return;
+
+                        foreach (var minion in minionList)
                         {
-                            _q.Cast(trueTarget.Position, true);
+                            if (_e.IsReady() && cleavecount >= 1 && config.Item("jungleE").GetValue<bool>())
+                                _e.Cast(minion.Position);
+
+                            _q.Cast(minion.Position, true);
+                            _orbwalker.ForceTarget(minion);
                         }
 
-                        var minionList =
-                            ObjectManager.Get<Obj_AI_Minion>()
-                                .Where(x => x.Name.StartsWith("Minion") && x.IsValidTarget(800) && x != orbtarget)
-                                .ToList();
-
-                        if (minionList.Any() && _q.IsReady())
-                        {
-                            if (!config.Item("farmQ").GetValue<bool>()) return;
-
-                            foreach (var minion in minionList)
-                            {
-                                if (_e.IsReady() && cleavecount >= 1 && config.Item("jungleE").GetValue<bool>())
-                                    _e.Cast(minion.Position);
-
-                                _q.Cast(minion.Position, true);
-                                _orbwalker.ForceTarget(minion);
-                            }
-
-                        }
-                    }
-                }
-
-                if (packet.Header == 56 && packet.Size() == 9 && (use_combo || killsteal + extraqtime > now))
-                {
-                    packet.Position = 1;
-                    int sourceId = packet.ReadInteger();
-                    if (sourceId == _player.NetworkId)
-                    {
-                        int targetId = _orbwalker.GetTarget().NetworkId;
-                        int method = config.Item("cancelanim").GetValue<StringList>().SelectedIndex;
-
-                        Obj_AI_Hero truetarget = ObjectManager.GetUnitByNetworkId<Obj_AI_Hero>(targetId);
-                        if (_player.Distance(_orbwalker.GetTarget().Position) <= truerange + 25 && Orbwalking.Move)
-                        {
-                            Vector3 movePos = truetarget.Position + _player.Position -
-                                              Vector3.Normalize(_player.Position) * (_player.Distance(truetarget.Position) + 57);
-
-                            switch (method)
-                            {
-                                case 1:
-                                    Packet.C2S.Move.Encoded(new Packet.C2S.Move.Struct(movePos.X, movePos.Y, 3, _orbwalker.GetTarget().NetworkId)).Send();
-                                    Orbwalking.LastAATick = 0;
-                                    break;
-                                case 0:
-                                    _player.IssueOrder(GameObjectOrder.MoveTo, new Vector3(movePos.X, movePos.Y, movePos.Z));
-                                    Orbwalking.LastAATick = 0;
-                                    break;
-                                case 2:
-                                    Utility.DelayAction.Add(cdelay, () => _player.IssueOrder(GameObjectOrder.MoveTo, new Vector3(movePos.X, movePos.Y, movePos.Z)));
-                                    Utility.DelayAction.Add(aadelay, () => Orbwalking.LastAATick = 0);
-                                    break;
-                            }
-                        }
-                    }
-                }
-
-                if (packet.Header == 56 && packet.Size() == 9 && use_clear)
-                {
-                    packet.Position = 1;
-                    int sourceId = packet.ReadInteger();
-                    if (sourceId == _player.NetworkId)
-                    {
-                        int targetId = _orbwalker.GetTarget().NetworkId;
-                        Obj_AI_Minion truetarget = ObjectManager.GetUnitByNetworkId<Obj_AI_Minion>(targetId);
-
-                        if (_player.Distance(_orbwalker.GetTarget().Position) <= truerange + 25 && Orbwalking.Move)
-                        {
-                            Vector3 movePos = truetarget.Position + _player.Position -
-                                              Vector3.Normalize(_player.Position) * (_player.Distance(truetarget.Position) + 63);
-
-                            if (jungleminions.Any(name => truetarget.Name.StartsWith(name)))
-                            {
-                                Utility.DelayAction.Add(cdelay, () => _player.IssueOrder(GameObjectOrder.MoveTo, new Vector3(movePos.X, movePos.Y, movePos.Z)));
-                                Utility.DelayAction.Add(aadelay, () => Orbwalking.LastAATick = 0);
-                            }
-
-                            if (jungleminions.Any(name => truetarget.Name.StartsWith("Minion")))
-                            {
-                                Utility.DelayAction.Add(cdelay, () => _player.IssueOrder(GameObjectOrder.MoveTo, new Vector3(movePos.X, movePos.Y, movePos.Z)));
-                                Utility.DelayAction.Add(aadelay, () => Orbwalking.LastAATick = 0);
-                            }
-                        }
-
-                    }
-                }
-
-                if (packet.Header == 254 && packet.Size() == 24)
-                {
-                    packet.Position = 1;
-                    if (packet.ReadInteger() == _player.NetworkId)
-                    {
-                        Orbwalking.LastAATick = Environment.TickCount;
-                        Orbwalking.LastMoveCommandT = Environment.TickCount;
                     }
                 }
             }
-            catch (Exception e)
+
+            if (packet.Header == 56 && packet.Size() == 9 && (use_combo || killsteal + extraqtime > now))
             {
-                LogError("OnProcessPacket", e);
+                packet.Position = 1;
+                int sourceId = packet.ReadInteger();
+                if (sourceId == _player.NetworkId)
+                {
+                    int targetId = _orbwalker.GetTarget().NetworkId;
+                    int method = config.Item("cancelanim").GetValue<StringList>().SelectedIndex;
+
+                    Obj_AI_Hero truetarget = ObjectManager.GetUnitByNetworkId<Obj_AI_Hero>(targetId);
+                    if (_player.Distance(_orbwalker.GetTarget().Position) <= truerange + 25 && Orbwalking.Move)
+                    {
+                        Vector3 movePos = truetarget.Position + _player.Position -
+                                            Vector3.Normalize(_player.Position) * (_player.Distance(truetarget.Position) + 57);
+
+                        switch (method)
+                        {
+                            case 1:
+                                Packet.C2S.Move.Encoded(new Packet.C2S.Move.Struct(movePos.X, movePos.Y, 3, _orbwalker.GetTarget().NetworkId)).Send();
+                                Orbwalking.LastAATick = 0;
+                                break;
+                            case 0:
+                                _player.IssueOrder(GameObjectOrder.MoveTo, new Vector3(movePos.X, movePos.Y, movePos.Z));
+                                Orbwalking.LastAATick = 0;
+                                break;
+                            case 2:
+                                Utility.DelayAction.Add(cdelay, () => _player.IssueOrder(GameObjectOrder.MoveTo, new Vector3(movePos.X, movePos.Y, movePos.Z)));
+                                Utility.DelayAction.Add(aadelay, () => Orbwalking.LastAATick = 0);
+                                break;
+                        }
+                    }
+                }
+            }
+
+            if (packet.Header == 56 && packet.Size() == 9 && use_clear)
+            {
+                packet.Position = 1;
+                int sourceId = packet.ReadInteger();
+                if (sourceId == _player.NetworkId)
+                {
+                    int targetId = _orbwalker.GetTarget().NetworkId;
+                    Obj_AI_Minion truetarget = ObjectManager.GetUnitByNetworkId<Obj_AI_Minion>(targetId);
+
+                    if (_player.Distance(_orbwalker.GetTarget().Position) <= truerange + 25 && Orbwalking.Move)
+                    {
+                        Vector3 movePos = truetarget.Position + _player.Position -
+                                            Vector3.Normalize(_player.Position) * (_player.Distance(truetarget.Position) + 63);
+
+                        if (jungleminions.Any(name => truetarget.Name.StartsWith(name)))
+                        {
+                            Utility.DelayAction.Add(cdelay, () => _player.IssueOrder(GameObjectOrder.MoveTo, new Vector3(movePos.X, movePos.Y, movePos.Z)));
+                            Utility.DelayAction.Add(aadelay, () => Orbwalking.LastAATick = 0);
+                        }
+
+                        if (jungleminions.Any(name => truetarget.Name.StartsWith("Minion")))
+                        {
+                            Utility.DelayAction.Add(cdelay, () => _player.IssueOrder(GameObjectOrder.MoveTo, new Vector3(movePos.X, movePos.Y, movePos.Z)));
+                            Utility.DelayAction.Add(aadelay, () => Orbwalking.LastAATick = 0);
+                        }
+                    }
+
+                }
+            }
+
+            if (packet.Header == 254 && packet.Size() == 24)
+            {
+                packet.Position = 1;
+                if (packet.ReadInteger() == _player.NetworkId)
+                {
+                    Orbwalking.LastAATick = Environment.TickCount;
+                    Orbwalking.LastMoveCommandT = Environment.TickCount;
+                }
             }
         }
 
@@ -755,52 +712,45 @@ namespace KurisuRiven
         #region  Combo Logic
         private void CastCombo(Obj_AI_Base target)
         {
-            try
+            var healthvalor = config.Item("valorhealth").GetValue<Slider>().Value;
+            if (target.IsValidTarget())
             {
-                var healthvalor = config.Item("valorhealth").GetValue<Slider>().Value;
-                if (target.IsValidTarget())
+                if (_player.Distance(use_cursor ? Game.CursorPos : target.Position) > truerange + 25 ||
+                    ((_player.Health / _player.MaxHealth) * 100) <= healthvalor)
                 {
-                    if (_player.Distance(use_cursor ? Game.CursorPos : target.Position) > truerange + 25 ||
-                        ((_player.Health / _player.MaxHealth) * 100) <= healthvalor)
+                    if (_e.IsReady() && config.Item("usevalor").GetValue<bool>())
+                        _e.Cast(use_cursor ? Game.CursorPos : target.Position);
+                    if (_q.IsReady() && cleavecount <= 1 && config.Item("waitvalor").GetValue<bool>())
+                        CheckR(use_cursor ? _player : target);
+                }
+
+                if (_w.IsReady() && _q.IsReady() && _e.IsReady()
+                    && _player.Distance(use_cursor ? _player.Position : target.Position) < _w.Range + 20)
+                {
+                    if (cleavecount <= 1)
+                        if (!use_cursor) CheckR(target);
+                }
+
+                if (_r.IsReady() && _e.IsReady() && ultion)
+                {
+                    if (cleavecount == 2)
+                        _e.Cast(use_cursor ? Game.CursorPos : target.Position);
+                }
+
+
+                if (_player.Distance(use_cursor ? Game.CursorPos : target.Position) < _w.Range)
+                    if (_w.IsReady())
+                        _w.Cast();
+
+                if (_q.IsReady() && !_e.IsReady() &&
+                    _player.Distance(use_cursor ? Game.CursorPos : target.Position) > _q.Range)
+                {
+                    if (TimeSpan.FromMilliseconds(bwdelay).TotalSeconds + extraqtime < now &&
+                        TimeSpan.FromMilliseconds(vrdelay).TotalSeconds + extraetime < now)
                     {
-                        if (_e.IsReady() && config.Item("usevalor").GetValue<bool>())
-                            _e.Cast(use_cursor ? Game.CursorPos : target.Position);
-                        if (_q.IsReady() && cleavecount <= 1 && config.Item("waitvalor").GetValue<bool>())
-                            CheckR(use_cursor ? _player : target);
-                    }
-
-                    if (_w.IsReady() && _q.IsReady() && _e.IsReady()
-                        && _player.Distance(use_cursor ? _player.Position : target.Position) < _w.Range + 20)
-                    {
-                        if (cleavecount <= 1)
-                            if (!use_cursor) CheckR(target);
-                    }
-
-                    if (_r.IsReady() && _e.IsReady() && ultion)
-                    {
-                        if (cleavecount == 2)
-                            _e.Cast(use_cursor ? Game.CursorPos : target.Position);
-                    }
-
-
-                    if (_player.Distance(use_cursor ? Game.CursorPos : target.Position) < _w.Range)
-                        if (_w.IsReady())
-                            _w.Cast();
-
-                    if (_q.IsReady() && !_e.IsReady() &&
-                        _player.Distance(use_cursor ? Game.CursorPos : target.Position) > _q.Range)
-                    {
-                        if (TimeSpan.FromMilliseconds(bwdelay).TotalSeconds + extraqtime < now &&
-                            TimeSpan.FromMilliseconds(vrdelay).TotalSeconds + extraetime < now)
-                        {
-                            _q.Cast(target.Position, true);
-                        }
+                        _q.Cast(target.Position, true);
                     }
                 }
-            }
-            catch (Exception e)
-            {
-                LogError("ComboLogic", e);
             }
         }
         #endregion
@@ -830,42 +780,35 @@ namespace KurisuRiven
         #region  Windlsash
         private static void WindSlash()
         {
-            try
-            {
-                if (!ultion) return;
-                foreach (var e in ObjectManager.Get<Obj_AI_Hero>().Where(e => e.IsValidTarget(_r.Range)))
-                {                   
-                    var hitcount = config.Item("autows2").GetValue<Slider>().Value;
+            if (!ultion) return;
+            foreach (var e in ObjectManager.Get<Obj_AI_Hero>().Where(e => e.IsValidTarget(_r.Range)))
+            {                   
+                var hitcount = config.Item("autows2").GetValue<Slider>().Value;
 
-                    PredictionOutput prediction = _r.GetPrediction(use_cursor ? _player : e, true);
-                    if (_r.IsReady() && use_auto_wind)
+                PredictionOutput prediction = _r.GetPrediction(use_cursor ? _player : e, true);
+                if (_r.IsReady() && use_auto_wind)
+                {
+                    if (wslash == 1)
                     {
-                        if (wslash == 1)
+                        if (prediction.AoeTargetsHitCount >= hitcount)
+                            _r.Cast(prediction.CastPosition, true);
+                        else if (rr / e.MaxHealth * 100 > e.Health / e.MaxHealth * wsneed)
                         {
-                            if (prediction.AoeTargetsHitCount >= hitcount)
-                                _r.Cast(prediction.CastPosition, true);
-                            else if (rr / e.MaxHealth * 100 > e.Health / e.MaxHealth * wsneed)
-                            {
-                                if (prediction.Hitchance >= HitChance.Medium)
-                                    _r.Cast(prediction.CastPosition);
-                            }
-                            else if (e.Health < rr + ra * 2 + rq * 1)
-                            {
-                                if (prediction.Hitchance >= HitChance.Medium)
-                                    _r.Cast(prediction.CastPosition);
-                            }
+                            if (prediction.Hitchance >= HitChance.Medium)
+                                _r.Cast(prediction.CastPosition);
                         }
-                        else if (wslash == 0 && e.Health < rr)
+                        else if (e.Health < rr + ra * 2 + rq * 1)
                         {
                             if (prediction.Hitchance >= HitChance.Medium)
                                 _r.Cast(prediction.CastPosition);
                         }
                     }
+                    else if (wslash == 0 && e.Health < rr)
+                    {
+                        if (prediction.Hitchance >= HitChance.Medium)
+                            _r.Cast(prediction.CastPosition);
+                    }
                 }
-            }
-            catch (Exception e)
-            {
-                LogError("Windslash", e);
             }
         }
 
@@ -874,31 +817,23 @@ namespace KurisuRiven
         #region Killsteal
         private void Killsteal()
         {
-            try
+            foreach (var e in ObjectManager.Get<Obj_AI_Hero>().Where(e => e.IsValidTarget(_r.Range)))
             {
-                foreach (var e in ObjectManager.Get<Obj_AI_Hero>().Where(e => e.IsValidTarget(_r.Range)))
+                if (_q.IsReady() && e.Health < rq && _player.Distance(enemy.Position) < _q.Range)
+                    _q.Cast(enemy.Position, true);
+                else if (_q.IsReady() && e.Health < rq + ra*2 + ri &&
+                            _player.Distance(enemy.Position) < _q.Range)
                 {
-                    if (_q.IsReady() && e.Health < rq && _player.Distance(enemy.Position) < _q.Range)
-                        _q.Cast(enemy.Position, true);
-                    else if (_q.IsReady() && e.Health < rq + ra*2 + ri &&
-                             _player.Distance(enemy.Position) < _q.Range)
-                    {
-                        enemy = e;
-                        killsteal = TimeSpan.FromMilliseconds(Environment.TickCount).TotalSeconds;
+                    enemy = e;
+                    killsteal = TimeSpan.FromMilliseconds(Environment.TickCount).TotalSeconds;
 
-                    }
-                    else if (_q.IsReady() && e.Health < rq*2 + ri && _player.Distance(enemy.Position) < _q.Range)
-                    {
-                        enemy = e;
-                        killsteal = TimeSpan.FromMilliseconds(Environment.TickCount).TotalSeconds;
-                    }
                 }
-            }
-            catch (Exception e)
-            {
-                LogError("Killsteal", e);
-            }
-
+                else if (_q.IsReady() && e.Health < rq*2 + ri && _player.Distance(enemy.Position) < _q.Range)
+                {
+                    enemy = e;
+                    killsteal = TimeSpan.FromMilliseconds(Environment.TickCount).TotalSeconds;
+                }
+            }        
         }
 
         #endregion
@@ -977,43 +912,36 @@ namespace KurisuRiven
         #region  Ultimate Handler
         private void CheckR(Obj_AI_Base target)
         {
-            try
+            if (target.IsValidTarget() && useblade && use_combo)
             {
-                if (target.IsValidTarget() && useblade && use_combo)
+                switch (bladewhen)
                 {
-                    switch (bladewhen)
-                    {
-                        case 2:
-                            if ((float) (ua*3 + uq*3 + uw + rr + ri + ritems) > target.Health && !ultion)
-                            {
-                                _r.Cast();
-                                if (config.Item("useignote").GetValue<bool>() && _r.IsReady())
-                                    CastIgnite(target);
-                            }
-                            break;
-                        case 1:
-                            if ((float) (ra*3 + rq*3 + rw + rr + ri + ritems) > target.Health && !ultion)
-                            {
-                                _r.Cast();
-                                if (config.Item("useignote").GetValue<bool>() && _r.IsReady())
-                                    CastIgnite(target);
-                            }
-                            break;
-                        case 0:
-                            if ((float) (ra*2 + rq*2 + rw + rr + ri + ritems) > target.Health && !ultion)
-                            {
-                                _r.Cast();
-                            }
-                            break;
-                    }
+                    case 2:
+                        if ((float) (ua*3 + uq*3 + uw + rr + ri + ritems) > target.Health && !ultion)
+                        {
+                            _r.Cast();
+                            if (config.Item("useignote").GetValue<bool>() && _r.IsReady())
+                                CastIgnite(target);
+                        }
+                        break;
+                    case 1:
+                        if ((float) (ra*3 + rq*3 + rw + rr + ri + ritems) > target.Health && !ultion)
+                        {
+                            _r.Cast();
+                            if (config.Item("useignote").GetValue<bool>() && _r.IsReady())
+                                CastIgnite(target);
+                        }
+                        break;
+                    case 0:
+                        if ((float) (ra*2 + rq*2 + rw + rr + ri + ritems) > target.Health && !ultion)
+                        {
+                            _r.Cast();
+                        }
+                        break;
                 }
             }
-            catch (Exception e)
-            {
-                LogError("Ultimate", e);
-            }
         }
-
+        
         #endregion
 
         #region  Ignote Handler
@@ -1033,37 +961,17 @@ namespace KurisuRiven
         #region  AutoW
         private void AutoW()
         {
-            try
+            var getenemies = ObjectManager.Get<Obj_AI_Hero>().Where(en => en.IsValidTarget(_w.Range));
+            if (getenemies.Count() >= config.Item("autow").GetValue<Slider>().Value)
             {
-                var getenemies = ObjectManager.Get<Obj_AI_Hero>().Where(en => en.IsValidTarget(_w.Range));
-                if (getenemies.Count() >= config.Item("autow").GetValue<Slider>().Value)
+                if (_w.IsReady() && config.Item("useautow").GetValue<bool>())
                 {
-                    if (_w.IsReady() && config.Item("useautow").GetValue<bool>())
-                    {
-                        _w.Cast();
-                    }
+                    _w.Cast();
                 }
             }
-            catch (Exception e)
-            {
-                LogError("AutoW", e);
-            }
-        }
-        #endregion
 
-        #region  Log Handler
-        private static void LogError(string name, Exception ex)
-        {
-            using (var file = new System.IO.StreamWriter(@"C:\" + name + "-" + DateTime.Now + ".txt"))
-            {
-                file.WriteLine("Riven error log" + DateTime.Now);
-                file.WriteLine(name + "Error : " + ex.Message);
-                file.WriteLine(name + "Error : " + ex);
-                file.Close();
-            }
-
-            Game.PrintChat("An error has occured with please check C:\\error.txt");
         }
+
         #endregion
     }
 }
