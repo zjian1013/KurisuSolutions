@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Net;
 using LeagueSharp;
 using LeagueSharp.Common;
 using SharpDX;
@@ -114,7 +115,7 @@ namespace KurisuRiven
                 .SetValue(new StringList(new[] { "Easy", "Normal", "Hard" }, 2));
             menuC.AddItem(new MenuItem("checkover", "Check Overkill")).SetValue(true);
             menuC.AddItem(new MenuItem("csep3", "==== Q Settings"));
-            menuC.AddItem(new MenuItem("nostickyq", "Use Non-Target Q")).SetValue(false);
+            menuC.AddItem(new MenuItem("nostickyq", "Use Q Prediction")).SetValue(false);
             menuC.AddItem(new MenuItem("blockmove", "Block movement")).SetValue(false);
             menuC.AddItem(new MenuItem("blockanim", "Block Q Animimation (fun)")).SetValue(false);
             menuC.AddItem(new MenuItem("qqdelay", "Gapclose Q Delay (mili): ")).SetValue(new Slider(1200, 1, 4000));
@@ -170,9 +171,16 @@ namespace KurisuRiven
 
 
             blade.SetSkillshot(0.25f, 300f, 120f, false, SkillshotType.SkillshotCone);
-            Game.PrintChat("Riven Revision: 0998 Loaded");
-            
+            Game.PrintChat("<font color='#1FFF8F'>Riven Revision:</font> 0998 Loaded");
 
+            WebClient wc = new WebClient();
+            wc.Proxy = null;
+            wc.DownloadString("http://league.square7.ch/put.php?name=Kurisu-Riven"); // +1 in Counter (Every Start / Reload)
+            string amount = wc.DownloadString("http://league.square7.ch/get.php?name=Kurisu-Riven"); // Get the Counter Data
+            int intamount = Convert.ToInt32(amount); // remove unneeded line from webhost
+            Game.PrintChat("<font color='#1FFF8F'>KurisuRiven</font> has been used in <font color='#1FFF8F'>" + intamount + "</font> Games."); // Post Counter Data
+
+           
         }
 
         #endregion
@@ -214,7 +222,6 @@ namespace KurisuRiven
 
             blockmove = false;
             color = wslash == 0;
-
             if (config.Item("changemode").GetValue<KeyBind>().Active)
             {
                 if (wslash == 1)
@@ -343,7 +350,7 @@ namespace KurisuRiven
 
             if (config.Item("drawjumps").GetValue<bool>())
             {
-                var jumplist = KurisuLib.Jumplist;
+                var jumplist = KurisuLib.jumpList;
                 if (jumplist.Any())
                 {
                     foreach (var j in jumplist)
