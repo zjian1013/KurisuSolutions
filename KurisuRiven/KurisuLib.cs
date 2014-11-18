@@ -6,18 +6,6 @@ using SharpDX;
 
 namespace KurisuRiven
 {
-    internal struct Coordinate
-    {
-        public Vector3 pointA;
-        public Vector3 pointB;
-
-        public Coordinate(Vector3 p1, Vector3 p2)
-        {
-            pointA = p1;
-            pointB = p2;
-        }
-    }
-
     internal class KurisuLib
     {      
         private static bool active;
@@ -27,7 +15,7 @@ namespace KurisuRiven
         private const int rotatemultiplier = 15;
         private static Vector3 startpoint, endpoint, directionpoint;
 
-        private static readonly Spell _q = new Spell(SpellSlot.Q, 280f);
+        private static readonly Spell wings = new Spell(SpellSlot.Q, 280f);
         private static readonly Obj_AI_Hero player = ObjectManager.Player;
 
         public KurisuLib()
@@ -44,8 +32,8 @@ namespace KurisuRiven
             {
                 using (var file = new System.IO.StreamWriter(@"C:\Rivenjumps.txt"))
                 {
-                    file.WriteLine(player.Position.X + " " + player.Position.Y + " " + player.Position.Z);
-                    file.Close();
+                   file.WriteLine("new Vector3(" + player.Position.X + "f," + player.Position.Y + "f," + player.Position.Z + ")");
+                   file.Close();
                 }
 
                 Game.PrintChat("Debug: Position exported!");
@@ -117,7 +105,7 @@ namespace KurisuRiven
 
         public static void Walljump()
         {
-            _q.Cast(endpoint, true);
+            wings.Cast(endpoint, true);
             player.IssueOrder(GameObjectOrder.HoldPosition, player.ServerPosition);
             Utility.DelayAction.Add(1000, () => active = false);
         }
@@ -1573,6 +1561,18 @@ namespace KurisuRiven
                     )
                 ));
 
+        }
+    }
+
+    internal struct Coordinate
+    {
+        public Vector3 pointA;
+        public Vector3 pointB;
+
+        public Coordinate(Vector3 p1, Vector3 p2)
+        {
+            pointA = p1;
+            pointB = p2;
         }
     }
 }

@@ -3,6 +3,22 @@
      *  |    -| | | | -_|   |
      *  |__|__|_|\_/|___|_|_|
      * 
+	 * Revision 0998: 17/11/2014
+	 * + QA Harass
+	 * + QA turnback/cancel improved
+	 *   this should result in faster qa
+	 * + Windslash should always kill target on Only Kill mode
+	 * + Can toggle between modes with hotkey in keybindings
+	 * + Q cancels all the time now.
+	 * + More customizable settings (why not)
+	 * + Can turn anti-gapclose stun off now
+	 * + Can QA turrets and inhibitors now
+	 * + Should jungleclear in new SR now 
+	 * + Laneclear tweaks (should fix q to wrong minion)
+	 * + Check overkill when using R actually works now
+	 * + New feature blockmovement between QA 
+	 *   optional not sure if better try it out.
+     *
 	 * Revision 0995: 1/11/2014
 	 * + Walljumps (Oh baby)
 	 * + Expiremental laneclear was not good, reverted back to normal
