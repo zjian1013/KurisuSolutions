@@ -52,7 +52,7 @@ namespace KurisuRiven
         private static readonly string[] jungleminions =
         {
             "AncientGolem",  "GreatWraith", "Wraith",  "LizardElder",  "Golem", "Worm",   "Dragon", 
-            "GiantWolf", "SRU_Baron", "SRU_Dragon", "SRU_Blue ", "SRU_Red", "SRU_Murkwolf", "SRU_Gromp",
+            "GiantWolf", "SRU_Baron", "SRU_Dragon", "SRU_Blue", "SRU_Red", "SRU_Murkwolf", "SRU_Gromp",
             "SRU_Razorbeak", "SRU_Krug"
         };
 
@@ -115,8 +115,8 @@ namespace KurisuRiven
                 .SetValue(new StringList(new[] { "Easy", "Normal", "Hard" }, 2));
             menuC.AddItem(new MenuItem("checkover", "Check Overkill")).SetValue(true);
             menuC.AddItem(new MenuItem("csep3", "==== Q Settings"));
-            menuC.AddItem(new MenuItem("nostickyq", "Use Q Prediction")).SetValue(false);
-            menuC.AddItem(new MenuItem("blockmove", "Block movement")).SetValue(false);
+            menuC.AddItem(new MenuItem("nostickyq", "Use Non-Target Q")).SetValue(false);
+            menuC.AddItem(new MenuItem("blockmove", "Block Movement")).SetValue(false);
             menuC.AddItem(new MenuItem("blockanim", "Block Q Animimation (fun)")).SetValue(false);
             menuC.AddItem(new MenuItem("qqdelay", "Gapclose Q Delay (mili): ")).SetValue(new Slider(1200, 1, 4000));
             menuC.AddItem(new MenuItem("asep2", "==== Multi-Skill Settings"));
@@ -132,7 +132,7 @@ namespace KurisuRiven
             menuO.AddItem(new MenuItem("osep2", "==== Extra Settings"));
             menuO.AddItem(new MenuItem("useignote", "Use Ignite")).SetValue(true);
             menuO.AddItem(new MenuItem("enableAntiG", "Use Anti-Gapclosing")).SetValue(true);
-            menuO.AddItem(new MenuItem("useautow", "Use auto W")).SetValue(true);
+            menuO.AddItem(new MenuItem("useautow", "Use Auto W")).SetValue(true);
             menuO.AddItem(new MenuItem("autow", "Auto W min Targets")).SetValue(new Slider(3, 1, 5));
             menuO.AddItem(new MenuItem("osep1", "==== Windslash Settings"));
             menuO.AddItem(new MenuItem("useautows", "Enable Windslash")).SetValue(true);
@@ -171,14 +171,17 @@ namespace KurisuRiven
 
 
             blade.SetSkillshot(0.25f, 300f, 120f, false, SkillshotType.SkillshotCone);
-            Game.PrintChat("<font color='#1FFF8F'>Riven Revision:</font> 0998 Loaded");
 
-            WebClient wc = new WebClient();
-            wc.Proxy = null;
-            wc.DownloadString("http://league.square7.ch/put.php?name=Kurisu-Riven"); // +1 in Counter (Every Start / Reload)
-            string amount = wc.DownloadString("http://league.square7.ch/get.php?name=Kurisu-Riven"); // Get the Counter Data
-            int intamount = Convert.ToInt32(amount); // remove unneeded line from webhost
-            Game.PrintChat("<font color='#1FFF8F'>KurisuRiven</font> has been used in <font color='#1FFF8F'>" + intamount + "</font> Games."); // Post Counter Data
+            var wc = new WebClient { Proxy = null };
+            wc.DownloadString("http://league.square7.ch/put.php?name=Kurisu-Riven");
+
+            var amount = wc.DownloadString("http://league.square7.ch/get.php?name=Kurisu-Riven");
+            var intamount = Convert.ToInt32(amount);
+            var tcolor = config.Item("wslash").GetValue<StringList>().SelectedIndex == 0;
+            var hex = tcolor ? "#7CFC00" : "#FF00FF";
+
+            Game.PrintChat("<font color='" + hex + "'>KurisuRiven r.0998</font> - Loaded");
+            Game.PrintChat("<font color='" + hex + "'>KurisuRiven</font> has been used in <font color='" + hex + "'>" + intamount + "</font> games."); // Post Counter Data
 
            
         }
@@ -219,7 +222,6 @@ namespace KurisuRiven
         private static bool color;
         private void Game_OnGameUpdate(EventArgs args)
         {
-
             blockmove = false;
             color = wslash == 0;
             if (config.Item("changemode").GetValue<KeyBind>().Active)
@@ -357,8 +359,8 @@ namespace KurisuRiven
                     {
                         if (me.Distance(j.pointA) <= 800 || me.Distance(j.pointB) <= 800)
                         {
-                            Utility.DrawCircle(j.pointA, 100, Color.White, 1, 1);
-                            Utility.DrawCircle(j.pointB, 100, Color.White, 1, 1);
+                            Utility.DrawCircle(j.pointA, 100, color ? Color.LawnGreen : Color.Magenta, 1, 1);
+                            Utility.DrawCircle(j.pointB, 100, color ? Color.LawnGreen : Color.Magenta, 1, 1);
                         }
                     }
                 }
@@ -575,7 +577,7 @@ namespace KurisuRiven
                         case GameObjectType.obj_AI_Minion:
                             if (!config.Item("clearkey").GetValue<KeyBind>().Active)
                                 return;
-                            if (jungleminions.Any(name => trueTarget.Name.StartsWith(name)) &&
+                            if (jungleminions.Any(name => trueTarget.Name.StartsWith(name)) && !trueTarget.Name.Contains("Mini") &&
                                 wings.IsReady() && config.Item("jungleQ").GetValue<bool>())
                                 wings.Cast(trueTarget.Position, true);
                             if (trueTarget.Name.StartsWith("Minion") && config.Item("farmQ").GetValue<bool>())
