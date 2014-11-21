@@ -20,12 +20,7 @@ namespace KurisuRiven
 
         public KurisuLib()
         {
-
-            if (Utility.Map.GetMap()._MapType.Equals(Utility.Map.MapType.SummonersRift))
-                Coordinates();
-            if (Utility.Map.GetMap()._MapType.Equals(Utility.Map.MapType.Unknown))
-                NSRCoordinates();
-
+            NSRCoordinates();
             Game.OnGameUpdate += Game_OnGameUpdate;           
         }
 
