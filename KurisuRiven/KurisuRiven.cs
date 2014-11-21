@@ -53,7 +53,7 @@ namespace KurisuRiven
         {
             "AncientGolem",  "GreatWraith", "Wraith",  "LizardElder",  "Golem", "Worm",   "Dragon", 
             "GiantWolf", "SRU_Baron", "SRU_Dragon", "SRU_Blue", "SRU_Red", "SRU_Murkwolf", "SRU_Gromp",
-            "SRU_Razorbeak", "SRU_Krug"
+            "SRU_Razorbeak", "SRU_Krug", "Sru_Crab"
         };
 
         #endregion
