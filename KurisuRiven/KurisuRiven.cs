@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using System.Net;
-using System.Security.Policy;
 using LeagueSharp;
 using LeagueSharp.Common;
 using SharpDX;
