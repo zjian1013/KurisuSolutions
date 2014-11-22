@@ -120,6 +120,12 @@ namespace KurisuRiven
         // new coordinates from new map by me :)
         private static void NSRCoordinates()
         {
+            jumpList.Add(new Coordinate(new Vector3(7830f, 4332f, 53.71266f),
+            new Vector3(7760.892f, 4786.927f, 49.92004f)));
+            jumpList.Add(new Coordinate(new Vector3(7902f, 4742f, 50.93093f),
+            new Vector3(7787.4f, 4263.179f, 53.8678f)));
+            jumpList.Add(new Coordinate(new Vector3(10850f, 4356f, -71.26904f),
+            new Vector3(10383.91f, 4297.003f, -71.2406f)));
             jumpList.Add(new Coordinate(new Vector3(6696f, 8774f, -71.2406f),
             new Vector3(6933.048f, 8941.319f, 52.87134f)));
             jumpList.Add(new Coordinate(new Vector3(6698f, 8984f, 49.94371f),

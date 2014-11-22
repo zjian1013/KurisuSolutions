@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Net;
+using System.Security.Policy;
 using LeagueSharp;
 using LeagueSharp.Common;
 using SharpDX;
@@ -39,7 +40,7 @@ namespace KurisuRiven
         private static double extraetime;
 
         private static bool ultion, useblade, useautows;
-        private static bool usecombo, useclear, usecursor;
+        private static bool usecombo, useclear;
         private static int gaptime, wslash, wsneed, bladewhen;
 
         private static float ee, ff;
@@ -113,10 +114,9 @@ namespace KurisuRiven
             menuC.AddItem(new MenuItem("useblade", "Use R logic")).SetValue(true);
             menuC.AddItem(new MenuItem("bladewhen", "Use R when: "))
                 .SetValue(new StringList(new[] { "Easy", "Normal", "Hard" }, 2));
-            menuC.AddItem(new MenuItem("checkover", "Check Overkill")).SetValue(true);
+            //menuC.AddItem(new MenuItem("checkover", "Check Overkill")).SetValue(true);
             menuC.AddItem(new MenuItem("csep3", "==== Q Settings"));
             menuC.AddItem(new MenuItem("nostickyq", "Use Non-Target Q")).SetValue(false);
-            menuC.AddItem(new MenuItem("blockmove", "Block Movement")).SetValue(false);
             menuC.AddItem(new MenuItem("blockanim", "Block Q Animimation (fun)")).SetValue(false);
             menuC.AddItem(new MenuItem("qqdelay", "Gapclose Q Delay (mili): ")).SetValue(new Slider(1200, 1, 4000));
             menuC.AddItem(new MenuItem("asep2", "==== Multi-Skill Settings"));
@@ -163,9 +163,6 @@ namespace KurisuRiven
             rivenD.AddItem(new MenuItem("debugdmg", "Debug combo damage")).SetValue(false);
             rivenD.AddItem(new MenuItem("debugtrue", "Debug true range")).SetValue(false);
             rivenD.AddItem(new MenuItem("exportjump", "Export Position")).SetValue(new KeyBind(73, KeyBindType.Press));
-            rivenD.AddItem(new MenuItem("asep4", "==== Dont Use In Game"));
-            rivenD.AddItem(new MenuItem("cursormode", "Cursor debug mode")).SetValue(false);
-
             config.AddSubMenu(rivenD);
             config.AddToMainMenu();
 
@@ -222,7 +219,6 @@ namespace KurisuRiven
         private static bool color;
         private void Game_OnGameUpdate(EventArgs args)
         {
-            blockmove = false;
             color = wslash == 0;
             if (config.Item("changemode").GetValue<KeyBind>().Active)
             {
@@ -234,11 +230,11 @@ namespace KurisuRiven
                         () => config.Item("wslash").SetValue(new StringList(new[] {"Only Kill", "Max Damage"}, 1)));
             }
 
-            CheckDamage(usecursor ? me : enemy);
+            CheckDamage(enemy);
 
             if (usecombo || killsteal + extraqtime > now)
             {
-                CastCombo(usecursor ? me : enemy); 
+                CastCombo(enemy); 
             }
 
             Killsteal();
@@ -271,7 +267,6 @@ namespace KurisuRiven
             bladewhen = config.Item("bladewhen").GetValue<StringList>().SelectedIndex;
             wslash = config.Item("wslash").GetValue<StringList>().SelectedIndex;
 
-            usecursor = config.Item("cursormode").GetValue<bool>();
             useblade = config.Item("useblade").GetValue<bool>();
 
             extraqtime = TimeSpan.FromMilliseconds(gaptime).TotalSeconds;
@@ -447,9 +442,6 @@ namespace KurisuRiven
             switch (args.SData.Name)
             {
                 case "RivenTriCleave":
-                    if (config.Item("blockmove").GetValue<bool>() && (usecombo || useclear))
-                        blockmove = true;
-
                     tritick = Environment.TickCount;
                     if (cleavecount < 1)
                         ff = Game.Time + (13 + (13*me.PercentCooldownMod));
@@ -460,7 +452,7 @@ namespace KurisuRiven
                         return;
 
                     if (wings.IsReady() && (usecombo || killsteal + extraqtime > now))
-                        Utility.DelayAction.Add(Game.Ping + 75, () => wings.Cast(usecursor ? Game.CursorPos : target.Position, true));
+                        Utility.DelayAction.Add(Game.Ping + 75, () => wings.Cast(target.Position, true));
 
                     if (wings.IsReady() && useclear)
                         Utility.DelayAction.Add(Game.Ping + 75, () => wings.Cast(orbwalker.GetTarget(), true));
@@ -487,7 +479,7 @@ namespace KurisuRiven
 
                     if (blade.IsReady() && (usecombo || killsteal + extraqtime > now))
                         if (ultion && wslash == 1)
-                            blade.Cast(usecursor ? Game.CursorPos : target.Position, true);
+                            blade.Cast(target.Position, true);
                     break;
                 case "RivenFengShuiEngine":
                     Orbwalking.LastAATick = 0;
@@ -507,7 +499,7 @@ namespace KurisuRiven
                         return;
 
                     if (wings.IsReady())
-                        wings.Cast(usecursor ? Game.CursorPos : target.Position, true);
+                        wings.Cast(target.Position, true);
                     break;
             }
         }
@@ -525,15 +517,15 @@ namespace KurisuRiven
                     args.Process = false;
             }
             
-            else if (packet.Header == 0x61)
-            {
-                packet.Position = 0xc;
-                if (packet.ReadInteger() != me.NetworkId)
-                    return;
+            //else if (packet.Header == 0x61)
+            //{
+            //    packet.Position = 0xc;
+            //    if (packet.ReadInteger() != me.NetworkId)
+            //        return;
 
-                if (config.Item("blockmove").GetValue<bool>())
-                    args.Process = !blockmove;
-            }
+            //    if (Orbwalking.Move && orbwalker.GetTarget() != null)
+            //        Orbwalking.Move = !blockmove;
+            //}
 
             else if (packet.Header == 0x65)
             {
@@ -598,28 +590,26 @@ namespace KurisuRiven
                 if (sourceId != me.NetworkId)
                     return;
 
-                if (config.Item("blockmove").GetValue<bool>())
-                    blockmove = true;
+                var movePos = new Vector3();
+                var targetId = orbwalker.GetTarget().NetworkId;
+                var trueTarget = ObjectManager.GetUnitByNetworkId<Obj_AI_Base>(targetId);
 
-                int targetId = orbwalker.GetTarget().NetworkId;
-                Obj_AI_Base trueTarget = ObjectManager.GetUnitByNetworkId<Obj_AI_Base>(targetId);
-                if (me.Distance(orbwalker.GetTarget().Position) > truerange + 25)
-                    return;
-
-                Vector3 movePos;
                 if (trueTarget.Type == GameObjectType.obj_Barracks || trueTarget.Type == GameObjectType.obj_AI_Turret ||
                     trueTarget.Type == GameObjectType.obj_AI_Minion)
+                {
                     movePos = trueTarget.Position + Vector3.Normalize(me.Position -
-                                                                      trueTarget.Position)*(me.Distance(trueTarget.Position) + 63);
+                                                                        trueTarget.Position) * (me.Distance(trueTarget.Position) + 63);
+                }
+
                 else if (trueTarget.Type == GameObjectType.obj_AI_Hero)
+                {
                     movePos = trueTarget.Position + Vector3.Normalize(me.Position -
-                                                                      trueTarget.Position)*(me.Distance(trueTarget.Position) + 58);
-                else
-                    movePos = Game.CursorPos;
+                                                                        trueTarget.Position) * (me.Distance(trueTarget.Position) + 58);
+                }
 
                 me.IssueOrder(GameObjectOrder.MoveTo, new Vector3(movePos.X, movePos.Y, movePos.Z));
                 if (trueTarget.Type == GameObjectType.obj_AI_Minion)
-                    Utility.DelayAction.Add(Game.Ping + 70, () => Orbwalking.LastAATick = 0);
+                    Utility.DelayAction.Add(Game.Ping + 75, () => Orbwalking.LastAATick = 0);
                 else
                     Orbwalking.LastAATick = 0;
             }
@@ -643,30 +633,30 @@ namespace KurisuRiven
             var healthvalor = config.Item("valorhealth").GetValue<Slider>().Value;
             if (target.IsValidTarget())
             {
-                if (me.Distance(usecursor ? Game.CursorPos : target.Position) > truerange + 25 ||
+                if (me.Distance(target.Position) > truerange + 25 ||
                     ((me.Health / me.MaxHealth) * 100) <= healthvalor)
                 {
                     if (valor.IsReady() && config.Item("usevalor").GetValue<bool>())
-                        valor.Cast(usecursor ? Game.CursorPos : target.Position);
-                    if (wings.IsReady() && cleavecount <= 1 && config.Item("waitvalor").GetValue<bool>())
-                        CheckR(usecursor ? me : target);
+                        valor.Cast(target.Position);
+                    if (wings.IsReady() && cleavecount <= 1)
+                        CheckR(target);
                 }
 
                 if (kiburst.IsReady() && wings.IsReady() && valor.IsReady()
-                    && me.Distance(usecursor ? me.Position : target.Position) < kiburst.Range + 20)
+                    && me.Distance(target.Position) < kiburst.Range + 20)
                 {
                     if (cleavecount <= 1)
-                        if (!usecursor) CheckR(target);
+                        CheckR(target);
                 }
 
                 if (blade.IsReady() && valor.IsReady() && ultion)
                 {
                     if (cleavecount == 2)
-                        valor.Cast(usecursor ? Game.CursorPos : target.Position);
+                        valor.Cast(target.Position);
                 }
 
 
-                if (me.Distance(usecursor ? Game.CursorPos : target.Position) < kiburst.Range)
+                if (me.Distance(target.Position) < kiburst.Range)
                 {
                     if (Items.HasItem(3077) && Items.CanUseItem(3077))
                         Items.UseItem(3077);
@@ -677,7 +667,7 @@ namespace KurisuRiven
                 }
 
                 if (wings.IsReady() && !valor.IsReady() &&
-                    me.Distance(usecursor ? Game.CursorPos : target.Position) > wings.Range)
+                    me.Distance(target.Position) > wings.Range)
                 {
                     if (TimeSpan.FromMilliseconds(tritick).TotalSeconds + extraqtime < now &&
                         TimeSpan.FromMilliseconds(etick).TotalSeconds + extraetime < now)
@@ -722,7 +712,7 @@ namespace KurisuRiven
             {                   
                 var hitcount = config.Item("autows2").GetValue<Slider>().Value;
 
-                PredictionOutput prediction = blade.GetPrediction(usecursor ? me : e, true);
+                PredictionOutput prediction = blade.GetPrediction(e, true);
                 if (blade.IsReady() && useautows)
                 {
                     if (wslash == 1)
