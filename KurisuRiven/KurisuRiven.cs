@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using System.Net;
 using LeagueSharp;
 using LeagueSharp.Common;
 using SharpDX;
@@ -167,16 +166,16 @@ namespace KurisuRiven
 
             blade.SetSkillshot(0.25f, 300f, 120f, false, SkillshotType.SkillshotCone);
 
-            var wc = new WebClient { Proxy = null };
-            wc.DownloadString("http://counter.lolbol.net/put.php?name=Kurisu-Riven");
+            //var wc = new WebClient { Proxy = null };
+            //wc.DownloadString("http://counter.lolbol.net/put.php?name=Kurisu-Riven");
 
-            var amount = wc.DownloadString("http://counter.lolbol.net/get.php?name=Kurisu-Riven");
-            var intamount = Convert.ToInt32(amount);
+            //var amount = wc.DownloadString("http://counter.lolbol.net/get.php?name=Kurisu-Riven");
+            //var intamount = Convert.ToInt32(amount);
             var tcolor = config.Item("wslash").GetValue<StringList>().SelectedIndex == 0;
             var hex = tcolor ? "#7CFC00" : "#FF00FF";
 
             Game.PrintChat("<font color='" + hex + "'>KurisuRiven r.0998</font> - Loaded");
-            Game.PrintChat("<font color='" + hex + "'>KurisuRiven</font> has been used in <font color='" + hex + "'>" + intamount + "</font> games."); // Post Counter Data
+            //Game.PrintChat("<font color='" + hex + "'>KurisuRiven</font> has been used in <font color='" + hex + "'>" + intamount + "</font> games."); // Post Counter Data
 
         }
 
