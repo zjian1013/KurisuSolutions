@@ -93,7 +93,7 @@ namespace KurisuNidalee
             cougarList.AddRange(new[] { takedown, pounce, swipe });
             humanList.AddRange(new[] { javelin, bushwack, primalsurge });
 
-            javelin.SetSkillshot(0.50f, 70f, 1300f, true, SkillshotType.SkillshotLine);
+            javelin.SetSkillshot(0.125f, 40f, 1300f, true, SkillshotType.SkillshotLine);
             bushwack.SetSkillshot(0.50f, 100f, 1500f, false, SkillshotType.SkillshotCircle);
             swipe.SetSkillshot(0.50f, 375f, 1500f, false, SkillshotType.SkillshotCone);
             pounce.SetSkillshot(0.50f, 400f, 1500f, false, SkillshotType.SkillshotCone);
