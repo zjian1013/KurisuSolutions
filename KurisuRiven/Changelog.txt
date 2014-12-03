@@ -3,6 +3,11 @@
      *  |    -| | | | -_|   |
      *  |__|__|_|\_/|___|_|_|
      * 
+	 * + QA Speed/Fix from 0998
+	 *   faster QA speed ever then before
+	 * + Combat assist (will help you cancel q's)
+	 * + Check overkill works for real now guys (kappa)
+	 *
 	 * Revision 0998: 17/11/2014
 	 * + QA Harass
 	 * + QA turnback/cancel improved

@@ -18,7 +18,6 @@ namespace KurisuRiven
 
         private static int etick;
         private static int tritick;
-        private static int runiccount;
         public static int cleavecount;
 
         private static double ritems;
@@ -26,20 +25,19 @@ namespace KurisuRiven
         private static double ra, rq, rw, rr, ri;
         private static float truerange;
 
-        private static readonly Spell valor = new Spell(SpellSlot.E, 390f);
-        private static readonly Spell wings = new Spell(SpellSlot.Q, 280f);
-        private static readonly Spell kiburst = new Spell(SpellSlot.W, 260f);
-        private static readonly Spell blade = new Spell(SpellSlot.R, 900f);
-
         private static bool blockmove;
         private static double now;
-        private static double killsteal;
         private static double extraqtime;
         private static double extraetime;
 
         private static bool ultion, useblade, useautows;
         private static bool usecombo, useclear;
         private static int gaptime, wslash, wsneed, bladewhen;
+
+        private static readonly Spell valor = new Spell(SpellSlot.E, 390f);
+        private static readonly Spell wings = new Spell(SpellSlot.Q, 260f);
+        private static readonly Spell kiburst = new Spell(SpellSlot.W, 250f);
+        private static readonly Spell blade = new Spell(SpellSlot.R, 900f);
 
         private static float ee, ff;
         private static readonly int[] items = { 3144, 3153, 3142, 3112, 3131 };
@@ -48,25 +46,26 @@ namespace KurisuRiven
             20, 20, 25, 25, 25, 30, 30, 30, 35, 35, 35, 40, 40, 40, 45, 45, 45, 50, 50
         };
 
+        public const string Revision = "0.0.9.99";
         private static readonly string[] jungleminions =
-        {
-            "AncientGolem",  "GreatWraith", "Wraith",  "LizardElder",  "Golem", "Worm",   "Dragon", 
-            "GiantWolf", "SRU_Baron", "SRU_Dragon", "SRU_Blue", "SRU_Red", "SRU_Murkwolf", "SRU_Gromp",
-            "SRU_Razorbeak", "SRU_Krug", "Sru_Crab"
+        {     
+            "SRU_Razorbeak", "SRU_Krug", "Sru_Crab",
+            "SRU_Baron", "SRU_Dragon", "SRU_Blue", "SRU_Red", "SRU_Murkwolf", "SRU_Gromp"
         };
 
         #endregion
-
+      
         public KurisuRiven()
         {
             Console.WriteLine("KurisuRiven is loading..");
             CustomEvents.Game.OnGameLoad += Game_OnGameLoad;
         }
 
+
         #region  OnGameLoad
         private void Game_OnGameLoad(EventArgs args)
         {
-            if (me.BaseSkinName != "Riven")
+            if (me.ChampionName != "Riven")
                 return;    
  
             Initialize();
@@ -74,16 +73,16 @@ namespace KurisuRiven
             config = new Menu("KurisuRiven", "kriven", true);
 
             // Target Selector
-            Menu menuTS = new Menu("Riven: Selector", "tselect");
+            var menuTS = new Menu("Riven: Selector", "tselect");
             SimpleTs.AddToMenu(menuTS);
             config.AddSubMenu(menuTS);
 
             // Orbwalker
-            Menu menuOrb = new Menu("Riven: Orbwalker", "orbwalker");
+            var menuOrb = new Menu("Riven: Orbwalker", "orbwalker");
             orbwalker = new Orbwalking.Orbwalker(menuOrb);
             config.AddSubMenu(menuOrb);
 
-            Menu menuK = new Menu("Riven: Keybinds", "demkeys");
+            var menuK = new Menu("Riven: Keybinds", "demkeys");
             menuK.AddItem(new MenuItem("combokey", "Combo Key")).SetValue(new KeyBind(32, KeyBindType.Press));
             menuK.AddItem(new MenuItem("harasskey", "Harass Key")).SetValue(new KeyBind(67, KeyBindType.Press));
             menuK.AddItem(new MenuItem("clearkey", "Clear Key")).SetValue(new KeyBind(86, KeyBindType.Press));
@@ -92,7 +91,7 @@ namespace KurisuRiven
             config.AddSubMenu(menuK);
 
             // Draw settings
-            Menu menuD = new Menu("Riven: Drawings ", "dsettings");
+            var menuD = new Menu("Riven: Drawings ", "dsettings");
             menuD.AddItem(new MenuItem("dsep1", "==== Drawing Settings"));
             menuD.AddItem(new MenuItem("drawrr", "Draw R range")).SetValue(true);
             menuD.AddItem(new MenuItem("drawaa", "Draw AA range")).SetValue(true);
@@ -103,49 +102,44 @@ namespace KurisuRiven
             config.AddSubMenu(menuD);
 
             // Combo Settings
-            Menu menuC = new Menu("Riven: Combo ", "csettings");
+            var menuC = new Menu("Riven: Combo ", "csettings");        
             menuC.AddItem(new MenuItem("csep1", "==== E Settings"));
-            menuC.AddItem(new MenuItem("usevalor", "Use E Logic")).SetValue(true);
+            menuC.AddItem(new MenuItem("usevalor", "Use E logic")).SetValue(true);
             menuC.AddItem(new MenuItem("valorhealth", "Health % to use E")).SetValue(new Slider(40));
             menuC.AddItem(new MenuItem("waitvalor", "Wait for E (Ult)")).SetValue(true);
             menuC.AddItem(new MenuItem("csep2", "==== R Settings"));
             menuC.AddItem(new MenuItem("useblade", "Use R logic")).SetValue(true);
             menuC.AddItem(new MenuItem("bladewhen", "Use R when: "))
                 .SetValue(new StringList(new[] { "Easy", "Normal", "Hard" }, 2));
-            //menuC.AddItem(new MenuItem("checkover", "Check Overkill")).SetValue(true);
+            menuC.AddItem(new MenuItem("checkover", "Check overkill")).SetValue(true);
             menuC.AddItem(new MenuItem("csep3", "==== Q Settings"));
-            menuC.AddItem(new MenuItem("nostickyq", "Use Non-Target Q")).SetValue(false);
-            menuC.AddItem(new MenuItem("blockanim", "Block Q Animimation (fun)")).SetValue(false);
-            menuC.AddItem(new MenuItem("qqdelay", "Gapclose Q Delay (mili): ")).SetValue(new Slider(1200, 1, 4000));
-            menuC.AddItem(new MenuItem("asep2", "==== Multi-Skill Settings"));
-            menuC.AddItem(new MenuItem("ssWQ", "Try W->Q")).SetValue(true);
-            menuC.AddItem(new MenuItem("ssEQ", "Try E->Q")).SetValue(true);
-            menuC.AddItem(new MenuItem("ssEWS", "Try E->Windslash")).SetValue(true);
-            menuC.AddItem(new MenuItem("ssWSQ", "Try Windslash->Q")).SetValue(true);
-
+            menuC.AddItem(new MenuItem("cancelassist", "Use combat assist")).SetValue(true);
+            menuC.AddItem(new MenuItem("nostickyq", "Use non-target Q")).SetValue(false);
+            menuC.AddItem(new MenuItem("blockanim", "Block Q animimation (fun)")).SetValue(false);
+            menuC.AddItem(new MenuItem("qqdelay", "Gapclose Q delay (milliseconds): ")).SetValue(new Slider(1200, 1, 4000));
             config.AddSubMenu(menuC);
 
             // Extra Settings
-            Menu menuO = new Menu("Riven: Extra ", "osettings");
+            var menuO = new Menu("Riven: Extra ", "osettings");
             menuO.AddItem(new MenuItem("osep2", "==== Extra Settings"));
             menuO.AddItem(new MenuItem("useignote", "Use Ignite")).SetValue(true);
-            menuO.AddItem(new MenuItem("enableAntiG", "Use Anti-Gapclosing")).SetValue(true);
             menuO.AddItem(new MenuItem("useautow", "Use Auto W")).SetValue(true);
+            menuO.AddItem(new MenuItem("enableAntiG", "Auto W Gapcloser")).SetValue(true);
             menuO.AddItem(new MenuItem("autow", "Auto W min Targets")).SetValue(new Slider(3, 1, 5));
             menuO.AddItem(new MenuItem("osep1", "==== Windslash Settings"));
-            menuO.AddItem(new MenuItem("useautows", "Enable Windslash")).SetValue(true);
+            menuO.AddItem(new MenuItem("useautows", "Use Windslash")).SetValue(true);
             menuO.AddItem(new MenuItem("wslash", "Windslash: "))
-                .SetValue(new StringList(new[] { "Only Kill", "Max Damage" }, 1));
+                .SetValue(new StringList(new[] { "Only Kill", "Reckless" }));
             menuO.AddItem(new MenuItem("autows", "Windslash if damage dealt %")).SetValue(new Slider(65, 1));
             menuO.AddItem(new MenuItem("autows2", "Windslash if targets hit >=")).SetValue(new Slider(3, 2, 5));
             menuO.AddItem(new MenuItem("osep3", "==== Interrupt Settings"));
-            menuO.AddItem(new MenuItem("interrupter", "Enable Interrupter")).SetValue(true);
+            menuO.AddItem(new MenuItem("interrupter", "Use Interrupter")).SetValue(true);
             menuO.AddItem(new MenuItem("interruptQ3", "Interrupt with 3rd Q")).SetValue(true);
             menuO.AddItem(new MenuItem("interruptW", "Interrupt with W")).SetValue(true);
             config.AddSubMenu(menuO);
 
             // Farm/Clear Settings
-            Menu menuJ = new Menu("Riven: Farm ", "jsettings");
+            var menuJ = new Menu("Riven: Farm ", "jsettings");
             menuJ.AddItem(new MenuItem("jsep1", "==== Jungle Settings"));
             menuJ.AddItem(new MenuItem("jungleE", "Enable E ")).SetValue(true);
             menuJ.AddItem(new MenuItem("jungleW", "Enable W ")).SetValue(true);
@@ -156,7 +150,7 @@ namespace KurisuRiven
             menuJ.AddItem(new MenuItem("farmQ", "Enable Q")).SetValue(true);
             config.AddSubMenu(menuJ);
 
-            Menu rivenD = new Menu("Riven: Debug", "therivend");
+            var rivenD = new Menu("Riven: Debug", "therivend");
             rivenD.AddItem(new MenuItem("dsep2", "==== Debug Settings"));
             rivenD.AddItem(new MenuItem("debugdmg", "Debug combo damage")).SetValue(false);
             rivenD.AddItem(new MenuItem("debugtrue", "Debug true range")).SetValue(false);
@@ -164,18 +158,13 @@ namespace KurisuRiven
             config.AddSubMenu(rivenD);
             config.AddToMainMenu();
 
+            wings.SetSkillshot(0.25f, 200f, 1700, false, SkillshotType.SkillshotCircle);
             blade.SetSkillshot(0.25f, 300f, 120f, false, SkillshotType.SkillshotCone);
 
-            //var wc = new WebClient { Proxy = null };
-            //wc.DownloadString("http://counter.lolbol.net/put.php?name=Kurisu-Riven");
-
-            //var amount = wc.DownloadString("http://counter.lolbol.net/get.php?name=Kurisu-Riven");
-            //var intamount = Convert.ToInt32(amount);
             var tcolor = config.Item("wslash").GetValue<StringList>().SelectedIndex == 0;
-            var hex = tcolor ? "#7CFC00" : "#FF00FF";
+            var hex = tcolor ? "#7CFC00" : "#FF0080";
 
-            Game.PrintChat("<font color='" + hex + "'>KurisuRiven r.0998</font> - Loaded");
-            //Game.PrintChat("<font color='" + hex + "'>KurisuRiven</font> has been used in <font color='" + hex + "'>" + intamount + "</font> games."); // Post Counter Data
+            Game.PrintChat("<font color='" + hex + "'>KurisuRiven</font> - Loaded");
 
         }
 
@@ -215,39 +204,54 @@ namespace KurisuRiven
         private static bool color;
         private void Game_OnGameUpdate(EventArgs args)
         {
-            color = wslash == 0;
+            var selected = SimpleTs.GetSelectedTarget() != null && SimpleTs.GetSelectedTarget().Distance(me.Position) <= 750 &&
+                           SimpleTs.GetSelectedTarget().Type == me.Type;
+
+            enemy = selected ? SimpleTs.GetSelectedTarget() : SimpleTs.GetTarget(750, SimpleTs.DamageType.Physical);
+
             if (config.Item("changemode").GetValue<KeyBind>().Active)
             {
-                if (wslash == 1)
-                    Utility.DelayAction.Add(300,
-                        () => config.Item("wslash").SetValue(new StringList(new[] {"Only Kill", "Max Damage"}, 0)));
-                else if (wslash == 0)
-                    Utility.DelayAction.Add(300,
-                        () => config.Item("wslash").SetValue(new StringList(new[] {"Only Kill", "Max Damage"}, 1)));
+                switch (wslash)
+                {
+                    case 1:
+                        Utility.DelayAction.Add(300,
+                            () => config.Item("wslash").SetValue(new StringList(new[] {"Only Kill", "Max Damage"}, 0)));
+                        break;
+                    case 0:
+                        Utility.DelayAction.Add(300,
+                            () => config.Item("wslash").SetValue(new StringList(new[] {"Only Kill", "Max Damage"}, 1)));
+                        break;
+                }
             }
 
-            CheckDamage(enemy);
-
-            if (usecombo || killsteal + extraqtime > now)
-            {
+            if (usecombo)
                 CastCombo(enemy); 
-            }
 
-            Killsteal();
+            if (config.Item("cancelassist").GetValue<bool>())
+                Orbwalking.Move = !blockmove;
+
+            foreach (var b in me.Buffs.Where(b => b.Name == "RivenTriCleave"))
+                cleavecount = b.Count;
+
+            if (!me.HasBuff("RivenTriCleave", true))
+                Utility.DelayAction.Add(700, () => cleavecount = 0);
+
             Clear();
             AutoW();
             Requisites();
-            RefreshBuffs();
             WindSlash();
         }
 
         #endregion
 
         #region  Requisites
-        private void Requisites()
+        private static void Requisites()
         {
+
+            color = wslash == 0;
+            CheckDamage(enemy);
+
             now = TimeSpan.FromMilliseconds(Environment.TickCount).TotalSeconds;
-            enemy = SimpleTs.GetTarget(750, SimpleTs.DamageType.Physical);
             truerange = me.AttackRange + me.Distance(me.BBox.Minimum) + 1;
 
             ee = (ff - Game.Time > 0) ? (ff - Game.Time) : 0;
@@ -272,13 +276,13 @@ namespace KurisuRiven
         #endregion
 
         #region  On Draw
-        private void Game_OnDraw(EventArgs args)
+        private static void Game_OnDraw(EventArgs args)
         {
-
+            
             if (config.Item("drawaa").GetValue<bool>() && !me.IsDead)
-                Utility.DrawCircle(me.Position, me.AttackRange + 35   , color ? Color.LawnGreen : Color.Magenta, 1, 1);
+                Utility.DrawCircle(me.Position, me.AttackRange + 35, color ? Color.LawnGreen : Color.Fuchsia, 1, 1);
             if (config.Item("drawrr").GetValue<bool>() && !me.IsDead)
-                Utility.DrawCircle(me.Position, blade.Range, color ? Color.LawnGreen : Color.Magenta, 1, 1);
+                Utility.DrawCircle(me.Position, blade.Range, color ? Color.LawnGreen : Color.Fuchsia, 1, 1);
             if (config.Item("drawp").GetValue<bool>() && !me.IsDead)
             {
                 var wts = Drawing.WorldToScreen(me.Position);
@@ -286,7 +290,7 @@ namespace KurisuRiven
                 if (wslash == 0)
                     Drawing.DrawText(wts[0] - 55, wts[1] + 30, Color.LawnGreen, "Mode: Only Kill");
                 else
-                    Drawing.DrawText(wts[0] - 55, wts[1] + 30, Color.Magenta, "Mode: Max Damage");
+                    Drawing.DrawText(wts[0] - 55, wts[1] + 30, Color.Fuchsia, "Mode: Reckless");
                 if (me.Spellbook.CanUseSpell(SpellSlot.Q) == SpellState.NotLearned)
                     Drawing.DrawText(wts[0] - 35, wts[1] + 10, Color.White, "Q: Not Learned!");
                 else if (ee <= 0)
@@ -305,7 +309,7 @@ namespace KurisuRiven
 
             if (config.Item("drawengage").GetValue<bool>())
                 if (!me.IsDead)
-                    Utility.DrawCircle(me.Position, valor.Range + me.AttackRange - 35, color ? Color.LawnGreen : Color.Magenta, 1, 1);
+                    Utility.DrawCircle(me.Position, valor.Range + me.AttackRange - 35, color ? Color.LawnGreen : Color.Fuchsia, 1, 1);
 
             if (config.Item("drawkill").GetValue<bool>())
             {
@@ -350,8 +354,8 @@ namespace KurisuRiven
                     {
                         if (me.Distance(j.pointA) <= 800 || me.Distance(j.pointB) <= 800)
                         {
-                            Utility.DrawCircle(j.pointA, 100, color ? Color.LawnGreen : Color.Magenta, 1, 1);
-                            Utility.DrawCircle(j.pointB, 100, color ? Color.LawnGreen : Color.Magenta, 1, 1);
+                            Utility.DrawCircle(j.pointA, 100, color ? Color.LawnGreen : Color.Fuchsia, 1, 1);
+                            Utility.DrawCircle(j.pointB, 100, color ? Color.LawnGreen : Color.Fuchsia, 1, 1);
                         }
                     }
                 }
@@ -361,7 +365,7 @@ namespace KurisuRiven
         #endregion
 
         #region Clear
-        private void Clear()
+        private static void Clear()
         {
             if (!useclear) 
                 return;
@@ -428,7 +432,7 @@ namespace KurisuRiven
 
         #region  OnProcessSpellCast
 
-        private void Obj_AI_Base_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
+        private static void Obj_AI_Base_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
         {
             var target = enemy;
 
@@ -441,13 +445,13 @@ namespace KurisuRiven
                     tritick = Environment.TickCount;
                     if (cleavecount < 1)
                         ff = Game.Time + (13 + (13*me.PercentCooldownMod));
+                    if (wslash == 1 && cleavecount == 1)
+                        blade.Cast(enemy.Position);
+                        
                     break;
                 case "RivenMartyr":
                     Orbwalking.LastAATick = 0;
-                    if (!config.Item("ssWQ").GetValue<bool>())
-                        return;
-
-                    if (wings.IsReady() && (usecombo || killsteal + extraqtime > now))
+                    if (wings.IsReady() && usecombo)
                         Utility.DelayAction.Add(Game.Ping + 75, () => wings.Cast(target.Position, true));
 
                     if (wings.IsReady() && useclear)
@@ -456,31 +460,33 @@ namespace KurisuRiven
                     break;
                 case "ItemTiamatCleave":
                     Orbwalking.LastAATick = 0;
-                    if (target.IsValidTarget(kiburst.Range) && (usecombo || killsteal + extraqtime > now))
-                        if (kiburst.IsReady())
-                            kiburst.Cast();
+                    if (target.IsValidTarget(kiburst.Range) && usecombo)
+                        if (wings.IsReady() && !kiburst.IsReady())
+                            wings.Cast(enemy.Position, true);
+
+                    if (wslash == 1 && blade.IsReady())
+                        if (ultion && cleavecount == 2)
+                            blade.Cast(enemy.ServerPosition);
+
                     break;
                 case "RivenFeint":
                     etick = Environment.TickCount;
                     Orbwalking.LastAATick = 0;
 
-                    if (usecombo || killsteal + extraqtime > now)
+                    if (usecombo)
                         castitems(target);
-
-                    if (!config.Item("ssEWS").GetValue<bool>())
-                        return;
 
                     if (!useblade || !useautows)
                         return;
 
-                    if (blade.IsReady() && (usecombo || killsteal + extraqtime > now))
+                    if (blade.IsReady() && usecombo)
                         if (ultion && wslash == 1)
                             blade.Cast(target.Position, true);
                     break;
                 case "RivenFengShuiEngine":
                     Orbwalking.LastAATick = 0;
 
-                    if (!usecombo || killsteal + extraqtime < now)
+                    if (!usecombo)
                         return;
 
                     castitems(target);
@@ -491,11 +497,8 @@ namespace KurisuRiven
                         kiburst.Cast();
                     break;
                 case "rivenizunablade":
-                    if (!config.Item("ssWSQ").GetValue<bool>())
-                        return;
-
                     if (wings.IsReady())
-                        wings.Cast(target.Position, true);
+                        wings.Cast(enemy.ServerPosition, true);
                     break;
             }
         }
@@ -503,114 +506,111 @@ namespace KurisuRiven
         #endregion
 
         #region  OnProcessPacket
-        private void Game_OnGameProcessPacket(GamePacketEventArgs args)
+        private static void Game_OnGameProcessPacket(GamePacketEventArgs args)
         {
             var packet = new GamePacket(args.PacketData);
-            if (packet.Header == 0xb0 && config.Item("blockanim").GetValue<bool>())
+            if (packet.Header == 0xb0 && wings.IsReady())
             {
                 packet.Position = 0x1;
-                if (packet.ReadInteger() == me.NetworkId)
-                    args.Process = false;
+                if (packet.ReadInteger() == me.NetworkId &&  
+                    config.Item("blockanim").GetValue<bool>())
+                        args.Process = false;
             }
-            
-            //else if (packet.Header == 0x61)
-            //{
-            //    packet.Position = 0xc;
-            //    if (packet.ReadInteger() != me.NetworkId)
-            //        return;
 
-            //    if (Orbwalking.Move && orbwalker.GetTarget() != null)
-            //        Orbwalking.Move = !blockmove;
-            //}
-
-            else if (packet.Header == 0x65)
+            if (packet.Header == 0x65 && wings.IsReady())
             {
                 packet.Position = 0x10;
                 int sourceId = packet.ReadInteger();
-
                 if (sourceId != me.NetworkId)
                     return;
-
+       
                 packet.Position = 0x1;
                 int targetId = packet.ReadInteger();
                 int dmgType = packet.ReadByte();
 
-                var trueTarget = ObjectManager.GetUnitByNetworkId<Obj_AI_Base>(targetId);
-                var trueOutput = wings.GetPrediction(trueTarget);
+                var targ = ObjectManager.GetUnitByNetworkId<Obj_AI_Base>(targetId);
 
-                var nonstickyPosition = new Vector3();
-                if (trueOutput.Hitchance >= HitChance.Low)
-                    nonstickyPosition = new Vector3(nonstickyPosition.X, nonstickyPosition.Y, nonstickyPosition.Z);
-
+                var prediction = wings.GetPrediction(targ);
                 var nosticky = config.Item("nostickyq").GetValue<bool>();
-                if ((dmgType == 0x4 || dmgType == 0x3) && wings.IsReady())
+
+                if ((dmgType == 0x4 || dmgType == 0x3))
                 {
-                    switch (trueTarget.Type)
+                    switch (targ.Type)
                     {
                         case GameObjectType.obj_Barracks:
                         case GameObjectType.obj_AI_Turret:
                             if (!config.Item("clearkey").GetValue<KeyBind>().Active)
                                 return;
-                            castitems(trueTarget);
-                            wings.Cast(trueTarget.Position, true);
+                            castitems(targ);
+                            wings.Cast(targ.ServerPosition, true);
                             break;
                         case GameObjectType.obj_AI_Hero:
                             if (config.Item("combokey").GetValue<KeyBind>().Active) 
-                                castitems(trueTarget);
+                                castitems(targ);
                             if (config.Item("combokey").GetValue<KeyBind>().Active) 
-                                wings.Cast(nosticky ? nonstickyPosition : trueTarget.Position, true);
+                                wings.Cast(nosticky ? prediction.CastPosition : enemy.ServerPosition, true);
                             if (config.Item("harasskey").GetValue<KeyBind>().Active)
-                                wings.Cast(nosticky ? nonstickyPosition : trueTarget.Position, true);
+                                wings.Cast(nosticky ? prediction.CastPosition : enemy.ServerPosition, true);
                             break;
                         case GameObjectType.obj_AI_Minion:
                             if (!config.Item("clearkey").GetValue<KeyBind>().Active)
                                 return;
-                            if (jungleminions.Any(name => trueTarget.Name.StartsWith(name)) && !trueTarget.Name.Contains("Mini") &&
+                            if (jungleminions.Any(name => targ.Name.StartsWith(name)) && !targ.Name.Contains("Mini") &&
                                 wings.IsReady() && config.Item("jungleQ").GetValue<bool>())
-                                wings.Cast(trueTarget.Position, true);
-                            if (trueTarget.Name.StartsWith("Minion") && config.Item("farmQ").GetValue<bool>())
-                            {
-                                wings.Cast(trueTarget.Position, true);
-                                orbwalker.ForceTarget(trueTarget);
-                            }
+                                wings.Cast(targ.ServerPosition, true);
+                            if (targ.Name.StartsWith("Minion") && config.Item("farmQ").GetValue<bool>())
+                                wings.Cast(targ.ServerPosition, true);
                             if (valor.IsReady() && cleavecount >= 1 && config.Item("jungleE").GetValue<bool>())
-                                valor.Cast(trueTarget.Position);
+                                valor.Cast(targ.ServerPosition);
                             break;
                     }
                 }
             }
-            else if (packet.Header == 0x38 && packet.Size() == 0x9)
+
+            if (packet.Header == 0x38 && packet.Size() == 0x9)
             {
                 packet.Position = 0x1;
                 int sourceId = packet.ReadInteger();
                 if (sourceId != me.NetworkId)
                     return;
-
+     
                 var movePos = new Vector3();
-                var targetId = orbwalker.GetTarget().NetworkId;
-                var trueTarget = ObjectManager.GetUnitByNetworkId<Obj_AI_Base>(targetId);
+                var test = ObjectManager.GetUnitByNetworkId<Obj_AI_Base>(orbwalker.GetTarget().NetworkId);
+                var targ = ObjectManager.Get<Obj_AI_Base>().First(x => x.NetworkId == test.NetworkId);
 
-                if (trueTarget.Type == GameObjectType.obj_Barracks || trueTarget.Type == GameObjectType.obj_AI_Turret ||
-                    trueTarget.Type == GameObjectType.obj_AI_Minion)
-                {
-                    movePos = trueTarget.Position + Vector3.Normalize(me.Position -
-                                                                        trueTarget.Position) * (me.Distance(trueTarget.Position) + 63);
+                if (me.Distance(targ.Position) > truerange + 25)
+                    return;
+
+                switch (targ.Type)
+                {                                  
+                    case GameObjectType.obj_Barracks:
+                    case GameObjectType.obj_AI_Turret:
+                    case GameObjectType.obj_AI_Minion:
+                        movePos = targ.Position + Vector3.Normalize(me.Position -
+                                                                          targ.ServerPosition) * (me.Distance(targ.ServerPosition) + 63);
+                        break;
+                    case GameObjectType.obj_AI_Hero:
+                        movePos = enemy.ServerPosition + Vector3.Normalize(me.Position -
+                                                                          enemy.ServerPosition) * (me.Distance(enemy.ServerPosition) + 57);
+                        break;
                 }
 
-                else if (trueTarget.Type == GameObjectType.obj_AI_Hero)
-                {
-                    movePos = trueTarget.Position + Vector3.Normalize(me.Position -
-                                                                        trueTarget.Position) * (me.Distance(trueTarget.Position) + 58);
-                }
+                blockmove = true;
+                Packet.C2S.Move.Encoded(new Packet.C2S.Move.Struct(movePos.X, movePos.Y)).Send();
+                //me.IssueOrder(GameObjectOrder.MoveTo, new Vector3(movePos.X, movePos.Y, movePos.Z));  
+                //Packet.C2S.Ping.Encoded(new Packet.C2S.Ping.Struct(movePos.X, movePos.Y)).Send();
+                Utility.DelayAction.Add(Game.Ping + 150, delegate { blockmove = false; });
 
-                me.IssueOrder(GameObjectOrder.MoveTo, new Vector3(movePos.X, movePos.Y, movePos.Z));
-                if (trueTarget.Type == GameObjectType.obj_AI_Minion)
-                    Utility.DelayAction.Add(Game.Ping + 75, () => Orbwalking.LastAATick = 0);
+                if ((targ.Type == GameObjectType.obj_AI_Minion && 
+                    !targ.Name.Contains("Minion")) || cleavecount == 3)
+                    Utility.DelayAction.Add(Game.Ping + 50, () => Orbwalking.LastAATick = 0);
                 else
                     Orbwalking.LastAATick = 0;
+
+
             }
 
-            else if (packet.Header == 0xfe && packet.Size() == 0x18)
+            if (packet.Header == 0xfe && packet.Size() == 0x18)
             {
                 packet.Position = 1;
                 if (packet.ReadInteger() == me.NetworkId)
@@ -624,76 +624,57 @@ namespace KurisuRiven
         #endregion
 
         #region  Combo Logic
-        private void CastCombo(Obj_AI_Base target)
+        private static void CastCombo(Obj_AI_Base target)
         {
             var healthvalor = config.Item("valorhealth").GetValue<Slider>().Value;
-            if (target.IsValidTarget())
+            if (!target.IsValidTarget(950)) 
+                return;
+
+            if (me.Distance(target.ServerPosition) > truerange + 25 ||
+                     ((me.Health / me.MaxHealth) * 100) <= healthvalor)
             {
-                if (me.Distance(target.Position) > truerange + 25 ||
-                    ((me.Health / me.MaxHealth) * 100) <= healthvalor)
-                {
-                    if (valor.IsReady() && config.Item("usevalor").GetValue<bool>())
-                        valor.Cast(target.Position);
-                    if (wings.IsReady() && cleavecount <= 1)
-                        CheckR(target);
-                }
-
-                if (kiburst.IsReady() && wings.IsReady() && valor.IsReady()
-                    && me.Distance(target.Position) < kiburst.Range + 20)
-                {
-                    if (cleavecount <= 1)
-                        CheckR(target);
-                }
-
-                if (blade.IsReady() && valor.IsReady() && ultion)
-                {
-                    if (cleavecount == 2)
-                        valor.Cast(target.Position);
-                }
-
-
-                if (me.Distance(target.Position) < kiburst.Range)
-                {
-                    if (Items.HasItem(3077) && Items.CanUseItem(3077))
-                        Items.UseItem(3077);
-                    if (Items.HasItem(3074) && Items.CanUseItem(3074))
-                        Items.UseItem(3074);
-                    if (kiburst.IsReady())
-                        kiburst.Cast();
-                }
-
-                if (wings.IsReady() && !valor.IsReady() &&
-                    me.Distance(target.Position) > wings.Range)
-                {
-                    if (TimeSpan.FromMilliseconds(tritick).TotalSeconds + extraqtime < now &&
-                        TimeSpan.FromMilliseconds(etick).TotalSeconds + extraetime < now)
-                    {
-                        wings.Cast(target.Position, true);
-                    }
-                }
-            }
-        }
-
-        #endregion
-
-        #region  Buff Handler
-
-        private void RefreshBuffs()
-        {
-            var buffs = me.Buffs;
-
-            foreach (var b in buffs)
-            {
-                if (b.Name == "rivenpassiveaaboost")
-                    runiccount = b.Count;
-                if (b.Name == "RivenTriCleave")
-                    cleavecount = b.Count;
+                if (valor.IsReady() && config.Item("usevalor").GetValue<bool>())
+                    valor.Cast(target.Position);
+                if (wings.IsReady() && cleavecount <= 1)
+                    CheckR(target);
             }
 
-            if (!me.HasBuff("rivenpassiveaaboost", true))
-                runiccount = 0;
-            if (!wings.IsReady())
-                cleavecount = 0;
+            if (wings.IsReady() && (valor.IsReady() || kiburst.IsReady())
+                && me.Distance(target.Position) <= kiburst.Range - 10)
+            {
+                if (cleavecount <= 1)
+                    CheckR(target);
+            }
+
+            if (blade.IsReady() && valor.IsReady() && ultion)
+            {
+                if (cleavecount == 2)
+                    valor.Cast(target.Position);
+            }
+
+
+            if (me.Distance(target.Position) < kiburst.Range)
+            {
+                if (Items.HasItem(3077) && Items.CanUseItem(3077))
+                    Items.UseItem(3077);
+                if (Items.HasItem(3074) && Items.CanUseItem(3074))
+                    Items.UseItem(3074);
+                if (kiburst.IsReady())
+                    kiburst.Cast();
+            }
+
+            var eready = me.Spellbook.CanUseSpell(valor.Slot) == SpellState.Ready;
+
+            if (wings.IsReady() && !eready &&
+                me.Distance(target.ServerPosition) > wings.Range)
+            {
+                if (TimeSpan.FromMilliseconds(tritick).TotalSeconds + extraqtime < now &&
+                    TimeSpan.FromMilliseconds(etick).TotalSeconds + extraetime < now)
+                {
+                    wings.Cast(target.ServerPosition, true);
+                }
+            }
+   
         }
 
         #endregion
@@ -708,22 +689,24 @@ namespace KurisuRiven
             {                   
                 var hitcount = config.Item("autows2").GetValue<Slider>().Value;
 
-                PredictionOutput prediction = blade.GetPrediction(e, true);
+                var prediction = blade.GetPrediction(e, true);
                 if (blade.IsReady() && useautows)
                 {
-                    if (wslash == 1)
+                    if (wslash == 1 && prediction.AoeTargetsHitCount >= hitcount)
+                        blade.Cast(prediction.CastPosition, true);
+
+                    if (wslash == 1 && prediction.Hitchance >= HitChance.Medium)
                     {
-                        if (prediction.AoeTargetsHitCount >= hitcount)
-                            blade.Cast(prediction.CastPosition, true);
-                        else if (rr / e.MaxHealth * 100 > e.Health / e.MaxHealth * wsneed)
+                        if (rr / e.MaxHealth * 100 >= e.Health / e.MaxHealth * wsneed)
+                            blade.Cast(prediction.CastPosition);
+
+                        else if (e.Health < rr + ua*1 + uq*1 && enemy.Distance(me.Position) < wings.Range + 50)
                         {
-                            if (prediction.Hitchance >= HitChance.Medium)
-                                blade.Cast(prediction.CastPosition);
+                            blade.Cast(prediction.CastPosition);
                         }
-                        else if (e.Health < rr + ra * 2 + rq * 1)
+                        else if (enemy.Distance(me.Position) <= blade.Range && e.Health <= rr)
                         {
-                            if (prediction.Hitchance >= HitChance.Medium)
-                                blade.Cast(prediction.CastPosition);
+                            blade.Cast(prediction.CastPosition);
                         }
                     }
                     else if (wslash == 0)
@@ -733,30 +716,6 @@ namespace KurisuRiven
                     }
                 }
             }
-        }
-
-        #endregion
-
-        #region Killsteal
-        private void Killsteal()
-        {
-            foreach (var e in ObjectManager.Get<Obj_AI_Hero>().Where(e => e.IsValidTarget(blade.Range)))
-            {
-                if (wings.IsReady() && e.Health < rq && me.Distance(enemy.Position) < wings.Range)
-                    wings.Cast(enemy.Position, true);
-                else if (wings.IsReady() && e.Health < rq + ra*2 + ri &&
-                            me.Distance(enemy.Position) < wings.Range)
-                {
-                    enemy = e;
-                    killsteal = TimeSpan.FromMilliseconds(Environment.TickCount).TotalSeconds;
-
-                }
-                else if (wings.IsReady() && e.Health < rq*2 + ri && me.Distance(enemy.Position) < wings.Range)
-                {
-                    enemy = e;
-                    killsteal = TimeSpan.FromMilliseconds(Environment.TickCount).TotalSeconds;
-                }
-            }        
         }
 
         #endregion
@@ -834,34 +793,42 @@ namespace KurisuRiven
         #endregion
 
         #region  Ultimate Handler
-        private void CheckR(Obj_AI_Base target)
+        private static void CheckR(Obj_AI_Base target)
         {
             if (useblade && usecombo)
             {
                 switch (bladewhen)
                 {
                     case 2:
-                        if ((float) (ua*3 + uq*3 + uw + rr + ri + ritems) > target.Health && !ultion)
+                        if ((float) (ua*3 + uq*3 + uw + rr + ri + ritems) >= target.Health && !ultion)
                         {
+                            if (target.Health <= (float)(ra * 2 + rq * 2  + ri + ritems))
+                                if (config.Item("checkover").GetValue<bool>())
+                                    return;
+
                             blade.Cast();
+
                             if (config.Item("useignote").GetValue<bool>() && blade.IsReady())
-                                if (cleavecount <= 1)
+                                if (cleavecount <= 1 && ultion)
                                     CastIgnite(target);
                         }
                         break;
                     case 1:
-                        if ((float) (ra*3 + rq*3 + rw + rr + ri + ritems) > target.Health && !ultion)
+                        if ((float) (ra*3 + rq*3 + rw + rr + ri + ritems) >= target.Health && !ultion)
                         {
+                            if (target.Health <= (float) (ra*2 + rq*2 + ri + ritems))
+                                if (config.Item("checkover").GetValue<bool>())
+                                    return;
+
                             blade.Cast();
                             if (config.Item("useignote").GetValue<bool>() && blade.IsReady())
-                                if (cleavecount <= 1)
+                                if (cleavecount <= 1 && ultion)
                                     CastIgnite(target);
                         }
                         break;
                     case 0:
-                        if ((float) (ra*2 + rq*2 + rw + rr + ri + ritems) > target.Health && !ultion)
+                        if ((float) (ra*2 + rq*2 + rw + rr + ri + ritems) >= target.Health && !ultion)
                         {
-                            if (!config.Item("checkover").GetValue<bool>())
                                 blade.Cast();
                         }
                         break;
