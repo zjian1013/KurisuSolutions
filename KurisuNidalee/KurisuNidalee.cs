@@ -376,7 +376,7 @@ namespace KurisuNidalee
         {
             var actualHeroManaPercent = (int)((Me.Mana / Me.MaxMana) * 100);
             var minPercent = MainMenu.Item("humanqpct").GetValue<Slider>().Value;
-            var hitchance = MainMenu.Item("hitchance").GetValue<StringList>().SelectedIndex;
+            var hitchance = MainMenu.Item("seth").GetValue<StringList>().SelectedIndex;
             if (!CougarForm && HQ == 0 && MainMenu.Item("usehumanq2").GetValue<bool>())
             {
                 var prediction = javelin.GetPrediction(target);
