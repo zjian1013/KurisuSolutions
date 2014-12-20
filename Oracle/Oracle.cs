@@ -1,15 +1,17 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using Oracle.Core;
 using Oracle.Extensions;
 using LeagueSharp;
 using LeagueSharp.Common;
-using SpellSlot = LeagueSharp.SpellSlot;
 
 namespace Oracle
 {
+
+    // Oracle is not ready
+    throwError
+    
     internal class Oracle 
     {
         //  _____             _     

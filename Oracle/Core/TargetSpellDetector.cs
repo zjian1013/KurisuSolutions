@@ -20,9 +20,10 @@
 using System;
 using LeagueSharp;
 using LeagueSharp.Common;
-using SpellDetector.Helpers;
-
+ 
 #endregion
+
+
 
 namespace Oracle.Core
 {

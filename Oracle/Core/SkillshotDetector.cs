@@ -23,9 +23,6 @@ using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
 using SharpDX;
-using SpellDetector.Helpers;
-using Collision = SpellDetector.Helpers.Collision;
-using SpellSlot = SpellDetector.Targeted.SpellSlot;
 
 #endregion
 

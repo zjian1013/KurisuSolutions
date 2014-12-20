@@ -23,9 +23,6 @@ using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
 using SharpDX;
-using SpellDetector.Helpers;
-using Collision = SpellDetector.Helpers.Collision;
-using SpellSlot = SpellDetector.Targeted.SpellSlot;
 
 #endregion
 
@@ -111,7 +108,7 @@ namespace Oracle.Core
         public float MultipleAngle;
         public int MultipleNumber = -1;
         public int RingRadius;
-        public SpellSlot Slot;
+        public LeagueSharp.SpellSlot Slot;
         public string SpellName;
         public string ToggleParticleName = "";
         public SkillShotType Type;
