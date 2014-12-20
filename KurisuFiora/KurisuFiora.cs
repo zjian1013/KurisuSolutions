@@ -6,6 +6,9 @@ using Color = System.Drawing.Color;
 
 namespace KurisuFiora
 {
+    // KurisuFiora is not ready
+    throwError
+
     internal class KurisuFiora
     {
         private static Menu mainmenu;
