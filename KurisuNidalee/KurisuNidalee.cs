@@ -117,13 +117,13 @@ namespace KurisuNidalee
             MainMenu.AddSubMenu(nidaKeys);
 
             var nidaSpells = new Menu("Nidalee: Spells", "spells");
-            nidaSpells.AddItem(new MenuItem("hitchance", "Q Hitchance: ")).SetValue(new StringList(new[] { "Low", "Medium", "High" }, 2));
+            nidaSpells.AddItem(new MenuItem("seth", "Q Hitchance: ")).SetValue(new StringList(new[] { "Low", "Medium", "High" }, 2));
             nidaSpells.AddItem(new MenuItem("usehumanq", "Use Javelin Toss")).SetValue(true);
             nidaSpells.AddItem(new MenuItem("usehumanw", "Use Bushwack")).SetValue(true);
             nidaSpells.AddItem(new MenuItem(" ", " "));
             nidaSpells.AddItem(new MenuItem("usecougarq", "Use Takedown")).SetValue(true);
             nidaSpells.AddItem(new MenuItem("usecougarw", "Use Pounce")).SetValue(true);
-            nidaSpells.AddItem(new MenuItem("pouncerange", "Pounce Min Distance")).SetValue(new Slider(125, 50, 300));
+            nidaSpells.AddItem(new MenuItem("setp", "Pounce Min Distance")).SetValue(new Slider(125, 50, 300));
             nidaSpells.AddItem(new MenuItem("usecougare", "Use Swipe")).SetValue(true);
             nidaSpells.AddItem(new MenuItem("usecougarr", "Auto Switch Forms")).SetValue(true);
             MainMenu.AddSubMenu(nidaSpells);
