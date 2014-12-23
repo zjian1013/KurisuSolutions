@@ -7,7 +7,6 @@ using OC = Oracle.Oracle;
 
 namespace Oracle.Extensions
 {
-    // Create our contructor/class
     internal class SmiteChamp
     {
         public string Name;
@@ -31,6 +30,8 @@ namespace Oracle.Extensions
         private static Menu MainMenu;
         private static Obj_AI_Hero HeroUnit;
         private static Obj_AI_Hero HeroTarget;
+
+        private static float HeroDamage;
         private static string[] HeroSummoners;
         private static string[] SmiteSlots =
         {
@@ -143,7 +144,12 @@ namespace Oracle.Extensions
             SmiteList.Add(new SmiteChamp("Amumu", 350f, SpellSlot.E, "onlycast"));
             SmiteList.Add(new SmiteChamp("Chogath", 125f, SpellSlot.R, "targetspell"));
             SmiteList.Add(new SmiteChamp("Nidalee", 300f, SpellSlot.E, "vectorspell"));
+
+            OC.Logger(Oracle.LogType.Info, "Oracle: Smite -- Initialized", true);
             #endregion
+
+            if (HeroTarget == null)
+                OC.Logger(Oracle.LogType.Error, "HeroTarget is null!", true);
         }
 
         private static void Drawing_OnDraw(EventArgs args)
@@ -203,12 +209,10 @@ namespace Oracle.Extensions
 
         private static void Game_OnGameUpdate(EventArgs args)
         {
-            HeroTarget = OC.HeroTarget;
             HeroUnit = OC.HeroUnit;
-
-            Console.WriteLine("Summoners.cs Debug: " + HeroUnit.SkinName);
-
-
+            HeroDamage = OC.HeroDamage;
+            HeroTarget = OC.HeroTarget;
+         
             #region Summoners : Smite
 
             if (HeroSummoners.Any() == SmiteSlots.Any())
@@ -242,6 +246,7 @@ namespace Oracle.Extensions
                                 admg = (float) (Me.Spellbook.CanUseSpell(i.Slot) == SpellState.Ready
                                            ? Me.GetSpellDamage(minion, i.Slot)
                                            : 0);
+
                                 type = i.Type;
                                 slot = i.Slot;
                                 inst = Me.Spellbook.GetSpell(slot);
@@ -414,17 +419,17 @@ namespace Oracle.Extensions
             if (HeroSummoners.Any(x => x == "summonermana"))
             {
                 var clarity = Me.GetSpellSlot("summonermana");
-                if (Me.Spellbook.CanUseSpell(clarity) == SpellState.Ready)
+                if (Me.Spellbook.CanUseSpell(clarity) != SpellState.Ready)
+                    return;
+
+                if (MainMenu.Item("useClarity").GetValue<bool>() && !Utility.InFountain())
                 {
-                    if (MainMenu.Item("useClarity").GetValue<bool>() && !Utility.InFountain())
+                    var manaPercent = HeroUnit.Mana/HeroUnit.MaxMana*100;
+                    if (manaPercent <= MainMenu.Item("useClarityPct").GetValue<Slider>().Value)
                     {
-                        var manaPercent = HeroUnit.Mana/HeroUnit.MaxMana*100;
-                        if (manaPercent <= MainMenu.Item("useClarityPct").GetValue<Slider>().Value)
-                        {
-                            Me.Spellbook.CastSpell(clarity);
-                        }
+                        Me.Spellbook.CastSpell(clarity);
                     }
-                }
+                }             
             }
 
             #endregion
@@ -434,16 +439,18 @@ namespace Oracle.Extensions
             if (HeroSummoners.Any(x => x == "summonerbarrier"))
             {
                 var barrier = Me.GetSpellSlot("summonerbarrier");
-                if (Me.Spellbook.CanUseSpell(barrier) == SpellState.Ready)
-                {
-                    var healthPercent = HeroUnit.Health/HeroUnit.MaxHealth*100;
-                    if (healthPercent <= MainMenu.Item("useBarrierPct").GetValue<Slider>().Value)
-                    {
-                        Me.Spellbook.CastSpell(barrier);
-                    }
+                if (Me.Spellbook.CanUseSpell(barrier) != SpellState.Ready)
+                    return;
 
-                    // todo : check pct damage taken
-                }
+                var incomePercent = HeroDamage/HeroUnit.MaxHealth*100;
+                var healthPercent = Me.Health / Me.MaxHealth * 100;
+
+                if (healthPercent <= MainMenu.Item("useBarrierPct").GetValue<Slider>().Value)
+                {
+                    if (incomePercent >= 1 || HeroDamage >= HeroUnit.Health)
+                        Me.Spellbook.CastSpell(barrier);
+                }                  
+                
             }
 
             #endregion
@@ -453,16 +460,18 @@ namespace Oracle.Extensions
             if (HeroSummoners.Any(x => x == "summonerheal"))
             {
                 var heal = Me.GetSpellSlot("summonerheal");
-                if (Me.Spellbook.CanUseSpell(heal) == SpellState.Ready)
-                {
-                    var healthPercent = HeroUnit.Health / HeroUnit.MaxHealth * 100;
-                    if (healthPercent <= MainMenu.Item("useHealrPct").GetValue<Slider>().Value)
-                    {
-                        Me.Spellbook.CastSpell(heal);
-                    }
+                if (Me.Spellbook.CanUseSpell(heal) != SpellState.Ready)
+                    return;
 
-                    // todo : check pct damage taken
+                var incdmg = HeroDamage / HeroUnit.MaxHealth * 100;
+                var healthPercent = HeroUnit.Health / HeroUnit.MaxHealth * 100;
+
+                if (healthPercent <= MainMenu.Item("useHealrPct").GetValue<Slider>().Value)
+                {
+                    if (incdmg >= 1 || HeroDamage >= HeroUnit.Health)
+                        Me.Spellbook.CastSpell(heal);
                 }
+                
             }
 
             #endregion
@@ -472,29 +481,29 @@ namespace Oracle.Extensions
             if (HeroSummoners.Any(x => x == "summonerexhaust"))
             {
                 var exhaust = Me.GetSpellSlot("summonerexhaust");
-                if (Me.Spellbook.CanUseSpell(exhaust) == SpellState.Ready)
-                {
-                    if (!OC.MainMenu.Item("combokey").GetValue<KeyBind>().Active &&
-                        MainMenu.Item("exhaustMode").GetValue<StringList>().SelectedIndex == 1)
-                        return;
+                if (Me.Spellbook.CanUseSpell(exhaust) != SpellState.Ready) 
+                    return;
 
-                    foreach (
-                        var enemy in
+                if (!OC.MainMenu.Item("combokey").GetValue<KeyBind>().Active &&
+                    MainMenu.Item("exhaustMode").GetValue<StringList>().SelectedIndex == 1)
+                    return;
+
+                foreach (
+                    var enemy in
+                        from enemy in
                             ObjectManager.Get<Obj_AI_Hero>()
                                 .Where(hero => hero.IsValidTarget(650))
-                                .OrderByDescending(hero => hero.BaseAttackDamage + hero.FlatPhysicalDamageMod))
-                    {
-                        // todo: check team and shit
+                                .OrderByDescending(hero => hero.BaseAttackDamage + hero.FlatPhysicalDamageMod)
 
-                        var healthPercent = Me.Health/Me.MaxHealth*100;
-                        if (healthPercent <= MainMenu.Item("aExhaustPct").GetValue<Slider>().Value)
-                        {
-                            if (enemy.IsFacing(Me))
-                                Me.Spellbook.CastSpell(exhaust, enemy);
-                        }
-                    }
+                        let healthPercent = HeroUnit.Health/HeroUnit.MaxHealth*100
+                        where healthPercent <= MainMenu.Item("aExhaustPct").GetValue<Slider>().Value
+                        where enemy.IsFacing(Me)
+                        select enemy) 
+                {
+                    Me.Spellbook.CastSpell(exhaust, enemy);
                 }
             }
+
             #endregion
 
             #region Summoners : Cleanse // Incomplete

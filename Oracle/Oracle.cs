@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using Oracle.Core;
 using Oracle.Extensions;
 using LeagueSharp;
 using LeagueSharp.Common;
@@ -10,7 +9,7 @@ namespace Oracle
 {
 
     // Oracle is not ready
-    throwError
+    //throwError
     
     internal class Oracle 
     {
@@ -65,7 +64,7 @@ namespace Oracle
             MainMenu = new Menu("Oracle", "oracle", true);
 
             Summoners.Initialize(MainMenu);
-            Logger(LogType.Info, "Summoners extension loaded!");
+            Logger(LogType.Info, "Summoners Extension Loaded!");
 
             var DebugMenu = new Menu("Oracle Debug", "odebugger");
             DebugMenu.AddItem(new MenuItem("enabledebug", "Enable Debug")).SetValue(true);
@@ -74,10 +73,10 @@ namespace Oracle
             DebugMenu.AddItem(new MenuItem("debuginfo", "Print Info")).SetValue(false);
             MainMenu.AddSubMenu(DebugMenu);
 
-            if (!MainMenu.Item("enabledebug").GetValue<bool>())
-                Logger(LogType.Warning, "Oracle debugging is disabled");
-
             MainMenu.AddToMainMenu();
+
+            if (!MainMenu.Item("enabledebug").GetValue<bool>())
+                Game.PrintChat("Oracle: Debugger Disabled, it is reccomended that you leave it enabled!");
 
             // Set Current Map
             switch (Game.MapId)
@@ -96,16 +95,22 @@ namespace Oracle
                     break;
             }
 
-            // Set Summoners
-            var d = Me.
-                Spellbook.
+            try
+            {
+                var d = Me.
+                    Spellbook.
                     GetSpell(SpellSlot.Summoner1);
-            var f = Me.
-                Spellbook.
+                var f = Me.
+                    Spellbook.
                     GetSpell(SpellSlot.Summoner2);
 
-            Summoner1 = d.Name;
-            Summoner2 = f.Name;
+                Summoner1 = d.Name;
+                Summoner2 = f.Name;
+            }
+            catch (Exception e)
+            {
+                Logger(LogType.Error, e.Message);
+            }
 
             Logger(LogType.Info, "Current Map: " + Map);
             Logger(LogType.Info, "Summoners : " + Summoner1 + " " + Summoner2);
@@ -128,69 +133,18 @@ namespace Oracle
                 file.Close();
             }
 
-            switch (type)
-            {
-                case LogType.Error:
-                    if (!MainMenu.Item("debugerror").GetValue<bool>())
-                        return;
-                    Logger(LogType.Error, msg, true);
-
-                    break;
-                case LogType.Warning:
-                    if (!MainMenu.Item("debugwarning").GetValue<bool>())
-                        return;
-                    Logger(LogType.Warning, msg, true);
-                    break;
-                case LogType.Info:
-                    if (!MainMenu.Item("debuginfo").GetValue<bool>())
-                        return;
-                    Logger(LogType.Info , msg, true);
-                    break;
-            }
+            if (ingame)
+                Game.PrintChat("Oracle: " + msg);
         }
 
         private static void Game_OnGameUpdate(EventArgs args)
         {
-            try
+            foreach (var hero in ObjectManager.Get<Obj_AI_Hero>()
+                        .Where(x => x.IsAlly && x.IsValidTarget(900, false))
+                        .OrderByDescending(o => o.Health/o.MaxHealth*100))
             {
-                foreach (
-                    var hero in
-                        ObjectManager.Get<Obj_AI_Hero>()
-                            .Where(x => x.IsAlly && x.IsValidTarget(900, false))
-                            .OrderByDescending(o => o.Health/o.MaxHealth*100))
-                {
-                    HeroUnit = hero;
-                }
-            }
-
-            catch (Exception e)
-            {
-                Logger(LogType.Error, e.Message);
-            }
-      
-        }
-
-        private static void Null(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
-        {
-            foreach (var i in SkillshotDatabase.Spells.Where(x => x.SpellName == args.SData.Name))
-            {
-                var data =
-                    new SkillshotData(
-                        i.ChampionName, i.SpellName, i.Slot,
-                        i.Type, i.Delay, i.Range, i.Radius,
-                        i.MissileSpeed, i.AddHitbox, i.FixedRange, i.DangerValue);
-
-                var spell = 
-                    new Skillshot(
-                        DetectionType.ProcessSpell, data, Environment.TickCount, 
-                        args.Start.To2D(), args.End.To2D(), sender);
-
-                if (spell.IsAboutToHit(2, ObjectManager.Player))
-                {
-                    
-                }
-
-            }
+                HeroUnit = hero;
+            }             
         }
 
         private static void Obj_AI_Base_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
