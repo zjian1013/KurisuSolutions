@@ -9,7 +9,7 @@ namespace Oracle
 {
 
     // Oracle is not ready
-    //throwError
+    throwError
     
     internal class Oracle 
     {
@@ -24,10 +24,8 @@ namespace Oracle
         public static Obj_AI_Hero HeroTarget;
         public const string Revision = "1.0.0.0";
         public static readonly Obj_AI_Hero Me = ObjectManager.Player;
-   
-        public static CurrentMap Map;
-        internal enum CurrentMap { SR = 0, CS = 1, HA = 2, TT = 3, };
-        internal enum LogType { Error = 0, Warning = 1, Info = 2, }
+
+        internal enum LogType { Error = 0, Warning = 1, Info = 2, };
 
         public static string FileName;
         public static float HeroDamage;
@@ -78,23 +76,6 @@ namespace Oracle
             if (!MainMenu.Item("enabledebug").GetValue<bool>())
                 Game.PrintChat("Oracle: Debugger Disabled, it is reccomended that you leave it enabled!");
 
-            // Set Current Map
-            switch (Game.MapId)
-            {
-                case (GameMapId)11:
-                    Map = CurrentMap.SR;
-                    break;
-                case GameMapId.CrystalScar:
-                    Map = CurrentMap.CS;
-                    break;
-                case GameMapId.HowlingAbyss:
-                    Map = CurrentMap.HA;
-                    break;
-                case GameMapId.TwistedTreeline:
-                    Map = CurrentMap.TT;
-                    break;
-            }
-
             try
             {
                 var d = Me.
@@ -112,9 +93,19 @@ namespace Oracle
                 Logger(LogType.Error, e.Message);
             }
 
-            Logger(LogType.Info, "Current Map: " + Map);
+            Logger(LogType.Info, "Current Map: " + Game.MapId);
             Logger(LogType.Info, "Summoners : " + Summoner1 + " " + Summoner2);
            
+        }
+
+        private static void Game_OnGameUpdate(EventArgs args)
+        {
+            foreach (var hero in ObjectManager.Get<Obj_AI_Hero>()
+                        .Where(x => x.IsAlly && x.IsValidTarget(900, false))
+                        .OrderByDescending(o => o.Health/o.MaxHealth*100))
+            {
+                HeroUnit = hero;
+            }             
         }
 
         public static void Logger(LogType type, string msg, bool ingame = false)
@@ -135,16 +126,6 @@ namespace Oracle
 
             if (ingame)
                 Game.PrintChat("Oracle: " + msg);
-        }
-
-        private static void Game_OnGameUpdate(EventArgs args)
-        {
-            foreach (var hero in ObjectManager.Get<Obj_AI_Hero>()
-                        .Where(x => x.IsAlly && x.IsValidTarget(900, false))
-                        .OrderByDescending(o => o.Health/o.MaxHealth*100))
-            {
-                HeroUnit = hero;
-            }             
         }
 
         private static void Obj_AI_Base_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
