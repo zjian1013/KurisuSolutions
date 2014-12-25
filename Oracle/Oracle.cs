@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using Oracle.Extensions;
+using Oracle.Helpers;
 using LeagueSharp;
 using LeagueSharp.Common;
 
@@ -65,7 +66,6 @@ namespace Oracle
             Logger(LogType.Info, "Summoners Extension Loaded!");
 
             var DebugMenu = new Menu("Oracle Debug", "odebugger");
-            DebugMenu.AddItem(new MenuItem("enabledebug", "Enable Debug")).SetValue(true);
             DebugMenu.AddItem(new MenuItem("debugwarning", "Print Warnings")).SetValue(false);
             DebugMenu.AddItem(new MenuItem("debugerror", "Print Errors")).SetValue(false);
             DebugMenu.AddItem(new MenuItem("debuginfo", "Print Info")).SetValue(false);
@@ -110,15 +110,11 @@ namespace Oracle
 
         public static void Logger(LogType type, string msg, bool ingame = false)
         {
-            if (!MainMenu.Item("enabledebug").GetValue<bool>())
-                return;
-
+            var user = Environment.UserName;
             var prefix = "[" + DateTime.Now.ToString("T") + " " + type + "] ";
             var drive = Path.GetPathRoot(Environment.GetFolderPath(Environment.SpecialFolder.System));
 
-            using (
-                var file =
-                    new StreamWriter(@"" + drive + "\\Users\\" + FileName, true)) 
+            using (var file = new StreamWriter( @"" + drive + "\\Users\\" + user + "\\AppData\\Roaming\\LeagueSharp\\Oracle\\" + FileName, true)) 
             {
                 file.WriteLine(prefix + msg);
                 file.Close();

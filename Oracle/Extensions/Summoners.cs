@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
-using OC = Oracle.Oracle;
 
 namespace Oracle.Extensions
 {
@@ -54,7 +53,7 @@ namespace Oracle.Extensions
             Drawing.OnDraw += Drawing_OnDraw;
 
             // Get summoners
-            HeroSummoners = new[] {OC.Summoner1, OC.Summoner2};
+            HeroSummoners = new[] {Oracle.Summoner1, Oracle.Summoner2};
 
             // Create menu
             MainMenu = new Menu("Summoners", "summoners");
@@ -145,16 +144,16 @@ namespace Oracle.Extensions
             SmiteList.Add(new SmiteChamp("Chogath", 125f, SpellSlot.R, "targetspell"));
             SmiteList.Add(new SmiteChamp("Nidalee", 300f, SpellSlot.E, "vectorspell"));
 
-            OC.Logger(Oracle.LogType.Info, "Oracle: Smite -- Initialized", true);
+            Oracle.Logger(Oracle.LogType.Info, "Oracle: Smite -- Initialized", true);
             #endregion
 
             if (HeroTarget == null)
-                OC.Logger(Oracle.LogType.Error, "HeroTarget is null!", true);
+                Oracle.Logger(Oracle.LogType.Error, "HeroTarget is null!", true);
         }
 
         private static void Drawing_OnDraw(EventArgs args)
         {
-            # region Smite : Drawings
+            #region Smite : Drawings
 
             if (HeroSummoners.Any() == SmiteSlots.Any())
             {
@@ -209,9 +208,9 @@ namespace Oracle.Extensions
 
         private static void Game_OnGameUpdate(EventArgs args)
         {
-            HeroUnit = OC.HeroUnit;
-            HeroDamage = OC.HeroDamage;
-            HeroTarget = OC.HeroTarget;
+            HeroUnit = Oracle.HeroUnit;
+            HeroDamage = Oracle.HeroDamage;
+            HeroTarget = Oracle.HeroTarget;
          
             #region Summoners : Smite
 
@@ -381,7 +380,7 @@ namespace Oracle.Extensions
                         case 1:
 
                             // Combo ignite
-                            if (OC.MainMenu.Item("usecombo").GetValue<KeyBind>().Active)
+                            if (Oracle.MainMenu.Item("usecombo").GetValue<KeyBind>().Active)
                             {
                                 var damage = 0f;
                                 var aa = Me.FlatPhysicalDamageMod + Me.BaseAttackDamage;
@@ -484,7 +483,7 @@ namespace Oracle.Extensions
                 if (Me.Spellbook.CanUseSpell(exhaust) != SpellState.Ready) 
                     return;
 
-                if (!OC.MainMenu.Item("combokey").GetValue<KeyBind>().Active &&
+                if (!Oracle.MainMenu.Item("combokey").GetValue<KeyBind>().Active &&
                     MainMenu.Item("exhaustMode").GetValue<StringList>().SelectedIndex == 1)
                     return;
 

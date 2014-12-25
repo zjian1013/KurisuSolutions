@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
 using OC = Oracle.Oracle;
@@ -8,7 +9,7 @@ namespace Oracle.Extensions
     class Offensives
     {
         private static Menu MainMenu;
-        private static Obj_AI_Hero HeroUnit = OC.HeroUnit;
+        private static Menu MenuConfig;
         private static readonly Obj_AI_Hero Me = ObjectManager.Player;
 
         public static void Initialize(Menu root)
@@ -17,7 +18,11 @@ namespace Oracle.Extensions
             Game.OnGameUpdate += Game_OnGameUpdate;
 
             MainMenu = new Menu("Offensives", "offensives");
-            // TODO: Champ config;
+            MenuConfig = new Menu("Offensives Config", "oconfig");
+
+            foreach (var x in ObjectManager.Get<Obj_AI_Hero>().Where(x => x.Team != Me.Team))
+                MenuConfig.AddItem(new MenuItem("oson" + x.SkinName, "Use for " + x.SkinName)).SetValue(true);
+                    MainMenu.AddSubMenu(MenuConfig);
 
             CreateMenuItem("Muramana", "Muramana", 90, 30);
             CreateMenuItem("Tiamat/Hydra", "Hydra", 90, 30);

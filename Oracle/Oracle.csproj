@@ -55,15 +55,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Core\Collision.cs" />
-    <Compile Include="Core\Geometry.cs" />
-    <Compile Include="Core\Helpers.cs" />
-    <Compile Include="Core\Skillshot.cs" />
-    <Compile Include="Core\SkillshotDatabase.cs" />
-    <Compile Include="Core\SkillshotDetector.cs" />
-    <Compile Include="Core\TargetSpell.cs" />
-    <Compile Include="Core\TargetSpellDatabase.cs" />
-    <Compile Include="Core\TargetSpellDetector.cs" />
     <Compile Include="Extensions\Cleansers.cs" />
     <Compile Include="Extensions\Consumables.cs" />
     <Compile Include="Extensions\Defensives.cs" />
