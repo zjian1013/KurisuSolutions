@@ -2,13 +2,11 @@
 using System.IO;
 using System.Linq;
 using Oracle.Extensions;
-using Oracle.Helpers;
 using LeagueSharp;
 using LeagueSharp.Common;
 
 namespace Oracle
 {
-
     // Oracle is not ready
     throwError
     
@@ -26,7 +24,7 @@ namespace Oracle
         public const string Revision = "1.0.0.0";
         public static readonly Obj_AI_Hero Me = ObjectManager.Player;
 
-        internal enum LogType { Error = 0, Warning = 1, Info = 2, };
+        internal enum LogType { Error = 0, Warning = 1, Info = 2, Damage = 3};
 
         public static string FileName;
         public static float HeroDamage;
@@ -114,7 +112,9 @@ namespace Oracle
             var prefix = "[" + DateTime.Now.ToString("T") + " " + type + "] ";
             var drive = Path.GetPathRoot(Environment.GetFolderPath(Environment.SpecialFolder.System));
 
-            using (var file = new StreamWriter( @"" + drive + "\\Users\\" + user + "\\AppData\\Roaming\\LeagueSharp\\Oracle\\" + FileName, true)) 
+            using (
+                var file = 
+                    new StreamWriter( @"" + drive + "\\Users\\" + user + "\\AppData\\Roaming\\LeagueSharp\\Oracle\\" + FileName, true)) 
             {
                 file.WriteLine(prefix + msg);
                 file.Close();
@@ -148,7 +148,7 @@ namespace Oracle
                             (float)
                                 Turret.CalcDamage(HeroTarget, Damage.DamageType.Physical,
                                     Turret.BaseAttackDamage + Turret.FlatPhysicalDamageMod);
-                        Logger(LogType.Info,
+                        Logger(LogType.Damage,
                             "Turret has hit " + HeroTarget.ChampionName + " (" + HeroPercent + "%)  for " + HeroDamage);
                     }
                 }
@@ -163,7 +163,7 @@ namespace Oracle
                         (float)
                             Minion.CalcDamage(HeroTarget, Damage.DamageType.Physical,
                                 Minion.BaseAttackDamage + Minion.FlatPhysicalDamageMod);
-                    Logger(LogType.Info,
+                    Logger(LogType.Damage,
                         "Minion ( " + Minion.Name + ") has hit " + HeroTarget.ChampionName + " (" + HeroPercent + "%) for " + HeroDamage);
                 }                
             }
@@ -190,7 +190,7 @@ namespace Oracle
                 if (HeroSlot == SpellSlot.Unknown)
                     HeroDamage = (float) Hero.GetAutoAttackDamage(HeroTarget);
 
-                Logger(LogType.Info,
+                Logger(LogType.Damage,
                     "Hero (" + Hero.ChampionName + ") has hit " + HeroTarget.ChampionName + " (" + HeroPercent + "%)  for " + HeroDamage);
             }
         }

@@ -1,40 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml.Schema;
 using LeagueSharp;
 using LeagueSharp.Common;
 
 namespace Oracle.Extensions
 {
-    internal class SmiteChamp
-    {
-        public string Name;
-        public float Range;
-        public SpellSlot Slot;
-        public string Type;
-        public int Stage;
-
-        public SmiteChamp(string skinname, float range, SpellSlot slot, string type, int stage = 0)
-        {
-            Name = skinname;
-            Range = range;
-            Slot = slot;
-            Type = type;
-            Stage = stage;
-        }
-    }
-
     internal static class Summoners
     {
         private static Menu MainMenu;
-        private static Obj_AI_Hero HeroUnit;
-        private static Obj_AI_Hero HeroTarget;
-
-        private static float HeroDamage;
+        private static Menu MenuConfig;
         private static string[] HeroSummoners;
+
+        // Smite spellslots
         private static string[] SmiteSlots =
         {
-            "summonersmite", "itemsmiteaoe", "s5_summonersmitequick", "s5_summonersmiteduel",
+            "itemsmiteaoe", 
+            "summonersmite", 
+            "s5_summonersmitequick", 
+            "s5_summonersmiteduel",
             "s5_summonersmiteplayerganker"
         };
 
@@ -42,7 +27,7 @@ namespace Oracle.Extensions
         private static readonly Obj_AI_Hero Me = ObjectManager.Player;
 
         // Create smite list
-        private static readonly List<SmiteChamp> SmiteList = new List<SmiteChamp>();
+        private static readonly List<OracleChamp> SmiteList = new List<OracleChamp>();
 
         public static void Initialize(Menu root)
         {           
@@ -57,6 +42,10 @@ namespace Oracle.Extensions
 
             // Create menu
             MainMenu = new Menu("Summoners", "summoners");
+
+            foreach (var x in ObjectManager.Get<Obj_AI_Hero>().Where(x => x.Team != Me.Team))
+                MenuConfig.AddItem(new MenuItem("oson" + x.SkinName, "Use for " + x.SkinName)).SetValue(true);
+            MainMenu.AddSubMenu(MenuConfig);
 
             // Validate summoner spell slots
             if (HeroSummoners.Any(x => x == "summonerdot"))
@@ -122,32 +111,32 @@ namespace Oracle.Extensions
             #region SmiteList
 
             // Populate smite champ list
-            SmiteList.Add(new SmiteChamp("Vi", 125f, SpellSlot.E, "onlycast"));
-            SmiteList.Add(new SmiteChamp("Warwick", 200f, SpellSlot.Q, "targetspell"));
-            SmiteList.Add(new SmiteChamp("MasterYi", 600f, SpellSlot.Q, "targetspell"));
-            SmiteList.Add(new SmiteChamp("Kayle", 650f, SpellSlot.Q, "targetspell"));
-            SmiteList.Add(new SmiteChamp("Khazix", 125f, SpellSlot.Q, "targetspell"));
-            SmiteList.Add(new SmiteChamp("MonkeyKing", 300f, SpellSlot.Q, "targetspell"));
-            SmiteList.Add(new SmiteChamp("Elise", 425f, SpellSlot.Q, "targetspell"));
-            SmiteList.Add(new SmiteChamp("Olaf", 325f, SpellSlot.E, "targetspell"));
-            SmiteList.Add(new SmiteChamp("Nunu", 125f, SpellSlot.Q, "targetspell"));
-            SmiteList.Add(new SmiteChamp("LeeSin", 1100f, SpellSlot.Q, "onlycast", 1));
-            SmiteList.Add(new SmiteChamp("Malphite", 200f, SpellSlot.E, "onlycast"));
-            SmiteList.Add(new SmiteChamp("Riven", 175f, SpellSlot.W, "onlycast"));
-            SmiteList.Add(new SmiteChamp("Nasus", 125f, SpellSlot.Q, "targetspell"));
-            SmiteList.Add(new SmiteChamp("Poppy", 125f, SpellSlot.Q, "targetspell"));
-            SmiteList.Add(new SmiteChamp("JarvanIV", 700f, SpellSlot.Q, "vectorspell"));
-            SmiteList.Add(new SmiteChamp("Gangplank", 625f, SpellSlot.Q, "targetspell"));
-            SmiteList.Add(new SmiteChamp("Jayce", 600f, SpellSlot.Q, "targetspell"));
-            SmiteList.Add(new SmiteChamp("Aatrox", 1000f, SpellSlot.E, "vectorspell"));
-            SmiteList.Add(new SmiteChamp("Amumu", 350f, SpellSlot.E, "onlycast"));
-            SmiteList.Add(new SmiteChamp("Chogath", 125f, SpellSlot.R, "targetspell"));
-            SmiteList.Add(new SmiteChamp("Nidalee", 300f, SpellSlot.E, "vectorspell"));
+            SmiteList.Add(new OracleChamp("Vi", 125f, SpellSlot.E, "onlycast"));
+            SmiteList.Add(new OracleChamp("Warwick", 200f, SpellSlot.Q, "targetspell"));
+            SmiteList.Add(new OracleChamp("MasterYi", 600f, SpellSlot.Q, "targetspell"));
+            SmiteList.Add(new OracleChamp("Kayle", 650f, SpellSlot.Q, "targetspell"));
+            SmiteList.Add(new OracleChamp("Khazix", 125f, SpellSlot.Q, "targetspell"));
+            SmiteList.Add(new OracleChamp("MonkeyKing", 300f, SpellSlot.Q, "targetspell"));
+            SmiteList.Add(new OracleChamp("Elise", 425f, SpellSlot.Q, "targetspell"));
+            SmiteList.Add(new OracleChamp("Olaf", 325f, SpellSlot.E, "targetspell"));
+            SmiteList.Add(new OracleChamp("Nunu", 125f, SpellSlot.Q, "targetspell"));
+            SmiteList.Add(new OracleChamp("LeeSin", 1100f, SpellSlot.Q, "onlycast", 1));
+            SmiteList.Add(new OracleChamp("Malphite", 200f, SpellSlot.E, "onlycast"));
+            SmiteList.Add(new OracleChamp("Riven", 175f, SpellSlot.W, "onlycast"));
+            SmiteList.Add(new OracleChamp("Nasus", 125f, SpellSlot.Q, "targetspell"));
+            SmiteList.Add(new OracleChamp("Poppy", 125f, SpellSlot.Q, "targetspell"));
+            SmiteList.Add(new OracleChamp("JarvanIV", 700f, SpellSlot.Q, "vectorspell"));
+            SmiteList.Add(new OracleChamp("Gangplank", 625f, SpellSlot.Q, "targetspell"));
+            SmiteList.Add(new OracleChamp("Jayce", 600f, SpellSlot.Q, "targetspell"));
+            SmiteList.Add(new OracleChamp("Aatrox", 1000f, SpellSlot.E, "vectorspell"));
+            SmiteList.Add(new OracleChamp("Amumu", 350f, SpellSlot.E, "onlycast"));
+            SmiteList.Add(new OracleChamp("Chogath", 125f, SpellSlot.R, "targetspell"));
+            SmiteList.Add(new OracleChamp("Nidalee", 300f, SpellSlot.E, "vectorspell"));
 
             Oracle.Logger(Oracle.LogType.Info, "Oracle: Smite -- Initialized", true);
             #endregion
 
-            if (HeroTarget == null)
+            if (Oracle.HeroTarget == null)
                 Oracle.Logger(Oracle.LogType.Error, "HeroTarget is null!", true);
         }
 
@@ -207,11 +196,7 @@ namespace Oracle.Extensions
         }
 
         private static void Game_OnGameUpdate(EventArgs args)
-        {
-            HeroUnit = Oracle.HeroUnit;
-            HeroDamage = Oracle.HeroDamage;
-            HeroTarget = Oracle.HeroTarget;
-         
+        {        
             #region Summoners : Smite
 
             if (HeroSummoners.Any() == SmiteSlots.Any())
@@ -222,131 +207,147 @@ namespace Oracle.Extensions
                 string[] smallminions = {"SRU_Murkwolf", "SRU_Razorbeak", "SRU_Krug", "SRU_Gromp", "Sru_Crab"};
 
                 var smite = Me.GetSpellSlot("summonersmite");
-                if (Me.Spellbook.CanUseSpell(smite) == SpellState.Ready && MainMenu.Item("useSmite").GetValue<KeyBind>().Active)
+                if (Me.Spellbook.CanUseSpell(smite) != SpellState.Ready ||
+                    !MainMenu.Item("useSmite").GetValue<KeyBind>().Active)
+                    return;
+
+                // todo: check jayce/nidalee forms
+                foreach (var minion in 
+                         MinionManager.GetMinions(Me.Position, 760f, MinionTypes.All, MinionTeam.Neutral))
                 {
-                    // todo: check jayce/nidalee forms
-                    foreach (
-                        var minion in 
-                            MinionManager.GetMinions(Me.Position, 760f, MinionTypes.All, MinionTeam.Neutral))
+                    var admg = 0f;
+                    var type = string.Empty;
+                    var slot = new SpellSlot();
+
+                    // get spell data (may be useful)
+                    SpellDataInst inst = null;
+
+                    var damage = (float)Me.GetSummonerSpellDamage(minion, Damage.SummonerSpell.Smite);
+
+                    if (MainMenu.Item("smiteSpell").GetValue<bool>())
                     {
-                        var admg = 0f;
-                        var type = string.Empty;
-                        var slot = new SpellSlot();
-
-                        // get spell data (may be useful)
-                        SpellDataInst inst = null;
-
-                        var damage = (float)Me.GetSummonerSpellDamage(minion, Damage.SummonerSpell.Smite);
-
-                        if (MainMenu.Item("smiteSpell").GetValue<bool>())
+                        foreach (var i in SmiteList.Where(x => x.Name == Me.SkinName))
                         {
-                            foreach (var i in SmiteList.Where(x => x.Name == Me.SkinName))
-                            {
-                                admg = (float) (Me.Spellbook.CanUseSpell(i.Slot) == SpellState.Ready
-                                           ? Me.GetSpellDamage(minion, i.Slot)
-                                           : 0);
+                            admg = (float) (Me.Spellbook.CanUseSpell(i.Slot) == SpellState.Ready
+                                        ? Me.GetSpellDamage(minion, i.Slot)
+                                        : 0);
 
-                                type = i.Type;
-                                slot = i.Slot;
-                                inst = Me.Spellbook.GetSpell(slot);
+                            type = i.Type;
+                            slot = i.Slot;
+                            inst = Me.Spellbook.GetSpell(slot);
+                        }
+                    }
+
+                    if (smallminions.Any(name => minion.Name.StartsWith(name) && !minion.Name.Contains("Mini")))
+                    {
+                        if (minion.Health <= damage + admg && MainMenu.Item("smiteSmall").GetValue<bool>())
+                        {
+                            switch (type)
+                            {
+                                case "targetspell":
+                                    Me.Spellbook.CastSpell(slot, minion);
+                                    Oracle.Logger(Oracle.LogType.Info,
+                                        "Smite Casting (small-target) spell on " + minion.Name + " (" + minion.Health + " HP)");
+                                    break;
+                                case "vectorspell":
+                                    Me.Spellbook.CastSpell(slot, minion.ServerPosition);
+                                    Oracle.Logger(Oracle.LogType.Info,
+                                        "Smite Casting (small - vector) spell on " + minion.Name + " (" + minion.Health + " HP)");
+                                    break;
+                                case "onlycast":
+                                    Me.Spellbook.CastSpell(slot);
+                                    Oracle.Logger(Oracle.LogType.Info,
+                                        "Smite Casting (small - self) spell on " + minion.Name + " (" + minion.Health + " HP)");
+                                    break;
                             }
                         }
-                         
-                        if (smallminions.Any(name => minion.Name.StartsWith(name) && !minion.Name.Contains("Mini")))
-                        {
-                            if (minion.Health <= damage + admg && MainMenu.Item("smiteSmall").GetValue<bool>())
-                            {
-                                if (Me.Spellbook.CanUseSpell(slot) == SpellState.Ready)
-                                {
-                                    switch (type)
-                                    {
-                                        case "targetspell":
-                                            Me.Spellbook.CastSpell(slot, minion);
-                                            break;
-                                        case "vectorspell":
-                                            Me.Spellbook.CastSpell(slot, minion.ServerPosition);
-                                            break;
-                                        case "onlycast":
-                                            Me.Spellbook.CastSpell(slot);
-                                            break;
-                                    }
-                                }
-                            }
 
-                            if (minion.Health <= damage && MainMenu.Item("smiteSmall").GetValue<bool>())
-                            {
-                                // Lee check
-                                if (inst != null && (Me.SkinName == "LeeSin" && inst.Name != "blindmonkqtwo" && 
-                                                     !minion.HasBuff("BlindMonkSonicWave", true)))
-                                    return;
+                        if (minion.Health <= damage && MainMenu.Item("smiteSmall").GetValue<bool>())
+                        {
+                            // Lee check
+                            if (inst != null && (Me.SkinName == "LeeSin" && inst.Name != "blindmonkqtwo" && 
+                                                    !minion.HasBuff("BlindMonkSonicWave", true)))
+                                return;
                               
-                                Me.Spellbook.CastSpell(smite, minion);
-                            }
+                            Me.Spellbook.CastSpell(smite, minion);
+                            Oracle.Logger(Oracle.LogType.Info,
+                                "Casting smite on small " + minion.Name + " (" + minion.Health + " HP)");
+                        }
+                    }
+             
 
+                    else if (largeminions.Any(name => minion.Name.StartsWith(name) && !minion.Name.Contains("Mini")))
+                    {
+                        if (minion.Health <= damage + admg && MainMenu.Item("smiteLarge").GetValue<bool>())
+                        {
+                            switch (type)
+                            {
+                                case "targetspell":
+                                    Me.Spellbook.CastSpell(slot, minion);
+                                    Oracle.Logger(Oracle.LogType.Info,
+                                        "Smite Casting (large - target) spell on " + minion.Name + " (" + minion.Health + " HP)");
+                                    break;
+                                case "vectorspell":
+                                    Me.Spellbook.CastSpell(slot, minion.ServerPosition);
+                                    Oracle.Logger(Oracle.LogType.Info,
+                                        "Smite Casting (large - vector) spell on " + minion.Name + " (" + minion.Health + " HP)");
+                                    break;
+                                case "onlycast":
+                                    Me.Spellbook.CastSpell(slot);
+                                    Oracle.Logger(Oracle.LogType.Info,
+                                        "Smite Casting (large - self) spell on " + minion.Name + " (" + minion.Health + " HP)");
+                                    break;
+                            }
+                                
                         }
 
-                        else if (largeminions.Any(name => minion.Name.StartsWith(name) && !minion.Name.Contains("Mini")))
+                        if (minion.Health <= damage && MainMenu.Item("smiteLarge").GetValue<bool>())
                         {
-                            if (minion.Health <= damage + admg && MainMenu.Item("smiteSmall").GetValue<bool>())
-                            {
-                                if (Me.Spellbook.CanUseSpell(slot) == SpellState.Ready)
-                                {
-                                    switch (type)
-                                    {
-                                        case "targetspell":
-                                            Me.Spellbook.CastSpell(slot, minion);
-                                            break;
-                                        case "vectorspell":
-                                            Me.Spellbook.CastSpell(slot, minion.ServerPosition);
-                                            break;
-                                        case "onlycast":
-                                            Me.Spellbook.CastSpell(slot);
-                                            break;
-                                    }
-                                }
-                            }
+                            // Lee check
+                            if (inst != null && (Me.SkinName == "LeeSin" && inst.Name != "blindmonkqtwo" &&
+                                                    !minion.HasBuff("BlindMonkSonicWave", true)))
+                                return;
 
-                            if (minion.Health <= damage && MainMenu.Item("smiteLarge").GetValue<bool>())
-                            {
-                                // Lee check
-                                if (inst != null && (Me.SkinName == "LeeSin" && inst.Name != "blindmonkqtwo" &&
-                                                     !minion.HasBuff("BlindMonkSonicWave", true)))
-                                    return;
+                            Me.Spellbook.CastSpell(smite, minion);
+                            Oracle.Logger(Oracle.LogType.Info,
+                                "Casting smite on large " + minion.Name + " (" + minion.Health + " HP)");
+                        }
+                    }
 
-                                Me.Spellbook.CastSpell(smite, minion);
-                            }
+                    else if (epicminions.Any(name => minion.Name.StartsWith(name) && !minion.Name.Contains("Mini")))
+                    {
+                        if (minion.Health <= damage + admg && MainMenu.Item("smiteEpic").GetValue<bool>())
+                        {
+                            switch (type)
+                            {
+                                case "targetspell":
+                                    Me.Spellbook.CastSpell(slot, minion);
+                                    Oracle.Logger(Oracle.LogType.Info,
+                                        "Smite Casting (epic - self) spell on " + minion.Name + " (" + minion.Health + " HP)");
+                                    break;
+                                case "vectorspell":
+                                    Me.Spellbook.CastSpell(slot, minion.ServerPosition);
+                                    Oracle.Logger(Oracle.LogType.Info,
+                                        "Smite Casting (epic - self) spell on " + minion.Name + " (" + minion.Health + " HP)");
+                                    break;
+                                case "onlycast":
+                                    Me.Spellbook.CastSpell(slot);
+                                    Oracle.Logger(Oracle.LogType.Info,
+                                        "Smite Casting (epic - self) spell on " + minion.Name + " (" + minion.Health + " HP)");
+                                    break;
+                            }                           
                         }
 
-                        else if (epicminions.Any(name => minion.Name.StartsWith(name) && !minion.Name.Contains("Mini")))
+                        if (minion.Health <= damage && MainMenu.Item("smiteEpic").GetValue<bool>())
                         {
-                            if (minion.Health <= damage + admg && MainMenu.Item("smiteSmall").GetValue<bool>())
-                            {
-                                if (Me.Spellbook.CanUseSpell(slot) == SpellState.Ready)
-                                {
-                                    switch (type)
-                                    {
-                                        case "targetspell":
-                                            Me.Spellbook.CastSpell(slot, minion);
-                                            break;
-                                        case "vectorspell":
-                                            Me.Spellbook.CastSpell(slot, minion.ServerPosition);
-                                            break;
-                                        case "onlycast":
-                                            Me.Spellbook.CastSpell(slot);
-                                            break;
-                                    }
-                                }
-                            }
+                            // Lee check
+                            if (inst != null && (Me.SkinName == "LeeSin" && inst.Name != "blindmonkqtwo" &&
+                                                    !minion.HasBuff("BlindMonkSonicWave", true)))
+                                return;
 
-                            if (minion.Health <= damage && MainMenu.Item("smiteEpic").GetValue<bool>())
-                            {
-                                // Lee check
-                                if (inst != null && (Me.SkinName == "LeeSin" && inst.Name != "blindmonkqtwo" &&
-                                                     !minion.HasBuff("BlindMonkSonicWave", true)))
-                                    return;
-
-                                Me.Spellbook.CastSpell(smite, minion);
-                            }
+                            Me.Spellbook.CastSpell(smite, minion);
+                            Oracle.Logger(Oracle.LogType.Info,
+                                        "Casting smite on " + minion.Name + " (" + minion.Health + " HP)");
                         }
                     }
                 }
@@ -370,9 +371,12 @@ namespace Oracle.Extensions
                             {
                                 if (target.Health <= Me.GetSummonerSpellDamage(target, Damage.SummonerSpell.Smite))
                                 {
+                                    var targetPercent = target.Health / target.MaxHealth * 100;
                                     if (!target.HasBuff("summonerdot", true))
                                     {
                                         Me.Spellbook.CastSpell(ignite, target);
+                                        Oracle.Logger(Oracle.LogType.Info,
+                                            "Casting Ignite (KSMode) on " + target.ChampionName + " (" + targetPercent + "%)");
                                     }
                                 }
                             }
@@ -403,8 +407,13 @@ namespace Oracle.Extensions
                                     var regen = (target.FlatHPRegenMod + (target.HPRegenRate*target.Level));
                                     var dmgafter = (dmg - ((regen*5)/2));
 
+                                    var targetPercent = target.Health/target.MaxHealth*100;
                                     if (target.Health <= dmgafter + damage && !target.HasBuff("summonerdot", true))
+                                    {
                                         Me.Spellbook.CastSpell(ignite, target);
+                                        Oracle.Logger(Oracle.LogType.Info,
+                                            "Casting Ignite (Combo) on " + target.ChampionName + " (" + targetPercent + "%)");
+                                    }
                                 }
                             }
                             break;
@@ -423,10 +432,15 @@ namespace Oracle.Extensions
 
                 if (MainMenu.Item("useClarity").GetValue<bool>() && !Utility.InFountain())
                 {
-                    var manaPercent = HeroUnit.Mana/HeroUnit.MaxMana*100;
-                    if (manaPercent <= MainMenu.Item("useClarityPct").GetValue<Slider>().Value)
+                    if (Oracle.HeroUnit.Distance(Me.ServerPosition, true) <= 700f) // todo: verify clarity range
                     {
-                        Me.Spellbook.CastSpell(clarity);
+                        var manaPercent = Oracle.HeroUnit.Mana/Oracle.HeroUnit.MaxMana*100;
+                        if (manaPercent <= MainMenu.Item("useClarityPct").GetValue<Slider>().Value)
+                        {
+                            Me.Spellbook.CastSpell(clarity);
+                            Oracle.Logger(Oracle.LogType.Info,
+                                "Casting clarity on " + Oracle.HeroUnit.ChampionName + " (" + manaPercent + "%)");
+                        }
                     }
                 }             
             }
@@ -441,13 +455,25 @@ namespace Oracle.Extensions
                 if (Me.Spellbook.CanUseSpell(barrier) != SpellState.Ready)
                     return;
 
-                var incomePercent = HeroDamage/HeroUnit.MaxHealth*100;
-                var healthPercent = Me.Health / Me.MaxHealth * 100;
+                var incomePercent = Oracle.HeroDamage/Oracle.HeroUnit.MaxHealth*100;
+                var aHealthPercent = Me.Health / Me.MaxHealth * 100;
 
-                if (healthPercent <= MainMenu.Item("useBarrierPct").GetValue<Slider>().Value)
+                if (aHealthPercent <= MainMenu.Item("useBarrierPct").GetValue<Slider>().Value)
                 {
-                    if (incomePercent >= 1 || HeroDamage >= HeroUnit.Health)
+                    if (incomePercent >= 1 || Oracle.HeroDamage >= Oracle.HeroUnit.Health)
+                    {
                         Me.Spellbook.CastSpell(barrier);
+                        Oracle.Logger(Oracle.LogType.Info,
+                            "Casting barrier on " + Oracle.HeroUnit.ChampionName + " (" + aHealthPercent + "%)");
+                    }
+
+                    var incomeSetting = MainMenu.Item("useBarrierDmg").GetValue<Slider>().Value;
+                    if (incomePercent >= MainMenu.Item("useBarrierDmg").GetValue<Slider>().Value)
+                    {
+                        Me.Spellbook.CastSpell(barrier);
+                        Oracle.Logger(Oracle.LogType.Info,
+                            "Casting barrier because incomedamage percent is above our setting (" + incomeSetting  + "%)");
+                    }
                 }                  
                 
             }
@@ -462,15 +488,21 @@ namespace Oracle.Extensions
                 if (Me.Spellbook.CanUseSpell(heal) != SpellState.Ready)
                     return;
 
-                var incdmg = HeroDamage / HeroUnit.MaxHealth * 100;
-                var healthPercent = HeroUnit.Health / HeroUnit.MaxHealth * 100;
-
-                if (healthPercent <= MainMenu.Item("useHealrPct").GetValue<Slider>().Value)
+                // Check if unit is in heal range
+                if (Oracle.HeroUnit.Distance(Me.ServerPosition, true) <= 750 * 750) // todo : verify exhaust range
                 {
-                    if (incdmg >= 1 || HeroDamage >= HeroUnit.Health)
+                    var iDamagePercent = Oracle.HeroDamage/Oracle.HeroUnit.MaxHealth*100;
+                    var aHealthPercent = Oracle.HeroUnit.Health/Oracle.HeroUnit.MaxHealth*100;
+
+                    if (aHealthPercent <= MainMenu.Item("useHealrPct").GetValue<Slider>().Value)
+                    {
+                        if (iDamagePercent >= 1 || Oracle.HeroDamage >= Oracle.HeroUnit.Health)
+                            Me.Spellbook.CastSpell(heal);
+                    }
+
+                    if (iDamagePercent >= MainMenu.Item("useHealDmg").GetValue<Slider>().Value)
                         Me.Spellbook.CastSpell(heal);
                 }
-                
             }
 
             #endregion
@@ -489,17 +521,27 @@ namespace Oracle.Extensions
 
                 foreach (
                     var enemy in
-                        from enemy in
-                            ObjectManager.Get<Obj_AI_Hero>()
-                                .Where(hero => hero.IsValidTarget(650))
-                                .OrderByDescending(hero => hero.BaseAttackDamage + hero.FlatPhysicalDamageMod)
-
-                        let healthPercent = HeroUnit.Health/HeroUnit.MaxHealth*100
-                        where healthPercent <= MainMenu.Item("aExhaustPct").GetValue<Slider>().Value
-                        where enemy.IsFacing(Me)
-                        select enemy) 
+                        ObjectManager.Get<Obj_AI_Hero>()
+                            .Where(hero => hero.IsValidTarget(650)) // todo : verify exhaust range
+                            .OrderByDescending(hero => hero.BaseAttackDamage + hero.FlatPhysicalDamageMod)) 
                 {
-                    Me.Spellbook.CastSpell(exhaust, enemy);
+                    var eHealthPercent = enemy.Health/enemy.MaxHealth*100;
+                    var aHealthPercent = Oracle.HeroUnit.Health/Oracle.HeroUnit.MaxHealth*100;
+
+                    if (eHealthPercent <= MainMenu.Item("eExhaustPct").GetValue<Slider>().Value && 
+                        !enemy.IsFacing(Oracle.HeroUnit))
+                    {
+                        Me.Spellbook.CastSpell(exhaust, enemy);
+                        Oracle.Logger(Oracle.LogType.Info, "Casting exhaust on " + enemy.ChampionName + " (" + eHealthPercent + "%)");
+                    }
+
+                    if (aHealthPercent <= MainMenu.Item("aExhaustPct").GetValue<Slider>().Value &&
+                        enemy.IsFacing(Oracle.HeroUnit))
+                    {
+                        Me.Spellbook.CastSpell(exhaust, enemy);
+                        Oracle.Logger(Oracle.LogType.Info,
+                            "Casting exhaust because herounit health percent was at (" + aHealthPercent + "%)");
+                    }
                 }
             }
 
@@ -511,6 +553,24 @@ namespace Oracle.Extensions
 
 
             #endregion
+        }
+    }
+
+    internal class OracleChamp
+    {
+        public string Name;
+        public float Range;
+        public SpellSlot Slot;
+        public string Type;
+        public int Stage;
+
+        public OracleChamp(string skinname, float range, SpellSlot slot, string type, int stage = 0)
+        {
+            Name = skinname;
+            Range = range;
+            Slot = slot;
+            Type = type;
+            Stage = stage;
         }
     }
 }
