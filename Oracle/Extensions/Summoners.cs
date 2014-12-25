@@ -532,7 +532,8 @@ namespace Oracle.Extensions
                         !enemy.IsFacing(Oracle.HeroUnit))
                     {
                         Me.Spellbook.CastSpell(exhaust, enemy);
-                        Oracle.Logger(Oracle.LogType.Info, "Casting exhaust on " + enemy.ChampionName + " (" + eHealthPercent + "%)");
+                        Oracle.Logger(Oracle.LogType.Info,
+                            "Casting exhaust on " + enemy.ChampionName + " (" + eHealthPercent + "%)");
                     }
 
                     if (aHealthPercent <= MainMenu.Item("aExhaustPct").GetValue<Slider>().Value &&
