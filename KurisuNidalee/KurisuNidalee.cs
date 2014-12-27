@@ -106,7 +106,7 @@ namespace KurisuNidalee
             MainMenu.AddSubMenu(nidaOrb);
 
             var nidaTS = new Menu("Nidalee: Selector", "target selecter");
-            SimpleTs.AddToMenu(nidaTS);
+            TargetSelector.AddToMenu(nidaTS);
             MainMenu.AddSubMenu(nidaTS);
 
             var nidaKeys = new Menu("Nidalee: Keybindings", "keybindongs");
@@ -193,7 +193,7 @@ namespace KurisuNidalee
         private void NidaleeOnUpdate(EventArgs args)
         {
             CougarForm = NidaData.Name != "JavelinToss";
-            Target = SimpleTs.GetTarget(1500, SimpleTs.DamageType.Magical);
+            Target = TargetSelector.GetTarget(1500, TargetSelector.DamageType.Magical);
 
             ProcessCooldowns();
             PrimalSurge();
