@@ -114,8 +114,8 @@ namespace KurisuBlitz
         {
             try
             {
-                _target = SimpleTs.GetSelectedTarget() 
-                    ?? SimpleTs.GetTarget(1000, SimpleTs.DamageType.Physical);
+                _target = TargetSelector.GetSelectedTarget() 
+                    ?? TargetSelector.GetTarget(1000, TargetSelector.DamageType.Physical);
 
                 // do KS
                 GodKS(Q);
@@ -130,7 +130,7 @@ namespace KurisuBlitz
 
                 // use the god hand
 
-                if (SimpleTs.GetSelectedTarget() == null || !(_target.Distance(_player.Position) > 750))
+                if (TargetSelector.GetSelectedTarget() == null || !(_target.Distance(_player.Position) > 750))
                 {
                     TheGodHand(_target);
                 }
@@ -157,7 +157,7 @@ namespace KurisuBlitz
         private void TheGodHand(Obj_AI_Base target)
         {
             var keydown = _menu.Item("combokey").GetValue<KeyBind>().Active;
-            if (SimpleTs.GetSelectedTarget() != null && _target.Distance(_player.Position) > 1000)
+            if (TargetSelector.GetSelectedTarget() != null && _target.Distance(_player.Position) > 1000)
                 return;
 
             if (target != null && Q.IsReady())
@@ -229,7 +229,7 @@ namespace KurisuBlitz
             _menu.AddSubMenu(blitzOrb);
 
             var blitzTS = new Menu("Blitz: Selector", "tselect");
-            SimpleTs.AddToMenu(blitzTS);
+            TargetSelector.AddToMenu(blitzTS);
             _menu.AddSubMenu(blitzTS);
             
             var menuD = new Menu("Blitz: Drawings", "drawings");
