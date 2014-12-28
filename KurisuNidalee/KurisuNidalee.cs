@@ -116,13 +116,14 @@ namespace KurisuNidalee
             MainMenu.AddSubMenu(nidaKeys);
 
             var nidaSpells = new Menu("Nidalee: Combo", "spells");
-            nidaSpells.AddItem(new MenuItem("seth", "Q Hitchance: ")).SetValue(new StringList(new[] { "Low", "Medium", "High" }, 2));
+            
             nidaSpells.AddItem(new MenuItem("usehumanq", "Use Javelin Toss")).SetValue(true);
+            nidaSpells.AddItem(new MenuItem("seth", "Hitchance: ")).SetValue(new StringList(new[] { "Low", "Medium", "High" }, 2));
             nidaSpells.AddItem(new MenuItem("usehumanw", "Use Bushwack")).SetValue(true);
             nidaSpells.AddItem(new MenuItem(" ", " "));
             nidaSpells.AddItem(new MenuItem("usecougarq", "Use Takedown")).SetValue(true);
             nidaSpells.AddItem(new MenuItem("usecougarw", "Use Pounce")).SetValue(true);
-            nidaSpells.AddItem(new MenuItem("setp", "Pounce Min Distance")).SetValue(new Slider(125, 50, 300));
+            nidaSpells.AddItem(new MenuItem("setp", "Pounce Min Distance")).SetValue(new Slider(100, 15, 300));
             nidaSpells.AddItem(new MenuItem("usecougare", "Use Swipe")).SetValue(true);
             nidaSpells.AddItem(new MenuItem("usecougarr", "Auto Switch Forms")).SetValue(true);
             nidaSpells.AddItem(new MenuItem("useitems", "Use Itmes")).SetValue(true);
@@ -277,10 +278,12 @@ namespace KurisuNidalee
                 // Check is pounce is ready 
                 if (CW == 0
                     && MainMenu.Item("usecougarw").GetValue<bool>()
-                    && target.Distance(Me.Position) <= 750f
-                    && target.Distance(Me.Position) > minPounce)
+                    && target.Distance(Me.ServerPosition) > minPounce)
                 {
-                    pounce.Cast(target.Position, Packets()); 
+                    if (TargetHunted(target) & target.Distance(Me.ServerPosition) <= 750)
+                        pounce.Cast(target.ServerPosition, Packets()); 
+                    if (!TargetHunted(target) && target.Distance(Me.ServerPosition) <= 350)
+                        pounce.Cast(target.ServerPosition, Packets());
                 }
 
                 // Check if swipe is ready (prediction)
@@ -292,13 +295,6 @@ namespace KurisuNidalee
                         swipe.Cast(prediction.CastPosition, Packets());
                 }
 
-                // Check if javelin is ready, if not chase target (pounce)
-                if (CW == 0 && HQ > 1
-                    && target.Distance(Me.ServerPosition) > pounce.Range
-                    && MainMenu.Item("usecougarw").GetValue<bool>() && !TargetHunted(target))
-                {
-                    pounce.Cast(Game.CursorPos);
-                }
 
                 // force transform if q ready and no collision
                 if (HQ == 0)
@@ -444,7 +440,7 @@ namespace KurisuNidalee
             foreach (
                 var m in
                     ObjectManager.Get<Obj_AI_Minion>()
-                        .Where( m => m.IsValidTarget(1500) && jungleminions.Any(name => m.Name.StartsWith(name)))) 
+                        .Where(m => m.IsValidTarget(1500) && jungleminions.Any(name => m.Name.StartsWith(name) && !name.Contains("Mini")))) 
             {
                 if (CougarForm)
                 {
