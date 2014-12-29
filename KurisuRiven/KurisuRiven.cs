@@ -204,8 +204,42 @@ namespace KurisuRiven
             // On Game Process Spell Cast
             Obj_AI_Base.OnProcessSpellCast += Obj_AI_Base_OnProcessSpellCast;
 
+            // On Play Animation
+            Obj_AI_Base.OnPlayAnimation += Obj_AI_Base_OnPlayAnimation;
+
         }
 
+
+        private static void Obj_AI_Base_OnPlayAnimation(GameObject sender, GameObjectPlayAnimationEventArgs args)
+        {
+            if (sender.IsMe && args.Animation.Contains("Spell1"))
+            {
+                
+                var id = orbwalker.GetTarget() != null
+                    ? orbwalker.GetTarget().NetworkId
+                    : me.NetworkId;
+
+                var obj = ObjectManager.GetUnitByNetworkId<Obj_AI_Base>(id);
+
+                var movePos = obj.ServerPosition +
+                              Vector3.Normalize(me.ServerPosition - obj.ServerPosition) * (me.Distance(obj.ServerPosition) + 63);
+                 
+                if (config.Item("combokey").GetValue<KeyBind>().Active || 
+                    config.Item("clearkey").GetValue<KeyBind>().Active || 
+                    config.Item("harasskey").GetValue<KeyBind>().Active)
+                {
+                    Orbwalking.Move = false;
+                    //Packet.C2S.Move.Encoded(new Packet.C2S.Move.Struct(movePos.X, movePos.Y)).Send();
+                    me.IssueOrder(GameObjectOrder.MoveTo, new Vector3(movePos.X, movePos.Y, movePos.Z));
+                    Utility.DelayAction.Add(350, () => Orbwalking.Move = true);
+                    Utility.DelayAction.Add(370, delegate
+                    {
+                        Orbwalking.LastAATick = 0;
+                        //Game.PrintChat("reset");
+                    });
+                }
+            }
+        }      
         #endregion
 
         #region  OnGameUpdate
@@ -213,42 +247,36 @@ namespace KurisuRiven
         private static bool color;
         private void Game_OnGameUpdate(EventArgs args)
         {
-            try
+            enemy = TargetSelector.GetTarget(900, TargetSelector.DamageType.Physical);
+            if (config.Item("changemode").GetValue<KeyBind>().Active)
             {
-                enemy = TargetSelector.GetTarget(900, TargetSelector.DamageType.Physical);
-                if (config.Item("changemode").GetValue<KeyBind>().Active)
+                switch (wslash)
                 {
-                    switch (wslash)
-                    {
-                        case 1:
-                            Utility.DelayAction.Add(300,
-                                () => config.Item("wslash").SetValue(new StringList(new[] { "Only Kill", "Max Damage" }, 0)));
-                            break;
-                        case 0:
-                            Utility.DelayAction.Add(300,
-                                () => config.Item("wslash").SetValue(new StringList(new[] { "Only Kill", "Max Damage" }, 1)));
-                            break;
-                    }
+                    case 1:
+                        Utility.DelayAction.Add(300,
+                            () => config.Item("wslash").SetValue(new StringList(new[] { "Only Kill", "Max Damage" }, 0)));
+                        break;
+                    case 0:
+                        Utility.DelayAction.Add(300,
+                            () => config.Item("wslash").SetValue(new StringList(new[] { "Only Kill", "Max Damage" }, 1)));
+                        break;
                 }
-
-                if (usecombo)
-                    CastCombo(enemy);
-
-                foreach (var b in me.Buffs.Where(b => b.Name == "RivenTriCleave"))
-                    cleavecount = b.Count;
-
-                if (!me.HasBuff("RivenTriCleave", true))
-                    Utility.DelayAction.Add(700, () => cleavecount = 0);
-
-                Clear();
-                AutoW();
-                Requisites();
-                WindSlash();
             }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
+
+            if (usecombo)
+                CastCombo(enemy);
+
+            foreach (var b in me.Buffs.Where(b => b.Name == "RivenTriCleave"))
+                cleavecount = b.Count;
+
+            if (!me.HasBuff("RivenTriCleave", true))
+                Utility.DelayAction.Add(700, () => cleavecount = 0);
+
+            Clear();
+            AutoW();
+            Requisites();
+            WindSlash();
+            
         }
 
         #endregion
@@ -544,55 +572,6 @@ namespace KurisuRiven
                     args.Process = false;
             }
 
-            // Headers: 0x17, 0xd7, 0xdd, 0xdf
-            if (packet.Header == 0xdd && me.HasBuff("RivenTriCleave", true))
-            {
-                if (config.Item("clearkey").GetValue<KeyBind>().Active)
-                {
-
-
-                    var id = orbwalker.GetTarget() != null
-                        ? orbwalker.GetTarget().NetworkId
-                        : me.NetworkId;
-
-                    var obj = ObjectManager.GetUnitByNetworkId<Obj_AI_Base>(id);
-                    var movePos = obj.ServerPosition +
-                                  Vector3.Normalize(me.ServerPosition - obj.ServerPosition)* (me.Distance(obj.ServerPosition) + 63);
-              
-                    if (obj.NetworkId != me.NetworkId && me.Distance(obj.ServerPosition) <= wings.Range + 20)
-                    {
-                        Orbwalking.Move = false;
-                        //Packet.C2S.Move.Encoded(new Packet.C2S.Move.Struct(movePos.X, movePos.Y)).Send();
-                        me.IssueOrder(GameObjectOrder.MoveTo, new Vector3(movePos.X, movePos.Y, movePos.Z));
-                        Utility.DelayAction.Add(Game.Ping + 50, () => Orbwalking.Move = true);
-                        Orbwalking.LastAATick = 0;
-                    }
-                }
-
-                if (config.Item("combokey").GetValue<KeyBind>().Active)
-                {
-                    var id = orbwalker.GetTarget() != null
-                        ? orbwalker.GetTarget().NetworkId
-                        : me.NetworkId;
-                 
-                    var obj = ObjectManager.GetUnitByNetworkId<Obj_AI_Hero>(id);
-                    var movePos = obj.ServerPosition +
-                                  Vector3.Normalize(me.ServerPosition - obj.ServerPosition) * (me.Distance(obj.ServerPosition) + 59);
-
-                    if (obj.NetworkId != me.NetworkId && me.Distance(obj.ServerPosition) <= truerange + 20)
-                    {
-                        var thirdc = cleavecount == 3;
-
-                        Orbwalking.Move = false;
-                        //Packet.C2S.Move.Encoded(new Packet.C2S.Move.Struct(movePos.X, movePos.Y)).Send();                     
-                        me.IssueOrder(GameObjectOrder.MoveTo, new Vector3(movePos.X, movePos.Y, movePos.Z));
-                        Utility.DelayAction.Add(Game.Ping + 100, () => Orbwalking.Move = true);
-                        Orbwalking.LastAATick = 0;
-                    }
-                }
-            }
-
-
             // Headers: 0x23
             if (packet.Header == 0x23 && wings.IsReady())
             {
@@ -605,7 +584,7 @@ namespace KurisuRiven
                 if (targ.NetworkId == me.NetworkId)
                     return;
 
-                if (damageType.ToString() != "54") 
+                if (damageType.ToString() != "54")
                     return;
 
                 switch (targ.Type)
