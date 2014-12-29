@@ -32,8 +32,11 @@ namespace KurisuRiven
 
         public KurisuLib()
         {
-            NSRCoordinates();
-            Game.OnGameUpdate += Game_OnGameUpdate;           
+            // Call GameUpdate Event
+            Game.OnGameUpdate += Game_OnGameUpdate;
+
+            if (Game.MapId == (GameMapId) 11)
+                NSRCoordinates();
         }
 
         public static readonly List<Coordinate> jumpList = new List<Coordinate>();
