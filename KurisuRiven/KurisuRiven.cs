@@ -159,7 +159,7 @@ namespace KurisuRiven
             config.AddSubMenu(rivenD);
 
             var donate = new Menu("Riven: Freelo", "feelo");
-            donate.AddItem(new MenuItem("donate", "Donate because you me <3?"));
+            donate.AddItem(new MenuItem("donate", "Donate because you love me <3?"));
             donate.AddItem(new MenuItem("donate2", "xrobinsong@gmail.com"));
 
             config.AddSubMenu(donate);
