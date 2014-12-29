@@ -157,7 +157,15 @@ namespace KurisuRiven
             rivenD.AddItem(new MenuItem("debugtrue", "Debug true range")).SetValue(false);
             rivenD.AddItem(new MenuItem("exportjump", "Export Position")).SetValue(new KeyBind(73, KeyBindType.Press));
             config.AddSubMenu(rivenD);
+
+            var donate = new Menu("Riven: Freelo", "feelo");
+            donate.AddItem(new MenuItem("donate", "Donate because you me <3?"));
+            donate.AddItem(new MenuItem("donate2", "xrobinsong@gmail.com"));
+
+            config.AddSubMenu(donate);
             config.AddToMainMenu();
+
+
 
             wings.SetSkillshot(0.25f, 200f, 1700, false, SkillshotType.SkillshotCircle);
             blade.SetSkillshot(0.25f, 300f, 120f, false, SkillshotType.SkillshotCone);
