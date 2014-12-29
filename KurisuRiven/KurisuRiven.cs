@@ -228,7 +228,9 @@ namespace KurisuRiven
                     config.Item("clearkey").GetValue<KeyBind>().Active || 
                     config.Item("harasskey").GetValue<KeyBind>().Active)
                 {
-                    Orbwalking.Move = false;
+
+                    if (config.Item("cancelassist").GetValue<bool>())
+                        Orbwalking.Move = false;
                     //Packet.C2S.Move.Encoded(new Packet.C2S.Move.Struct(movePos.X, movePos.Y)).Send();
                     me.IssueOrder(GameObjectOrder.MoveTo, new Vector3(movePos.X, movePos.Y, movePos.Z));
                     Utility.DelayAction.Add(350, () => Orbwalking.Move = true);
@@ -237,9 +239,11 @@ namespace KurisuRiven
                         Orbwalking.LastAATick = 0;
                         //Game.PrintChat("reset");
                     });
+                    
                 }
             }
         }      
+
         #endregion
 
         #region  OnGameUpdate
