@@ -45,7 +45,7 @@ namespace KurisuRiven
             20, 20, 25, 25, 25, 30, 30, 30, 35, 35, 35, 40, 40, 40, 45, 45, 45, 50, 50
         };
 
-        public const string Revision = "1.0.0.1";
+        public const string Revision = "1.0.0.2";
         private static readonly string[] jungleminions =
         {     
             "SRU_Razorbeak", "SRU_Krug", "Sru_Crab",
@@ -212,35 +212,51 @@ namespace KurisuRiven
 
         private static void Obj_AI_Base_OnPlayAnimation(GameObject sender, GameObjectPlayAnimationEventArgs args)
         {
-            if (sender.IsMe && args.Animation.Contains("Spell1"))
+            if (!sender.IsMe || !args.Animation.Contains("Spell1")) 
+                return;
+
+            int id;
+            if (orbwalker.GetTarget() != null) 
+                id = orbwalker.GetTarget().NetworkId;
+            else if (enemy.IsValidTarget())
+                id = enemy.NetworkId;
+            else
             {
-                
-                var id = orbwalker.GetTarget() != null
-                    ? orbwalker.GetTarget().NetworkId
-                    : me.NetworkId;
+                id = me.NetworkId;
+            }
 
-                var obj = ObjectManager.GetUnitByNetworkId<Obj_AI_Base>(id);
+            var obj = ObjectManager.GetUnitByNetworkId<Obj_AI_Base>(id);
 
-                var movePos = obj.ServerPosition +
-                              Vector3.Normalize(me.ServerPosition - obj.ServerPosition) * (me.Distance(obj.ServerPosition) + 63);
+            var movePos = obj.ServerPosition +
+                          Vector3.Normalize(me.ServerPosition - obj.ServerPosition) * (me.Distance(obj.ServerPosition) + 63);
                  
-                if (config.Item("combokey").GetValue<KeyBind>().Active || 
-                    config.Item("clearkey").GetValue<KeyBind>().Active || 
-                    config.Item("harasskey").GetValue<KeyBind>().Active)
-                {
+            if (me.Distance(obj.ServerPosition) <= truerange + 20 && obj.NetworkId != me.NetworkId)
+            {
+                if (config.Item("cancelassist").GetValue<bool>())
+                    Orbwalking.Move = false;
 
-                    if (config.Item("cancelassist").GetValue<bool>())
-                        Orbwalking.Move = false;
-                    //Packet.C2S.Move.Encoded(new Packet.C2S.Move.Struct(movePos.X, movePos.Y)).Send();
-                    me.IssueOrder(GameObjectOrder.MoveTo, new Vector3(movePos.X, movePos.Y, movePos.Z));
-                    Utility.DelayAction.Add(350, () => Orbwalking.Move = true);
-                    Utility.DelayAction.Add(370, delegate
+                //Packet.C2S.Move.Encoded(new Packet.C2S.Move.Struct(movePos.X, movePos.Y)).Send();
+                me.IssueOrder(GameObjectOrder.MoveTo, new Vector3(movePos.X, movePos.Y, movePos.Z));
+                    
+                if (cleavecount == 2)
+                {
+                    Utility.DelayAction.Add(Game.Ping + 360, () => Orbwalking.Move = true);
+                    Utility.DelayAction.Add(Game.Ping + 370, delegate
+                    {
+                        Orbwalking.LastAATick = 0;
+                        //Game.PrintChat("reset 3q");
+                    });
+                }
+                else
+                {
+                    Utility.DelayAction.Add(Game.Ping + 250, () => Orbwalking.Move = true);
+                    Utility.DelayAction.Add(Game.Ping + 260, delegate
                     {
                         Orbwalking.LastAATick = 0;
                         //Game.PrintChat("reset");
                     });
-                    
                 }
+
             }
         }      
 
@@ -513,7 +529,12 @@ namespace KurisuRiven
 
                     break;
                 case "ItemTiamatCleave":
-                    Orbwalking.LastAATick = 0;
+                    
+                    //Utility.DelayAction.Add(150, delegate
+                    //{
+                    //    Orbwalking.LastAATick = 0;
+                    //    Game.PrintChat("Reset tiamat");
+                    //});
                     if (target.IsValidTarget(kiburst.Range) && usecombo)
                         if (wings.IsReady() && !kiburst.IsReady())
                             wings.Cast(enemy.ServerPosition);
@@ -590,6 +611,11 @@ namespace KurisuRiven
 
                 if (damageType.ToString() != "54")
                     return;
+
+                if (Items.HasItem(3077) && Items.CanUseItem(3077))
+                    Items.UseItem(3077);
+                if (Items.HasItem(3074) && Items.CanUseItem(3074))
+                    Items.UseItem(3074);
 
                 switch (targ.Type)
                 {
