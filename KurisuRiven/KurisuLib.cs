@@ -60,40 +60,39 @@ namespace KurisuRiven
                 canexport = true;
             }
 
-            if (!active && KurisuRiven.config.Item("jumpkey").GetValue<KeyBind>().Active && KurisuRiven.cleavecount == 2)
-            {
-                var playeradjacentpos = (float) (minrange + 1);
-                for (int i = 0; i < jumpList.Count; i++)
-                {
-                    Coordinate pos = jumpList[i];
-                    if (player.Distance(pos.pointA) < playeradjacentpos || player.Distance(pos.pointB) < playeradjacentpos)
-                    {
-                        active = true;
-                        if (player.Distance(pos.pointA) < player.Distance(pos.pointB))
-                        {
-                            playeradjacentpos = player.Distance(pos.pointA);
-                            startpoint = pos.pointA;
-                            endpoint = pos.pointB;
-                        }
-                        else
-                        {
-                            playeradjacentpos = player.Distance(pos.pointB);
-                            startpoint = pos.pointB;
-                            endpoint = pos.pointA;
-                        }
-                    }
-                }
-                if (active)
-                {
-                    directionpoint.X = startpoint.X - endpoint.X;
-                    directionpoint.Y = startpoint.Y - endpoint.Y;
+            //if (!active && KurisuRiven.config.Item("jumpkey").GetValue<KeyBind>().Active && KurisuRiven.cleavecount == 2)
+            //{
+            //    var playeradjacentpos = (float) (minrange + 1);
+            //    for (int i = 0; i < jumpList.Count; i++)
+            //    {
+            //        Coordinate pos = jumpList[i];
+            //        if (player.Distance(pos.pointA) < playeradjacentpos || player.Distance(pos.pointB) < playeradjacentpos)
+            //        {
+            //            active = true;
+            //            if (player.Distance(pos.pointA) < player.Distance(pos.pointB))
+            //            {
+            //                playeradjacentpos = player.Distance(pos.pointA);
+            //                startpoint = pos.pointA;
+            //                endpoint = pos.pointB;
+            //            }
+            //            else
+            //            {
+            //                playeradjacentpos = player.Distance(pos.pointB);
+            //                startpoint = pos.pointB;
+            //                endpoint = pos.pointA;
+            //            }
+            //        }
+            //    }
+            //    if (active)
+            //    {
+            //        directionpoint.X = startpoint.X - endpoint.X;
+            //        directionpoint.Y = startpoint.Y - endpoint.Y;
 
-                    player.IssueOrder(GameObjectOrder.HoldPosition, player.ServerPosition);
-                    Packet.C2S.Move.Encoded(new Packet.C2S.Move.Struct(startpoint.X, startpoint.Y)).Send();
-                    Utility.DelayAction.Add(Game.Ping + 70, Direction1);
-                }
-            }         
-
+            //        player.IssueOrder(GameObjectOrder.HoldPosition, player.ServerPosition);
+            //        Packet.C2S.Move.Encoded(new Packet.C2S.Move.Struct(startpoint.X, startpoint.Y)).Send();
+            //        Utility.DelayAction.Add(Game.Ping + 70, Direction1);
+            //    }
+            //}         
         }
 
 
