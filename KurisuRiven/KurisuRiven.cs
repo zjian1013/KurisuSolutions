@@ -38,6 +38,7 @@ namespace KurisuRiven
         private static readonly Spell kiburst = new Spell(SpellSlot.W, 250f);
         private static readonly Spell blade = new Spell(SpellSlot.R, 900f);
 
+        private static Vector3 holdPos;
         private static float ee, ff;
         private static readonly int[] items = { 3144, 3153, 3142, 3112, 3131 };
         private static readonly int[] runicpassive =
@@ -265,6 +266,7 @@ namespace KurisuRiven
         private static bool color;
         private void Game_OnGameUpdate(EventArgs args)
         {
+            //if (orbwalker.).IsValidTarget(900))
             enemy = TargetSelector.GetTarget(900, TargetSelector.DamageType.Physical);
 
             if (config.Item("changemode").GetValue<KeyBind>().Active)
@@ -292,18 +294,23 @@ namespace KurisuRiven
                 id = me.NetworkId;
             }
 
-            var ex = ultion ? +75 : 0;
+            var ex = ultion ? + 75 : 0;
             var obj = ObjectManager.GetUnitByNetworkId<Obj_AI_Base>(id);
 
-            var holdPos = me.ServerPosition +
-                   Vector3.Normalize(obj.ServerPosition - me.ServerPosition) * (me.Distance(obj.ServerPosition) - 136 - ex);
+            holdPos = me.ServerPosition +
+                   Vector3.Normalize(obj.ServerPosition - me.ServerPosition) * (me.Distance(obj.ServerPosition) - 126 - ex);
 
             //Utility.DrawCircle(holdPos, config.Item("orbradius").GetValue<Slider>().Value, Color.White, 2, 1);
 
             if ((usecombo || useclear ) && obj.IsValidTarget(300) && config.Item("orbto").GetValue<bool>())
             {
                 orbwalker.SetOrbwalkingPoint(holdPos);
-                orbwalker.SetMovement(!(me.Distance(holdPos) <= config.Item("orbradius").GetValue<Slider>().Value));
+
+                if (me.Distance(holdPos) <= config.Item("orbradius").GetValue<Slider>().Value ||
+                    me.Distance(obj) <= wings.Range + 20)
+                {
+                    orbwalker.SetMovement(false);
+                }
             }
             else
             {
@@ -714,6 +721,7 @@ namespace KurisuRiven
             if (!target.IsValidTarget(950))
                 return;
 
+            var sticky = config.Item("orbto").GetValue<bool>();
             var aHealthPercent = (int)((me.Health/me.MaxHealth)*100);
 
             if (me.Distance(target.ServerPosition) > truerange + 25 || 
@@ -721,7 +729,7 @@ namespace KurisuRiven
             {
                 castitems(target);
                 if (valor.IsReady() && config.Item("usevalor").GetValue<bool>())
-                    valor.Cast(target.ServerPosition, true);
+                    valor.Cast(sticky? holdPos : target.ServerPosition, true);
                 if (wings.IsReady() && cleavecount <= 1)
                     CheckR(target);
             }
@@ -736,7 +744,7 @@ namespace KurisuRiven
             if (blade.IsReady() && valor.IsReady() && ultion)
             {
                 if (cleavecount == 2)
-                    valor.Cast(target.ServerPosition, true);
+                    valor.Cast(sticky ? holdPos : target.ServerPosition, true);
             }
 
             if (me.Distance(target.Position) < kiburst.Range)
