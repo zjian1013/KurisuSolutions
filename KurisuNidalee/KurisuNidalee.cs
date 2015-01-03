@@ -287,16 +287,14 @@ namespace KurisuNidalee
                 UseInventoryItems(NidaItems, target);
 
                 // Check if takedown is ready (on unit)
-                if (CQ == 0
-                    && MainMenu.Item("usecougarq").GetValue<bool>()
+                if (CQ == 0 && MainMenu.Item("usecougarq").GetValue<bool>()
                     && target.Distance(Me.ServerPosition) <= takedown.Range)
                 {
                     takedown.CastOnUnit(Me, Packets());
                 }
 
                 // Check is pounce is ready 
-                if (CW == 0
-                    && MainMenu.Item("usecougarw").GetValue<bool>()
+                if (CW == 0 && MainMenu.Item("usecougarw").GetValue<bool>()
                     && target.Distance(Me.ServerPosition) > MainMenu.Item("setp").GetValue<Slider>().Value)
                 {
                     if (TargetHunted(target) & target.Distance(Me.ServerPosition) <= 750)
@@ -306,8 +304,7 @@ namespace KurisuNidalee
                 }
 
                 // Check if swipe is ready (prediction)
-                if (CE == 0 
-                    && MainMenu.Item("usecougare").GetValue<bool>())
+                if (CE == 0 && MainMenu.Item("usecougare").GetValue<bool>())
                 {
                     var prediction = swipe.GetPrediction(target);
                     if (prediction.Hitchance >= HitChance.Medium && target.Distance(Me.Position) <= swipe.Range)
@@ -315,9 +312,19 @@ namespace KurisuNidalee
                 }
 
 
-                // force transform if q ready and no collision
-                if (HQ == 0)
+                // force transform if q ready and no collision 
+                if (HQ == 0 && MainMenu.Item("usecougarr").GetValue<bool>())
                 {
+                    if (!aspectofcougar.IsReady())
+                        return;
+
+                    // or return stay cougar if we can kill with available spells
+                    if (target.Health <= CougarDamage(target) &&
+                        target.Distance(Me.ServerPosition) <= swipe.Range)
+                    {
+                        return;
+                    }
+
                     var prediction = javelin.GetPrediction(target);
                     if (prediction.Hitchance != HitChance.Collision)
                         aspectofcougar.Cast();              
@@ -332,7 +339,7 @@ namespace KurisuNidalee
                 }
 
                 // Switch to human form if cougar W/E are not ready and Q is not ready or not in range and Q ready
-                if (CW > 1 && CE > 1 && (CQ > 1 || target.Distance(Me.ServerPosition) > takedown.Range) && HQ < 1
+                if (CW != 0 && CE != 0 && (CQ != 0 || target.Distance(Me.ServerPosition) > takedown.Range) && HQ < 1
                     && MainMenu.Item("usecougarr").GetValue<bool>() && target.Distance(Me.ServerPosition) <= javelin.Range)
                 {
                     var prediction = javelin.GetPrediction(target);
@@ -356,8 +363,7 @@ namespace KurisuNidalee
                         aspectofcougar.Cast();
                 }
 
-                if (HQ == 0
-                    && MainMenu.Item("usehumanq").GetValue<bool>())
+                if (HQ == 0 && MainMenu.Item("usehumanq").GetValue<bool>())
                 {
                     var prediction = javelin.GetPrediction(target);
                     switch (MainMenu.Item("seth").GetValue<StringList>().SelectedIndex)
@@ -378,8 +384,7 @@ namespace KurisuNidalee
                 }
 
                 // Check bushwack and cast underneath targets feet.
-                if (HW == 0
-                    && MainMenu.Item("usehumanw").GetValue<bool>()
+                if (HW == 0 && MainMenu.Item("usehumanw").GetValue<bool>()
                     && target.Distance(Me.Position) <= bushwack.Range)
                 {
                     bushwack.Cast(target.Position, Packets());
@@ -464,24 +469,24 @@ namespace KurisuNidalee
                 if (CougarForm)
                 {
                     if (MainMenu.Item("jgcougare").GetValue<bool>() && m.Distance(Me.Position) < swipe.Range)
-                        if (swipe.IsReady())
+                        if (CE == 0)
                             swipe.Cast(m.Position);
                     if (MainMenu.Item("jgcougarw").GetValue<bool>() && m.Distance(Me.Position) < pounce.Range)
-                        if (pounce.IsReady())
+                        if (CW == 0)
                             pounce.Cast(m.Position);
                     if (MainMenu.Item("jgcougarq").GetValue<bool>() && m.Distance(Me.Position) < takedown.Range)
-                        if (takedown.IsReady())
+                        if (CQ == 0)
                             takedown.CastOnUnit(Me);
                 }
                 else
                 {
                     if (MainMenu.Item("jghumanq").GetValue<bool>() && actualHeroManaPercent > minPercent)
-                        if (javelin.IsReady())
+                        if (HQ == 0)
                             javelin.Cast(m.Position);
                     if (MainMenu.Item("jghumanw").GetValue<bool>() && m.Distance(Me.Position) < bushwack.Range && actualHeroManaPercent > minPercent)
-                        if (bushwack.IsReady())
+                        if (HW == 0)
                             bushwack.Cast(m.Position);
-                    if (!javelin.IsReady() && MainMenu.Item("jgcougarr").GetValue<bool>() && m.Distance(Me.Position) < pounce.Range && actualHeroManaPercent > minPercent)
+                    if (!HQ != 0 && MainMenu.Item("jgcougarr").GetValue<bool>() && m.Distance(Me.Position) < pounce.Range && actualHeroManaPercent > minPercent)
                         if (aspectofcougar.IsReady())
                             aspectofcougar.Cast();
                 }
@@ -511,19 +516,19 @@ namespace KurisuNidalee
                 {
                     if (MainMenu.Item("clearcougare").GetValue<bool>() && m.Distance(Me.Position) < swipe.Range)
                     {
-                        if (swipe.IsReady() && m.Health <= cedmg)
+                        if (CE == 0 && m.Health <= cedmg)
                             swipe.Cast(m);
                     }
 
                     if (MainMenu.Item("clearcougarw").GetValue<bool>() && m.Distance(Me.Position) < pounce.Range)
                     {
-                        if (pounce.IsReady() && m.Health <= cwdmg)
+                        if (CW == 0 && m.Health <= cwdmg)
                             pounce.Cast(m.Position);
                     }
 
                     if (MainMenu.Item("clearcougarq").GetValue<bool>() && m.Distance(Me.Position) < takedown.Range)
                     {
-                        if (takedown.IsReady() && m.Health <= cqdmg)
+                        if (CQ == 0 && m.Health <= cqdmg)
                             takedown.CastOnUnit(Me);
                     }
                 }
@@ -532,14 +537,15 @@ namespace KurisuNidalee
                     if (actualHeroManaPercent > minPercent
                         && MainMenu.Item("clearhumanq").GetValue<bool>() && javelin.IsReady())
                     {
-                        if (m.Health <= hqdmg)
+                        if (HQ == 0 && m.Health <= hqdmg)
                         javelin.Cast(m.ServerPosition);
                     }
 
-                    if ((!javelin.IsReady() || !MainMenu.Item("clearhumanq").GetValue<bool>())
+                    if ((HQ != 0 || !MainMenu.Item("clearhumanq").GetValue<bool>())
                         && MainMenu.Item("clearcougarr").GetValue<bool>() && m.Distance(Me.ServerPosition) <= pounce.Range)
                     {
-                        aspectofcougar.Cast();
+                        if (aspectofcougar.IsReady())
+                            aspectofcougar.Cast();
                     }
                 }
             }
