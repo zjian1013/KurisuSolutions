@@ -116,9 +116,9 @@ namespace KurisuNidalee
             MainMenu.AddSubMenu(nidaKeys);
 
             var nidaSpells = new Menu("Nidalee: Combo", "spells");
-            
-            nidaSpells.AddItem(new MenuItem("usehumanq", "Use Javelin Toss")).SetValue(true);
             nidaSpells.AddItem(new MenuItem("seth", "Hitchance: ")).SetValue(new StringList(new[] { "Low", "Medium", "High" }, 2));
+            nidaSpells.AddItem(new MenuItem("usehumanq", "Use Javelin Toss")).SetValue(true);
+            nidaSpells.AddItem(new MenuItem("useonhigh", "Use on Dashing/Immobile")).SetValue(true); 
             nidaSpells.AddItem(new MenuItem("usehumanw", "Use Bushwack")).SetValue(true);
             nidaSpells.AddItem(new MenuItem(" ", " "));
             nidaSpells.AddItem(new MenuItem("usecougarq", "Use Takedown")).SetValue(true);
@@ -187,7 +187,10 @@ namespace KurisuNidalee
         private void NidaleeOnUpdate(EventArgs args)
         {
             CougarForm = NidaData.Name != "JavelinToss";
-            Target = TargetSelector.GetTarget(1500, TargetSelector.DamageType.Magical);
+
+            Target = TargetSelector.GetSelectedTarget() ??
+                     TargetSelector.GetTarget(1500, TargetSelector.DamageType.Magical);
+
 
             ProcessCooldowns();
             PrimalSurge();
@@ -197,9 +200,28 @@ namespace KurisuNidalee
             if (MainMenu.Item("useharass").GetValue<KeyBind>().Active)
                 UseHarass(Target);
             if (MainMenu.Item("useclear").GetValue<KeyBind>().Active)
-                UseLaneclear();
-            if (MainMenu.Item("usejungle").GetValue<KeyBind>().Active )
-                UseJungleclear();
+                UseLaneFarm();
+            if (MainMenu.Item("usejungle").GetValue<KeyBind>().Active)
+                UseJungleFarm();
+
+            if (MainMenu.Item("useonhigh").GetValue<bool>())
+            {
+                foreach (
+                    var obj in 
+                        ObjectManager.Get<Obj_AI_Hero>()
+                            .Where(hero => hero.IsValidTarget(javelin.Range)))
+                {
+                    if (CougarForm)
+                        return;
+
+                    var prediction = javelin.GetPrediction(obj);
+                    if (prediction.Hitchance == HitChance.Immobile)
+                        javelin.Cast(prediction.CastPosition);
+
+                    if (prediction.Hitchance == HitChance.Dashing)
+                        javelin.Cast(prediction.CastPosition);
+                }
+            }
 
         }
 
@@ -257,6 +279,9 @@ namespace KurisuNidalee
 
         private void UseCombo(Obj_AI_Base target)
         {
+            if (TargetSelector.GetSelectedTarget() != null && Target.Distance(Me.ServerPosition) > 1500)
+                return;
+
             var minPounce 
                 = MainMenu.Item("setp").GetValue<Slider>().Value;
             var hitchance 
@@ -344,15 +369,15 @@ namespace KurisuNidalee
                     switch (hitchance)
                     {
                         case 0:
-                            if (prediction.Hitchance == HitChance.Low)
+                            if (prediction.Hitchance >= HitChance.Low)
                                 javelin.Cast(prediction.CastPosition, Packets());
                             break;
                         case 1:
-                            if (prediction.Hitchance == HitChance.Medium)
+                            if (prediction.Hitchance >= HitChance.Medium)
                                 javelin.Cast(prediction.CastPosition, Packets());
                             break;
                         case 2:
-                            if (prediction.Hitchance == HitChance.High)
+                            if (prediction.Hitchance >= HitChance.High)
                                 javelin.Cast(prediction.CastPosition, Packets());
                             break;
                     }
@@ -383,11 +408,11 @@ namespace KurisuNidalee
                     switch (MainMenu.Item("seth").GetValue<StringList>().SelectedIndex)
                     {
                         case 0:
-                            if (prediction.Hitchance == HitChance.Low)
+                            if (prediction.Hitchance >= HitChance.Low)
                                 javelin.Cast(prediction.CastPosition, Packets());
                             break;
                         case 1:
-                            if (prediction.Hitchance == HitChance.Medium)
+                            if (prediction.Hitchance >= HitChance.Medium)
                                 javelin.Cast(prediction.CastPosition, Packets());
                             break;
                         case 2:
@@ -430,9 +455,9 @@ namespace KurisuNidalee
 
         #endregion
 
-        #region Nidalee: Jungleclear
+        #region Nidalee: JungleFarm
 
-        private void UseJungleclear()
+        private void UseJungleFarm()
         {
             var actualHeroManaPercent = (int)((Me.Mana / Me.MaxMana) * 100);
             var minPercent = MainMenu.Item("jgrpct").GetValue<Slider>().Value;
@@ -471,9 +496,9 @@ namespace KurisuNidalee
 
         #endregion
 
-        #region Nidalee: Laneclear
+        #region Nidalee: LaneFarm
 
-        private void UseLaneclear()
+        private void UseLaneFarm()
         {
             var actualHeroManaPercent = (int)((Me.Mana / Me.MaxMana) * 100);
             var minPercent = MainMenu.Item("clearpct").GetValue<Slider>().Value;
@@ -481,32 +506,44 @@ namespace KurisuNidalee
             foreach (
                 var m in
                     ObjectManager.Get<Obj_AI_Minion>()
-                        .Where(m => m.IsValidTarget(javelin.Range) && jungleminions.Any(name => !m.Name.StartsWith(name)))) 
+                        .Where(m => m.IsValidTarget(javelin.Range) && jungleminions.Any(name => !m.Name.StartsWith(name))))
             {
+                var cqdmg = Me.GetSpellDamage(m, SpellSlot.Q, 1);
+                var cwdmg = Me.GetSpellDamage(m, SpellSlot.W, 1);
+                var cedmg = Me.GetSpellDamage(m, SpellSlot.E, 1);
+                var hqdmg = Me.GetSpellDamage(m, SpellSlot.Q);
+
                 if (CougarForm)
                 {
                     if (MainMenu.Item("clearcougare").GetValue<bool>() && m.Distance(Me.Position) < swipe.Range)
-                        if (swipe.IsReady())
+                    {
+                        if (swipe.IsReady() && m.Health <= cedmg)
                             swipe.Cast(m);
+                    }
+
                     if (MainMenu.Item("clearcougarw").GetValue<bool>() && m.Distance(Me.Position) < pounce.Range)
-                        if (pounce.IsReady())
+                    {
+                        if (pounce.IsReady() && m.Health <= cwdmg)
                             pounce.Cast(m.Position);
+                    }
+
                     if (MainMenu.Item("clearcougarq").GetValue<bool>() && m.Distance(Me.Position) < takedown.Range)
-                        if (takedown.IsReady())
+                    {
+                        if (takedown.IsReady() && m.Health <= cqdmg)
                             takedown.CastOnUnit(Me);
+                    }
                 }
                 else
                 {
                     if (actualHeroManaPercent > minPercent
-                        && MainMenu.Item("clearhumanq").GetValue<bool>() 
-                        && javelin.IsReady())
+                        && MainMenu.Item("clearhumanq").GetValue<bool>() && javelin.IsReady())
                     {
-                        javelin.Cast(m.Position);
+                        if (m.Health <= hqdmg)
+                        javelin.Cast(m.ServerPosition);
                     }
 
                     if ((!javelin.IsReady() || !MainMenu.Item("clearhumanq").GetValue<bool>())
-                        && MainMenu.Item("clearcougarr").GetValue<bool>()
-                        && m.Distance(Me.Position) < pounce.Range)
+                        && MainMenu.Item("clearcougarr").GetValue<bool>() && m.Distance(Me.ServerPosition) <= pounce.Range)
                     {
                         aspectofcougar.Cast();
                     }
