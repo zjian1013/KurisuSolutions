@@ -210,7 +210,7 @@ namespace KurisuNidalee
                         ObjectManager.Get<Obj_AI_Hero>()
                             .Where(hero => hero.IsValidTarget(javelin.Range)))
                 {
-                    if (CougarForm)
+                    if (CougarForm || HQ != 0)
                         return;
 
                     var prediction = javelin.GetPrediction(obj);
