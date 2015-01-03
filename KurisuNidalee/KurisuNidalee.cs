@@ -191,7 +191,6 @@ namespace KurisuNidalee
             Target = TargetSelector.GetSelectedTarget() ??
                      TargetSelector.GetTarget(1500, TargetSelector.DamageType.Magical);
 
-
             ProcessCooldowns();
             PrimalSurge();
 
@@ -282,11 +281,6 @@ namespace KurisuNidalee
             if (TargetSelector.GetSelectedTarget() != null && Target.Distance(Me.ServerPosition) > 1500)
                 return;
 
-            var minPounce 
-                = MainMenu.Item("setp").GetValue<Slider>().Value;
-            var hitchance 
-                = MainMenu.Item("seth").GetValue<StringList>().SelectedIndex;
-  
             // Cougar combo
             if (CougarForm && target.IsValidTarget(javelin.Range))
             {             
@@ -303,7 +297,7 @@ namespace KurisuNidalee
                 // Check is pounce is ready 
                 if (CW == 0
                     && MainMenu.Item("usecougarw").GetValue<bool>()
-                    && target.Distance(Me.ServerPosition) > minPounce)
+                    && target.Distance(Me.ServerPosition) > MainMenu.Item("setp").GetValue<Slider>().Value)
                 {
                     if (TargetHunted(target) & target.Distance(Me.ServerPosition) <= 750)
                         pounce.Cast(target.ServerPosition, Packets()); 
@@ -366,7 +360,7 @@ namespace KurisuNidalee
                     && MainMenu.Item("usehumanq").GetValue<bool>())
                 {
                     var prediction = javelin.GetPrediction(target);
-                    switch (hitchance)
+                    switch (MainMenu.Item("seth").GetValue<StringList>().SelectedIndex)
                     {
                         case 0:
                             if (prediction.Hitchance >= HitChance.Low)
