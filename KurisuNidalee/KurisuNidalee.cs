@@ -486,7 +486,7 @@ namespace KurisuNidalee
                     if (MainMenu.Item("jghumanw").GetValue<bool>() && m.Distance(Me.Position) < bushwack.Range && actualHeroManaPercent > minPercent)
                         if (HW == 0)
                             bushwack.Cast(m.Position);
-                    if (!HQ != 0 && MainMenu.Item("jgcougarr").GetValue<bool>() && m.Distance(Me.Position) < pounce.Range && actualHeroManaPercent > minPercent)
+                    if (HQ != 0 && MainMenu.Item("jgcougarr").GetValue<bool>() && m.Distance(Me.Position) < pounce.Range && actualHeroManaPercent > minPercent)
                         if (aspectofcougar.IsReady())
                             aspectofcougar.Cast();
                 }
