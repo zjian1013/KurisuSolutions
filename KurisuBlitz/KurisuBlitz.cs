@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
-using SharpDX;
 using Color = System.Drawing.Color;
 
 namespace KurisuBlitz
@@ -59,31 +58,6 @@ namespace KurisuBlitz
             // Interrupter
             Interrupter.OnPossibleToInterrupt += BlitzOnInterrupt;
 
-            // OnGapCloser
-            AntiGapcloser.OnEnemyGapcloser += BlitzOnGapcloser;
-
-        }
-
-        private void BlitzOnGapcloser(ActiveGapcloser gapcloser)
-        {
-            if (!_menu.Item("gapcloser").GetValue<bool>()) 
-                return;
-
-            foreach (
-                var a in
-                    ObjectManager.Get<Obj_AI_Hero>()
-                        .Where(a => a.IsValidTarget() && a.Team == _player.Team))
-            {
-
-                var senderPos = gapcloser.End;
-                var validPos = senderPos - Vector3.Normalize(_player.Position - senderPos)*Q.Range;
-
-                if (_player.Distance(validPos) > a.Distance(a.ServerPosition))
-                {
-                    if (_player.Distance(validPos) > 200f)
-                        Q.Cast(senderPos);
-                }
-            }
         }
 
         private void BlitzOnInterrupt(Obj_AI_Base unit, InterruptableSpell spell)
@@ -102,7 +76,7 @@ namespace KurisuBlitz
             {
                 var circle = _menu.SubMenu("drawings").Item("draw" + spell.Slot).GetValue<Circle>();
                 if (circle.Active)
-                    Utility.DrawCircle(_player.Position, spell.Range, circle.Color, 1, 1);
+                    Utility.DrawCircle(_player.Position, spell.Range, circle.Color, 5, 1);
             }
 
             if (_target.IsValidTarget(Q.Range*2))
@@ -110,117 +84,132 @@ namespace KurisuBlitz
         }
 
 
-        private void BlitzOnUpdate(EventArgs args)
+        private static void BlitzOnUpdate(EventArgs args)
         {
-            try
+
+            _target = TargetSelector.GetSelectedTarget()
+                ?? TargetSelector.GetTarget(1000, TargetSelector.DamageType.Physical);
+
+            // do KS
+            GodKS(Q);
+            GodKS(R);
+            GodKS(E);
+
+            var actualHealthSetting = _menu.Item("hneeded").GetValue<Slider>().Value;
+            var actualHealthPercent = (int) (_player.Health/_player.MaxHealth*100);
+
+            if (actualHealthPercent < actualHealthSetting) 
+                return;
+
+            // use the god hand
+            GodHand(_target);
+
+
+            // powerfist that hoe
+            foreach (
+                var e in
+                    ObjectManager.Get<Obj_AI_Hero>()
+                        .Where(e => e.Team != _player.Team && e.IsValidTarget(_player.AttackRange)))
             {
-                _target = TargetSelector.GetSelectedTarget() 
-                    ?? TargetSelector.GetTarget(1000, TargetSelector.DamageType.Physical);
-
-                // do KS
-                GodKS(Q);
-                GodKS(R);
-                GodKS(E);
-
-                var actualHealthSetting = _menu.Item("hneeded").GetValue<Slider>().Value;
-                var actualHealthPercent = (int) (_player.Health/_player.MaxHealth*100);
-
-                if (actualHealthPercent < actualHealthSetting) 
-                    return;
-
-                // use the god hand
-
-                if (TargetSelector.GetSelectedTarget() == null || !(_target.Distance(_player.Position) > 750))
-                {
-                    TheGodHand(_target);
-                }
-
-                // powerfist that hoe
-                    foreach (
-                        var e in
-                            ObjectManager.Get<Obj_AI_Hero>()
-                                .Where( e => e.Team != _player.Team && e.IsValidTarget(_player.AttackRange)))
-                    {
-                        if (_menu.Item("useE").GetValue<bool>() && !Q.IsReady())
-                            E.CastOnUnit(_player);
-                    }
-                
+                if (_menu.Item("useE").GetValue<bool>() && !Q.IsReady())
+                    E.CastOnUnit(_player);
             }
-            catch (Exception ex)
-            {
-                //Game.PrintChat(ex.Message);
-                Console.WriteLine(ex);
-            }
-
+            
         }
 
-        private void TheGodHand(Obj_AI_Base target)
+        private static void GodHand(Obj_AI_Base target)
         {
-            var keydown = _menu.Item("combokey").GetValue<KeyBind>().Active;
             if (TargetSelector.GetSelectedTarget() != null && _target.Distance(_player.Position) > 1000)
                 return;
 
-            if (target != null && Q.IsReady())
+            if (target.IsValidTarget() && Q.IsReady())
             {
-                PredictionOutput prediction = Q.GetPrediction(target);
-                if (keydown)
+                var prediction = Q.GetPrediction(target);
+                if (_menu.Item("combokey").GetValue<KeyBind>().Active)
                 {
                     if ((target.Distance(_player.Position) > _menu.Item("dneeded").GetValue<Slider>().Value)
                         && (target.Distance(_player.Position) < _menu.Item("dneeded2").GetValue<Slider>().Value))
-                    if (_menu.Item("dograb" + target.SkinName).GetValue<StringList>().SelectedIndex == 0) return;
-                    if (prediction.Hitchance == HitChance.High && _menu.Item("hitchance").GetValue<StringList>().SelectedIndex == 2)
+
+                    {
+                        if (_menu.Item("dograb" + target.SkinName).GetValue<StringList>().SelectedIndex == 0) 
+                            return;
+
+                        if (prediction.Hitchance >= HitChance.High &&
+                            _menu.Item("hitchance").GetValue<StringList>().SelectedIndex == 2)
+                        {
                             Q.Cast(prediction.CastPosition);
-                    else if (prediction.Hitchance == HitChance.Medium && _menu.Item("hitchance").GetValue<StringList>().SelectedIndex == 1)
-                        Q.Cast(prediction.CastPosition);
-                    else if (prediction.Hitchance == HitChance.Low && _menu.Item("hitchance").GetValue<StringList>().SelectedIndex == 0)
-                        Q.Cast(prediction.CastPosition);      
-                    
+                        }
+
+                        else if (prediction.Hitchance >= HitChance.Medium && 
+                                 _menu.Item("hitchance").GetValue<StringList>().SelectedIndex == 1)
+                        {
+                            Q.Cast(prediction.CastPosition);
+                        }
+
+                        else if (prediction.Hitchance >= HitChance.Low && 
+                                 _menu.Item("hitchance").GetValue<StringList>().SelectedIndex == 0)
+                        {
+                            Q.Cast(prediction.CastPosition);   
+                        }   
+                    }                
                 }
             }
 
             foreach (
-                   var e in
-                       ObjectManager.Get<Obj_AI_Hero>()
-                           .Where(
-                               e =>
-                                   e.Team != _player.Team && !e.IsDead && e.IsValid &&
-                                   Vector2.DistanceSquared(_player.Position.To2D(), e.ServerPosition.To2D()) <
-                                   Q.Range * Q.Range && _menu.Item("dograb" + e.SkinName).GetValue<StringList>().SelectedIndex == 2))
+                var e in
+                    ObjectManager.Get<Obj_AI_Hero>()
+                        .Where(
+                            e => e.IsValidTarget(Q.Range) &&
+                                _menu.Item("dograb" + e.SkinName).GetValue<StringList>().SelectedIndex == 2)) 
             {
                 if (e.Distance(_player.Position) > _menu.Item("dneeded").GetValue<Slider>().Value)
                 {
-                    PredictionOutput prediction = Q.GetPrediction(e);
-                    if (prediction.Hitchance == HitChance.Immobile && _menu.Item("immobile").GetValue<bool>())
+                    var prediction = Q.GetPrediction(e);
+                    if (prediction.Hitchance == HitChance.Immobile && 
+                        _menu.Item("immobile").GetValue<bool>())
+                    {
                         Q.Cast(prediction.CastPosition);
-                    if (prediction.Hitchance == HitChance.Dashing && _menu.Item("dashing").GetValue<bool>())
+                    }
+
+                    if (prediction.Hitchance == HitChance.Dashing &&
+                        _menu.Item("dashing").GetValue<bool>())
+                    {
                         Q.Cast(prediction.CastPosition);
+                    }
                 }
             }
         }
 
                         
-        private void GodKS(Spell spell)
+        private static void GodKS(Spell spell)
         {
             if (_menu.Item("killsteal" + spell.Slot).GetValue<bool>() && spell.IsReady())
             {
                 foreach (
                     var enemy in
                         ObjectManager.Get<Obj_AI_Hero>()
-                            .Where(e => e.Team != _player.Team && e.Distance(_player.Position) < spell.Range))
+                            .Where(e => e.IsValidTarget(spell.Range)))
                 {
                     var ksDmg = _player.GetSpellDamage(enemy, spell.Slot);
                     if (ksDmg > enemy.Health)
                     {
-                        var po = spell.GetPrediction(enemy);
-                        if (po.Hitchance >= HitChance.Medium)
-                            spell.Cast(po.CastPosition);
-                    }
+                        if (spell.Slot.ToString() == "Q")
+                        {
+                            var po = spell.GetPrediction(enemy);
+                            if (po.Hitchance >= HitChance.Medium)
+                                spell.Cast(po.CastPosition);
+                        }
 
+                        else
+                        {
+                            spell.CastOnUnit(_player);
+                        }
+                    }
                 }
             }
         }
 
-        private void BlitzMenu()
+        private static void BlitzMenu()
         {
             _menu = new Menu("Kurisu: Blitz", "blitz", true);
 
@@ -257,6 +246,7 @@ namespace KurisuBlitz
                 menuG.AddItem(new MenuItem("dograb" + e.SkinName, e.SkinName))
                     .SetValue(new StringList(new[] {"Dont Grab ", "Normal Grab ", "Auto Grab "}, 1));
             }
+
             _menu.AddSubMenu(menuG);
 
             var menuK = new Menu("Blitz: Killsteal", "blitzks");
@@ -265,7 +255,6 @@ namespace KurisuBlitz
             menuK.AddItem(new MenuItem("killstealR", "Use R")).SetValue(false);
             _menu.AddSubMenu(menuK);
 
-            _menu.AddItem(new MenuItem("gapcloser", "Smart anti gapcloser")).SetValue(true);
             _menu.AddItem(new MenuItem("interrupt", "Interrupt spells")).SetValue(true);
             _menu.AddItem(new MenuItem("useE", "Powerfist after grab")).SetValue(true);
             _menu.AddItem(new MenuItem("combokey", "Combo Key")).SetValue(new KeyBind(32, KeyBindType.Press));
