@@ -292,9 +292,6 @@ namespace KurisuRiven
             AutoW();
             Requisites();
             WindSlash();
-
-            if (usecombo)
-                Orbwalking.LastAATick = 0;
             
         }
 
@@ -770,7 +767,7 @@ namespace KurisuRiven
                     }
                     else if (wslash == 0)
                     {
-                        if (prediction.Hitchance >= HitChance.Medium && e.Health <= rr)
+                        if (prediction.Hitchance >= HitChance.Medium && e.Health <= rr-100)
                             blade.Cast(prediction.CastPosition);
                     }
                 }
