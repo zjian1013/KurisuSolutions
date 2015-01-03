@@ -236,6 +236,10 @@ namespace KurisuRiven
             {
                 Orbwalking.LastAATick = 0;
             }
+            else
+            {
+                Orbwalking.LastAATick = 0;
+            }
 
             if (DidQ && (usecombo || useclear))
             {
@@ -281,7 +285,7 @@ namespace KurisuRiven
 
             if (usecombo)
                 CastCombo(enemy);
-            
+
             foreach (var b in me.Buffs.Where(b => b.Name == "RivenTriCleave"))
                 cleavecount = b.Count;
 
@@ -501,7 +505,6 @@ namespace KurisuRiven
         private static bool DidQ, DidW, DidE, DidR, DidR2;
         private static void Obj_AI_Base_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
         {
-            var target = enemy;
             var wrange = ultion ? 150 + 135 : 150;
             if (!sender.IsMe)
                 return;
@@ -521,7 +524,7 @@ namespace KurisuRiven
                     DidW = true;
                     Utility.DelayAction.Add(100, () => DidW = false);
                     if (wings.IsReady() && usecombo)
-                        Utility.DelayAction.Add(Game.Ping + 75, () => wings.Cast(target.ServerPosition));
+                        Utility.DelayAction.Add(Game.Ping + 75, () => wings.Cast(enemy.ServerPosition));
 
                     if (wings.IsReady() && useclear)
                         Utility.DelayAction.Add(Game.Ping + 75, () => wings.Cast(orbwalker.GetTarget().Position));
@@ -533,7 +536,7 @@ namespace KurisuRiven
                         //Orbwalking.LastAATick = 0;
                         me.IssueOrder(GameObjectOrder.AttackUnit, orbwalker.GetTarget());
                     });
-                    if (target.IsValidTarget(wrange) && usecombo)
+                    if (enemy.IsValidTarget(wrange) && usecombo)
                         if (wings.IsReady() && !kiburst.IsReady())
                             wings.Cast(enemy.ServerPosition);
 
@@ -549,7 +552,7 @@ namespace KurisuRiven
 
                     if (usecombo)
                     {
-                        castitems(target);
+                        castitems(enemy);
                         //if (target.Distance(me.ServerPosition) <= truerange + 20)
                         //{
                         //    if (Items.HasItem(3077) && Items.CanUseItem(3077))
@@ -564,7 +567,7 @@ namespace KurisuRiven
 
                     if (blade.IsReady() && usecombo)
                         if (ultion && wslash == 1 && (cleavecount == 1 || cleavecount == 2))
-                            blade.Cast(target.ServerPosition);
+                            blade.Cast(enemy.ServerPosition);
                     break;
                 case "RivenFengShuiEngine":
                     DidR = true;
@@ -573,8 +576,8 @@ namespace KurisuRiven
                     if (!usecombo)
                         return;
 
-                    castitems(target);
-                    if (!target.IsValidTarget(wrange))
+                    castitems(enemy);
+                    if (!enemy.IsValidTarget(wings.Range + 135))
                         return;
 
                     if (kiburst.IsReady())
