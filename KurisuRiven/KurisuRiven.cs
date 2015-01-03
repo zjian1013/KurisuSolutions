@@ -38,7 +38,6 @@ namespace KurisuRiven
         private static readonly Spell kiburst = new Spell(SpellSlot.W, 250f);
         private static readonly Spell blade = new Spell(SpellSlot.R, 900f);
 
-        private static Vector3 holdPos;
         private static float ee, ff;
         private static readonly int[] items = { 3144, 3153, 3142, 3112, 3131 };
         private static readonly int[] runicpassive =
@@ -111,7 +110,7 @@ namespace KurisuRiven
             menuC.AddItem(new MenuItem("useblade", "Use R Logic")).SetValue(true);
             menuC.AddItem(new MenuItem("bladewhen", "Use R When: "))
                 .SetValue(new StringList(new[] { "Easy", "Normal", "Hard" }, 2));
-            menuC.AddItem(new MenuItem("checkover", "Check R Overkill")).SetValue(true);
+            menuC.AddItem(new MenuItem("checkover", "Check R Overkill")).SetValue(false);
 
             menuC.AddItem(new MenuItem("csep3", "==== Cleave Settings"));       
             //menuC.AddItem(new MenuItem("orbto", "Stick to Target (Alpha)")).SetValue(false);
@@ -239,7 +238,7 @@ namespace KurisuRiven
 
             if (DidQ && (usecombo || useclear))
             {
-                orbwalker.SetMovement(false);
+                
                 var id = orbwalker.GetTarget() == null
                  ? (enemy.IsValidTarget() ? enemy.NetworkId : me.NetworkId)
                  : orbwalker.GetTarget().NetworkId;
@@ -249,7 +248,7 @@ namespace KurisuRiven
                 var movePos = obj.ServerPosition +
                             Vector3.Normalize(me.ServerPosition - obj.ServerPosition)*(me.Distance(obj.ServerPosition) + 58);
 
-
+                orbwalker.SetMovement(false);
                 if (me.Distance(obj.ServerPosition) <= truerange + 35 && obj.NetworkId != me.NetworkId)
                 {
                     me.IssueOrder(GameObjectOrder.MoveTo, new Vector3(movePos.X, movePos.Y, movePos.Z));
