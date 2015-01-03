@@ -35,7 +35,7 @@ namespace KurisuRiven
 
         private static readonly Spell valor = new Spell(SpellSlot.E, 390f);
         private static readonly Spell wings = new Spell(SpellSlot.Q, 250f);
-        private static readonly Spell kiburst = new Spell(SpellSlot.W, 250f);
+        private static readonly Spell kiburst = new Spell(SpellSlot.W, 150f);
         private static readonly Spell blade = new Spell(SpellSlot.R, 900f);
 
         private static float ee, ff;
@@ -502,7 +502,7 @@ namespace KurisuRiven
         private static void Obj_AI_Base_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
         {
             var target = enemy;
-            var wrange = ultion ? 400 : 200;
+            var wrange = ultion ? 150 + 135 : 150;
             if (!sender.IsMe)
                 return;
 
@@ -674,7 +674,7 @@ namespace KurisuRiven
             if (!target.IsValidTarget(950))
                 return;
 
-            var wrange = ultion ? 400 : 200;
+            var wrange = ultion ? 150 + 135 : 150;
             var aHealthPercent = (int)((me.Health/me.MaxHealth)*100);
 
             if (me.Distance(target.ServerPosition) > truerange + 25 || 
