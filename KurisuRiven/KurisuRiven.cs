@@ -213,8 +213,9 @@ namespace KurisuRiven
         private static bool color;
         private void Game_OnGameUpdate(EventArgs args)
         {
-            enemy = TargetSelector.GetSelectedTarget() ??
-                    TargetSelector.GetTarget(900, TargetSelector.DamageType.Physical);
+            enemy = TargetSelector.GetSelectedTarget().IsValidTarget(1400) 
+                ? TargetSelector.GetSelectedTarget() 
+                : TargetSelector.GetTarget(900, TargetSelector.DamageType.Physical);
 
             if (config.Item("changemode").GetValue<KeyBind>().Active)
             {
@@ -615,7 +616,11 @@ namespace KurisuRiven
                 var targetId = trees.TargetNetworkId;
                 var damageType = trees.Type;
 
-                var targ = ObjectManager.GetUnitByNetworkId<Obj_AI_Base>(targetId);
+                var targ =
+                    ObjectManager.
+                        GetUnitByNetworkId<Obj_AI_Base>
+                            (targetId);
+
                 if (targ.NetworkId == me.NetworkId)
                     return;
 
@@ -643,7 +648,10 @@ namespace KurisuRiven
                         if (!config.Item("combokey").GetValue<KeyBind>().Active)
                             return;         
                             castitems(targ);
-                            wings.Cast(targ.ServerPosition, true);
+                            wings.Cast(
+                                enemy.IsValidTarget(truerange + 20) 
+                                ? enemy.ServerPosition 
+                                : targ.ServerPosition, true);
                         break;
                     case GameObjectType.obj_AI_Minion:
                         if (!config.Item("clearkey").GetValue<KeyBind>().Active)
@@ -666,9 +674,6 @@ namespace KurisuRiven
 
         private static void CastCombo(Obj_AI_Base target)
         {
-            if (TargetSelector.GetSelectedTarget() != null && enemy.Distance(me.ServerPosition) > 900)
-                return;
-
             if (!target.IsValidTarget(950))
                 return;
 
@@ -856,28 +861,40 @@ namespace KurisuRiven
                     case 2:
                         if ((float)(ua * 3 + uq * 3 + uw + rr + ri + ritems) >= target.Health && !ultion)
                         {
+                            if (config.Item("useignote").GetValue<bool>())
+                            {
+                                if (cleavecount <= 1)
+                                    CastIgnite(target);
+                                
+                            }
+
                             if (target.Health <= (float)(ra * 2 + rq * 2 + ri + ritems))
+                            {
                                 if (config.Item("checkover").GetValue<bool>())
                                     return;
+                            }
 
                             blade.Cast();
 
-                            if (config.Item("useignote").GetValue<bool>())
-                                if (cleavecount <= 1 && ultion)
-                                    CastIgnite(target);
                         }
                         break;
                     case 1:
                         if ((float)(ra * 3 + rq * 3 + rw + rr + ri + ritems) >= target.Health && !ultion)
                         {
+                            if (config.Item("useignote").GetValue<bool>())
+                            {
+                                if (cleavecount <= 1)
+                                    CastIgnite(target);
+                            }
+
                             if (target.Health <= (float)(ra * 2 + rq * 2 + ri + ritems))
+                            {
                                 if (config.Item("checkover").GetValue<bool>())
                                     return;
+                            }
 
                             blade.Cast();
-                            if (config.Item("useignote").GetValue<bool>())
-                                if (cleavecount <= 1 && ultion)
-                                    CastIgnite(target);
+
                         }
                         break;
                     case 0:
