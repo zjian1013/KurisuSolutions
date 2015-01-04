@@ -354,7 +354,7 @@ namespace KurisuNidalee
                 // Switch to cougar if target hunted or can kill target 
                 if (aspectofcougar.IsReady() 
                     && MainMenu.Item("usecougarr").GetValue<bool>() 
-                    && (TargetHunted(target) || target.Health <= CougarDamage(target)))
+                    && (TargetHunted(target) || target.Health <= CougarDamage(target) && HQ != 0))
                 {
 
                     if (TargetHunted(target) && target.Distance(Me.ServerPosition, true) <= 750*750)
