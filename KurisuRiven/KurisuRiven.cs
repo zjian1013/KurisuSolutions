@@ -45,7 +45,7 @@ namespace KurisuRiven
             20, 20, 25, 25, 25, 30, 30, 30, 35, 35, 35, 40, 40, 40, 45, 45, 45, 50, 50
         };
 
-        public const string Revision = "1.0.0.5";
+        public const string Revision = "1.0.0.6";
         private static readonly string[] jungleminions =
         {     
             "SRU_Razorbeak", "SRU_Krug", "Sru_Crab",
@@ -72,25 +72,19 @@ namespace KurisuRiven
             config = new Menu("KurisuRiven", "kriven", true);
 
             // Target Selector
-            var menuTS = new Menu("Riven: Selector", "tselect");
+            var menuTS = new Menu("Selector", "tselect");
             TargetSelector.AddToMenu(menuTS);
             config.AddSubMenu(menuTS);
 
             // Orbwalker
-            var menuOrb = new Menu("Riven: Orbwalker", "orbwalker");
+            var menuOrb = new Menu("Orbwalker", "orbwalker");
             orbwalker = new Orbwalking.Orbwalker(menuOrb);
             config.AddSubMenu(menuOrb);
 
-            var menuK = new Menu("Riven: Keybinds", "demkeys");
-            menuK.AddItem(new MenuItem("combokey", "Combo Key")).SetValue(new KeyBind(32, KeyBindType.Press));
-            menuK.AddItem(new MenuItem("harasskey", "Harass Key Disabled"));//.SetValue(new KeyBind(67, KeyBindType.Press));
-            menuK.AddItem(new MenuItem("clearkey", "Clear Key")).SetValue(new KeyBind(86, KeyBindType.Press));
-            menuK.AddItem(new MenuItem("jumpkey", "Jump Key Disabled"));//.SetValue(new KeyBind(88, KeyBindType.Press));
-            menuK.AddItem(new MenuItem("changemode", "Change Mode")).SetValue(new KeyBind(90, KeyBindType.Press));
-            config.AddSubMenu(menuK);
+           
 
             // Draw settings
-            var menuD = new Menu("Riven: Drawings ", "dsettings");
+            var menuD = new Menu("Riven: Draw ", "dsettings");
             menuD.AddItem(new MenuItem("dsep1", "==== Drawing Settings"));
             menuD.AddItem(new MenuItem("drawrr", "Draw R range")).SetValue(false);
             menuD.AddItem(new MenuItem("drawqq", "Draw Q range")).SetValue(true);
@@ -100,6 +94,12 @@ namespace KurisuRiven
             menuD.AddItem(new MenuItem("drawkill", "Draw killable")).SetValue(true);
             menuD.AddItem(new MenuItem("drawtarg", "Draw target")).SetValue(true);
             config.AddSubMenu(menuD);
+
+            var kMenu = new Menu("Riven: Keys", "rkkes");
+            kMenu.AddItem(new MenuItem("combokey", "Combo Key")).SetValue(new KeyBind(32, KeyBindType.Press));
+            kMenu.AddItem(new MenuItem("clearkey", "Clear Key")).SetValue(new KeyBind(86, KeyBindType.Press));
+            kMenu.AddItem(new MenuItem("changemode", "Change Mode")).SetValue(new KeyBind(90, KeyBindType.Press));
+            config.AddSubMenu(kMenu);
 
             // Combo Settings
             var menuC = new Menu("Riven: Combo ", "csettings");
@@ -159,11 +159,6 @@ namespace KurisuRiven
             //rivenD.AddItem(new MenuItem("delay2", "Q 3 Delay")).SetValue(new Slider(412, 0, 1000));
             config.AddSubMenu(rivenD);
 
-            var donate = new Menu("Riven: Freelo", "feelo");
-            donate.AddItem(new MenuItem("donate", "Donate because you love me <3?"));
-            donate.AddItem(new MenuItem("donate2", "Paypal: xrobinsong@gmail.com"));
-
-            config.AddSubMenu(donate);
             config.AddToMainMenu();
 
 
@@ -232,18 +227,19 @@ namespace KurisuRiven
                 }
             }
 
-            if (me.IsMoving && !DidQ && !DidW && !DidE && !DidR && !DidR2)
+            if (me.IsMoving && !DidQ && !DidE && !DidW && !DidR)
             {
                 Orbwalking.LastAATick = 0;
+                Orbwalking.LastMoveCommandT = 0;
             }
             else
             {
-                Orbwalking.LastAATick = 0;
+                Orbwalking.LastAATick = Environment.TickCount + (Game.Ping/2);
+                Orbwalking.LastMoveCommandT = Environment.TickCount;
             }
 
             if (DidQ && (usecombo || useclear))
-            {
-                
+            {               
                 var id = orbwalker.GetTarget() == null
                  ? (enemy.IsValidTarget() ? enemy.NetworkId : me.NetworkId)
                  : orbwalker.GetTarget().NetworkId;
@@ -253,7 +249,7 @@ namespace KurisuRiven
                 var movePos = obj.ServerPosition +
                             Vector3.Normalize(me.ServerPosition - obj.ServerPosition)*(me.Distance(obj.ServerPosition) + 58);
 
-                orbwalker.SetMovement(false);
+                //orbwalker.SetMovement(false);
                 if (me.Distance(obj.ServerPosition) <= truerange + 35 && obj.NetworkId != me.NetworkId)
                 {
                     me.IssueOrder(GameObjectOrder.MoveTo, new Vector3(movePos.X, movePos.Y, movePos.Z));
@@ -261,18 +257,16 @@ namespace KurisuRiven
                     {
                         Utility.DelayAction.Add(Game.Ping + 323, delegate
                         {
-                            orbwalker.SetMovement(true);
+                            //orbwalker.SetMovement(true);
                             DidQ = false;
-
                         });
                     }
                     else
                     {
                         Utility.DelayAction.Add(Game.Ping + 278, delegate
                         {
-                            orbwalker.SetMovement(true);
+                            //orbwalker.SetMovement(true);
                             DidQ = false;
-
                         });
                     }
                 }
@@ -296,7 +290,6 @@ namespace KurisuRiven
             AutoW();
             Requisites();
             WindSlash();
-            
         }
 
         #endregion
@@ -304,7 +297,6 @@ namespace KurisuRiven
         #region  Requisites
         private static void Requisites()
         {
-
             color = wslash == 0;
             CheckDamage(enemy);
 
@@ -502,14 +494,14 @@ namespace KurisuRiven
 
         #region  OnProcessSpellCast
 
-        private static bool DidQ, DidW, DidE, DidR, DidR2;
+        private static bool DidQ, DidW, DidE, DidR;
         private static void Obj_AI_Base_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
         {
             var wrange = ultion ? 150 + 135 : 150;
             if (!sender.IsMe)
                 return;
 
-            switch (args.SData.Name)
+            switch (args.SData.Name)    
             {
                 case "RivenTriCleave":
                     DidQ = true;
@@ -531,11 +523,9 @@ namespace KurisuRiven
 
                     break;
                 case "ItemTiamatCleave":
-                    Utility.DelayAction.Add(250, delegate
-                    {
-                        //Orbwalking.LastAATick = 0;
-                        me.IssueOrder(GameObjectOrder.AttackUnit, orbwalker.GetTarget());
-                    });
+                    Orbwalking.LastAATick = 0;
+                    Utility.DelayAction.Add(250, () => me.IssueOrder(GameObjectOrder.AttackUnit, orbwalker.GetTarget()));
+
                     if (enemy.IsValidTarget(wrange) && usecombo)
                         if (wings.IsReady() && !kiburst.IsReady())
                             wings.Cast(enemy.ServerPosition);
@@ -546,20 +536,20 @@ namespace KurisuRiven
 
                     break;
                 case "RivenFeint":
-                    DidE = true;
-                    Utility.DelayAction.Add(100, () => DidE = false);
+                    //DidE = true;
+                    //Utility.DelayAction.Add(100, () => DidE = false);
                     eet = Environment.TickCount;
 
                     if (usecombo)
                     {
                         castitems(enemy);
-                        //if (target.Distance(me.ServerPosition) <= truerange + 20)
-                        //{
-                        //    if (Items.HasItem(3077) && Items.CanUseItem(3077))
-                        //        Items.UseItem(3077);
-                        //    if (Items.HasItem(3074) && Items.CanUseItem(3074))
-                        //        Items.UseItem(3074);
-                        //}
+                        if (enemy.Distance(me.ServerPosition) <= truerange + 20 + 385)
+                        {
+                            if (Items.HasItem(3077) && Items.CanUseItem(3077))
+                                Items.UseItem(3077);
+                            if (Items.HasItem(3074) && Items.CanUseItem(3074))
+                                Items.UseItem(3074);
+                        }
                     }
 
                     if (!useblade || !useautows)
@@ -584,8 +574,6 @@ namespace KurisuRiven
                         kiburst.Cast();
                     break;
                 case "rivenizunablade":
-                    DidR2 = true;
-                    Utility.DelayAction.Add(100, () => DidR2 = false);
                     if (wings.IsReady())
                         wings.Cast(enemy.ServerPosition);
                     break;
@@ -624,6 +612,8 @@ namespace KurisuRiven
                 if (targ.NetworkId == me.NetworkId)
                     return;
 
+                var prediction = wings.GetPrediction(enemy);
+
                 if (damageType.ToString() != "54")
                     return;
 
@@ -649,8 +639,8 @@ namespace KurisuRiven
                             return;         
                             castitems(targ);
                             wings.Cast(
-                                enemy.IsValidTarget(truerange + 20) 
-                                ? enemy.ServerPosition 
+                                enemy.IsValidTarget(truerange + 20)
+                                ? prediction.CastPosition
                                 : targ.ServerPosition, true);
                         break;
                     case GameObjectType.obj_AI_Minion:
@@ -703,29 +693,23 @@ namespace KurisuRiven
                     valor.Cast(target.ServerPosition, true);
             }
 
+            var hasitem = (Items.HasItem(3074) && Items.CanUseItem(3074) ||
+                           Items.HasItem(3077) && Items.CanUseItem(3077));
 
-            if (me.Distance(target.Position) <= wrange)
+            if (kiburst.IsReady())
             {
-                if (kiburst.IsReady())
+                var irange = hasitem ? wrange + 300 : wrange;
+                if (me.Distance(target.Position) <= irange)
                 {
-                    if (Items.HasItem(3077) && Items.CanUseItem(3077) ||
-                        Items.HasItem(3074) && Items.CanUseItem(3074))
-                    {
-                        Items.UseItem(3077);
-                        Items.UseItem(3074);
-                        Utility.DelayAction.Add(Game.Ping + 20, () => kiburst.Cast());
-                    }
-                    else
-                    {
-                        kiburst.Cast();
-                    }
+                    //kiburst.Cast();
+                    Utility.DelayAction.Add(hasitem ? Game.Ping + 200 : 0, () => kiburst.Cast());
                 }
             }
 
             var eready = me.Spellbook.CanUseSpell(valor.Slot) == SpellState.Ready;
 
             if ((!eready || !config.Item("usevalor").GetValue<bool>()) &&
-                wings.IsReady()  && me.Distance(target.ServerPosition) > truerange + 20)
+                wings.IsReady()  && me.Distance(target.ServerPosition) > truerange && Orbwalking.LastAATick == 0)
             {
                 if (TimeSpan.FromMilliseconds(qqt).TotalSeconds + extraqtime < now &&
                     TimeSpan.FromMilliseconds(eet).TotalSeconds + extraetime < now)
