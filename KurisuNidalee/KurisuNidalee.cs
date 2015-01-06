@@ -107,7 +107,7 @@ namespace KurisuNidalee
             TargetSelector.AddToMenu(nidaTS);
             MainMenu.AddSubMenu(nidaTS);
 
-            var nidaKeys = new Menu("Nidalee: Keybindings", "keybindongs");
+            var nidaKeys = new Menu("Nidalee: Keys", "keybindongs");
             nidaKeys.AddItem(new MenuItem("usecombo", "Combo")).SetValue(new KeyBind(32, KeyBindType.Press));
             nidaKeys.AddItem(new MenuItem("useharass", "Harass")).SetValue(new KeyBind(67, KeyBindType.Press));
             nidaKeys.AddItem(new MenuItem("usejungle", "Jungleclear")).SetValue(new KeyBind(86, KeyBindType.Press));
@@ -145,31 +145,35 @@ namespace KurisuNidalee
             nidaHarass.AddItem(new MenuItem("humanqpct", "Minimum Mana %")).SetValue(new Slider(70));
             MainMenu.AddSubMenu(nidaHarass);
 
-            var nidaClear = new Menu("Nidalee: Lanefarm", "laneclear");
-            nidaClear.AddItem(new MenuItem("clearhumanq", "Use Javelin")).SetValue(false);
-            nidaClear.AddItem(new MenuItem(" ", " "));
-            nidaClear.AddItem(new MenuItem("clearcougarq", "Use Takedown")).SetValue(true);
-            nidaClear.AddItem(new MenuItem("clearcougarw", "Use Pounce")).SetValue(true);
-            nidaClear.AddItem(new MenuItem("clearcougare", "Use Swipe")).SetValue(true);
-            nidaClear.AddItem(new MenuItem("clearcougarr", "Auto Switch Forms")).SetValue(false);
-            nidaClear.AddItem(new MenuItem("clearpct", "Minimum Mana %")).SetValue(new Slider(55));
-            MainMenu.AddSubMenu(nidaClear);
-
-            var nidaJungle = new Menu("Nidalee: Farm", "jungleclear");
-            nidaJungle.AddItem(new MenuItem("jghumanq", "Use Javelin Toss"))
-                .SetValue(new StringList(new[] {"Never", "Last Hit", "Lane/Jungle", "Both"}, 1));
-            nidaJungle.AddItem(new MenuItem("jghumanw", "Use Bushwack"))
-                .SetValue(new StringList(new[] { "Never", "Last Hit", "Lane/Jungle", "Both" }));
-            nidaJungle.AddItem(new MenuItem(" ", " "));
-            nidaJungle.AddItem(new MenuItem("jgcougarq", "Use Takedown"))
-                .SetValue(new StringList(new[] { "Never", "Last Hit", "Lane/Jungle", "Both" }, 3));
-            nidaJungle.AddItem(new MenuItem("jgcougarw", "Use Pounce"))
-                .SetValue(new StringList(new[] { "Never", "Last Hit", "Lane/Jungle", "Both" }, 3));
-            nidaJungle.AddItem(new MenuItem("jgcougare", "Use Swipe"))
-                .SetValue(new StringList(new[] { "Never", "Last Hit", "Lane/Jungle", "Both" }, 3));
+            var nidaJungle = new Menu("Nidalee: Jungle", "jungleclear");
+            nidaJungle.AddItem(new MenuItem("jghumanq", "Use Javelin Toss")).SetValue(true);
+            nidaJungle.AddItem(new MenuItem("jghumanw", "Use Bushwack")).SetValue(true);
+            nidaJungle.AddItem(new MenuItem("jgcougarq", "Use Takedown")).SetValue(true);
+            nidaJungle.AddItem(new MenuItem("jgcougarw", "Use Pounce")).SetValue(true);
+            nidaJungle.AddItem(new MenuItem("jgcougare", "Use Swipe")).SetValue(true);
             nidaJungle.AddItem(new MenuItem("jgcougarr", "Auto Switch Forms")).SetValue(true);
-            nidaJungle.AddItem(new MenuItem("jgrpct", "Minimum Mana %")).SetValue(new Slider(55, 0, 100));
+            nidaJungle.AddItem(new MenuItem("jgpct", "Minimum Mana %")).SetValue(new Slider(25));
             MainMenu.AddSubMenu(nidaJungle);
+
+            var nidalhit = new Menu("Nidalee: Last Hit", "lasthit");
+            nidalhit.AddItem(new MenuItem("lhhumanq", "Use Javelin Toss")).SetValue(true);
+            nidalhit.AddItem(new MenuItem("lhhumanw", "Use Bushwack")).SetValue(true);
+            nidalhit.AddItem(new MenuItem("lhcougarq", "Use Takedown")).SetValue(true);
+            nidalhit.AddItem(new MenuItem("lhcougarw", "Use Pounce")).SetValue(true);
+            nidalhit.AddItem(new MenuItem("lhcougare", "Use Swipe")).SetValue(true);
+            nidalhit.AddItem(new MenuItem("lhcougarr", "Auto Switch Forms")).SetValue(true);
+            nidalhit.AddItem(new MenuItem("lhpct", "Minimum Mana %")).SetValue(new Slider(55));
+            MainMenu.AddSubMenu(nidalhit);
+
+            var nidalc = new Menu("Nidalee: Laneclear", "laneclear");
+            nidalc.AddItem(new MenuItem("lchumanq", "Use Javelin Toss")).SetValue(true);
+            nidalc.AddItem(new MenuItem("lchumanw", "Use Bushwack")).SetValue(true);
+            nidalc.AddItem(new MenuItem("lccougarq", "Use Takedown")).SetValue(true);
+            nidalc.AddItem(new MenuItem("lccougarw", "Use Pounce")).SetValue(true);
+            nidalc.AddItem(new MenuItem("lccougare", "Use Swipe")).SetValue(true);
+            nidalc.AddItem(new MenuItem("lccougarr", "Auto Switch Forms")).SetValue(true);
+            nidalc.AddItem(new MenuItem("lcpct", "Minimum Mana %")).SetValue(new Slider(55));
+            MainMenu.AddSubMenu(nidalc);
 
             var nidaD = new Menu("Nidalee: Drawings", "drawings");
             nidaD.AddItem(new MenuItem("drawQ", "Draw Q")).SetValue(new Circle(true, Color.FromArgb(150, Color.White)));
@@ -466,7 +470,7 @@ namespace KurisuNidalee
         private void UseLaneFarm()
         {
             var actualHeroManaPercent = (int)((Me.Mana / Me.MaxMana) * 100);
-            var minPercent = MainMenu.Item("jgrpct").GetValue<Slider>().Value;
+            var minPercent = MainMenu.Item("lcpct").GetValue<Slider>().Value;
             foreach (
                 var m in
                     ObjectManager.Get<Obj_AI_Minion>()
@@ -477,46 +481,42 @@ namespace KurisuNidalee
             {
                 if (CougarForm)
                 {
-                    if ((MainMenu.Item("jgcougare").GetValue<StringList>().SelectedIndex == 2 ||
-                         MainMenu.Item("jgcougare").GetValue<StringList>().SelectedIndex == 3) &&
-                        m.Distance(Me.Position) < swipe.Range && CE == 0)
+                    if (m.Distance(Me.Position) < swipe.Range && CE == 0)
                     {
-                        swipe.Cast(m.Position);
+                        if (MainMenu.Item("lccougare").GetValue<bool>())
+                            swipe.Cast(m.Position);
                     }
 
 
-                    if ((MainMenu.Item("jgcougarw").GetValue<StringList>().SelectedIndex == 2 ||
-                         MainMenu.Item("jgcougarw").GetValue<StringList>().SelectedIndex == 3) &&
-                        m.Distance(Me.Position) < pounce.Range && CW == 0)
+                    if (m.Distance(Me.Position) < pounce.Range && CW == 0)
                     {
-                        pounce.Cast(m.Position);
+                        if (MainMenu.Item("lccougarw").GetValue<bool>())
+                            pounce.Cast(m.Position);
                     }
 
-                    if ((MainMenu.Item("jgcougarq").GetValue<StringList>().SelectedIndex == 2 ||
-                         MainMenu.Item("jgcougarq").GetValue<StringList>().SelectedIndex == 3) &&
-                        m.Distance(Me.Position) < takedown.Range && CQ == 0)
+                    if (m.Distance(Me.Position) < takedown.Range && CQ == 0)
                     {
-                        takedown.CastOnUnit(Me);
+                        if (MainMenu.Item("lccougarq").GetValue<bool>())
+                            takedown.CastOnUnit(Me);
                     }
                 }
                 else
                 {
-                    if ((MainMenu.Item("jghumanq").GetValue<StringList>().SelectedIndex == 2 ||
-                         MainMenu.Item("jghumanq").GetValue<StringList>().SelectedIndex == 3) &&
-                        actualHeroManaPercent > minPercent && HQ == 0) 
+                    if (actualHeroManaPercent > minPercent && HQ == 0) 
                     {
-                        javelin.Cast(m.Position);
+                        if (MainMenu.Item("lchumanq").GetValue<bool>())
+                            javelin.Cast(m.Position);
                     }
 
-                    if ((MainMenu.Item("jghumanw").GetValue<StringList>().SelectedIndex == 2 ||
-                         MainMenu.Item("jghumanw").GetValue<StringList>().SelectedIndex == 3) &&
-                        m.Distance(Me.Position) < bushwack.Range && actualHeroManaPercent > minPercent && HW == 0) 
+                    if (m.Distance(Me.Position) < bushwack.Range && actualHeroManaPercent > minPercent && HW == 0)
                     {
-                        bushwack.Cast(m.Position);
+                        if (MainMenu.Item("lchumanw").GetValue<bool>())
+                            bushwack.Cast(m.Position);
                     }
 
-                    if (HQ != 0 && MainMenu.Item("jgcougarr").GetValue<bool>() && m.Distance(Me.Position) < pounce.Range &&
-                        actualHeroManaPercent > minPercent && aspectofcougar.IsReady())
+                    if (MainMenu.Item("lccougarr").GetValue<bool>() &&
+                        m.Distance(Me.Position) < pounce.Range && actualHeroManaPercent > minPercent &&
+                        aspectofcougar.IsReady())
                     {
                         aspectofcougar.Cast();
                     }
@@ -529,7 +529,7 @@ namespace KurisuNidalee
         private void UseJungleFarm()
         {
             var actualHeroManaPercent = (int)((Me.Mana / Me.MaxMana) * 100);
-            var minPercent = MainMenu.Item("jgrpct").GetValue<Slider>().Value;
+            var minPercent = MainMenu.Item("jgpct").GetValue<Slider>().Value;
 
             foreach (
                 var m in
@@ -538,50 +538,46 @@ namespace KurisuNidalee
             {
                 if (CougarForm)
                 {
-                    if ((MainMenu.Item("jgcougare").GetValue<StringList>().SelectedIndex == 2 ||
-                         MainMenu.Item("jgcougare").GetValue<StringList>().SelectedIndex == 3) &&
-                        m.Distance(Me.Position) < swipe.Range && CE == 0)
+                    if (m.Distance(Me.Position) < swipe.Range && CE == 0)
                     {
-                        swipe.Cast(m.Position);
+                        if (MainMenu.Item("jgcougare").GetValue<bool>())
+                            swipe.Cast(m.Position);
                     }
 
 
-                    if ((MainMenu.Item("jgcougarw").GetValue<StringList>().SelectedIndex == 2 ||
-                         MainMenu.Item("jgcougarw").GetValue<StringList>().SelectedIndex == 3) &&
-                        m.Distance(Me.Position) < pounce.Range && CW == 0)
+                    if (m.Distance(Me.Position) < pounce.Range && CW == 0)
                     {
-                        pounce.Cast(m.Position);
+                        if (MainMenu.Item("jgcougarw").GetValue<bool>())
+                            pounce.Cast(m.Position);
                     }
 
-                    if ((MainMenu.Item("jgcougarq").GetValue<StringList>().SelectedIndex == 2 ||
-                         MainMenu.Item("jgcougarq").GetValue<StringList>().SelectedIndex == 3) &&
-                        m.Distance(Me.Position) < takedown.Range && CQ == 0)
+                    if (m.Distance(Me.Position) < takedown.Range && CQ == 0)
                     {
-                        takedown.CastOnUnit(Me);
+                        if (MainMenu.Item("jgcougarq").GetValue<bool>())
+                            takedown.CastOnUnit(Me);
                     }
                 }
                 else
                 {
-                    if ((MainMenu.Item("jghumanq").GetValue<StringList>().SelectedIndex == 2 ||
-                         MainMenu.Item("jghumanq").GetValue<StringList>().SelectedIndex == 3) &&
-                        actualHeroManaPercent > minPercent && HQ == 0)
+                    if (actualHeroManaPercent > minPercent && HQ == 0) 
                     {
-                        javelin.Cast(m.Position);
+                        if (MainMenu.Item("jghumanq").GetValue<bool>())
+                            javelin.Cast(m.Position);
                     }
 
-                    if ((MainMenu.Item("jghumanw").GetValue<StringList>().SelectedIndex == 2 ||
-                         MainMenu.Item("jghumanw").GetValue<StringList>().SelectedIndex == 3) &&
-                        m.Distance(Me.Position) < bushwack.Range && actualHeroManaPercent > minPercent && HW == 0)
+                    if (m.Distance(Me.Position) < bushwack.Range && actualHeroManaPercent > minPercent && HW == 0)
                     {
-                        bushwack.Cast(m.Position);
+                        if (MainMenu.Item("jghumanw").GetValue<bool>())
+                            bushwack.Cast(m.Position);
                     }
 
-                    if (HQ != 0 && MainMenu.Item("jgcougarr").GetValue<bool>() && m.Distance(Me.Position) < pounce.Range &&
-                        actualHeroManaPercent > minPercent && aspectofcougar.IsReady())
+                    if (MainMenu.Item("jgcougarr").GetValue<bool>() &&
+                        m.Distance(Me.Position) < pounce.Range && actualHeroManaPercent > minPercent &&
+                        aspectofcougar.IsReady())
                     {
                         aspectofcougar.Cast();
                     }
-                }
+                }                
             }
         }
 
@@ -592,7 +588,7 @@ namespace KurisuNidalee
         private void UseLastHit()
         {
             var actualHeroManaPercent = (int)((Me.Mana / Me.MaxMana) * 100);
-            var minPercent = MainMenu.Item("clearpct").GetValue<Slider>().Value;
+            var minPercent = MainMenu.Item("lhpct").GetValue<Slider>().Value;
 
             foreach (
                 var m in
@@ -606,50 +602,42 @@ namespace KurisuNidalee
 
                 if (CougarForm)
                 {
-                    if ((MainMenu.Item("jgcougare").GetValue<StringList>().SelectedIndex == 1 ||
-                         MainMenu.Item("jgcougare").GetValue<StringList>().SelectedIndex == 3) &&
-                        m.Distance(Me.Position) < swipe.Range && CE == 0)
+                    if (m.Distance(Me.Position) < swipe.Range && CE == 0)
                     {
-                        if (m.Health <= cedmg)
+                        if (m.Health <= cedmg && MainMenu.Item("lhcougare").GetValue<bool>())
                             swipe.Cast(m.Position);
                     }
 
 
-                    if ((MainMenu.Item("jgcougarw").GetValue<StringList>().SelectedIndex == 1 ||
-                         MainMenu.Item("jgcougarw").GetValue<StringList>().SelectedIndex == 3) &&
-                        m.Distance(Me.Position) < pounce.Range && CW == 0)
+                    if (m.Distance(Me.Position) < pounce.Range && CW == 0)
                     {
-                        if (m.Health <= cwdmg)
+                        if (m.Health <= cwdmg && MainMenu.Item("lhcougarw").GetValue<bool>())
                             pounce.Cast(m.Position);
                     }
 
-                    if ((MainMenu.Item("jgcougarq").GetValue<StringList>().SelectedIndex == 1 ||
-                         MainMenu.Item("jgcougarq").GetValue<StringList>().SelectedIndex == 3) &&
-                        m.Distance(Me.Position) < takedown.Range && CQ == 0)
+                    if (m.Distance(Me.Position) < takedown.Range && CQ == 0)
                     {
-                        if (m.Health <= cqdmg)
+                        if (m.Health <= cqdmg && MainMenu.Item("lhcougarq").GetValue<bool>())
                             takedown.CastOnUnit(Me);
                     }
                 }
                 else
                 {
-                    if ((MainMenu.Item("jghumanq").GetValue<StringList>().SelectedIndex == 1 ||
-                         MainMenu.Item("jghumanq").GetValue<StringList>().SelectedIndex == 3) &&
-                        actualHeroManaPercent > minPercent && HQ == 0)
+                    if (actualHeroManaPercent > minPercent && HQ == 0)
                     {
-                        if (m.Health <= hqdmg)
+                        if (m.Health <= hqdmg && MainMenu.Item("lhhumanq").GetValue<bool>())
                             javelin.Cast(m.Position);
                     }
 
-                    if ((MainMenu.Item("jghumanw").GetValue<StringList>().SelectedIndex == 1 ||
-                         MainMenu.Item("jghumanw").GetValue<StringList>().SelectedIndex == 3) &&
-                        m.Distance(Me.Position) < bushwack.Range && actualHeroManaPercent > minPercent && HW == 0)
+                    if (m.Distance(Me.Position) < bushwack.Range && actualHeroManaPercent > minPercent && HW == 0)
                     {
-                        bushwack.Cast(m.Position);
+                        if (MainMenu.Item("lhhumanw").GetValue<bool>())
+                            bushwack.Cast(m.Position);
                     }
 
-                    if (HQ != 0 && MainMenu.Item("jgcougarr").GetValue<bool>() && m.Distance(Me.Position) < pounce.Range &&
-                        actualHeroManaPercent > minPercent && aspectofcougar.IsReady())
+                    if (MainMenu.Item("lhcougarr").GetValue<bool>() &&
+                        m.Distance(Me.Position) < pounce.Range && actualHeroManaPercent > minPercent &&
+                        aspectofcougar.IsReady())
                     {
                         aspectofcougar.Cast();
                     }
@@ -670,6 +658,8 @@ namespace KurisuNidalee
                 if (slot == SpellSlot.Q && CougarForm)
                 {
                     Orbwalking.LastAATick = 0;
+                    if (Orb.GetTarget() != null)
+                    Me.IssueOrder(GameObjectOrder.AttackTo, Orb.GetTarget());
                 }
             }
         }
@@ -735,14 +725,14 @@ namespace KurisuNidalee
             {
                 var circle = MainMenu.Item("draw" + spell.Slot).GetValue<Circle>();
                 if (circle.Active && CougarForm && !Me.IsDead)
-                    Utility.DrawCircle(Me.Position, spell.Range, circle.Color, 1, 1);
+                    Utility.DrawCircle(Me.Position, spell.Range, circle.Color, 3, 5);
             }
 
             foreach (var spell in HumanList)
             {
                 var circle = MainMenu.Item("draw" + spell.Slot).GetValue<Circle>();
                 if (circle.Active && !CougarForm && !Me.IsDead)
-                    Utility.DrawCircle(Me.Position, spell.Range, circle.Color, 1, 1);
+                    Utility.DrawCircle(Me.Position, spell.Range, circle.Color, 3, 5);
             }
 
             if (!MainMenu.Item("drawcds").GetValue<bool>()) return;
