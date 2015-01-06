@@ -664,12 +664,13 @@ namespace KurisuNidalee
         private void NidaleeTracker(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
         {
             if (sender.IsMe)
+            { 
                 GetCooldowns(args);
-
-            var slot = Me.GetSpellSlot(args.SData.Name);
-            if (slot == SpellSlot.Q && CougarForm)
-            {
-                Orbwalking.LastAATick = 0;
+                var slot = Me.GetSpellSlot(args.SData.Name);
+                if (slot == SpellSlot.Q && CougarForm)
+                {
+                    Orbwalking.LastAATick = 0;
+                }
             }
         }
 
