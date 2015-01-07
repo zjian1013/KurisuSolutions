@@ -89,6 +89,34 @@ namespace KurisuNidalee
 
             // OnProcessSpellCast Event
             Obj_AI_Base.OnProcessSpellCast += NidaleeTracker;
+
+            // AntiGapcloer Event
+            AntiGapcloser.OnEnemyGapcloser += AntiGapcloser_OnEnemyGapcloser;
+        }
+
+        private static void AntiGapcloser_OnEnemyGapcloser(ActiveGapcloser gapcloser)
+        {
+            var attacker = gapcloser.Sender;
+            if (attacker.IsValidTarget(javelin.Range))
+            {
+                if (!CougarForm)
+                {
+                    var prediction = javelin.GetPrediction(attacker);
+                    if (prediction.Hitchance != HitChance.Collision && HQ == 0)
+                        javelin.Cast(prediction.CastPosition);
+
+                    if (aspectofcougar.IsReady())
+                        aspectofcougar.Cast();
+                }
+
+                if (CougarForm)
+                {
+                    if (attacker.Distance(Me.ServerPosition) <= takedown.Range && CQ == 0)
+                        takedown.CastOnUnit(Me);
+                    if (attacker.Distance(Me.ServerPosition) <= swipe.Range && CE == 0)
+                        swipe.Cast(attacker.ServerPosition);
+                }
+            }
         }
 
         #endregion
@@ -299,7 +327,7 @@ namespace KurisuNidalee
 
                 // Check if takedown is ready (on unit)
                 if (CQ == 0 && MainMenu.Item("usecougarq").GetValue<bool>()
-                    && target.Distance(Me.ServerPosition) <= takedown.Range)
+                    && target.Distance(Me.ServerPosition) <= takedown.Range*2)
                 {
                     takedown.CastOnUnit(Me, Packets());
                 }
@@ -380,15 +408,15 @@ namespace KurisuNidalee
                     switch (MainMenu.Item("seth").GetValue<StringList>().SelectedIndex)
                     {
                         case 0:
-                            if (prediction.Hitchance >= HitChance.Low)
+                            if (prediction.Hitchance >= HitChance.Low || prediction.Hitchance == HitChance.VeryHigh)
                                 javelin.Cast(prediction.CastPosition, Packets());
                             break;
                         case 1:
-                            if (prediction.Hitchance >= HitChance.Medium)
+                            if (prediction.Hitchance >= HitChance.Medium || prediction.Hitchance == HitChance.VeryHigh)
                                 javelin.Cast(prediction.CastPosition, Packets());
                             break;
                         case 2:
-                            if (prediction.Hitchance >= HitChance.High)
+                            if (prediction.Hitchance >= HitChance.High || prediction.Hitchance == HitChance.VeryHigh)
                                 javelin.Cast(prediction.CastPosition, Packets());
                             break;
                     }
@@ -654,12 +682,24 @@ namespace KurisuNidalee
             if (sender.IsMe)
             { 
                 GetCooldowns(args);
+
                 var slot = Me.GetSpellSlot(args.SData.Name);
-                if (slot == SpellSlot.Q && CougarForm)
+                if (slot == SpellSlot.Q && CougarForm && MainMenu.Item("usecombo").GetValue<KeyBind>().Active)
                 {
-                    Orbwalking.LastAATick = 0;
-                    if (Orb.GetTarget() != null)
-                    Me.IssueOrder(GameObjectOrder.AttackTo, Orb.GetTarget());
+                    if (Target.IsValidTarget(600))
+                    {
+                        Orbwalking.LastAATick = 0;
+                        Me.IssueOrder(GameObjectOrder.AttackUnit, Orb.GetTarget());
+                    }
+                }
+
+                if (slot == SpellSlot.W && CougarForm && MainMenu.Item("usecombo").GetValue<KeyBind>().Active)
+                {
+                    if (Target.IsValidTarget(600))
+                    {
+                        Me.IssueOrder(GameObjectOrder.AttackUnit, Target);
+                        takedown.CastOnUnit(Me);
+                    }
                 }
             }
         }
@@ -725,14 +765,14 @@ namespace KurisuNidalee
             {
                 var circle = MainMenu.Item("draw" + spell.Slot).GetValue<Circle>();
                 if (circle.Active && CougarForm && !Me.IsDead)
-                    Utility.DrawCircle(Me.Position, spell.Range, circle.Color, 3, 5);
+                    Utility.DrawCircle(Me.Position, spell.Range, circle.Color, 2, 5);
             }
 
             foreach (var spell in HumanList)
             {
                 var circle = MainMenu.Item("draw" + spell.Slot).GetValue<Circle>();
                 if (circle.Active && !CougarForm && !Me.IsDead)
-                    Utility.DrawCircle(Me.Position, spell.Range, circle.Color, 3, 5);
+                    Utility.DrawCircle(Me.Position, spell.Range, circle.Color, 2, 5);
             }
 
             if (!MainMenu.Item("drawcds").GetValue<bool>()) return;
