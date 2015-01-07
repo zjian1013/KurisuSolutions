@@ -96,6 +96,9 @@ namespace KurisuNidalee
 
         private static void AntiGapcloser_OnEnemyGapcloser(ActiveGapcloser gapcloser)
         {
+            if (!MainMenu.Item("gapcloser").GetValue<bool>())
+                return;
+
             var attacker = gapcloser.Sender;
             if (attacker.IsValidTarget(javelin.Range))
             {
@@ -148,13 +151,13 @@ namespace KurisuNidalee
             nidaSpells.AddItem(new MenuItem("usehumanq", "Use Javelin Toss")).SetValue(true);
             nidaSpells.AddItem(new MenuItem("useonhigh", "Use on Dashing/Immobile")).SetValue(true); 
             nidaSpells.AddItem(new MenuItem("usehumanw", "Use Bushwack")).SetValue(true);
-            nidaSpells.AddItem(new MenuItem(" ", " "));
             nidaSpells.AddItem(new MenuItem("usecougarq", "Use Takedown")).SetValue(true);
             nidaSpells.AddItem(new MenuItem("usecougarw", "Use Pounce")).SetValue(true);
             nidaSpells.AddItem(new MenuItem("setp", "Pounce Min Distance")).SetValue(new Slider(100, 15, 300));
             nidaSpells.AddItem(new MenuItem("usecougare", "Use Swipe")).SetValue(true);
             nidaSpells.AddItem(new MenuItem("usecougarr", "Auto Switch Forms")).SetValue(true);
-            nidaSpells.AddItem(new MenuItem("useitems", "Use Itmes")).SetValue(true);
+            nidaSpells.AddItem(new MenuItem("useitems", "Use Items")).SetValue(true);
+            nidaSpells.AddItem(new MenuItem("gapcloser", "Use Anti-Gapcloser")).SetValue(true);
             MainMenu.AddSubMenu(nidaSpells);
 
             var nidaHeals = new Menu("Nidalee: Heal", "hengine");
@@ -241,6 +244,11 @@ namespace KurisuNidalee
                 UseJungleFarm();
             if (MainMenu.Item("uselasthit").GetValue<KeyBind>().Active)
                 UseLastHit();
+
+            if (Me.HasBuff("Takedown", true))
+            {
+                Orbwalking.LastAATick = 0;
+            }
 
             if (MainMenu.Item("useonhigh").GetValue<bool>())
             {
@@ -680,28 +688,7 @@ namespace KurisuNidalee
         private void NidaleeTracker(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
         {
             if (sender.IsMe)
-            { 
                 GetCooldowns(args);
-
-                var slot = Me.GetSpellSlot(args.SData.Name);
-                if (slot == SpellSlot.Q && CougarForm && MainMenu.Item("usecombo").GetValue<KeyBind>().Active)
-                {
-                    if (Target.IsValidTarget(600))
-                    {
-                        Orbwalking.LastAATick = 0;
-                        Me.IssueOrder(GameObjectOrder.AttackUnit, Orb.GetTarget());
-                    }
-                }
-
-                if (slot == SpellSlot.W && CougarForm && MainMenu.Item("usecombo").GetValue<KeyBind>().Active)
-                {
-                    if (Target.IsValidTarget(600))
-                    {
-                        Me.IssueOrder(GameObjectOrder.AttackUnit, Target);
-                        takedown.CastOnUnit(Me);
-                    }
-                }
-            }
         }
 
         private static readonly float[] humanQcd = { 6, 6, 6, 6, 6 };
