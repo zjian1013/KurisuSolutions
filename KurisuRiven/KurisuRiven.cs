@@ -185,7 +185,7 @@ namespace KurisuRiven
         private static void Game_OnGameSendPacket(GamePacketEventArgs args)
         {
             var packet = new GamePacket(args.PacketData);
-            if (packet.Header == 0xDE)
+            if (packet.Header == 0xDE && (usecombo || useclear))
             {
                 var condition = cleavecount >= 2;
 
@@ -195,8 +195,8 @@ namespace KurisuRiven
                 if (pkt.SpellSlot == (byte)SpellSlot.Q)
                 {
                     var id = orbwalker.GetTarget() == null
-                               ? (enemy.IsValidTarget() ? enemy.NetworkId : enemy.NetworkId)
-                               : orbwalker.GetTarget().NetworkId;
+                        ? (enemy.IsValidTarget() ? enemy.NetworkId : enemy.NetworkId)
+                        : orbwalker.GetTarget().NetworkId;
 
                     var obj = ObjectManager.GetUnitByNetworkId<Obj_AI_Base>(id);
 
@@ -312,9 +312,6 @@ namespace KurisuRiven
             wslash = config.Item("wslash").GetValue<StringList>().SelectedIndex;
 
             useblade = config.Item("useblade").GetValue<bool>();
-
-            extraqtime = TimeSpan.FromMilliseconds(gaptime).TotalSeconds;
-            extraetime = TimeSpan.FromMilliseconds(300).TotalSeconds;
         }
 
         #endregion
@@ -507,7 +504,6 @@ namespace KurisuRiven
                     break;
                 case "RivenMartyr":
                     Orbwalking.LastAATick = 0;            
- 
                     if (wings.IsReady() && usecombo)
                         Utility.DelayAction.Add(Game.Ping + 50, () => wings.Cast(enemy.ServerPosition));
 
@@ -694,10 +690,9 @@ namespace KurisuRiven
             var eready = me.Spellbook.CanUseSpell(valor.Slot) == SpellState.Ready;
 
             if ((!eready || !config.Item("usevalor").GetValue<bool>()) &&
-                wings.IsReady()  && me.Distance(target.ServerPosition) > truerange && Orbwalking.LastAATick == 0)
+                wings.IsReady()  && me.Distance(target.ServerPosition) > truerange + 20)
             {
-                if (TimeSpan.FromMilliseconds(qqt).TotalSeconds + extraqtime < now &&
-                    TimeSpan.FromMilliseconds(eet).TotalSeconds + extraetime < now)
+                if (Environment.TickCount - qqt >= gaptime && Environment.TickCount - eet >= 300)
                 {
                     wings.Cast(target.ServerPosition, true);
                 }
