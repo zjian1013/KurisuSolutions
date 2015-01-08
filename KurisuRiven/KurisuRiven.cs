@@ -194,8 +194,8 @@ namespace KurisuRiven
                 if (pkt.SpellSlot == (byte)SpellSlot.Q)
                 {
                     var id = orbwalker.GetTarget() == null
-                        ? (enemy.IsValidTarget() ? enemy.NetworkId : enemy.NetworkId)
-                        : orbwalker.GetTarget().NetworkId;
+                     ? (enemy.IsValidTarget() ? enemy.NetworkId : me.NetworkId)
+                     : orbwalker.GetTarget().NetworkId;
 
                     var obj = ObjectManager.GetUnitByNetworkId<Obj_AI_Base>(id);
 
