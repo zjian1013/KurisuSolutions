@@ -244,7 +244,6 @@ namespace KurisuRiven
         private static bool color;
         private void Game_OnGameUpdate(EventArgs args)
         {
-            Console.WriteLine(Orbwalking.LastAATick);
             enemy = TargetSelector.GetSelectedTarget().IsValidTarget(1400) 
                 ? TargetSelector.GetSelectedTarget() 
                 : TargetSelector.GetTarget(900, TargetSelector.DamageType.Physical);
@@ -253,14 +252,14 @@ namespace KurisuRiven
             if (me.IsDead)
                 return;
 
-            if (Environment.TickCount - etime >= 300 &&
-                Environment.TickCount - qtime >= Game.Ping + 450 &&
-                Environment.TickCount - wtime >= 200 &&
-                Environment.TickCount - rtime >= 200 && me.IsMoving)
-            {
-                if (Environment.TickCount - aatime >= 1000)
-                     Orbwalking.LastAATick = 0;
-            }
+            //if (Environment.TickCount - etime >= 300 &&
+            //    Environment.TickCount - qtime >= Game.Ping + 450 &&
+            //    Environment.TickCount - wtime >= 200 &&
+            //    Environment.TickCount - rtime >= 200 && me.IsMoving)
+            //{
+            //    if (Environment.TickCount - aatime >= 1000 || !enemy.IsValidTarget(truerange + 20))
+            //         Orbwalking.LastAATick = 0;
+            //}
 
             if (config.Item("changemode").GetValue<KeyBind>().Active)
             {
