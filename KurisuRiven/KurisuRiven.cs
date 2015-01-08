@@ -18,18 +18,17 @@ namespace KurisuRiven
         private static readonly Obj_AI_Hero me = ObjectManager.Player;
         private static Orbwalking.Orbwalker orbwalker;
 
-        private static int eet;
-        private static int qqt;
+        private static int etime;
+        private static int qtime;
+        private static int wtime;
+        private static int rtime;
+        private static int aatime;
         public static int cleavecount;
 
         private static double ritems;
         private static double ua, uq, uw;
         private static double ra, rq, rw, rr, ri;
         private static float truerange;
-
-        private static double now;
-        private static double extraqtime;
-        private static double extraetime;
         private static bool focus;
 
         private static bool ultion, useblade, useautows;
@@ -245,6 +244,7 @@ namespace KurisuRiven
         private static bool color;
         private void Game_OnGameUpdate(EventArgs args)
         {
+            Console.WriteLine(Orbwalking.LastAATick);
             enemy = TargetSelector.GetSelectedTarget().IsValidTarget(1400) 
                 ? TargetSelector.GetSelectedTarget() 
                 : TargetSelector.GetTarget(900, TargetSelector.DamageType.Physical);
@@ -252,6 +252,15 @@ namespace KurisuRiven
 
             if (me.IsDead)
                 return;
+
+            if (Environment.TickCount - etime >= 300 &&
+                Environment.TickCount - qtime >= Game.Ping + 450 &&
+                Environment.TickCount - wtime >= 200 &&
+                Environment.TickCount - rtime >= 200 && me.IsMoving)
+            {
+                if (Environment.TickCount - aatime >= 700)
+                     Orbwalking.LastAATick = 0;
+            }
 
             if (config.Item("changemode").GetValue<KeyBind>().Active)
             {
@@ -293,9 +302,7 @@ namespace KurisuRiven
             color = wslash == 0;
             CheckDamage(enemy);
 
-            now = TimeSpan.FromMilliseconds(Environment.TickCount).TotalSeconds;
             truerange = me.AttackRange + me.Distance(me.BBox.Minimum) + 1;
-
             focus = TargetSelector.GetSelectedTarget().IsValidTarget(truerange + 20);
 
             ee = (ff - Game.Time > 0) ? (ff - Game.Time) : 0;
@@ -474,13 +481,17 @@ namespace KurisuRiven
             if (!config.Item("interuppter").GetValue<bool>())
                 return;
 
-            if (sender.Type == me.Type && sender.IsValid && sender.Distance(me.Position) < wings.Range)
+            if (sender.IsValidTarget(wings.Range))
+            {
                 if (wings.IsReady() && cleavecount == 2 && config.Item("interruptQ3").GetValue<bool>())
                     wings.Cast(sender.Position);
+            }
 
-            if (sender.Type == me.Type && sender.IsValid && sender.Distance(me.Position) < kiburst.Range)
+            if (sender.IsValidTarget(kiburst.Range))
+            {
                 if (kiburst.IsReady() && config.Item("interruptW").GetValue<bool>())
                     kiburst.Cast();
+            }
         }
         #endregion
 
@@ -492,10 +503,13 @@ namespace KurisuRiven
             if (!sender.IsMe)
                 return;
 
+            if (args.SData.Name.Contains("BasicAttack"))
+                aatime = Environment.TickCount;
+
             switch (args.SData.Name)    
             {
                 case "RivenTriCleave":
-                    qqt = Environment.TickCount;
+                    qtime = Environment.TickCount;
                     if (cleavecount < 1)
                         ff = Game.Time + (13 + (13 * me.PercentCooldownMod));
                     if (wslash == 1 && cleavecount == 1 && enemy.Health < rr + ra)
@@ -503,6 +517,7 @@ namespace KurisuRiven
 
                     break;
                 case "RivenMartyr":
+                    wtime = Environment.TickCount;
                     Orbwalking.LastAATick = 0;            
                     if (wings.IsReady() && usecombo)
                         Utility.DelayAction.Add(Game.Ping + 50, () => wings.Cast(enemy.ServerPosition));
@@ -521,8 +536,8 @@ namespace KurisuRiven
 
                     break;
                 case "RivenFeint":
+                    etime = Environment.TickCount;
                     Orbwalking.LastAATick = 0;
-                    eet = Environment.TickCount;
 
                     if (!useblade || !useautows)
                         return;
@@ -534,6 +549,7 @@ namespace KurisuRiven
                        blade.Cast(enemy.ServerPosition);
                     break;
                 case "RivenFengShuiEngine":
+                    rtime = Environment.TickCount;
                     Orbwalking.LastAATick = 0;
 
                     if (!usecombo)
@@ -584,6 +600,9 @@ namespace KurisuRiven
                     return;
 
                 if (damageType.ToString() != "54")
+                    return;
+
+                if (useclear && targ.Type == me.Type || usecombo && targ.Type != me.Type)
                     return;
 
                 if ((usecombo || useclear) && !valor.IsReady())
@@ -664,7 +683,7 @@ namespace KurisuRiven
 
             if (kiburst.IsReady())
             {
-                var irange = hasitem ? wrange + 300 : wrange;
+                var irange = hasitem ? wrange + 100 : wrange;
                 if (me.Distance(target.ServerPosition) <= irange)
                 {
                     if (Items.HasItem(3077) && Items.CanUseItem(3077))
@@ -692,7 +711,7 @@ namespace KurisuRiven
             if ((!eready || !config.Item("usevalor").GetValue<bool>()) &&
                 wings.IsReady()  && me.Distance(target.ServerPosition) > truerange + 20)
             {
-                if (Environment.TickCount - qqt >= gaptime && Environment.TickCount - eet >= 300)
+                if (Environment.TickCount - qtime >= gaptime && Environment.TickCount - etime >= 300)
                 {
                     wings.Cast(target.ServerPosition, true);
                 }
@@ -825,13 +844,6 @@ namespace KurisuRiven
                     case 2:
                         if ((float)(ua * 3 + uq * 3 + uw + rr + ri + ritems) >= target.Health && !ultion)
                         {
-                            if (config.Item("useignote").GetValue<bool>())
-                            {
-                                if (cleavecount <= 1)
-                                    CastIgnite(target);
-                                
-                            }
-
                             if (target.Health <= (float)(ra * 2 + rq * 2 + ri + ritems))
                             {
                                 if (config.Item("checkover").GetValue<bool>())
@@ -839,17 +851,19 @@ namespace KurisuRiven
                             }
 
                             blade.Cast();
+
+                            if (config.Item("useignote").GetValue<bool>())
+                            {
+                                if (cleavecount <= 1 && ultion)
+                                    CastIgnite(target);
+
+                            }
 
                         }
                         break;
                     case 1:
                         if ((float)(ra * 3 + rq * 3 + rw + rr + ri + ritems) >= target.Health && !ultion)
                         {
-                            if (config.Item("useignote").GetValue<bool>())
-                            {
-                                if (cleavecount <= 1)
-                                    CastIgnite(target);
-                            }
 
                             if (target.Health <= (float)(ra * 2 + rq * 2 + ri + ritems))
                             {
@@ -858,6 +872,12 @@ namespace KurisuRiven
                             }
 
                             blade.Cast();
+
+                            if (config.Item("useignote").GetValue<bool>())
+                            {
+                                if (cleavecount <= 1 && ultion)
+                                    CastIgnite(target);
+                            }
 
                         }
                         break;
