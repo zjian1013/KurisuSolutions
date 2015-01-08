@@ -48,7 +48,7 @@ namespace KurisuRiven
             20, 20, 25, 25, 25, 30, 30, 30, 35, 35, 35, 40, 40, 40, 45, 45, 45, 50, 50
         };
 
-        public const string Revision = "1.0.0.7";
+        public const string Revision = "1.0.0.8";
         private static readonly string[] jungleminions =
         {     
             "SRU_Razorbeak", "SRU_Krug", "Sru_Crab",
