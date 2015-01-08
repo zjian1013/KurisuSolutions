@@ -214,7 +214,7 @@ namespace KurisuRiven
                             break;
                     }
 
-                    if (obj.NetworkId != me.NetworkId && obj.Distance(me.ServerPosition) <= truerange + 20)
+                    if (obj.NetworkId != me.NetworkId && obj.Distance(me.ServerPosition) <= truerange + 30)
                     {
                         orbwalker.SetAttack(false);
                         orbwalker.SetMovement(false);
@@ -232,6 +232,10 @@ namespace KurisuRiven
 
                         Utility.DelayAction.Add(condition ? 320 : 260,
                             () => orbwalker.SetMovement(true));
+                    }
+                    else
+                    {
+                        Orbwalking.LastAATick = 0;
                     }
                 }
             }
