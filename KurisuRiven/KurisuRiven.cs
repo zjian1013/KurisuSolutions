@@ -214,23 +214,26 @@ namespace KurisuRiven
                                                                               enemy.ServerPosition) * (me.Distance(enemy.ServerPosition) + 57);
                             break;
                     }
-               
-                    orbwalker.SetAttack(false);
-                    orbwalker.SetMovement(false);
 
-                    Utility.DelayAction.Add(Game.Ping + 328,
-                        () =>
-                            me.IssueOrder(GameObjectOrder.MoveTo, new Vector3(movePos.X, movePos.Y, movePos.Z)));
-
-
-                    Utility.DelayAction.Add(condition ? Game.Ping + 450 :Game.Ping + 400, delegate
+                    if (obj.NetworkId != me.NetworkId && obj.Distance(me.ServerPosition) <= truerange + 20)
                     {
-                        Orbwalking.LastAATick = 0;
-                        orbwalker.SetAttack(true);
-                    });
+                        orbwalker.SetAttack(false);
+                        orbwalker.SetMovement(false);
 
-                    Utility.DelayAction.Add(condition ? 320 : 260, 
-                        () => orbwalker.SetMovement(true));
+                        Utility.DelayAction.Add(Game.Ping + 328,
+                            () =>
+                                me.IssueOrder(GameObjectOrder.MoveTo, new Vector3(movePos.X, movePos.Y, movePos.Z)));
+
+
+                        Utility.DelayAction.Add(condition ? Game.Ping + 450 : Game.Ping + 400, delegate
+                        {
+                            Orbwalking.LastAATick = 0;
+                            orbwalker.SetAttack(true);
+                        });
+
+                        Utility.DelayAction.Add(condition ? 320 : 260,
+                            () => orbwalker.SetMovement(true));
+                    }
                 }
             }
         }
