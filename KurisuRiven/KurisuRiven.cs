@@ -258,7 +258,7 @@ namespace KurisuRiven
                 Environment.TickCount - wtime >= 200 &&
                 Environment.TickCount - rtime >= 200 && me.IsMoving)
             {
-                if (Environment.TickCount - aatime >= 700)
+                if (Environment.TickCount - aatime >= 1000)
                      Orbwalking.LastAATick = 0;
             }
 
