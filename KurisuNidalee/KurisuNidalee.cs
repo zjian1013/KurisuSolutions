@@ -160,6 +160,7 @@ namespace KurisuNidalee
             nidaSpells.AddItem(new MenuItem("usecougarr", "Auto Switch Forms")).SetValue(true);
             nidaSpells.AddItem(new MenuItem("useitems", "Use Items")).SetValue(true);
             nidaSpells.AddItem(new MenuItem("gapcloser", "Use Anti-Gapcloser")).SetValue(true);
+            nidaSpells.AddItem(new MenuItem("usehumanwauto", "Bushwack on Immobile")).SetValue(true);
             nidaSpells.AddItem(new MenuItem("javelinks", "Killsteal with Javelin")).SetValue(true);
             nidaSpells.AddItem(new MenuItem("ksform", "Killsteal switch Form")).SetValue(true);
             MainMenu.AddSubMenu(nidaSpells);
@@ -238,6 +239,7 @@ namespace KurisuNidalee
 
             ProcessCooldowns();
             PrimalSurge();
+            Killsteal();
 
             if (MainMenu.Item("usecombo").GetValue<KeyBind>().Active)
                 UseCombo(Target);
@@ -257,10 +259,36 @@ namespace KurisuNidalee
                 Orbwalking.LastAATick = 0;
             }
 
+            if (MainMenu.Item("usehumanwauto").GetValue<bool>())
+            {
+                if (HW != 0)
+                    return;
+
+                foreach (
+                    var targ in
+                        ObjectManager.Get<Obj_AI_Hero>()
+                            .Where(
+                                hero =>
+                                    hero.IsValidTarget() && hero.Distance(Me.ServerPosition, true) <= bushwack.RangeSqr)
+                    )
+                {
+                    var prediction = bushwack.GetPrediction(targ);
+                    if (prediction.Hitchance == HitChance.Immobile)
+                    {
+                        bushwack.Cast(prediction.CastPosition);
+                    }
+                }
+            }
+        }
+
+        #endregion
+
+        private static void Killsteal()
+        {
             if (MainMenu.Item("javelinks").GetValue<bool>())
             {
                 foreach (
-                    var targ in 
+                    var targ in
                         ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsValidTarget(javelin.Range)))
                 {
                     var hqdmg = Me.GetSpellDamage(targ, SpellSlot.Q);
@@ -283,15 +311,15 @@ namespace KurisuNidalee
 
                     else if (CougarForm && MainMenu.Item("ksform").GetValue<bool>())
                     {
-                        
+
                     }
-                }          
+                }
             }
 
             if (MainMenu.Item("useonhigh").GetValue<bool>())
             {
                 foreach (
-                    var obj in 
+                    var obj in
                         ObjectManager.Get<Obj_AI_Hero>()
                             .Where(hero => hero.IsValidTarget(javelin.Range)))
                 {
@@ -305,11 +333,8 @@ namespace KurisuNidalee
                     if (prediction.Hitchance == HitChance.Dashing)
                         javelin.Cast(prediction.CastPosition);
                 }
-            }
-
+            }            
         }
-
-        #endregion
 
         #region Nidalee : Misc
 
@@ -419,7 +444,7 @@ namespace KurisuNidalee
 
                     // or return -- stay cougar if we can kill with available spells
                     if (target.Health <= CougarDamage(target) &&
-                        target.Distance(Me.ServerPosition, true) <= swipe.RangeSqr)
+                        target.Distance(Me.ServerPosition, true) <= swipe.RangeSqr + pounce.RangeSqr)
                     {
                         return;
                     }
