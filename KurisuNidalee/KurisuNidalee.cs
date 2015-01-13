@@ -1,8 +1,10 @@
 using System;
-using System.Collections.Generic;
+using SharpDX;
 using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
+using System.Collections.Generic;
+using LeagueSharp.Network.Packets;
 using Color = System.Drawing.Color;
 
 namespace KurisuNidalee
@@ -15,10 +17,9 @@ namespace KurisuNidalee
 
     internal class KurisuNidalee
     {
-
         private static Menu MainMenu;
         private static Obj_AI_Base Target;
-        private static Orbwalking.Orbwalker Orb;
+        private static Orbwalking.Orbwalker Orbwalker;
         private static readonly Obj_AI_Hero Me = ObjectManager.Player;
         private static bool CougarForm;
         private static bool HasBlue;
@@ -40,15 +41,13 @@ namespace KurisuNidalee
         private static Spell swipe = new Spell(SpellSlot.E, 300f);
         private static Spell aspectofcougar = new Spell(SpellSlot.R);
 
-        private static readonly SpellDataInst NidaData = Me.Spellbook.GetSpell(SpellSlot.Q);
         private static readonly List<Spell> CougarList = new List<Spell>();
         private static readonly List<Spell> HumanList = new List<Spell>();
         private static IEnumerable<int> NidaItems = new[] {3128, 3144, 3153, 3092};
 
         private static bool Packets()
         {
-            //return MainMenu.Item("usepackets").GetValue<bool>();
-            return false;
+            return MainMenu.Item("usepackets").GetValue<bool>();
         }
 
         private static bool TargetHunted(Obj_AI_Base target)
@@ -77,8 +76,8 @@ namespace KurisuNidalee
             CougarList.AddRange(new[] { takedown, pounce, swipe });
             HumanList.AddRange(new[] { javelin, bushwack, primalsurge });
 
-            // Set skillshot prediction
-            javelin.SetSkillshot(0.125f, 40f, 1300f, true, SkillshotType.SkillshotLine);
+            // Set skillshot prediction (i has rito decode now)
+            javelin.SetSkillshot(0.50f, 40f, 1300f, true, SkillshotType.SkillshotLine);
             bushwack.SetSkillshot(0.50f, 100f, 1500f, false, SkillshotType.SkillshotCircle);
             swipe.SetSkillshot(0.50f, 375f, 1500f, false, SkillshotType.SkillshotCone);
             pounce.SetSkillshot(0.50f, 400f, 1500f, false, SkillshotType.SkillshotCone);
@@ -108,18 +107,18 @@ namespace KurisuNidalee
                 {
                     var prediction = javelin.GetPrediction(attacker);
                     if (prediction.Hitchance != HitChance.Collision && HQ == 0)
-                        javelin.Cast(prediction.CastPosition);
+                        PacketCast(javelin, prediction.CastPosition, Packets());
 
                     if (aspectofcougar.IsReady())
-                        aspectofcougar.Cast();
+                        PacketCast(aspectofcougar, Packets());
                 }
 
                 if (CougarForm)
                 {
                     if (attacker.Distance(Me.ServerPosition) <= takedown.Range && CQ == 0)
-                        takedown.CastOnUnit(Me);
+                        PacketCast(takedown, Packets());
                     if (attacker.Distance(Me.ServerPosition) <= swipe.Range && CE == 0)
-                        swipe.Cast(attacker.ServerPosition);
+                        PacketCast(swipe, attacker.ServerPosition, Packets());
                 }
             }
         }
@@ -132,7 +131,7 @@ namespace KurisuNidalee
             MainMenu = new Menu("Kurisu: Nidaleee", "nidalee", true);
 
             var nidaOrb = new Menu("Nidalee: Orbwalker", "orbwalker");
-            Orb = new Orbwalking.Orbwalker(nidaOrb);
+            Orbwalker = new Orbwalking.Orbwalker(nidaOrb);
            
             MainMenu.AddSubMenu(nidaOrb);
 
@@ -219,7 +218,7 @@ namespace KurisuNidalee
             MainMenu.AddSubMenu(nidaD);
 
             MainMenu.AddItem(new MenuItem("useignote", "Use Ignite")).SetValue(true);
-            //MainMenu.AddItem(new MenuItem("usepackets", "Use Packets (")).SetValue(true);
+            MainMenu.AddItem(new MenuItem("usepackets", "Use Packets")).SetValue(false);
             MainMenu.AddToMainMenu();
 
             Game.PrintChat("<font color=\"#FF9900\">KurisuNidalee</font> - Loaded");
@@ -232,7 +231,7 @@ namespace KurisuNidalee
         private static void NidaleeOnUpdate(EventArgs args)
         {
             HasBlue = Me.HasBuff("crestoftheancientgolem", true);
-            CougarForm = NidaData.Name != "JavelinToss";
+            CougarForm = Me.Spellbook.GetSpell(SpellSlot.Q).Name != "JavelinToss";
 
             Target = TargetSelector.GetSelectedTarget() ??
                      TargetSelector.GetTarget(1500, TargetSelector.DamageType.Magical);
@@ -275,7 +274,7 @@ namespace KurisuNidalee
                     var prediction = bushwack.GetPrediction(targ);
                     if (prediction.Hitchance == HitChance.Immobile)
                     {
-                        bushwack.Cast(prediction.CastPosition);
+                        PacketCast(bushwack, prediction.CastPosition, Packets());
                     }
                 }
             }
@@ -300,11 +299,11 @@ namespace KurisuNidalee
                             if (CougarForm && MainMenu.Item("ksform").GetValue<bool>())
                             {
                                 if (aspectofcougar.IsReady())
-                                    aspectofcougar.Cast();
+                                    PacketCast(aspectofcougar, Packets());
                             }
                             else
                             {
-                                javelin.Cast(prediction.CastPosition);
+                                PacketCast(javelin, prediction.CastPosition, Packets());
                             }
                         }
                     }
@@ -328,10 +327,10 @@ namespace KurisuNidalee
 
                     var prediction = javelin.GetPrediction(obj);
                     if (prediction.Hitchance == HitChance.Immobile)
-                        javelin.Cast(prediction.CastPosition);
+                       PacketCast(javelin, prediction.CastPosition, Packets());
 
                     if (prediction.Hitchance == HitChance.Dashing)
-                        javelin.Cast(prediction.CastPosition);
+                        PacketCast(javelin, prediction.CastPosition, Packets());
                 }
             }            
         }
@@ -411,7 +410,7 @@ namespace KurisuNidalee
                 if (CQ == 0 && MainMenu.Item("usecougarq").GetValue<bool>()
                     && target.Distance(Me.ServerPosition, true) <= takedown.RangeSqr*2)
                 {
-                    takedown.CastOnUnit(Me, Packets());
+                    PacketCast(takedown, Packets());
                 }
 
                 // Check is pounce is ready 
@@ -419,9 +418,9 @@ namespace KurisuNidalee
                     && target.Distance(Me.ServerPosition, true) > 30*30)
                 {
                     if (TargetHunted(target) & target.Distance(Me.ServerPosition, true) <= 750*750)
-                        pounce.Cast(target.ServerPosition, Packets()); 
+                        PacketCast(pounce, target.ServerPosition, Packets());
                     else if (target.Distance(Me.ServerPosition, true) <= 400*400)
-                        pounce.Cast(target.ServerPosition, Packets());
+                        PacketCast(pounce, target.ServerPosition, Packets());
 
                 }
 
@@ -430,7 +429,7 @@ namespace KurisuNidalee
                 {
                     var prediction = swipe.GetPrediction(target);
                     if (prediction.Hitchance >= HitChance.Low && target.Distance(Me.ServerPosition, true) <= swipe.RangeSqr)
-                        swipe.Cast(prediction.CastPosition, Packets());
+                        PacketCast(swipe, prediction.CastPosition, Packets());
                 }
 
 
@@ -451,7 +450,7 @@ namespace KurisuNidalee
 
                     var prediction = javelin.GetPrediction(target);
                     if (prediction.Hitchance >= HitChance.Medium)
-                        aspectofcougar.Cast();
+                        PacketCast(aspectofcougar, Packets());
                 }
 
                 // Switch to human form if can kill in 5 aa       
@@ -459,7 +458,7 @@ namespace KurisuNidalee
                     && MainMenu.Item("usecougarr").GetValue<bool>() && target.Distance(Me.ServerPosition, true) <= Me.AttackRange*Me.AttackRange + 5*5)
                 {
                     if (aspectofcougar.IsReady())
-                        aspectofcougar.Cast();
+                        PacketCast(aspectofcougar, Packets());
                 }
 
             }
@@ -472,9 +471,9 @@ namespace KurisuNidalee
                     && (TargetHunted(target) || target.Health <= CougarDamage(target) && HQ != 0))
                 {
                     if (TargetHunted(target) && target.Distance(Me.ServerPosition, true) <= 750*750)
-                        aspectofcougar.Cast();
+                        PacketCast(aspectofcougar, Packets());
                     if (target.Health <= CougarDamage(target) && target.Distance(Me.ServerPosition, true) <= 350*350)
-                        aspectofcougar.Cast();
+                        PacketCast(aspectofcougar, Packets());
                 }
 
                 if (HQ == 0 && MainMenu.Item("usehumanq").GetValue<bool>())
@@ -484,15 +483,15 @@ namespace KurisuNidalee
                     {
                         case 0:
                             if (prediction.Hitchance >= HitChance.Low || prediction.Hitchance == HitChance.VeryHigh)
-                                javelin.Cast(prediction.CastPosition, Packets());
+                                PacketCast(javelin, prediction.CastPosition, Packets());
                             break;
                         case 1:
                             if (prediction.Hitchance >= HitChance.Medium || prediction.Hitchance == HitChance.VeryHigh)
-                                javelin.Cast(prediction.CastPosition, Packets());
+                                PacketCast(javelin, prediction.CastPosition, Packets());
                             break;
                         case 2:
                             if (prediction.Hitchance >= HitChance.High || prediction.Hitchance == HitChance.VeryHigh)
-                                javelin.Cast(prediction.CastPosition, Packets());
+                                PacketCast(javelin, prediction.CastPosition, Packets());
                             break;
                     }
                 }
@@ -504,7 +503,7 @@ namespace KurisuNidalee
                     var prediction = bushwack.GetPrediction(target);
                     if (prediction.Hitchance >= HitChance.Medium)
                     {
-                        bushwack.Cast(prediction.CastPosition);
+                        PacketCast(bushwack, prediction.CastPosition, Packets());
                     }
                 }
             }
@@ -526,15 +525,15 @@ namespace KurisuNidalee
                     {
                         case 0:
                             if (prediction.Hitchance >= HitChance.Low)
-                                javelin.Cast(prediction.CastPosition, Packets());
+                                PacketCast(javelin, prediction.CastPosition, Packets());
                             break;
                         case 1:
                             if (prediction.Hitchance >= HitChance.Medium)
-                                javelin.Cast(prediction.CastPosition, Packets());
+                                PacketCast(javelin, prediction.CastPosition, Packets());
                             break;
                         case 2:
                             if (prediction.Hitchance >= HitChance.High)
-                                javelin.Cast(prediction.CastPosition, Packets());
+                                PacketCast(javelin, prediction.CastPosition, Packets());
                             break;
                     }
                 }                    
@@ -579,6 +578,7 @@ namespace KurisuNidalee
         {
             var actualHeroManaPercent = (int)((Me.Mana / Me.MaxMana) * 100);
             var minPercent = MainMenu.Item("lcpct").GetValue<Slider>().Value;
+
             foreach (
                 var m in
                     ObjectManager.Get<Obj_AI_Minion>()
@@ -587,31 +587,32 @@ namespace KurisuNidalee
                                 m.IsValidTarget(1500) && jungleminions.Any(name => !m.Name.StartsWith(name)) &&
                                 m.Name.StartsWith("Minion")))
             {
+
                 if (CougarForm)
                 {
                     if (HQ == 0 && MainMenu.Item("lccougarr").GetValue<bool>())
                     {
                         if (aspectofcougar.IsReady())
-                            aspectofcougar.Cast();
+                            PacketCast(aspectofcougar, Packets());
                     }
 
                     if (m.Distance(Me.ServerPosition, true) <= swipe.RangeSqr && CE == 0)
                     {
                         if (MainMenu.Item("lccougare").GetValue<bool>())
-                            swipe.Cast(m.ServerPosition);
+                            PacketCast(swipe, m.ServerPosition, Packets());
                     }
 
 
                     if (m.Distance(Me.ServerPosition, true) <= pounce.RangeSqr && CW == 0)
                     {
                         if (MainMenu.Item("lccougarw").GetValue<bool>())
-                            pounce.Cast(m.ServerPosition);
+                            PacketCast(pounce, m.ServerPosition, Packets());                 
                     }
 
                     if (m.Distance(Me.ServerPosition) <= takedown.RangeSqr && CQ == 0)
                     {
                         if (MainMenu.Item("lccougarq").GetValue<bool>())
-                            takedown.CastOnUnit(Me);
+                            PacketCast(takedown, Packets());
                     }
                 }
                 else
@@ -619,19 +620,19 @@ namespace KurisuNidalee
                     if (actualHeroManaPercent > minPercent && HQ == 0) 
                     {
                         if (MainMenu.Item("lchumanq").GetValue<bool>())
-                            javelin.Cast(m.ServerPosition);
+                            PacketCast(javelin, m.ServerPosition, Packets());
                     }
 
                     if (m.Distance(Me.ServerPosition, true) <= bushwack.RangeSqr && actualHeroManaPercent > minPercent && HW == 0)
                     {
                         if (MainMenu.Item("lchumanw").GetValue<bool>())
-                            bushwack.Cast(m.ServerPosition);
+                            PacketCast(bushwack, m.ServerPosition, Packets());
                     }
 
                     if (MainMenu.Item("lccougarr").GetValue<bool>() && m.Distance(Me.ServerPosition, true) <= pounce.RangeSqr && 
                         actualHeroManaPercent > minPercent && aspectofcougar.IsReady())
                     {
-                        aspectofcougar.Cast();
+                        PacketCast(aspectofcougar, Packets());
                     }
                 }
 
@@ -644,36 +645,37 @@ namespace KurisuNidalee
             var actualHeroManaPercent = (int)((Me.Mana / Me.MaxMana) * 100);
             var minPercent = MainMenu.Item("jgpct").GetValue<Slider>().Value;
 
-            foreach (
-                var m in
-                    ObjectManager.Get<Obj_AI_Minion>()
-                        .Where(m => m.IsValidTarget(1500) && jungleminions.Any(name => m.Name.StartsWith(name)) && !m.Name.Contains("Mini"))) 
+            foreach (var m in
+                ObjectManager.Get<Obj_AI_Minion>()
+                    .Where(
+                        m =>
+                            m.IsValidTarget(1500) && jungleminions.Any(name => m.Name.StartsWith(name)) &&
+                            !m.Name.Contains("Mini")))             
             {
                 if (CougarForm)
                 {
                     if (HQ == 0 && MainMenu.Item("jgcougarr").GetValue<bool>())
                     {
                         if (aspectofcougar.IsReady())
-                            aspectofcougar.Cast();
+                            PacketCast(aspectofcougar, Packets());
                     }
 
                     if (m.Distance(Me.ServerPosition, true) <= swipe.RangeSqr && CE == 0)
                     {
                         if (MainMenu.Item("jgcougare").GetValue<bool>())
-                            swipe.Cast(m.ServerPosition);
+                            PacketCast(swipe, m.ServerPosition, Packets());
                     }
-
 
                     if (m.Distance(Me.ServerPosition, true) <= pounce.RangeSqr && CW == 0)
                     {
                         if (MainMenu.Item("jgcougarw").GetValue<bool>())
-                            pounce.Cast(m.ServerPosition);
+                            PacketCast(pounce, m.ServerPosition, Packets());
                     }
 
                     if (m.Distance(Me.ServerPosition, true) <= takedown.RangeSqr && CQ == 0)
                     {
                         if (MainMenu.Item("jgcougarq").GetValue<bool>())
-                            takedown.CastOnUnit(Me);
+                            PacketCast(takedown, Packets());
                     }
                 }
                 else
@@ -681,19 +683,19 @@ namespace KurisuNidalee
                     if (actualHeroManaPercent > minPercent && HQ == 0) 
                     {
                         if (MainMenu.Item("jghumanq").GetValue<bool>())
-                            javelin.Cast(m.ServerPosition);
+                            PacketCast(javelin, m.ServerPosition, Packets());
                     }
 
                     if (m.Distance(Me.ServerPosition, true) <= bushwack.RangeSqr && actualHeroManaPercent > minPercent && HW == 0)
                     {
                         if (MainMenu.Item("jghumanw").GetValue<bool>())
-                            bushwack.Cast(m.ServerPosition);
+                            PacketCast(bushwack, m.ServerPosition, Packets());
                     }
 
                     if (MainMenu.Item("jgcougarr").GetValue<bool>() && m.Distance(Me.ServerPosition, true) <= pounce.RangeSqr && 
                         actualHeroManaPercent > minPercent && aspectofcougar.IsReady() && HQ != 0)
                     {
-                        aspectofcougar.Cast();
+                       PacketCast(aspectofcougar, Packets());
                     }
                 }                
             }
@@ -894,5 +896,52 @@ namespace KurisuNidalee
         }
 
         #endregion
+
+        // Self packet cast
+        private static void PacketCast(Spell spell, bool usepacket = true)
+        {
+            if (!spell.IsReady())
+                return;
+
+            if (usepacket)
+            {
+                new PKT_NPC_CastSpellReq()
+                {
+                    From = Me.ServerPosition.To2D(),
+                    NetworkId = Me.NetworkId,
+                    SpellSlot = (byte)spell.Slot,
+                    Unknown1 = true,
+                    Unknown2 = true,
+                }.Encode().SendAsPacket();
+            }
+            else
+            {
+                spell.Cast();
+            }           
+        }
+
+        // Pos packet cast
+        private static void PacketCast(Spell spell, Vector3 pos, bool usepacket = true)
+        {
+            if (!spell.IsReady())
+                return;
+
+            if (usepacket)
+            {
+                new PKT_NPC_CastSpellReq()
+                {
+                    From = Me.ServerPosition.To2D(),
+                    To = pos.To2D(),
+                    NetworkId = Me.NetworkId,
+                    SpellSlot = (byte) spell.Slot,
+                    Unknown1 = true,
+                    Unknown2 = true,
+                }.Encode().SendAsPacket();
+            }
+            else
+            {
+                spell.Cast(pos);
+            }
+        }
     }
 }
