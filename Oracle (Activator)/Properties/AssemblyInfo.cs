@@ -2,15 +2,19 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
+
+
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("KurisuNidalee")]
+
+
+[assembly: AssemblyTitle("Oracle")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("KurisuNidalee")]
-[assembly: AssemblyCopyright("Copyright ©  2015")]
+[assembly: AssemblyProduct("Oracle")]
+[assembly: AssemblyCopyright("Copyright © Oracle 2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,7 +24,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("7078e8ca-c9bc-4291-92cf-73886f215035")]
+[assembly: Guid("b93c7f91-41d6-4f6b-8ef3-aa3ab6ed10ea")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -32,5 +36,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: AssemblyVersion("0.0.0." + Oracle.Program.Revision)]
+[assembly: AssemblyFileVersion("0.0.0." + Oracle.Program.Revision)]

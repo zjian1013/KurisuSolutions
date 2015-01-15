@@ -1,0 +1,24 @@
+*.dll
+*.exe
+*.config
+*.pdb
+*.xml
+*.cache
+KurisuBlitz/obj/Debug/TemporaryGeneratedFile_036C0B5B-1481-4323-8D20-8F5ADCB23D92.cs
+KurisuBlitz/obj/Debug/TemporaryGeneratedFile_5937a670-0e60-4077-877b-f7221da3dda1.cs
+KurisuBlitz/obj/Debug/TemporaryGeneratedFile_E7A71F73-0F8D-4B9B-B56E-8E70B10BC5D3.cs
+KurisuNidalee/obj/Debug/KurisuNidalee.csproj.FileListAbsolute.txt
+KurisuNidalee/obj/Debug/TemporaryGeneratedFile_036C0B5B-1481-4323-8D20-8F5ADCB23D92.cs
+KurisuNidalee/obj/Debug/TemporaryGeneratedFile_5937a670-0e60-4077-877b-f7221da3dda1.cs
+KurisuNidalee/obj/Debug/TemporaryGeneratedFile_E7A71F73-0F8D-4B9B-B56E-8E70B10BC5D3.cs
+*.manifest
+KurisuRiven/obj/Debug/KurisuRiven.csproj.FileListAbsolute.txt
+KurisuRiven/obj/Debug/TemporaryGeneratedFile_036C0B5B-1481-4323-8D20-8F5ADCB23D92.cs
+KurisuRiven/obj/Debug/TemporaryGeneratedFile_5937a670-0e60-4077-877b-f7221da3dda1.cs
+KurisuRiven/obj/Debug/TemporaryGeneratedFile_E7A71F73-0F8D-4B9B-B56E-8E70B10BC5D3.cs
+Oracle (Activator)/obj/Debug/Oracle (Activator).csproj.FileListAbsolute.txt
+Oracle (Activator)/obj/Debug/TemporaryGeneratedFile_036C0B5B-1481-4323-8D20-8F5ADCB23D92.cs
+Oracle (Activator)/obj/Debug/TemporaryGeneratedFile_5937a670-0e60-4077-877b-f7221da3dda1.cs
+Oracle (Activator)/obj/Debug/TemporaryGeneratedFile_E7A71F73-0F8D-4B9B-B56E-8E70B10BC5D3.cs
+*.suo
+KurisuBlitz/obj/Debug/KurisuBlitz.csproj.FileListAbsolute.txt
