@@ -255,7 +255,7 @@ namespace Oracle.Extensions
                     {
                         // if its 1v1 cast on the sender
                         if (OC.AggroTarget.NetworkId == Me.NetworkId)
-                            spell.CastOnUnit(OC.Sender);
+                            spell.CastOnUnit(OC.Attacker);
                     }
                 }
             }
@@ -288,7 +288,7 @@ namespace Oracle.Extensions
                     {
                         // if its 1v1 cast on the sender
                         if (OC.AggroTarget.NetworkId == Me.NetworkId)
-                            spell.CastOnUnit(OC.Sender);
+                            spell.CastOnUnit(OC.Attacker);
                     }
                 }
             }

@@ -31,3 +31,4 @@ KurisuRiven/bin/Debug/Riven.exe.config
 KurisuRiven/bin/Debug/Riven.vshost.exe.config
 KurisuRiven/bin/Release/KurisuRiven.exe.config
 KurisuRiven/bin/Release/KurisuRiven.vshost.exe.config
+*.sln

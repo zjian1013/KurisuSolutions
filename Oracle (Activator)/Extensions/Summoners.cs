@@ -561,9 +561,9 @@ namespace Oracle.Extensions
             {
                 if (OC.DangerUlt && _mainMenu.Item("exhDanger").GetValue<bool>())
                 {
-                    if (OC.Sender.Distance(Me.ServerPosition, true) <= 650*650)
+                    if (OC.Attacker.Distance(Me.ServerPosition, true) <= 650*650)
                     {
-                        Me.Spellbook.CastSpell(exhaust, OC.Sender);
+                        Me.Spellbook.CastSpell(exhaust, OC.Attacker);
                     }
                 }
 

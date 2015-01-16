@@ -13,14 +13,14 @@ namespace Oracle
     // |     |___ ___ ___| |___ 
     // |  |  |  _| .'|  _| | -_|
     // |_____|_| |__,|___|_|___|
-    // Copyright © Kurisu Solutions 2014
-
+    // Copyright © Kurisu Solutions 2015
     internal static class Program
     {
-        public const string Revision = "202";
+
         public static Menu Origin;
         public static string ChampionName;
-        public static Obj_AI_Hero Sender;
+        public const string Revision = "203";
+        public static Obj_AI_Hero Attacker;
         public static Obj_AI_Hero AggroTarget;
         public static Obj_AI_Hero CurrentTarget;
         public static float IncomeDamage, MinionDamage;
@@ -39,7 +39,7 @@ namespace Oracle
             ChampionName = Me.ChampionName;
             Origin = new Menu("Oracle", "oracle", true);
 
-            //Cleansers.Initialize(Origin);
+            Cleansers.Initialize(Origin);
             Defensives.Initialize(Origin);
             Summoners.Initialize(Origin);
             Offensives.Initialize(Origin);
@@ -79,7 +79,6 @@ namespace Oracle
                     .SetValue(new KeyBind(32, KeyBindType.Press)));
 
             Origin.AddToMainMenu();
-            HeroCheck();
 
             // Events
             GameObject.OnCreate += GameObject_OnCreate;
@@ -94,90 +93,84 @@ namespace Oracle
         public static bool DangerCC;
         public static bool DangerUlt;
         public static bool CanManamune;
+        public static int SinceSpellCast;
 
-        private static GameObj _satchel;
-        private static GameObj _miasma;
-        private static GameObj _minesield;
-        private static GameObj _chaosstorm;
-        private static GameObj _glacialstorm;
-        private static GameObj _crowstorm;
-        private static GameObj _lightStrike;
-        private static GameObj _equinox;
-        private static GameObj _tormentsoil;
-
-        private static Obj_AI_Hero _viktor;
-        private static Obj_AI_Hero _fiddle;
-        private static Obj_AI_Hero _anivia;
-        private static Obj_AI_Hero _ziggs;
-        private static Obj_AI_Hero _cass;
-        private static Obj_AI_Hero _lux;
-        private static Obj_AI_Hero _morgana;
-        private static Obj_AI_Hero _soraka;
-        private static Obj_AI_Hero _vayne;
+        private static GameObj _satchel, _miasma, _minefield, _crowstorm;
+        private static GameObj _chaosstorm, _glacialstorm, _lightstrike, _equinox, _tormentsoil;
 
         private static void GameObject_OnCreate(GameObject obj, EventArgs args)
         {
-            if (obj.Name.Contains("Crowstorm_red") && _fiddle != null)
+            if (obj.Name.Contains("Crowstorm_red") && GetEnemy("Fiddlesticks") != null)
             {
-                var dmg = (float)_fiddle.GetSpellDamage(FriendlyTarget(), SpellSlot.R);
+                var dmg = (float) GetEnemy("Fiddlesticks").GetSpellDamage(FriendlyTarget(), SpellSlot.R);
                 _crowstorm = new GameObj(obj.Name, obj, true, dmg);
             }
 
-            else if (obj.Name.Contains("LuxLightstrike_tar_red") && _lux != null)
+            else if (obj.Name.Contains("LuxLightstrike_tar_red") && GetEnemy("Lux") != null)
             {
-                var dmg = (float)_lux.GetSpellDamage(FriendlyTarget(), SpellSlot.E);
-                _lightStrike = new GameObj(obj.Name, obj, true, dmg);
+                var dmg = (float) GetEnemy("Lux").GetSpellDamage(FriendlyTarget(), SpellSlot.E);
+                _lightstrike = new GameObj(obj.Name, obj, true, dmg);
             }
 
-            else if (obj.Name.Contains("Viktor_ChaosStorm_red") && _viktor != null)
+            else if (obj.Name.Contains("Viktor_ChaosStorm_red") && GetEnemy("Viktor") != null)
             {
-                var dmg = (float)_viktor.GetSpellDamage(FriendlyTarget(), SpellSlot.R);
+                var dmg = (float) GetEnemy("Viktor").GetSpellDamage(FriendlyTarget(), SpellSlot.R);
                 _chaosstorm = new GameObj(obj.Name, obj, true, dmg);
             }
 
-            else if (obj.Name.Contains("cryo_storm_red") && _anivia != null)
+            else if (obj.Name.Contains("cryo_storm_red") && GetEnemy("Anivia") != null)
             {
-                var dmg = (float)_anivia.GetSpellDamage(FriendlyTarget(), SpellSlot.R);
+                var dmg = (float) GetEnemy("Anivia").GetSpellDamage(FriendlyTarget(), SpellSlot.R);
                 _glacialstorm = new GameObj(obj.Name, obj, true, dmg);
             }
 
-            else if (obj.Name.Contains("ZiggsE_red") && _ziggs != null)
+            else if (obj.Name.Contains("ZiggsE_red") && GetEnemy("Ziggs") != null)
             {
-                var dmg = (float)_ziggs.GetSpellDamage(FriendlyTarget(), SpellSlot.E);
-                _minesield = new GameObj(obj.Name, obj, true, dmg);
+                var dmg = (float) GetEnemy("Ziggs").GetSpellDamage(FriendlyTarget(), SpellSlot.E);
+                _minefield = new GameObj(obj.Name, obj, true, dmg);
             }
 
-            else if (obj.Name.Contains("ZiggsWRingRed") && _ziggs != null)
+            else if (obj.Name.Contains("ZiggsWRingRed") && GetEnemy("Ziggs") != null)
             {
-                var dmg = (float)_ziggs.GetSpellDamage(FriendlyTarget(), SpellSlot.W);
+                var dmg = (float) GetEnemy("Ziggs").GetSpellDamage(FriendlyTarget(), SpellSlot.W);
                 _satchel = new GameObj(obj.Name, obj, true, dmg);
             }
 
-            else if (obj.Name.Contains("CassMiasma_tar_red") && _cass != null)
+            else if (obj.Name.Contains("CassMiasma_tar_red") && GetEnemy("Cassiopeia") != null)
             {
-                var dmg = (float)_cass.GetSpellDamage(FriendlyTarget(), SpellSlot.W);
+                var dmg = (float) GetEnemy("Cassiopeia").GetSpellDamage(FriendlyTarget(), SpellSlot.W);
                 _miasma = new GameObj(obj.Name, obj, true, dmg);
             }
 
-            else if (obj.Name.Contains("Soraka_Base_E_rune_RED") && _soraka != null)
+            else if (obj.Name.Contains("Soraka_Base_E_rune_RED") && GetEnemy("Soraka") != null)
             {
-                var dmg = (float)_soraka.GetSpellDamage(FriendlyTarget(), SpellSlot.E);
+                var dmg = (float) GetEnemy("Soraka").GetSpellDamage(FriendlyTarget(), SpellSlot.E);
                 _equinox = new GameObj(obj.Name, obj, true, dmg);
             }
 
-            else if (obj.Name.Contains("Morgana_Base_W_Tar_red") && _morgana != null)
+            else if (obj.Name.Contains("Morgana_Base_W_Tar_red") && GetEnemy("Morgana") != null)
             {
-                var dmg = (float) _morgana.GetSpellDamage(FriendlyTarget(), SpellSlot.W);
+                var dmg = (float) GetEnemy("Morgana").GetSpellDamage(FriendlyTarget(), SpellSlot.W);
                 _tormentsoil = new GameObj(obj.Name, obj, true, dmg);
             }
         }
 
         private static void Game_OnGameUpdate(EventArgs args)
         {
+            // reset income damage/danger safely
             if (IncomeDamage >= 1)
                 Utility.DelayAction.Add(Game.Ping + 50, () => IncomeDamage = 0);
             if (MinionDamage >= 1)
                 Utility.DelayAction.Add(Game.Ping + 50, () => MinionDamage = 0);
+
+            if (Danger)
+                Utility.DelayAction.Add(Game.Ping + 130, () => Danger = false);
+            if (DangerCC)
+                Utility.DelayAction.Add(Game.Ping + 130, () => DangerCC = false);
+            if (DangerUlt)
+                Utility.DelayAction.Add(Game.Ping + 130, () => DangerUlt = false);
+            if (Spell)
+                Utility.DelayAction.Add(Game.Ping + 130, () => Spell = false);
 
             // Get current target near mouse cursor.
             foreach (
@@ -189,12 +182,36 @@ namespace Oracle
                 CurrentTarget = targ;
             }
 
+            // Get buff damage update and dangerous buffs for zhonya (vladimir R) etc
+            if (Environment.TickCount - SinceSpellCast >= 300)
+            {
+                foreach (var buff in GameBuff.Buffs.Where(buff => FriendlyTarget().HasBuff(buff.BuffName, true)))
+                {
+                    Utility.DelayAction.Add(
+                        buff.Delay, delegate
+                        {
+                            Attacker = GetEnemy(buff.ChampionName);
+                            AggroTarget = FriendlyTarget();
+
+                            IncomeDamage =
+                                (float) GetEnemy(buff.ChampionName).GetSpellDamage(FriendlyTarget(), buff.Slot);
+
+                            Danger = buff.Dangerous && Origin.Item(buff.SpellName + "ccc").GetValue<bool>();
+                            DangerUlt = buff.Dangerous && buff.Slot == SpellSlot.R && Origin.Item(buff.SpellName + "ccc").GetValue<bool>();
+
+                            if (Origin.Item("dbool").GetValue<bool>())
+                                Console.WriteLine(Attacker.SkinName + " hit " + AggroTarget.SkinName + " (BuffType) for: " + IncomeDamage);
+
+                        });
+                }
+            }
+
             // Get ground object damage update
             if (_glacialstorm.Included)
             {
-                if (_glacialstorm.Obj.IsValid && FriendlyTarget().Distance(_glacialstorm.Obj.Position, true) <= 400*400 && _anivia != null)
+                if (_glacialstorm.Obj.IsValid && FriendlyTarget().Distance(_glacialstorm.Obj.Position, true) <= 400*400 && GetEnemy("Anivia") != null)
                 {
-                    Sender = _anivia;
+                    Attacker = GetEnemy("Anivia");
                     AggroTarget = FriendlyTarget();
                     IncomeDamage = _glacialstorm.Damage;
 
@@ -206,9 +223,9 @@ namespace Oracle
 
             if (_chaosstorm.Included)
             {
-                if (_chaosstorm.Obj.IsValid && FriendlyTarget().Distance(_chaosstorm.Obj.Position, true) <= 400*400 && _viktor != null)
+                if (_chaosstorm.Obj.IsValid && FriendlyTarget().Distance(_chaosstorm.Obj.Position, true) <= 400*400 && GetEnemy("Viktor") != null)
                 {
-                    Sender = _viktor;
+                    Attacker = GetEnemy("Viktor");
                     AggroTarget = FriendlyTarget();
                     IncomeDamage = _chaosstorm.Damage;
 
@@ -231,9 +248,9 @@ namespace Oracle
             if (_crowstorm.Included)
             {
                 // 575 Fear Range
-                if (_crowstorm.Obj.IsValid && FriendlyTarget().Distance(_crowstorm.Obj.Position, true) <= 575*575 && _fiddle != null)
+                if (_crowstorm.Obj.IsValid && FriendlyTarget().Distance(_crowstorm.Obj.Position, true) <= 575*575 && GetEnemy("Fiddlesticks") != null)
                 {
-                    Sender = _fiddle;
+                    Attacker = GetEnemy("Fiddlesticks");
                     AggroTarget = FriendlyTarget();
                     IncomeDamage = _chaosstorm.Damage;
 
@@ -244,7 +261,7 @@ namespace Oracle
                         {
                             Danger = true;
                             DangerUlt = true;
-                            Sender = _fiddle;
+                            Attacker = GetEnemy("Fiddlesticks");
                         }
                     }
 
@@ -254,13 +271,13 @@ namespace Oracle
                 }
             }
 
-            if (_minesield.Included)
+            if (_minefield.Included)
             {
-                if (_minesield.Obj.IsValid && FriendlyTarget().Distance(_minesield.Obj.Position, true) <= 300*300 && _ziggs != null)
+                if (_minefield.Obj.IsValid && FriendlyTarget().Distance(_minefield.Obj.Position, true) <= 300*300 && GetEnemy("Ziggs") != null)
                 {
-                    Sender = _ziggs;
+                    Attacker = GetEnemy("Ziggs");
                     AggroTarget = FriendlyTarget();
-                    IncomeDamage = _minesield.Damage;
+                    IncomeDamage = _minefield.Damage;
 
                     if (Origin.Item("dbool").GetValue<bool>())
                         Console.WriteLine(
@@ -270,9 +287,9 @@ namespace Oracle
 
             if (_satchel.Included)
             {
-                if (_satchel.Obj.IsValid && FriendlyTarget().Distance(_satchel.Obj.Position, true) <= 300*300 && _ziggs != null)
+                if (_satchel.Obj.IsValid && FriendlyTarget().Distance(_satchel.Obj.Position, true) <= 300*300 && GetEnemy("Ziggs") != null)
                 {
-                    Sender = _ziggs;
+                    Attacker = GetEnemy("Ziggs");
                     AggroTarget = FriendlyTarget();
                     IncomeDamage = _satchel.Damage;
 
@@ -284,9 +301,9 @@ namespace Oracle
 
             if (_tormentsoil.Included)
             {
-                if (_satchel.Obj.IsValid && FriendlyTarget().Distance(_tormentsoil.Obj.Position, true) <= 300*300 && _morgana != null)
+                if (_satchel.Obj.IsValid && FriendlyTarget().Distance(_tormentsoil.Obj.Position, true) <= 300*300 && GetEnemy("Morgana") != null)
                 {
-                    Sender = _morgana;
+                    Attacker = GetEnemy("Morgana");
                     AggroTarget = FriendlyTarget();
                     IncomeDamage = _tormentsoil.Damage;
 
@@ -298,9 +315,9 @@ namespace Oracle
 
             if (_miasma.Included)
             {
-                if (_miasma.Obj.IsValid && FriendlyTarget().Distance(_miasma.Obj.Position, true) <= 300*300 && _cass != null)
+                if (_miasma.Obj.IsValid && FriendlyTarget().Distance(_miasma.Obj.Position, true) <= 300*300 && GetEnemy("Cassiopeia") != null)
                 {
-                    Sender = _cass;
+                    Attacker = GetEnemy("Cassiopeia");
                     AggroTarget = FriendlyTarget();
                     IncomeDamage = _satchel.Damage;
 
@@ -310,13 +327,13 @@ namespace Oracle
                 }
             }
 
-            if (_lightStrike.Included)
+            if (_lightstrike.Included)
             {
-                if (_lightStrike.Obj.IsValid && FriendlyTarget().Distance(_lightStrike.Obj.Position, true) <= 300*300 && _lux != null)
+                if (_lightstrike.Obj.IsValid && FriendlyTarget().Distance(_lightstrike.Obj.Position, true) <= 300*300 && GetEnemy("Lux") != null)
                 {
-                    Sender = _lux;
+                    Attacker = GetEnemy("Lux");
                     AggroTarget = FriendlyTarget();
-                    IncomeDamage = _lightStrike.Damage;
+                    IncomeDamage = _lightstrike.Damage;
 
                     if (Origin.Item("dbool").GetValue<bool>())
                         Console.WriteLine(
@@ -326,63 +343,15 @@ namespace Oracle
 
             if (_equinox.Included)
             {
-                if (_equinox.Obj.IsValid && FriendlyTarget().Distance(_equinox.Obj.Position, true) <= 300*300 && _soraka != null)
+                if (_equinox.Obj.IsValid && FriendlyTarget().Distance(_equinox.Obj.Position, true) <= 300*300 && GetEnemy("Soraka") != null)
                 {
-                    Sender = _lux;
+                    Attacker = GetEnemy("Lux");
                     AggroTarget = FriendlyTarget();
                     IncomeDamage = _equinox.Damage;
 
                     if (Origin.Item("dbool").GetValue<bool>())
                         Console.WriteLine(
                             AggroTarget.SkinName + " is in Equinox (Ground Object) for: " + IncomeDamage);
-                }
-            }
-
-            if (Danger)
-                Utility.DelayAction.Add(Game.Ping + 130, () => Danger = false);
-            if (DangerCC)
-                Utility.DelayAction.Add(Game.Ping + 130, () => DangerCC = false);
-            if (DangerUlt)
-                Utility.DelayAction.Add(Game.Ping + 130, () => DangerUlt = false);
-            if (Spell)
-                Utility.DelayAction.Add(Game.Ping + 130, () => Spell = false);
-
-        }
-
-        private static void HeroCheck()
-        {
-            // Todo: get vayne R buff to detect stealth
-            foreach (var hero in ObjectManager.Get<Obj_AI_Hero>().Where(x => x.Team != ObjectManager.Player.Team))
-            {
-                switch (hero.SkinName)
-                {
-                    case "Viktor":
-                        _viktor = hero;
-                        break;
-                    case "FiddleSticks":
-                        _fiddle = hero;
-                        break;
-                    case "Anivia":
-                        _anivia = hero;
-                        break;
-                    case "Ziggs":
-                        _ziggs = hero;
-                        break;
-                    case "Cassiopeia":
-                        _cass = hero;
-                        break;
-                    case "Lux":
-                        _lux = hero;
-                        break;
-                    case "Soraka":
-                        _soraka = hero;
-                        break;
-                    case "Vayne":
-                        _vayne = hero;
-                        break;
-                    case "Morgana":
-                        _morgana = hero;
-                        break;
                 }
             }
         }
@@ -403,6 +372,22 @@ namespace Oracle
             return target;
         }
 
+        private static Obj_AI_Hero GetEnemy(string championname)
+        {
+            Obj_AI_Hero obj = null;
+
+            foreach (
+                var enemy in
+                    ObjectManager.Get<Obj_AI_Hero>()
+                        .Where(ene => ene.Team != Me.Team)
+                        .Where(enemy => enemy.ChampionName == championname))
+            {
+                obj = enemy;
+            }
+
+            return obj;
+        }
+
         public static int CountHerosInRange(this Obj_AI_Hero target, bool enemy = true, float range = float.MaxValue)
         {
             int count;
@@ -418,8 +403,8 @@ namespace Oracle
 
         public static bool NotRecalling(this Obj_AI_Hero target)
         {
-            return !target.HasBuff("Recall") && !target.HasBuff("RecallImproved") && !target.HasBuff("OdinRecall") &&
-                   !target.HasBuff("OdinRecallImproved");
+            return !target.HasBuff("Recall", true) && !target.HasBuff("RecallImproved", true) && !target.HasBuff("OdinRecall", true) &&
+                   !target.HasBuff("OdinRecallImproved", true);
         }
 
         public static float GetComboDamage(Obj_AI_Hero player, Obj_AI_Base target)
@@ -511,9 +496,12 @@ namespace Oracle
                 }
             }
 
-            Sender = null;
+            Attacker = null;
             if (sender.Type == GameObjectType.obj_AI_Hero && sender.IsEnemy)
             {
+                if (GameBuff.Buffs.Any(buff => args.SData.Name == buff.SpellName))
+                    SinceSpellCast = Environment.TickCount;
+
                 var HeroSender = ObjectManager.Get<Obj_AI_Hero>().First(x => x.NetworkId == sender.NetworkId);
                 if (HeroSender.GetSpellSlot(args.SData.Name) == SpellSlot.Unknown && args.Target.Type == Me.Type)
                 {
@@ -526,7 +514,7 @@ namespace Oracle
                         Console.WriteLine(HeroSender.SkinName + " hit (Auto Attack) " + AggroTarget.SkinName + " for: " + IncomeDamage);
                 }
 
-                Sender = HeroSender;
+                Attacker = HeroSender;
                 foreach (var o in TargetSpellDatabase.Spells.Where(x => x.Name == args.SData.Name.ToLower()))
                 {
                     Spell = true;
