@@ -74,7 +74,7 @@ namespace Oracle.Extensions
             {
                 if (target.Distance(Me.ServerPosition, true) <= range * range)
                 {
-                    foreach (var buff in GameBuff.Buffs.Where(aura => target.HasBuff(aura.BuffName, true)))
+                    foreach (var buff in GameBuff.CleanseBuffs.Where(aura => target.HasBuff(aura.BuffName, true)))
                     {
                         Utility.DelayAction.Add(500 + buff.Delay, () => Items.UseItem(itemId, target));
                     }

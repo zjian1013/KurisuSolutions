@@ -185,7 +185,7 @@ namespace Oracle
             // Get buff damage update and dangerous buffs for zhonya (vladimir R) etc
             if (Environment.TickCount - SinceSpellCast >= 300)
             {
-                foreach (var buff in GameBuff.Buffs.Where(buff => FriendlyTarget().HasBuff(buff.BuffName, true)))
+                foreach (var buff in GameBuff.CleanseBuffs.Where(buff => FriendlyTarget().HasBuff(buff.BuffName, true)))
                 {
                     Utility.DelayAction.Add(
                         buff.Delay, delegate
@@ -193,8 +193,8 @@ namespace Oracle
                             Attacker = GetEnemy(buff.ChampionName);
                             AggroTarget = FriendlyTarget();
 
-                            IncomeDamage =
-                                (float) GetEnemy(buff.ChampionName).GetSpellDamage(FriendlyTarget(), buff.Slot);
+                            //IncomeDamage =
+                            //    (float) GetEnemy(buff.ChampionName).GetSpellDamage(FriendlyTarget(), buff.Slot);
 
                             Danger = buff.Dangerous && Origin.Item(buff.SpellName + "ccc").GetValue<bool>();
                             DangerUlt = buff.Dangerous && buff.Slot == SpellSlot.R && Origin.Item(buff.SpellName + "ccc").GetValue<bool>();
@@ -499,7 +499,7 @@ namespace Oracle
             Attacker = null;
             if (sender.Type == GameObjectType.obj_AI_Hero && sender.IsEnemy)
             {
-                if (GameBuff.Buffs.Any(buff => args.SData.Name == buff.SpellName))
+                if (GameBuff.CleanseBuffs.Any(buff => args.SData.Name == buff.SpellName))
                     SinceSpellCast = Environment.TickCount;
 
                 var HeroSender = ObjectManager.Get<Obj_AI_Hero>().First(x => x.NetworkId == sender.NetworkId);

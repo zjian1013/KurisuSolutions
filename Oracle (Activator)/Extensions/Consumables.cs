@@ -59,7 +59,7 @@ namespace Oracle.Extensions
             if (menuvar.Contains("Health") && aHealthPercent <= _mainMenu.Item("use" + menuvar + "Pct").GetValue<Slider>().Value)
             {
                 if (iDamagePercent >= 1 || incdmg >= Me.Health || Me.HasBuff("summonerdot", true) ||
-                    mDamagePercent >= 1 || mindmg >= Me.Health || GameBuff.Buffs.Any(buff => Me.HasBuff(buff.BuffName, true)))
+                    mDamagePercent >= 1 || mindmg >= Me.Health || GameBuff.CleanseBuffs.Any(buff => Me.HasBuff(buff.BuffName, true)))
                 {
                     if (OC.AggroTarget.NetworkId == Me.NetworkId)
                         Items.UseItem(itemId);

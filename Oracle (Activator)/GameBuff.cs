@@ -16,11 +16,12 @@ namespace Oracle
         public string SpellName { get; set; }
         public int Delay { get; set; }
 
-        public static readonly List<GameBuff> Buffs = new List<GameBuff>();
+        public static readonly List<GameBuff> CleanseBuffs = new List<GameBuff>();
+        public static readonly List<GameBuff> DamageBuffs = new List<GameBuff>(); // todo: DoTs
 
         static GameBuff()
         {
-            Buffs.Add(new GameBuff
+            CleanseBuffs.Add(new GameBuff
             {
                 ChampionName = "Zed",
                 BuffName = "zedulttargetmark",
@@ -30,7 +31,7 @@ namespace Oracle
                 Dangerous = true
             });
 
-            Buffs.Add(new GameBuff
+            CleanseBuffs.Add(new GameBuff
             {
                 ChampionName = "Darius",
                 BuffName = "dariusnoxiantacticsonh",
@@ -39,7 +40,7 @@ namespace Oracle
                 Delay = 0
             });
 
-            Buffs.Add(new GameBuff
+            CleanseBuffs.Add(new GameBuff
             {
                 ChampionName = "Fizz",
                 BuffName = "fizzmarinerdoombomb",
@@ -49,7 +50,7 @@ namespace Oracle
                 Dangerous = true
             });
 
-            Buffs.Add(new GameBuff
+            CleanseBuffs.Add(new GameBuff
             {
                 ChampionName = "Leblanc",
                 BuffName = "leblancsoulshackle",
@@ -59,7 +60,7 @@ namespace Oracle
                 Dangerous = true,
             });
 
-            Buffs.Add(new GameBuff
+            CleanseBuffs.Add(new GameBuff
             {
                 ChampionName = "Leblanc",
                 BuffName = "leblancsoulshacklem",
@@ -68,7 +69,7 @@ namespace Oracle
                 Delay = 0,
             });
 
-            Buffs.Add(new GameBuff
+            CleanseBuffs.Add(new GameBuff
             {
                 ChampionName = "Mordekaiser",
                 BuffName = "mordekaiserchildrenofthegrave",
@@ -77,7 +78,7 @@ namespace Oracle
                 Delay = 0,
             });
 
-            Buffs.Add(new GameBuff
+            CleanseBuffs.Add(new GameBuff
             {
                 ChampionName = "Poppy",
                 BuffName = "poppydiplomaticimmunity",
@@ -86,7 +87,7 @@ namespace Oracle
                 Delay = 0,
             });
 
-            Buffs.Add(new GameBuff
+            CleanseBuffs.Add(new GameBuff
             {
                 ChampionName = "Skarner",
                 BuffName = "skarnerimpale",
@@ -95,7 +96,7 @@ namespace Oracle
                 Delay = 0
             });
 
-            Buffs.Add(new GameBuff
+            CleanseBuffs.Add(new GameBuff
             {
                 ChampionName = "Urgot",
                 BuffName = "urgotswap2",
@@ -104,7 +105,7 @@ namespace Oracle
                 Delay = 0
             });
 
-            Buffs.Add(new GameBuff
+            CleanseBuffs.Add(new GameBuff
             {
                 ChampionName = "Vladimir",
                 BuffName = "vladimirhemoplague",
@@ -114,7 +115,7 @@ namespace Oracle
                 Dangerous = true
             });
 
-            Buffs.Add(new GameBuff
+            CleanseBuffs.Add(new GameBuff
             {
                 ChampionName = "Morgana",
                 BuffName = "soulshackles",
