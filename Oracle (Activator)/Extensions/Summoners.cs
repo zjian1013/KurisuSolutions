@@ -71,10 +71,9 @@ namespace Oracle.Extensions
             {
                 _ss = true;
                 var Smite = new Menu("Smite", "msmite");
-                Smite.AddItem(new MenuItem("useSmite", "Use Smite"))
-                    .SetValue(new KeyBind(77, KeyBindType.Toggle, true));
-                Smite.AddItem(new MenuItem("smiteSpell", "Use Smite + Ability")).SetValue(true);
-                Smite.AddItem(new MenuItem("smiteKS", "Killsteal Smite")).SetValue(true);
+                Smite.AddItem(new MenuItem("useSmite", "Use Smite")).SetValue(new KeyBind(77, KeyBindType.Toggle, true));
+                Smite.AddItem(new MenuItem("smiteEnemy", "Smite Enemies")).SetValue(true);
+                Smite.AddItem(new MenuItem("smiteSpell", "Smite + Ability")).SetValue(true);
                 Smite.AddItem(new MenuItem("drawSmite", "Draw Smite Range")).SetValue(true);
                 Smite.AddItem(new MenuItem("smiteSmall", "Smite Small Camps")).SetValue(true);
                 Smite.AddItem(new MenuItem("smiteLarge", "Smite Large Camps")).SetValue(true);
@@ -401,10 +400,14 @@ namespace Oracle.Extensions
 
             var smite = Me.GetSpellSlot(_smiteSlot);
             if (smite == SpellSlot.Unknown)
+            {
                 return;
+            }
 
             if (smite != SpellSlot.Unknown && !_mainMenu.Item("useSmite").GetValue<KeyBind>().Active)
+            {
                 return;
+            }
 
             CheckChampSmite("Vi", "self", 125f, SpellSlot.E);
             CheckChampSmite("JarvanIV", "vector", 770f, SpellSlot.Q);
@@ -422,18 +425,23 @@ namespace Oracle.Extensions
             CheckChampSmite("MonkeyKing", "target", 300f, SpellSlot.Q);
 
             if (Me.Spellbook.CanUseSpell(smite) != SpellState.Ready)
+            {
                 return;
+            }
 
-            if (_mainMenu.Item("smiteKS").GetValue<bool>())
+            if (_mainMenu.Item("smiteEnemy").GetValue<bool>())
             {
                 if (_smiteSlot != "s5_summonersmiteplayerganker")
-                    return;
-
-                foreach (var ene in ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsValidTarget(760)))
                 {
-                    if (ene.Health <= Me.GetSummonerSpellDamage(ene, Damage.SummonerSpell.Smite))
+                    return;
+                }
+
+                var slot = Me.GetSpellSlot(_smiteSlot);
+                if (OC.Origin.Item("ComboKey").GetValue<KeyBind>().Active && Me.Spellbook.GetSpell(slot).Ammo > 1)
+                {
+                    if (Me.Spellbook.CanUseSpell(slot) == SpellState.Ready)
                     {
-                        Me.Spellbook.CastSpell(Me.GetSpellSlot(_smiteSlot), ene);
+                        Me.Spellbook.CastSpell(slot, OC.CurrentTarget);
                     }
                 }
             }

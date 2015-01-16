@@ -182,10 +182,11 @@ namespace Oracle
                 CurrentTarget = targ;
             }
 
-            // Get buff damage update and dangerous buffs for zhonya (vladimir R) etc
-            if (Environment.TickCount - SinceSpellCast >= 300)
+            // Get dangerous buff update for zhonya (vladimir R) etc)
+            foreach (var buff in GameBuff.CleanseBuffs)
             {
-                foreach (var buff in GameBuff.CleanseBuffs.Where(buff => FriendlyTarget().HasBuff(buff.BuffName, true)))
+                var buffinst = FriendlyTarget().Buffs;
+                if (buffinst.Any(aura => aura.Name.ToLower() == buff.BuffName))
                 {
                     Utility.DelayAction.Add(
                         buff.Delay, delegate
@@ -193,16 +194,39 @@ namespace Oracle
                             Attacker = GetEnemy(buff.ChampionName);
                             AggroTarget = FriendlyTarget();
 
-                            //IncomeDamage =
-                            //    (float) GetEnemy(buff.ChampionName).GetSpellDamage(FriendlyTarget(), buff.Slot);
-
-                            Danger = buff.Dangerous && Origin.Item(buff.SpellName + "ccc").GetValue<bool>();
-                            DangerUlt = buff.Dangerous && buff.Slot == SpellSlot.R && Origin.Item(buff.SpellName + "ccc").GetValue<bool>();
+                            DangerUlt = buff.Dangerous && buff.Slot == SpellSlot.R &&
+                                        Origin.Item(buff.SpellName + "ccc").GetValue<bool>();
 
                             if (Origin.Item("dbool").GetValue<bool>())
-                                Console.WriteLine(Attacker.SkinName + " hit " + AggroTarget.SkinName + " (BuffType) for: " + IncomeDamage);
+                                Console.WriteLine(
+                                    "Dangerous buff on " + AggroTarget.SkinName + " should cleanse/zhonyas!");
 
                         });
+                }
+            }
+            
+            // todo: Get buff damage update and finish list
+            if (FriendlyTarget().HasBuffOfType(BuffType.Damage))
+            {
+                foreach (var buff in GameBuff.DamageBuffs)
+                {
+                    var buffinst = FriendlyTarget().Buffs;
+                    if (buffinst.Any(aura => aura.Name.ToLower() == buff.BuffName))
+                    {
+                        Utility.DelayAction.Add(
+                            buff.Delay, delegate
+                            {
+                                Attacker = GetEnemy(buff.ChampionName);
+                                AggroTarget = FriendlyTarget();
+                                IncomeDamage =
+                                    (float) GetEnemy(buff.ChampionName).GetSpellDamage(FriendlyTarget(), buff.Slot);
+
+                                if (Origin.Item("dbool").GetValue<bool>())
+                                    Console.WriteLine(
+                                        Attacker.SkinName + " applied (Damagebuff) on " + AggroTarget.SkinName + " for " +
+                                        IncomeDamage);
+                            });
+                    }
                 }
             }
 
