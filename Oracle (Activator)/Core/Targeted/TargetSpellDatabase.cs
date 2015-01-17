@@ -127,7 +127,7 @@ namespace Oracle.Core.Targeted
                 new TargetSpellData("caitlyn", "caitlynpiltoverpeacemaker", SpellSlot.Q, SpellType.Skillshot, CcType.No, 2000, 250, 2200),
                 new TargetSpellData("caitlyn", "caitlynyordletrap", SpellSlot.W, SpellType.Skillshot, CcType.Snare, 800, 0, 1400),
                 new TargetSpellData("caitlyn", "caitlynentrapment", SpellSlot.E, SpellType.Skillshot, CcType.Slow, 950, 250, 2000),
-                new TargetSpellData("caitlyn", "caitlynaceinthehole", SpellSlot.R, SpellType.Targeted, CcType.No, 2500, 0, 1500, true),
+                new TargetSpellData("caitlyn", "caitlynaceinthehole", SpellSlot.R, SpellType.Targeted, CcType.No, 2500, 0, 1500, true, false, true),
 
                 #endregion Caitlyn
 
@@ -195,8 +195,8 @@ namespace Oracle.Core.Targeted
                 new TargetSpellData("elise", "elisehumane", SpellSlot.E, SpellType.Skillshot, CcType.Stun, 1075, 500, 1450),
                 new TargetSpellData("elise", "elisespidereinitial", SpellSlot.E, SpellType.Targeted, CcType.No, 975, float.MaxValue, float.MaxValue),
                 new TargetSpellData("elise", "elisespideredescent", SpellSlot.E, SpellType.Targeted, CcType.No, 975, float.MaxValue, float.MaxValue),
-                new TargetSpellData("elise", "eliser", SpellSlot.R, SpellType.Self, CcType.No, 0, float.MaxValue, float.MaxValue),
-                new TargetSpellData("elise", "elisespiderr", SpellSlot.R, SpellType.Self, CcType.No, 0, float.MaxValue, float.MaxValue),
+                new TargetSpellData("elise", "eliser", SpellSlot.R, SpellType.Self, CcType.No, 0, float.MaxValue, float.MaxValue, false, false, true),
+                new TargetSpellData("elise", "elisespiderr", SpellSlot.R, SpellType.Self, CcType.No, 0, float.MaxValue, float.MaxValue, false, false, true),
 
                 #endregion Elise
 
@@ -221,7 +221,7 @@ namespace Oracle.Core.Targeted
                 new TargetSpellData("fiddlesticks", "terrify", SpellSlot.Q, SpellType.Targeted, CcType.Fear, 575, 500, float.MaxValue, true),
                 new TargetSpellData("fiddlesticks", "drain", SpellSlot.W, SpellType.Targeted, CcType.No, 575, 500, float.MaxValue),
                 new TargetSpellData("fiddlesticks", "fiddlesticksdarkwind", SpellSlot.E, SpellType.Skillshot, CcType.Silence, 750, 500, 1100),
-                new TargetSpellData("fiddlesticks", "crowstorm", SpellSlot.R, SpellType.Targeted, CcType.No, 800, 500, float.MaxValue, true),
+                new TargetSpellData("fiddlesticks", "crowstorm", SpellSlot.R, SpellType.Targeted, CcType.No, 800, 500, float.MaxValue, true, false, true),
 
                 #endregion FiddleSticks
 
@@ -238,7 +238,7 @@ namespace Oracle.Core.Targeted
                 new TargetSpellData("fizz", "fizzseastonepassive", SpellSlot.W, SpellType.Self, CcType.No, 0, 500, 0),
                 new TargetSpellData("fizz", "fizzjump", SpellSlot.E, SpellType.Self, CcType.No, 400, 500, 1300),
                 new TargetSpellData("fizz", "fizzjumptwo", SpellSlot.E, SpellType.Skillshot, CcType.Slow, 400, 500, 1300),
-                new TargetSpellData("fizz", "fizzmarinerdoom", SpellSlot.R, SpellType.Skillshot, CcType.Knockup, 1275, 500, 1200, true),
+                new TargetSpellData("fizz", "fizzmarinerdoom", SpellSlot.R, SpellType.Skillshot, CcType.Knockup, 1275, 500, 1200, true, false, true),
 
                 #endregion Fizz
 
@@ -340,8 +340,8 @@ namespace Oracle.Core.Targeted
                 new TargetSpellData("jayce", "jaycehypercharge", SpellSlot.W, SpellType.Self, CcType.No, 0, 750, float.MaxValue),
                 new TargetSpellData("jayce", "jaycethunderingblow", SpellSlot.E, SpellType.Targeted, CcType.Knockback, 300, 0, float.MaxValue),
                 new TargetSpellData("jayce", "jayceaccelerationgate", SpellSlot.E, SpellType.Skillshot, CcType.No, 685, 500, 1600),
-                new TargetSpellData("jayce", "jaycestancehtg", SpellSlot.R, SpellType.Self, CcType.No, 0, 750, float.MaxValue),
-                new TargetSpellData("jayce", "jaycestancegth", SpellSlot.R, SpellType.Self, CcType.No, 0, 750, float.MaxValue),
+                new TargetSpellData("jayce", "jaycestancehtg", SpellSlot.R, SpellType.Self, CcType.No, 0, 750, float.MaxValue, false, false, true),
+                new TargetSpellData("jayce", "jaycestancegth", SpellSlot.R, SpellType.Self, CcType.No, 0, 750, float.MaxValue, false, false, true),
 
                 #endregion Jayce
 
@@ -367,7 +367,7 @@ namespace Oracle.Core.Targeted
                 new TargetSpellData("karthus", "laywaste", SpellSlot.Q, SpellType.Skillshot, CcType.No, 875, 500, float.MaxValue),
                 new TargetSpellData("karthus", "wallofpain", SpellSlot.W, SpellType.Skillshot, CcType.Slow, 1090, 500, 1600),
                 new TargetSpellData("karthus", "defile", SpellSlot.E, SpellType.Self, CcType.No, 550, 500, 1000),
-                new TargetSpellData("karthus", "fallenone", SpellSlot.R, SpellType.Self, CcType.No, float.MaxValue, 2800, float.MaxValue, true),
+                new TargetSpellData("karthus", "fallenone", SpellSlot.R, SpellType.Self, CcType.No, float.MaxValue, 2800, float.MaxValue, true, false, true),
 
                 #endregion Karthus
 
@@ -431,7 +431,7 @@ namespace Oracle.Core.Targeted
                 new TargetSpellData("leblanc", "leblancchaosorbm", SpellSlot.R, SpellType.Targeted, CcType.No, 700, 500, 2000, true),
                 new TargetSpellData("leblanc", "leblancslidem", SpellSlot.R, SpellType.Skillshot, CcType.No, 600, 500, float.MaxValue, true),
                 new TargetSpellData("leblanc", "leblancslidereturnm", SpellSlot.R, SpellType.Skillshot, CcType.No, 0, 500, float.MaxValue),
-                new TargetSpellData("leblanc", "leblancsoulshacklem", SpellSlot.R, SpellType.Skillshot, CcType.No, 925, 500, 1600, true),
+                new TargetSpellData("leblanc", "leblancsoulshacklem", SpellSlot.R, SpellType.Skillshot, CcType.No, 925, 500, 1600, true, false, true),
 
                 #endregion Leblanc
 
@@ -595,7 +595,7 @@ namespace Oracle.Core.Targeted
                 new TargetSpellData("nidalee", "pounce", SpellSlot.W, SpellType.Skillshot, CcType.No, 375, 500, 1500),
                 new TargetSpellData("nidalee", "primalsurge", SpellSlot.E, SpellType.Targeted, CcType.No, 600, 0, float.MaxValue),
                 new TargetSpellData("nidalee", "swipe", SpellSlot.E, SpellType.Skillshot, CcType.No, 300, 500, float.MaxValue),
-                new TargetSpellData("nidalee", "aspectofthecougar", SpellSlot.R, SpellType.Self, CcType.No, 0, 0, float.MaxValue),
+                new TargetSpellData("nidalee", "aspectofthecougar", SpellSlot.R, SpellType.Self, CcType.No, 0, 0, float.MaxValue, false, false, true),
 
                 #endregion Nidalee
 
@@ -808,7 +808,7 @@ namespace Oracle.Core.Targeted
                 new TargetSpellData("swain", "swaindecrepify", SpellSlot.Q, SpellType.Targeted, CcType.Slow, 625, 500, float.MaxValue),
                 new TargetSpellData("swain", "swainshadowgrasp", SpellSlot.W, SpellType.Skillshot, CcType.Snare, 1040, 500, 1250),
                 new TargetSpellData("swain", "swaintorment", SpellSlot.E, SpellType.Targeted, CcType.No, 625, 500, 1400),
-                new TargetSpellData("swain", "swainmetamorphism", SpellSlot.R, SpellType.Self, CcType.No, 700, 500, 950),
+                new TargetSpellData("swain", "swainmetamorphism", SpellSlot.R, SpellType.Self, CcType.No, 700, 500, 950, false, false, true),
 
                 #endregion Swain
 
@@ -961,7 +961,7 @@ namespace Oracle.Core.Targeted
                 new TargetSpellData("viktor", "viktorpowertransfer", SpellSlot.Q, SpellType.Targeted, CcType.No, 600, 500, 1400),
                 new TargetSpellData("viktor", "viktorgravitonfield", SpellSlot.W, SpellType.Skillshot, CcType.Slow, 815, 500, 1750),
                 new TargetSpellData("viktor", "viktordeathray", SpellSlot.E, SpellType.Skillshot, CcType.No, 700, 500, 1210),
-                new TargetSpellData("viktor", "viktorchaosstorm", SpellSlot.R, SpellType.Skillshot, CcType.Silence, 700, 500, 1210, true),
+                new TargetSpellData("viktor", "viktorchaosstorm", SpellSlot.R, SpellType.Skillshot, CcType.Silence, 700, 500, 1210, true, false, true),
 
                 #endregion Viktor
 
@@ -969,7 +969,7 @@ namespace Oracle.Core.Targeted
                 new TargetSpellData("vladimir", "vladimirtransfusion", SpellSlot.Q, SpellType.Targeted, CcType.No, 600, 500, 1400),
                 new TargetSpellData("vladimir", "vladimirsanguinepool", SpellSlot.W, SpellType.Self, CcType.Slow, 350, 500, 1600),
                 new TargetSpellData("vladimir", "vladimirtidesofblood", SpellSlot.E, SpellType.Self, CcType.No, 610, 500, 1100),
-                new TargetSpellData("vladimir", "vladimirhemoplague", SpellSlot.R, SpellType.Skillshot, CcType.No, 875, 500, 1200, true),
+                new TargetSpellData("vladimir", "vladimirhemoplague", SpellSlot.R, SpellType.Skillshot, CcType.No, 875, 500, 1200, true, false, true),
 
                 #endregion Vladimir
 
@@ -1035,7 +1035,7 @@ namespace Oracle.Core.Targeted
                 new TargetSpellData("zed", "zedshuriken", SpellSlot.Q, SpellType.Skillshot, CcType.No, 900, 500, 902),
                 new TargetSpellData("zed", "zedshdaowdash", SpellSlot.W, SpellType.Skillshot, CcType.No, 550, 500, 1600),
                 new TargetSpellData("zed", "zedpbaoedummy", SpellSlot.E, SpellType.Self, CcType.Slow, 300, 0, 0),
-                new TargetSpellData("zed", "zedult", SpellSlot.R, SpellType.Targeted, CcType.No, 850, 500, 0, true),
+                new TargetSpellData("zed", "zedult", SpellSlot.R, SpellType.Targeted, CcType.No, 850, 500, 0, true, false, true),
 
                 #endregion Zed
 

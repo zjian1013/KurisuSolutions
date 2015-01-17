@@ -21,6 +21,21 @@ namespace Oracle
 
         static GameBuff()
         {
+            DamageBuffs.Add(new GameBuff
+            {
+                ChampionName = "Karthus",
+                BuffName = "fallenonetarget",
+                SpellName = "fallenone",
+                Slot = SpellSlot.R,
+                Delay = 2100,
+                Dangerous = true
+            });
+
+            DamageBuffs.Add(new GameBuff
+            {
+                ChampionName = "Caitlyn"
+            });
+
             CleanseBuffs.Add(new GameBuff
             {
                 ChampionName = "Zed",

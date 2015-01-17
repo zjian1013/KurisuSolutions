@@ -221,10 +221,11 @@ namespace Oracle
                                 IncomeDamage =
                                     (float) GetEnemy(buff.ChampionName).GetSpellDamage(FriendlyTarget(), buff.Slot);
 
+                                DangerUlt = buff.Dangerous && buff.Slot == SpellSlot.R &&
+                                            Origin.Item(buff.SpellName + "ccc").GetValue<bool>();
+
                                 if (Origin.Item("dbool").GetValue<bool>())
-                                    Console.WriteLine(
-                                        Attacker.SkinName + " applied (Damagebuff) on " + AggroTarget.SkinName + " for " +
-                                        IncomeDamage);
+                                    Console.WriteLine(Attacker.SkinName + " applied (Damagebuff) on " + AggroTarget.SkinName + " for " + IncomeDamage);
                             });
                     }
                 }
@@ -561,8 +562,6 @@ namespace Oracle
 
                             if (AggroTarget != null && AggroTarget.Distance(HeroSender.ServerPosition, true) <= o.Range*o.Range)
                             {
-                                Danger = Origin.Item(o.Name.ToLower() + "ccc").GetValue<bool>();
-                                DangerUlt = Origin.Item(o.Name.ToLower() + "ccc").GetValue<bool>() && o.Spellslot.ToString() == "R";
                                 IncomeDamage = (float)HeroSender.GetSpellDamage(AggroTarget, (SpellSlot)o.Spellslot);
 
                                 if (Origin.Item("dbool").GetValue<bool>())
@@ -570,6 +569,13 @@ namespace Oracle
 
                                 if (Origin.Item("dbool").GetValue<bool>())
                                     Console.WriteLine(HeroSender.SkinName + " hit (Self Spell) " + AggroTarget.SkinName + " for: " + IncomeDamage);
+
+                                if (o.Wait)
+                                    return;
+
+                                Danger = Origin.Item(o.Name.ToLower() + "ccc").GetValue<bool>();
+                                DangerUlt = Origin.Item(o.Name.ToLower() + "ccc").GetValue<bool>() && o.Spellslot.ToString() == "R";
+
                             }
                         });
                     }
@@ -581,8 +587,6 @@ namespace Oracle
                             AggroTarget =
                                 ObjectManager.GetUnitByNetworkId<Obj_AI_Hero>(args.Target.NetworkId);
 
-                            Danger = Origin.Item(o.Name.ToLower() + "ccc").GetValue<bool>();
-                            DangerUlt = Origin.Item(o.Name.ToLower() + "ccc").GetValue<bool>() && o.Spellslot.ToString() == "R";
                             IncomeDamage = (float)HeroSender.GetSpellDamage(AggroTarget, (SpellSlot)o.Spellslot);
 
                             if (Origin.Item("dbool").GetValue<bool>())
@@ -591,6 +595,12 @@ namespace Oracle
                                 Console.WriteLine(HeroSender.SkinName + " hit (Target Spell) " + AggroTarget.SkinName +
                                                   " for: " + IncomeDamage);
                             }
+
+                            if (o.Wait)
+                                return;
+
+                            Danger = Origin.Item(o.Name.ToLower() + "ccc").GetValue<bool>();
+                            DangerUlt = Origin.Item(o.Name.ToLower() + "ccc").GetValue<bool>() && o.Spellslot.ToString() == "R";
                         });
                     }
                 }

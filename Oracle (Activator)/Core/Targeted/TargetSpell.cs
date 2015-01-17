@@ -92,9 +92,10 @@ namespace Oracle.Core.Targeted
         public double Speed { get; set; }
         public bool Dangerous { get; set; }
         public bool Stealth { get; set; }
+        public bool Wait { get; set; }
 
         public TargetSpellData(string champion, string name, SpellSlot slot, SpellType type, CcType cc, float range,
-            float delay, float speed, bool dangerous = false, bool stealth = false)
+            float delay, float speed, bool dangerous = false, bool stealth = false, bool wait = false)
         {
             ChampionName = champion;
             Name = name;
@@ -106,6 +107,7 @@ namespace Oracle.Core.Targeted
             Delay = delay;
             Dangerous = dangerous;
             Stealth = stealth;
+            Wait = wait;
         }
     }
 
