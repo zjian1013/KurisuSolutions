@@ -40,7 +40,11 @@ namespace Oracle.Extensions
 
         private static void Game_OnGameUpdate(EventArgs args)
         {
-    
+            if (!Me.IsValidTarget(300, false))
+            {
+                return;
+            }
+            
             if (_mainMenu.Item("useMuramana").GetValue<bool>())
             {
                 if (OC.CanManamune)

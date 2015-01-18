@@ -86,6 +86,11 @@ namespace Oracle.Extensions
 
         private static void Game_OnGameUpdate(EventArgs args)
         {
+            if (!Me.IsValidTarget(300, false))
+            {
+                return;
+            }
+
             // slow removals
             UseSpell("garenq", "garenslow", float.MaxValue, false);
             UseSpell("evelynnw", "eveslow", float.MaxValue, false);
@@ -365,6 +370,9 @@ namespace Oracle.Extensions
                 if (usemana && manaPercent <= _mainMenu.Item("use" + menuvar + "Mana").GetValue<Slider>().Value)
                     return;
 
+                if (Me.ChampionName == "Sona") 
+                    spell.Cast(); 
+                else 
                     spell.Cast(target);
             }
 

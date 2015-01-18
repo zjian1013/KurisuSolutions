@@ -560,7 +560,7 @@ namespace Oracle.Core.Targeted
                 new TargetSpellData("morgana", "darkbindingmissile", SpellSlot.Q, SpellType.Skillshot, CcType.Snare, 1300, 500, 1200, true),
                 new TargetSpellData("morgana", "tormentedsoil", SpellSlot.W, SpellType.Skillshot, CcType.No, 1075, 500, float.MaxValue),
                 new TargetSpellData("morgana", "blackshield", SpellSlot.E, SpellType.Targeted, CcType.No, 750, 500, float.MaxValue),
-                new TargetSpellData("morgana", "soulshackles", SpellSlot.R, SpellType.Self, CcType.Stun, 600, 500, float.MaxValue, true),
+                new TargetSpellData("morgana", "soulshackles", SpellSlot.R, SpellType.Self, CcType.Stun, 600, 500, float.MaxValue, true, false, true),
 
                 #endregion Morgana
 

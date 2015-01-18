@@ -10,7 +10,6 @@ namespace Oracle
     internal class GameBuff
     {
         public string ChampionName { get; set; }
-        public bool Dangerous { get; set; }
         public string BuffName { get; set; }
         public SpellSlot Slot { get; set; }
         public string SpellName { get; set; }
@@ -18,6 +17,7 @@ namespace Oracle
 
         public static readonly List<GameBuff> EvadeBuffs = new List<GameBuff>();
         public static readonly List<GameBuff> CleanseBuffs = new List<GameBuff>();
+
 
         static GameBuff()
         {
@@ -144,7 +144,7 @@ namespace Oracle
                 BuffName = "vladimirhemoplague",
                 SpellName = "vladimirhemoplague",
                 Slot = SpellSlot.R,
-                Delay = 4500,
+                Delay = 4500
             });
 
             EvadeBuffs.Add(new GameBuff
@@ -154,6 +154,15 @@ namespace Oracle
                 SpellName = "zedult",
                 Slot = SpellSlot.R,
                 Delay = 2500
+            });
+
+            EvadeBuffs.Add(new GameBuff
+            {
+                ChampionName = "Caitlyn",
+                BuffName = "caitlynaceinthehole",
+                SpellName = "caitlynaceinthehole",
+                Slot = SpellSlot.R,
+                Delay = 1000
             });
         }
     }

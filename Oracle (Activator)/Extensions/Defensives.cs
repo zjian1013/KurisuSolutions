@@ -22,17 +22,11 @@ namespace Oracle.Extensions
                 _menuConfig.AddItem(new MenuItem("DefenseOn" + x.SkinName, "Use for " + x.SkinName)).SetValue(true);
             _mainMenu.AddSubMenu(_menuConfig);
 
-            var oMenu = new Menu("Oracle's Lens", "olens");
-            oMenu.AddItem(new MenuItem("useOracles", "Use on Stealth")).SetValue(true);
-            oMenu.AddItem(new MenuItem("oracleMode", "Mode: ")).SetValue(new StringList(new[] { "Always", "Combo" }));
-            _mainMenu.AddSubMenu(oMenu);
-
-            CreateMenuItem("Odyn's Veil", "Odyns", 40, 40, true); 
-            CreateMenuItem("Randuin's Omen", "Randuins", 40, 40, true);
-            CreateMenuItem("Seraph's Embrace", "Seraphs", 55, 40);
-            CreateMenuItem("Zhonya's Hourglass", "Zhonyas", 35, 40);
-            CreateMenuItem("Face of the Mountain", "Mountain", 20, 40);
-            CreateMenuItem("Locket of Iron Solari", "Locket", 45, 40);
+            CreateMenuItem("Randuin's Omen", "Randuins", "selfcount", 40, 40, true);
+            CreateMenuItem("Seraph's Embrace", "Seraphs",  "selfhealth", 55, 40);
+            CreateMenuItem("Zhonya's Hourglass", "Zhonyas", "selfzhonya", 35, 40);
+            CreateMenuItem("Face of the Mountain", "Mountain", "allyhealth", 20, 40);
+            CreateMenuItem("Locket of Iron Solari", "Locket", "allyhealth", 45, 40);
 
             var tMenu = new Menu("Talisman of Ascension", "tboost");
             tMenu.AddItem(new MenuItem("useTalisman", "Use Tailsman")).SetValue(true);
@@ -45,23 +39,34 @@ namespace Oracle.Extensions
             bMenu.AddItem(new MenuItem("useBanner", "Use Banner of Command")).SetValue(true);
             _mainMenu.AddSubMenu(bMenu);
 
-            CreateMenuItem("Wooglet's Witchcap", "Wooglets", 35, 40);
+            CreateMenuItem("Wooglet's Witchcap", "Wooglets", "selfzhonya", 35, 40);
+            var oMenu = new Menu("Oracle's Lens", "olens");
+            oMenu.AddItem(new MenuItem("useOracles", "Use on Stealth")).SetValue(true);
+            oMenu.AddItem(new MenuItem("oracleMode", "Mode: ")).SetValue(new StringList(new[] { "Always", "Combo" }));
+            _mainMenu.AddSubMenu(oMenu);
+
+            CreateMenuItem("Odyn's Veil", "Odyns", "selfcount", 40, 40, true); 
        
             root.AddSubMenu(_mainMenu);
         }
 
         private static void Game_OnGameUpdate(EventArgs args)
         {
+            if (!Me.IsValidTarget(300, false))
+            {
+                return;
+            }
+
             UseItemCount("Odyns", 3180, 450f);
             UseItemCount("Randuins", 3143, 450f);
 
             if (OC.IncomeDamage >= 1)
             {
-                UseItem("allyshieldlocket", "Locket", 3190, 600f, OC.IncomeDamage);
-                UseItem("selfshieldseraph", "Seraphs", 3040, float.MaxValue, OC.IncomeDamage);
-                UseItem("selfshieldzhonya", "Zhonyas", 3157, float.MaxValue, OC.IncomeDamage);
-                UseItem("allyshieldmountain", "Mountain", 3401, 700f, OC.IncomeDamage);
-                UseItem("selfshieldzhonya", "Wooglets", 3090, float.MaxValue, OC.IncomeDamage);
+                UseItem("allyshieldlocket", "Locket", 3190, 600f);
+                UseItem("selfshieldseraph", "Seraphs", 3040);
+                UseItem("selfshieldzhonya", "Zhonyas", 3157);
+                UseItem("allyshieldmountain", "Mountain", 3401, 700f);
+                UseItem("selfshieldzhonya", "Wooglets", 3090);
             }
 
             // Oracle's Lens 
@@ -69,7 +74,9 @@ namespace Oracle.Extensions
             {
                 if (!OC.Origin.Item("ComboKey").GetValue<KeyBind>().Active &&
                     _mainMenu.Item("oracleMode").GetValue<StringList>().SelectedIndex == 1)
+                {
                     return;
+                }
 
                 var target = OC.Friendly();
                 if (target.Distance(Me.ServerPosition, true) <= 600*600 && OC.Stealth || target.HasBuff("RengarRBuff", true))
@@ -87,7 +94,8 @@ namespace Oracle.Extensions
                     var minyone in 
                         minionList.Where(minion => minion.IsValidTarget(1000) && minion.BaseSkinName.Contains("MechCannon")))
                 {
-                    Items.UseItem(3060, minyone);
+                    if (minyone.Health > minyone.Health/minyone.MaxHealth*50)
+                        Items.UseItem(3060, minyone);
                 }
             }
 
@@ -106,15 +114,15 @@ namespace Oracle.Extensions
                     return;
                 }
 
-                var weakEnemy =
+                var LowHpEnemy =
                     ObjectManager.Get<Obj_AI_Hero>()
                         .OrderByDescending(ex => ex.Health/ex.MaxHealth*100)
                         .First(x => x.IsValidTarget(1000));
 
                 var aHealthPercent = target.Health/target.MaxHealth*100;
-                var eHealthPercent = weakEnemy.Health/weakEnemy.MaxHealth*100;
+                var eHealthPercent = LowHpEnemy.Health/LowHpEnemy.MaxHealth*100;
 
-                if (weakEnemy.Distance(target.ServerPosition, true) <= 900 * 900 &&
+                if (LowHpEnemy.Distance(target.ServerPosition, true) <= 900 * 900 &&
                     (target.CountHerosInRange("allies") > target.CountHerosInRange("hostile") &&
                      eHealthPercent <= _mainMenu.Item("useEnemyPct").GetValue<Slider>().Value))
                 {
@@ -144,7 +152,7 @@ namespace Oracle.Extensions
             }
         }
 
-        private static void UseItem(string menuvar, string name, int itemId, float itemRange, float incdmg = 0)
+        private static void UseItem(string menuvar, string name, int itemId, float itemRange = float.MaxValue)
         {
             if (!Items.HasItem(itemId) || !Items.CanUseItem(itemId))
                 return;
@@ -157,12 +165,12 @@ namespace Oracle.Extensions
                 return;
             
             var aHealthPercent = (int) ((target.Health/target.MaxHealth)*100);
-            var iDamagePercent = (int) (incdmg/target.MaxHealth*100);
+            var iDamagePercent = (int) (OC.IncomeDamage/target.MaxHealth*100);
 
             if (!_mainMenu.Item("DefenseOn" + target.SkinName).GetValue<bool>())
                 return;
 
-            if (target.CountHerosInRange("allies") >= target.CountHerosInRange("hostile") || incdmg >= target.Health)
+            if (target.CountHerosInRange("allies") >= target.CountHerosInRange("hostile") || OC.IncomeDamage >= target.Health)
             {
                 if (_mainMenu.Item("use" + name + "Ults").GetValue<bool>())
                 {
@@ -179,9 +187,17 @@ namespace Oracle.Extensions
 
             if (menuvar.Contains("shield"))
             {
+                if (menuvar.Contains("zhonya"))
+                {
+                    if (_mainMenu.Item("use" + name + "Only").GetValue<bool>() || !(OC.IncomeDamage >= target.Health))
+                    {
+                        return;
+                    }
+                }
+
                 if (aHealthPercent <= _mainMenu.Item("use" + name + "Pct").GetValue<Slider>().Value)
                 {
-                    if ((iDamagePercent >= 1 || incdmg >= target.Health))
+                    if ((iDamagePercent >= 1 || OC.IncomeDamage >= target.Health))
                     {
                         if (OC.AggroTarget.NetworkId == target.NetworkId)
                             Items.UseItem(itemId, target);
@@ -199,7 +215,7 @@ namespace Oracle.Extensions
             }
         }
 
-        private static void CreateMenuItem(string displayname, string name, int hpvalue, int dmgvalue,bool itemcount = false)
+        private static void CreateMenuItem(string displayname, string name, string type, int hpvalue, int dmgvalue,bool itemcount = false)
         {
             var menuName = new Menu(displayname, name.ToLower());
 
@@ -217,8 +233,10 @@ namespace Oracle.Extensions
             if (!itemcount)
             {
                 menuName.AddItem(new MenuItem("use" + name + "Zhy", "Use on Dangerous (Spells)")).SetValue(false);
-                menuName.AddItem(new MenuItem("use" + name + "Ults", "Use on Dangerous (Ultimates Only)")).SetValue(true);  
-                
+                menuName.AddItem(new MenuItem("use" + name + "Ults", "Use  on Dangerous (Ultimates Only)")).SetValue(true);
+
+                if (type.Contains("zhonya"))
+                    menuName.AddItem(new MenuItem("use" + name + "Only", "Use only on Dangerous")).SetValue(true);           
             }
      
             _mainMenu.AddSubMenu(menuName);

@@ -16,23 +16,10 @@ namespace Oracle.Extensions
             Game.OnGameUpdate += Game_OnGameUpdate;
 
             _mainMenu = new Menu("Cleansers", "cmenu");
-            _menuConfig = new Menu("Cleanse Config", "cconfig");
-
-            _menuConfig.AddItem(new MenuItem("stun", "Stuns")).SetValue(true);
-            _menuConfig.AddItem(new MenuItem("charm", "Charms")).SetValue(true);
-            _menuConfig.AddItem(new MenuItem("taunt", "Taunts")).SetValue(true);
-            _menuConfig.AddItem(new MenuItem("fear", "Fears")).SetValue(true);
-            _menuConfig.AddItem(new MenuItem("snare", "Snares")).SetValue(true);
-            _menuConfig.AddItem(new MenuItem("silence", "Silences")).SetValue(true);
-            _menuConfig.AddItem(new MenuItem("supression", "Supression")).SetValue(true);
-            _menuConfig.AddItem(new MenuItem("polymorph", "Polymorphs")).SetValue(true);
-            _menuConfig.AddItem(new MenuItem("blind", "Blinds")).SetValue(false);
-            _menuConfig.AddItem(new MenuItem("slow", "Slows")).SetValue(false);
-            _menuConfig.AddItem(new MenuItem("poison", "Poisons")).SetValue(false);
-            _menuConfig.AddItem(new MenuItem("sep1", " "));
+            _menuConfig = new Menu("Cleansers Config", "cconfig");
 
             foreach (var a in ObjectManager.Get<Obj_AI_Hero>().Where(a => a.Team == Me.Team))
-                _menuConfig.AddItem(new MenuItem("ccon" + a.SkinName, "Use for " + a.SkinName)).SetValue(true);
+                _menuConfig.AddItem(new MenuItem("cccon" + a.SkinName, "Use for " + a.SkinName)).SetValue(true);
             _mainMenu.AddSubMenu(_menuConfig);
 
             CreateMenuItem("Dervish Blade", "Dervish", 1);
@@ -41,7 +28,7 @@ namespace Oracle.Extensions
             CreateMenuItem("Mikael's Crucible", "Mikaels", 1);
 
             _mainMenu.AddItem(
-                new MenuItem("cleanseMode", "Cleanse Mode: "))
+                new MenuItem("cmode", "Mode: "))
                 .SetValue(new StringList(new[] {"Always", "Combo"}));
 
             root.AddSubMenu(_mainMenu);
@@ -49,8 +36,8 @@ namespace Oracle.Extensions
 
         public static void Game_OnGameUpdate(EventArgs args)
         {
-            if (!_mainMenu.Item("ComboKey").GetValue<KeyBind>().Active &&
-                _mainMenu.Item("cleanseMode").GetValue<StringList>().SelectedIndex == 1)
+            if (!OC.Origin.Item("ComboKey").GetValue<KeyBind>().Active &&
+                _mainMenu.Item("cmode").GetValue<StringList>().SelectedIndex == 1)
             {
                 return;
             }
@@ -70,7 +57,7 @@ namespace Oracle.Extensions
                 return;
 
             var target = range > 5000 ? Me : OC.Friendly();
-            if (_mainMenu.Item("ccon" + target.SkinName).GetValue<bool>())
+            if (_mainMenu.Item("cccon" + target.SkinName).GetValue<bool>())
             {
                 if (target.Distance(Me.ServerPosition, true) <= range * range)
                 {
@@ -78,41 +65,41 @@ namespace Oracle.Extensions
                     {
                         var buffinst = target.Buffs;
                         if (buffinst.Any(aura => aura.Name.ToLower() == buff.BuffName))
-                            Utility.DelayAction.Add(500 + buff.Delay, () => Items.UseItem(itemId, target));
+                            Utility.DelayAction.Add(100 + buff.Delay, () => Items.UseItem(itemId, target));
                     }
 
-                    if (_mainMenu.Item("slow").GetValue<bool>() && target.HasBuffOfType(BuffType.Slow))
-                        Utility.DelayAction.Add(500, () => Items.UseItem(itemId, target));
+                    if (OC.Origin.Item("slow").GetValue<bool>() && target.HasBuffOfType(BuffType.Slow))
+                        Utility.DelayAction.Add(100, () => Items.UseItem(itemId, target));
 
-                    if (_mainMenu.Item("stun").GetValue<bool>() && target.HasBuffOfType(BuffType.Stun))
-                        Utility.DelayAction.Add(500, () => Items.UseItem(itemId, target));
+                    if (OC.Origin.Item("stun").GetValue<bool>() && target.HasBuffOfType(BuffType.Stun))
+                        Utility.DelayAction.Add(100, () => Items.UseItem(itemId, target));
 
-                    if (_mainMenu.Item("charm").GetValue<bool>() && target.HasBuffOfType(BuffType.Charm))
-                        Utility.DelayAction.Add(500, () => Items.UseItem(itemId, target));
+                    if (OC.Origin.Item("charm").GetValue<bool>() && target.HasBuffOfType(BuffType.Charm))
+                        Utility.DelayAction.Add(100, () => Items.UseItem(itemId, target));
 
-                    if (_mainMenu.Item("taunt").GetValue<bool>() && target.HasBuffOfType(BuffType.Taunt))
-                        Utility.DelayAction.Add(500, () => Items.UseItem(itemId, target));
+                    if (OC.Origin.Item("taunt").GetValue<bool>() && target.HasBuffOfType(BuffType.Taunt))
+                        Utility.DelayAction.Add(100, () => Items.UseItem(itemId, target));
 
-                    if (_mainMenu.Item("fear").GetValue<bool>() && target.HasBuffOfType(BuffType.Fear))
-                        Utility.DelayAction.Add(500, () => Items.UseItem(itemId, target));
+                    if (OC.Origin.Item("fear").GetValue<bool>() && target.HasBuffOfType(BuffType.Fear))
+                        Utility.DelayAction.Add(100, () => Items.UseItem(itemId, target));
 
-                    if (_mainMenu.Item("snare").GetValue<bool>() && target.HasBuffOfType(BuffType.Snare))
-                        Utility.DelayAction.Add(500, () => Items.UseItem(itemId, target));
+                    if (OC.Origin.Item("snare").GetValue<bool>() && target.HasBuffOfType(BuffType.Snare))
+                        Utility.DelayAction.Add(100, () => Items.UseItem(itemId, target));
 
-                    if (_mainMenu.Item("silence").GetValue<bool>() && target.HasBuffOfType(BuffType.Silence))
-                        Utility.DelayAction.Add(500, () => Items.UseItem(itemId, target));
+                    if (OC.Origin.Item("silence").GetValue<bool>() && target.HasBuffOfType(BuffType.Silence))
+                        Utility.DelayAction.Add(100, () => Items.UseItem(itemId, target));
 
-                    if (_mainMenu.Item("suppression").GetValue<bool>() && target.HasBuffOfType(BuffType.Suppression))
-                        Utility.DelayAction.Add(500, () => Items.UseItem(itemId, target));
+                    if (OC.Origin.Item("suppression").GetValue<bool>() && target.HasBuffOfType(BuffType.Suppression))
+                        Utility.DelayAction.Add(100, () => Items.UseItem(itemId, target));
 
-                    if (_mainMenu.Item("polymorph").GetValue<bool>() && target.HasBuffOfType(BuffType.Polymorph))
-                        Utility.DelayAction.Add(500, () => Items.UseItem(itemId, target));
+                    if (OC.Origin.Item("polymorph").GetValue<bool>() && target.HasBuffOfType(BuffType.Polymorph))
+                        Utility.DelayAction.Add(100, () => Items.UseItem(itemId, target));
 
-                    if (_mainMenu.Item("blind").GetValue<bool>() && target.HasBuffOfType(BuffType.Blind))
-                        Utility.DelayAction.Add(500, () => Items.UseItem(itemId, target));
+                    if (OC.Origin.Item("blind").GetValue<bool>() && target.HasBuffOfType(BuffType.Blind))
+                        Utility.DelayAction.Add(100, () => Items.UseItem(itemId, target));
 
-                    if (_mainMenu.Item("poison").GetValue<bool>() && target.HasBuffOfType(BuffType.Poison))
-                        Utility.DelayAction.Add(500, () => Items.UseItem(itemId, target));
+                    if (OC.Origin.Item("poison").GetValue<bool>() && target.HasBuffOfType(BuffType.Poison))
+                        Utility.DelayAction.Add(100, () => Items.UseItem(itemId, target));
                 }
             }
         }
