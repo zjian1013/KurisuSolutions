@@ -116,67 +116,67 @@ namespace Oracle
             if (obj.Name.Contains("Crowstorm_red") && GetEnemy("Fiddlesticks").IsValid)
             {
                 var dmg = (float) GetEnemy("Fiddlesticks").GetSpellDamage(Friendly(), SpellSlot.R);
-                _crowstorm = new GameObj(obj.Name, obj, true, dmg);
+                _crowstorm = new GameObj(obj.Name, obj, true, dmg, Environment.TickCount);
             }
 
-            else if (obj.Name.Contains("need_fizz_bait_name") && GetEnemy("Fiddlesticks").IsValid)
+            else if (obj.Name.Contains("shark") && GetEnemy("Fizz").IsValid)
             {
                 var dmg = (float) GetEnemy("Fizz").GetSpellDamage(Friendly(), SpellSlot.R);
-                _fizzbait = new GameObj(obj.Name, obj, true, dmg);
+                _fizzbait = new GameObj(obj.Name, obj, true, dmg, Environment.TickCount);
             }
 
             else if (obj.Name.Contains("caitlyn_Base_yordleTrap_idle_red") && GetEnemy("Caitlyn").IsValid)
             {
                 var dmg = (float) GetEnemy("Caitlyn").GetSpellDamage(Friendly(), SpellSlot.W);
-                _caittrap = new GameObj(obj.Name, obj, true, dmg);
+                _caittrap = new GameObj(obj.Name, obj, true, dmg, Environment.TickCount);
             }
 
             else if (obj.Name.Contains("LuxLightstrike_tar_red") && GetEnemy("Lux").IsValid)
             {
                 var dmg = (float) GetEnemy("Lux").GetSpellDamage(Friendly(), SpellSlot.E);
-                _lightstrike = new GameObj(obj.Name, obj, true, dmg);
+                _lightstrike = new GameObj(obj.Name, obj, true, dmg, Environment.TickCount);
             }
 
             else if (obj.Name.Contains("Viktor_ChaosStorm_red") && GetEnemy("Viktor").IsValid)
             {
                 var dmg = (float) GetEnemy("Viktor").GetSpellDamage(Friendly(), SpellSlot.R);
-                _chaosstorm = new GameObj(obj.Name, obj, true, dmg);
+                _chaosstorm = new GameObj(obj.Name, obj, true, dmg, Environment.TickCount);
             }
 
             else if (obj.Name.Contains("cryo_storm_red") && GetEnemy("Anivia").IsValid)
             {
                 var dmg = (float) GetEnemy("Anivia").GetSpellDamage(Friendly(), SpellSlot.R);
-                _glacialstorm = new GameObj(obj.Name, obj, true, dmg);
+                _glacialstorm = new GameObj(obj.Name, obj, true, dmg, Environment.TickCount);
             }
 
             else if (obj.Name.Contains("ZiggsE_red") && GetEnemy("Ziggs").IsValid)
             {
                 var dmg = (float) GetEnemy("Ziggs").GetSpellDamage(Friendly(), SpellSlot.E);
-                _minefield = new GameObj(obj.Name, obj, true, dmg);
+                _minefield = new GameObj(obj.Name, obj, true, dmg, Environment.TickCount);
             }
 
             else if (obj.Name.Contains("ZiggsWRingRed") && GetEnemy("Ziggs").IsValid)
             {
                 var dmg = (float) GetEnemy("Ziggs").GetSpellDamage(Friendly(), SpellSlot.W);
-                _satchel = new GameObj(obj.Name, obj, true, dmg);
+                _satchel = new GameObj(obj.Name, obj, true, dmg, Environment.TickCount);
             }
 
             else if (obj.Name.Contains("CassMiasma_tar_red") && GetEnemy("Cassiopeia").IsValid)
             {
                 var dmg = (float) GetEnemy("Cassiopeia").GetSpellDamage(Friendly(), SpellSlot.W);
-                _miasma = new GameObj(obj.Name, obj, true, dmg);
+                _miasma = new GameObj(obj.Name, obj, true, dmg, Environment.TickCount);
             }
 
             else if (obj.Name.Contains("Soraka_Base_E_rune_RED") && GetEnemy("Soraka").IsValid)
             {
                 var dmg = (float) GetEnemy("Soraka").GetSpellDamage(Friendly(), SpellSlot.E);
-                _equinox = new GameObj(obj.Name, obj, true, dmg);
+                _equinox = new GameObj(obj.Name, obj, true, dmg, Environment.TickCount);
             }
 
             else if (obj.Name.Contains("Morgana_Base_W_Tar_red") && GetEnemy("Morgana").IsValid)
             {
                 var dmg = (float) GetEnemy("Morgana").GetSpellDamage(Friendly(), SpellSlot.W);
-                _tormentsoil = new GameObj(obj.Name, obj, true, dmg);
+                _tormentsoil = new GameObj(obj.Name, obj, true, dmg, Environment.TickCount);
             }
         }
 
@@ -211,12 +211,16 @@ namespace Oracle
                             IncomeDamage = (float) GetEnemy(buff.ChampionName).GetSpellDamage(AggroTarget, buff.Slot);
 
                             // check if we still have buff
-                            if (AggroTarget.HasBuff(buff.BuffName, true))
+                            if (buffinst.Any(aura => aura.Name.ToLower().Contains(buff.SpellName)))
                                 DangerUlt = Origin.Item(buff.SpellName + "ccc").GetValue<bool>();
 
                             if (Origin.Item("dbool").GetValue<bool>())
+                            {
                                 Console.WriteLine(
                                     "Dangerous buff on " + AggroTarget.SkinName + " should zhonyas!");
+                                Console.WriteLine("Damage: " + IncomeDamage);
+                                Console.WriteLine("Aggro Target: " + AggroTarget.SkinName);
+                            }
 
                         });
                 }
@@ -265,7 +269,7 @@ namespace Oracle
             {
                 if (_fizzbait.Obj.IsValid && Friendly().Distance(_fizzbait.Obj.Position, true) <= 300 * 300)
                 {
-                    if (Environment.TickCount - _fizzbait.Starttick >= 2000)
+                    if (Environment.TickCount - _fizzbait.Start >= 2500)
                     {
                         Attacker = GetEnemy("Fizz");
                         AggroTarget = Friendly();
@@ -276,6 +280,7 @@ namespace Oracle
                         {
                             Danger = true;
                             DangerUlt = true;
+                            DangerCC = true;
                         }
                     }
 
@@ -565,9 +570,8 @@ namespace Oracle
                 Attacker = HeroSender;
                 foreach (var o in TargetSpellDatabase.Spells.Where(x => x.Name == args.SData.Name.ToLower()))
                 {
-                    Spell = true;
+                    
                     Stealth = o.Stealth;
-
                     if (o.Type == SpellType.Skillshot)
                     {
                         continue;
@@ -596,6 +600,7 @@ namespace Oracle
                                 if (o.Wait)
                                     return;
 
+                                Spell = true;
                                 Danger = Origin.Item(o.Name.ToLower() + "ccc").GetValue<bool>();
                                 DangerUlt = Origin.Item(o.Name.ToLower() + "ccc").GetValue<bool>() && o.Spellslot.ToString() == "R";
                                 DangerCC = o.CcType != CcType.No && o.Type != SpellType.AutoAttack;
@@ -623,6 +628,7 @@ namespace Oracle
                             if (o.Wait)
                                 return;
 
+                            Spell = true;
                             Danger = Origin.Item(o.Name.ToLower() + "ccc").GetValue<bool>();
                             DangerUlt = Origin.Item(o.Name.ToLower() + "ccc").GetValue<bool>() && o.Spellslot.ToString() == "R";
                             DangerCC = o.CcType != CcType.No && o.Type != SpellType.AutoAttack;
@@ -654,6 +660,7 @@ namespace Oracle
                     {
                         Utility.DelayAction.Add(castTime - 400, delegate
                         {
+                            Spell = true;
                             Danger = Origin.Item(o.SpellName.ToLower() + "ccc").GetValue<bool>();
                             DangerUlt = Origin.Item(o.SpellName.ToLower() + "ccc").GetValue<bool>() && o.Slot.ToString() == "R";
                             IncomeDamage = (float)HeroSender.GetSpellDamage(AggroTarget, (SpellSlot)skillShot.SkillshotData.Slot);

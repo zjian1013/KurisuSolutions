@@ -236,7 +236,7 @@ namespace Oracle.Extensions
                 menuName.AddItem(new MenuItem("use" + name + "Ults", "Use  on Dangerous (Ultimates Only)")).SetValue(true);
 
                 if (type.Contains("zhonya"))
-                    menuName.AddItem(new MenuItem("use" + name + "Only", "Use only on Dangerous")).SetValue(true);           
+                    menuName.AddItem(new MenuItem("use" + name + "Only", "Use Only on Dangerous")).SetValue(true);           
             }
      
             _mainMenu.AddSubMenu(menuName);

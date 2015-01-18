@@ -9,11 +9,11 @@ namespace Oracle
         public bool Included;
         public string Name;
         public GameObject Obj;
-        public int Starttick;
+        public int Start;
 
-        public GameObj(string name, GameObject obj, bool included, float incdmg)
+        public GameObj(string name, GameObject obj, bool included, float incdmg, int start)
         {
-            Starttick = Environment.TickCount;
+            Start = start;
             Name = name;
             Obj = obj;
             Included = included;
