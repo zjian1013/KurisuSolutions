@@ -52,6 +52,18 @@ namespace Oracle.Extensions
 
         private static void Game_OnGameUpdate(EventArgs args)
         {
+            UseItemCount("Odyns", 3180, 450f);
+            UseItemCount("Randuins", 3143, 450f);
+
+            if (OC.IncomeDamage >= 1)
+            {
+                UseItem("allyshieldlocket", "Locket", 3190, 600f, OC.IncomeDamage);
+                UseItem("selfshieldseraph", "Seraphs", 3040, float.MaxValue, OC.IncomeDamage);
+                UseItem("selfshieldzhonya", "Zhonyas", 3157, float.MaxValue, OC.IncomeDamage);
+                UseItem("allyshieldmountain", "Mountain", 3401, 700f, OC.IncomeDamage);
+                UseItem("selfshieldzhonya", "Wooglets", 3090, float.MaxValue, OC.IncomeDamage);
+            }
+
             // Oracle's Lens 
             if (Items.HasItem(3364) && Items.CanUseItem(3364) && _mainMenu.Item("useOracles").GetValue<bool>())
             {
@@ -115,17 +127,20 @@ namespace Oracle.Extensions
                     Items.UseItem(3069);
                 }
             }
+        }
 
-            UseItem("selfshieldranduinnum", "Randuins", 3143, 450f, OC.IncomeDamage);
-            UseItem("selfshieldodynnum", "Odyns", 3180, 450f, OC.IncomeDamage);
+        private static void UseItemCount(string name, int itemId, float itemRange)
+        {
+            if (!Items.HasItem(itemId) || !Items.CanUseItem(itemId))
+                return;
 
-            if (OC.IncomeDamage >= 1)
+            if (_mainMenu.Item("use" + name).GetValue<bool>())
             {
-                UseItem("allyshieldlocket", "Locket", 3190, 600f, OC.IncomeDamage);
-                UseItem("selfshieldseraph", "Seraphs", 3040, float.MaxValue, OC.IncomeDamage);
-                UseItem("selfshieldzhonya", "Zhonyas", 3157, float.MaxValue, OC.IncomeDamage);            
-                UseItem("allyshieldmountain", "Mountain", 3401, 700f, OC.IncomeDamage);
-                UseItem("selfshieldzhonya", "Wooglets", 3090, float.MaxValue, OC.IncomeDamage);
+                if (Me.CountHerosInRange("hostile", itemRange) >=
+                    _mainMenu.Item("use" + name + "Count").GetValue<Slider>().Value)
+                {
+                    Items.UseItem(itemId);
+                }
             }
         }
 
@@ -189,10 +204,12 @@ namespace Oracle.Extensions
             var menuName = new Menu(displayname, name.ToLower());
 
             menuName.AddItem(new MenuItem("use" + name, "Use " + name)).SetValue(true);
-            menuName.AddItem(new MenuItem("use" + name + "Pct", "Use on HP %")).SetValue(new Slider(hpvalue));
 
             if (!itemcount)
+            {
                 menuName.AddItem(new MenuItem("use" + name + "Dmg", "Use on Dmg %")).SetValue(new Slider(dmgvalue));
+                menuName.AddItem(new MenuItem("use" + name + "Pct", "Use on HP %")).SetValue(new Slider(hpvalue));
+            }
 
             if (itemcount)
                 menuName.AddItem(new MenuItem("use" + name + "Count", "Use on Count")).SetValue(new Slider(3, 1, 5));
