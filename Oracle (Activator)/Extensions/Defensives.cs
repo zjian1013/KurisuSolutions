@@ -59,7 +59,7 @@ namespace Oracle.Extensions
                     _mainMenu.Item("oracleMode").GetValue<StringList>().SelectedIndex == 1)
                     return;
 
-                var target = OC.FriendlyTarget();
+                var target = OC.Friendly();
                 if (target.Distance(Me.ServerPosition, true) <= 600*600 && OC.Stealth || target.HasBuff("RengarRBuff", true))
                 {
                     Items.UseItem(3364, target.ServerPosition);
@@ -84,16 +84,15 @@ namespace Oracle.Extensions
             {
                 if (!OC.Origin.Item("ComboKey").GetValue<KeyBind>().Active &&
                     _mainMenu.Item("talismanMode").GetValue<StringList>().SelectedIndex == 1)
-                    return;
-
-                var target = OC.FriendlyTarget();
-                if (target.Distance(Me.ServerPosition, true) > 600*600)
                 {
                     return;
                 }
 
-                var enemies = target.CountHerosInRange(true, 1000);
-                var allies = target.CountHerosInRange(false, 1000);
+                var target = OC.Friendly();
+                if (target.Distance(Me.ServerPosition, true) > 600*600)
+                {
+                    return;
+                }
 
                 var weakEnemy =
                     ObjectManager.Get<Obj_AI_Hero>()
@@ -103,13 +102,15 @@ namespace Oracle.Extensions
                 var aHealthPercent = target.Health/target.MaxHealth*100;
                 var eHealthPercent = weakEnemy.Health/weakEnemy.MaxHealth*100;
 
-                if (weakEnemy.Distance(target.ServerPosition, true) <= 900*900 &&
-                    (allies > enemies && eHealthPercent <= _mainMenu.Item("useEnemyPct").GetValue<Slider>().Value))
+                if (weakEnemy.Distance(target.ServerPosition, true) <= 900 * 900 &&
+                    (target.CountHerosInRange("allies") > target.CountHerosInRange("hostile") &&
+                     eHealthPercent <= _mainMenu.Item("useEnemyPct").GetValue<Slider>().Value))
                 {
                     Items.UseItem(3069);
                 }
 
-                if (enemies > allies && aHealthPercent <= _mainMenu.Item("useAllyPct").GetValue<Slider>().Value)
+                if (target.CountHerosInRange("hostile") > target.CountHerosInRange("allies") &&
+                    aHealthPercent <= _mainMenu.Item("useAllyPct").GetValue<Slider>().Value)
                 {
                     Items.UseItem(3069);
                 }
@@ -136,7 +137,7 @@ namespace Oracle.Extensions
             if (!_mainMenu.Item("use" + name).GetValue<bool>())
                 return;
 
-            var target = itemRange > 5000 ? Me : OC.FriendlyTarget();
+            var target = itemRange > 5000 ? Me : OC.Friendly();
             if (target.Distance(Me.ServerPosition, true) > itemRange*itemRange)
                 return;
             
@@ -146,21 +147,7 @@ namespace Oracle.Extensions
             if (!_mainMenu.Item("DefenseOn" + target.SkinName).GetValue<bool>())
                 return;
 
-
-            if (menuvar.Contains("num"))
-            {
-                // number check
-                if (Me.CountHerosInRange(true, itemRange) >=
-                    _mainMenu.Item("use" + name + "Count").GetValue<Slider>().Value)
-                {
-                    Items.UseItem(itemId);
-                }
-            }
-
-            if (menuvar.Contains("num"))
-                return;
-
-            if (target.CountHerosInRange(true, 1000) >= target.CountHerosInRange(false, 1000) || incdmg >= target.Health)
+            if (target.CountHerosInRange("allies") >= target.CountHerosInRange("hostile") || incdmg >= target.Health)
             {
                 if (_mainMenu.Item("use" + name + "Ults").GetValue<bool>())
                 {

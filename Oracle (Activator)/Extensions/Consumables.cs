@@ -38,7 +38,7 @@ namespace Oracle.Extensions
             if (!Items.HasItem(itemId) || !Items.CanUseItem(itemId))
                 return;
 
-            if (Me.HasBuff(name, true) || !Me.NotRecalling() || Me.InFountain())
+            if (Me.HasBuff(name, true) || Me.IsRecalling() || Me.InFountain())
                 return;
 
             if (!_mainMenu.Item("use" + menuvar).GetValue<bool>())

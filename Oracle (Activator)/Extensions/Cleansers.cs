@@ -69,7 +69,7 @@ namespace Oracle.Extensions
             if (!_mainMenu.Item("use" + name).GetValue<bool>())
                 return;
 
-            var target = range > 5000 ? Me : OC.FriendlyTarget();
+            var target = range > 5000 ? Me : OC.Friendly();
             if (_mainMenu.Item("ccon" + target.SkinName).GetValue<bool>())
             {
                 if (target.Distance(Me.ServerPosition, true) <= range * range)

@@ -163,7 +163,7 @@ namespace Oracle.Extensions
 
             var spell = new Spell(slot, range);
 
-            var target = range < 5000 ? OC.FriendlyTarget() : Me;
+            var target = range < 5000 ? OC.Friendly() : Me;
             if (target.Distance(Me.ServerPosition, true) > range * range)
                 return;
 
@@ -220,7 +220,7 @@ namespace Oracle.Extensions
             
             var spell = new Spell(slot, range);
 
-            var target = range < 5000 ? OC.FriendlyTarget() : Me;
+            var target = range < 5000 ? OC.Friendly() : Me;
             if (target.Distance(Me.ServerPosition, true) > range * range)
                 return;
 
@@ -237,7 +237,7 @@ namespace Oracle.Extensions
 
                 if (OC.Danger && menuvar.Contains("hero"))
                 {
-                    if (Me.CountHerosInRange(true, 1000) > Me.CountHerosInRange(false, 1000))
+                    if (Me.CountHerosInRange("hostile") > Me.CountHerosInRange("allies"))
                     {
                         if (OC.AggroTarget.NetworkId != Me.NetworkId)
                             return;
@@ -270,7 +270,7 @@ namespace Oracle.Extensions
 
                 if (OC.DangerUlt && menuvar.Contains("hero"))
                 {
-                    if (Me.CountHerosInRange(true, 1000) > Me.CountHerosInRange(false, 1000))
+                    if (Me.CountHerosInRange("hostile") > Me.CountHerosInRange("allies"))
                     {
                         if (OC.AggroTarget.NetworkId != Me.NetworkId)
                             return;
@@ -304,7 +304,7 @@ namespace Oracle.Extensions
                 return;
 
             var spell = new Spell(slot, range);
-            var target = range < 5000 ? OC.FriendlyTarget() : Me;
+            var target = range < 5000 ? OC.Friendly() : Me;
 
             if (target.Distance(Me.ServerPosition, true) > range*range)
                 return;    

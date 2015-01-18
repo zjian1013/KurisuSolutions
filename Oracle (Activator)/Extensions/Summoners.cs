@@ -312,7 +312,7 @@ namespace Oracle.Extensions
             if (Me.Spellbook.CanUseSpell(heal) != SpellState.Ready)
                 return;
 
-            var target = OC.FriendlyTarget();
+            var target = OC.Friendly();
             var iDamagePercent = (int) ((incdmg/Me.MaxHealth)*100);
 
             if (target.Distance(Me.Position) <= 700f)
@@ -356,7 +356,7 @@ namespace Oracle.Extensions
             if (Me.Spellbook.CanUseSpell(clarity) != SpellState.Ready)
                 return;
 
-            var target = OC.FriendlyTarget();
+            var target = OC.Friendly();
             if (!(target.Distance(Me.Position) <= 600f))
                 return;
 
@@ -367,7 +367,7 @@ namespace Oracle.Extensions
             if (!_menuConfig.Item("suseOn" + target.SkinName).GetValue<bool>())
                 return;
 
-            if (!Me.InFountain() && Me.NotRecalling())
+            if (!Me.InFountain() && !Me.IsRecalling())
                 Me.Spellbook.CastSpell(clarity, target);
         }
 
@@ -564,7 +564,7 @@ namespace Oracle.Extensions
                 _mainMenu.Item("exhaustMode").GetValue<StringList>().SelectedIndex == 1)
                 return;
 
-            var target = OC.FriendlyTarget();
+            var target = OC.Friendly();
             if (Me.Spellbook.CanUseSpell(exhaust) == SpellState.Ready)
             {
                 if (OC.DangerUlt && _mainMenu.Item("exhDanger").GetValue<bool>())

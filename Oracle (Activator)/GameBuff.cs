@@ -16,34 +16,18 @@ namespace Oracle
         public string SpellName { get; set; }
         public int Delay { get; set; }
 
+        public static readonly List<GameBuff> EvadeBuffs = new List<GameBuff>();
         public static readonly List<GameBuff> CleanseBuffs = new List<GameBuff>();
-        public static readonly List<GameBuff> DamageBuffs = new List<GameBuff>(); // todo: DoTs
 
         static GameBuff()
         {
-            DamageBuffs.Add(new GameBuff
-            {
-                ChampionName = "Karthus",
-                BuffName = "fallenonetarget",
-                SpellName = "fallenone",
-                Slot = SpellSlot.R,
-                Delay = 2100,
-                Dangerous = true
-            });
-
-            DamageBuffs.Add(new GameBuff
-            {
-                ChampionName = "Caitlyn"
-            });
-
             CleanseBuffs.Add(new GameBuff
             {
                 ChampionName = "Zed",
                 BuffName = "zedulttargetmark",
                 SpellName = "zedult",
                 Slot = SpellSlot.R,
-                Delay = 1800,
-                Dangerous = true
+                Delay = 1800
             });
 
             CleanseBuffs.Add(new GameBuff
@@ -61,8 +45,7 @@ namespace Oracle
                 BuffName = "fizzmarinerdoombomb",
                 SpellName = "fizzmarinerdoom",
                 Slot = SpellSlot.R,
-                Delay = 2000,
-                Dangerous = true
+                Delay = 0
             });
 
             CleanseBuffs.Add(new GameBuff
@@ -71,8 +54,7 @@ namespace Oracle
                 BuffName = "leblancsoulshackle",
                 SpellName = "leblancsoulshackle",
                 Slot = SpellSlot.E,
-                Delay = 1800,
-                Dangerous = true,
+                Delay = 0
             });
 
             CleanseBuffs.Add(new GameBuff
@@ -81,7 +63,7 @@ namespace Oracle
                 BuffName = "leblancsoulshacklem",
                 SpellName = "leblancsoulshacklem",
                 Slot = SpellSlot.R,
-                Delay = 0,
+                Delay = 0
             });
 
             CleanseBuffs.Add(new GameBuff
@@ -126,8 +108,7 @@ namespace Oracle
                 BuffName = "vladimirhemoplague",
                 SpellName = "vladimirhemoplague",
                 Slot = SpellSlot.R,
-                Delay = 4000,
-                Dangerous = true
+                Delay = 4000
             });
 
             CleanseBuffs.Add(new GameBuff
@@ -136,10 +117,44 @@ namespace Oracle
                 BuffName = "soulshackles",
                 SpellName = "soulshackles",
                 Slot = SpellSlot.R,
-                Delay = 2000,
-                Dangerous = true
+                Delay = 1000,
             });
-                        
+
+            EvadeBuffs.Add(new GameBuff
+            {
+                ChampionName = "Karthus",
+                BuffName = "fallenonetarget",
+                SpellName = "fallenone",
+                Slot = SpellSlot.R,
+                Delay = 2500
+            });
+
+            EvadeBuffs.Add(new GameBuff
+            {
+                ChampionName = "Morgana",
+                BuffName = "soulshackles",
+                SpellName = "soulshackles",
+                Slot = SpellSlot.R,
+                Delay = 2500
+            });
+
+            EvadeBuffs.Add(new GameBuff
+            {
+                ChampionName = "Vladimir",
+                BuffName = "vladimirhemoplague",
+                SpellName = "vladimirhemoplague",
+                Slot = SpellSlot.R,
+                Delay = 4500,
+            });
+
+            EvadeBuffs.Add(new GameBuff
+            {
+                ChampionName = "Zed",
+                BuffName = "zedulttargetmark",
+                SpellName = "zedult",
+                Slot = SpellSlot.R,
+                Delay = 2500
+            });
         }
     }
 }

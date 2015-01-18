@@ -95,83 +95,74 @@ namespace Oracle
         public static bool CanManamune;
         public static int SinceSpellCast;
 
-        private static GameObj _satchel, _miasma, _minefield, _crowstorm;
+        private static GameObj _satchel, _miasma, _minefield, _crowstorm, _fizzbait;
         private static GameObj _chaosstorm, _glacialstorm, _lightstrike, _equinox, _tormentsoil;
 
         private static void GameObject_OnCreate(GameObject obj, EventArgs args)
         {
             if (obj.Name.Contains("Crowstorm_red") && GetEnemy("Fiddlesticks") != null)
             {
-                var dmg = (float) GetEnemy("Fiddlesticks").GetSpellDamage(FriendlyTarget(), SpellSlot.R);
+                var dmg = (float) GetEnemy("Fiddlesticks").GetSpellDamage(Friendly(), SpellSlot.R);
                 _crowstorm = new GameObj(obj.Name, obj, true, dmg);
             }
 
+            //else if (obj.Name.Contains("Fizz") && GetEnemy("Fizz") != null)
+            //{
+            //    var dmg = (float) GetEnemy("Fizz").GetSpellDamage(Friendly(), SpellSlot.R);
+            //    _fizzbait = new GameObj(obj.Name, obj, true, dmg);
+            //}
+
             else if (obj.Name.Contains("LuxLightstrike_tar_red") && GetEnemy("Lux") != null)
             {
-                var dmg = (float) GetEnemy("Lux").GetSpellDamage(FriendlyTarget(), SpellSlot.E);
+                var dmg = (float) GetEnemy("Lux").GetSpellDamage(Friendly(), SpellSlot.E);
                 _lightstrike = new GameObj(obj.Name, obj, true, dmg);
             }
 
             else if (obj.Name.Contains("Viktor_ChaosStorm_red") && GetEnemy("Viktor") != null)
             {
-                var dmg = (float) GetEnemy("Viktor").GetSpellDamage(FriendlyTarget(), SpellSlot.R);
+                var dmg = (float) GetEnemy("Viktor").GetSpellDamage(Friendly(), SpellSlot.R);
                 _chaosstorm = new GameObj(obj.Name, obj, true, dmg);
             }
 
             else if (obj.Name.Contains("cryo_storm_red") && GetEnemy("Anivia") != null)
             {
-                var dmg = (float) GetEnemy("Anivia").GetSpellDamage(FriendlyTarget(), SpellSlot.R);
+                var dmg = (float) GetEnemy("Anivia").GetSpellDamage(Friendly(), SpellSlot.R);
                 _glacialstorm = new GameObj(obj.Name, obj, true, dmg);
             }
 
             else if (obj.Name.Contains("ZiggsE_red") && GetEnemy("Ziggs") != null)
             {
-                var dmg = (float) GetEnemy("Ziggs").GetSpellDamage(FriendlyTarget(), SpellSlot.E);
+                var dmg = (float) GetEnemy("Ziggs").GetSpellDamage(Friendly(), SpellSlot.E);
                 _minefield = new GameObj(obj.Name, obj, true, dmg);
             }
 
             else if (obj.Name.Contains("ZiggsWRingRed") && GetEnemy("Ziggs") != null)
             {
-                var dmg = (float) GetEnemy("Ziggs").GetSpellDamage(FriendlyTarget(), SpellSlot.W);
+                var dmg = (float) GetEnemy("Ziggs").GetSpellDamage(Friendly(), SpellSlot.W);
                 _satchel = new GameObj(obj.Name, obj, true, dmg);
             }
 
             else if (obj.Name.Contains("CassMiasma_tar_red") && GetEnemy("Cassiopeia") != null)
             {
-                var dmg = (float) GetEnemy("Cassiopeia").GetSpellDamage(FriendlyTarget(), SpellSlot.W);
+                var dmg = (float) GetEnemy("Cassiopeia").GetSpellDamage(Friendly(), SpellSlot.W);
                 _miasma = new GameObj(obj.Name, obj, true, dmg);
             }
 
             else if (obj.Name.Contains("Soraka_Base_E_rune_RED") && GetEnemy("Soraka") != null)
             {
-                var dmg = (float) GetEnemy("Soraka").GetSpellDamage(FriendlyTarget(), SpellSlot.E);
+                var dmg = (float) GetEnemy("Soraka").GetSpellDamage(Friendly(), SpellSlot.E);
                 _equinox = new GameObj(obj.Name, obj, true, dmg);
             }
 
             else if (obj.Name.Contains("Morgana_Base_W_Tar_red") && GetEnemy("Morgana") != null)
             {
-                var dmg = (float) GetEnemy("Morgana").GetSpellDamage(FriendlyTarget(), SpellSlot.W);
+                var dmg = (float) GetEnemy("Morgana").GetSpellDamage(Friendly(), SpellSlot.W);
                 _tormentsoil = new GameObj(obj.Name, obj, true, dmg);
             }
         }
 
         private static void Game_OnGameUpdate(EventArgs args)
         {
-            // reset income damage/danger safely
-            if (IncomeDamage >= 1)
-                Utility.DelayAction.Add(Game.Ping + 50, () => IncomeDamage = 0);
-            if (MinionDamage >= 1)
-                Utility.DelayAction.Add(Game.Ping + 50, () => MinionDamage = 0);
-
-            if (Danger)
-                Utility.DelayAction.Add(Game.Ping + 130, () => Danger = false);
-            if (DangerCC)
-                Utility.DelayAction.Add(Game.Ping + 130, () => DangerCC = false);
-            if (DangerUlt)
-                Utility.DelayAction.Add(Game.Ping + 130, () => DangerUlt = false);
-            if (Spell)
-                Utility.DelayAction.Add(Game.Ping + 130, () => Spell = false);
-
             // Get current target near mouse cursor.
             foreach (
                 var targ in
@@ -183,16 +174,16 @@ namespace Oracle
             }
 
             // Get dangerous buff update for zhonya (vladimir R) etc)
-            foreach (var buff in GameBuff.CleanseBuffs)
+            foreach (var buff in GameBuff.EvadeBuffs)
             {
-                var buffinst = FriendlyTarget().Buffs;
-                if (buffinst.Any(aura => aura.Name.ToLower() == buff.BuffName))
+                var buffinst = Friendly().Buffs;
+                if (buffinst.Any(aura => aura.Name.ToLower().Contains(buff.SpellName)))
                 {
                     Utility.DelayAction.Add(
                         buff.Delay, delegate
                         {
                             Attacker = GetEnemy(buff.ChampionName);
-                            AggroTarget = FriendlyTarget();
+                            AggroTarget = Friendly();
 
                             DangerUlt = buff.Dangerous && buff.Slot == SpellSlot.R &&
                                         Origin.Item(buff.SpellName + "ccc").GetValue<bool>();
@@ -205,39 +196,13 @@ namespace Oracle
                 }
             }
             
-            // todo: Get buff damage update and finish list
-            if (FriendlyTarget().HasBuffOfType(BuffType.Damage))
-            {
-                foreach (var buff in GameBuff.DamageBuffs)
-                {
-                    var buffinst = FriendlyTarget().Buffs;
-                    if (buffinst.Any(aura => aura.Name.ToLower() == buff.BuffName))
-                    {
-                        Utility.DelayAction.Add(
-                            buff.Delay, delegate
-                            {
-                                Attacker = GetEnemy(buff.ChampionName);
-                                AggroTarget = FriendlyTarget();
-                                IncomeDamage =
-                                    (float) GetEnemy(buff.ChampionName).GetSpellDamage(FriendlyTarget(), buff.Slot);
-
-                                DangerUlt = buff.Dangerous && buff.Slot == SpellSlot.R &&
-                                            Origin.Item(buff.SpellName + "ccc").GetValue<bool>();
-
-                                if (Origin.Item("dbool").GetValue<bool>())
-                                    Console.WriteLine(Attacker.SkinName + " applied (Damagebuff) on " + AggroTarget.SkinName + " for " + IncomeDamage);
-                            });
-                    }
-                }
-            }
-
             // Get ground object damage update
             if (_glacialstorm.Included)
             {
-                if (_glacialstorm.Obj.IsValid && FriendlyTarget().Distance(_glacialstorm.Obj.Position, true) <= 400*400 && GetEnemy("Anivia") != null)
+                if (_glacialstorm.Obj.IsValid && Friendly().Distance(_glacialstorm.Obj.Position, true) <= 400*400 && GetEnemy("Anivia") != null)
                 {
                     Attacker = GetEnemy("Anivia");
-                    AggroTarget = FriendlyTarget();
+                    AggroTarget = Friendly();
                     IncomeDamage = _glacialstorm.Damage;
 
                     if (Origin.Item("dbool").GetValue<bool>())
@@ -248,16 +213,16 @@ namespace Oracle
 
             if (_chaosstorm.Included)
             {
-                if (_chaosstorm.Obj.IsValid && FriendlyTarget().Distance(_chaosstorm.Obj.Position, true) <= 400*400 && GetEnemy("Viktor") != null)
+                if (_chaosstorm.Obj.IsValid && Friendly().Distance(_chaosstorm.Obj.Position, true) <= 400*400 && GetEnemy("Viktor") != null);
                 {
                     Attacker = GetEnemy("Viktor");
-                    AggroTarget = FriendlyTarget();
+                    AggroTarget = Friendly();
                     IncomeDamage = _chaosstorm.Damage;
 
-                    if (AggroTarget.NetworkId == FriendlyTarget().NetworkId && Origin.Item("viktorchaosstormccc").GetValue<bool>())
+                    if (AggroTarget.NetworkId == Friendly().NetworkId && Origin.Item("viktorchaosstormccc").GetValue<bool>())
                     {
-                        if (FriendlyTarget().CountHerosInRange(true, 1000) >=
-                            FriendlyTarget().CountHerosInRange(false, 1000) || IncomeDamage >= FriendlyTarget().Health)
+                        if (Friendly().CountHerosInRange("hostile") >=
+                            Friendly().CountHerosInRange("allies") || IncomeDamage >= Friendly().Health)
                         {
                             Danger = true;
                             DangerUlt = true;
@@ -273,18 +238,17 @@ namespace Oracle
             if (_crowstorm.Included)
             {
                 // 575 Fear Range
-                if (_crowstorm.Obj.IsValid && FriendlyTarget().Distance(_crowstorm.Obj.Position, true) <= 575*575 && GetEnemy("Fiddlesticks") != null)
+                if (_crowstorm.Obj.IsValid && Friendly().Distance(_crowstorm.Obj.Position, true) <= 575*575 && GetEnemy("Fiddlesticks") != null)
                 {
                     Attacker = GetEnemy("Fiddlesticks");
-                    AggroTarget = FriendlyTarget();
+                    AggroTarget = Friendly();
                     IncomeDamage = _chaosstorm.Damage;
 
-                    if (AggroTarget.NetworkId == FriendlyTarget().NetworkId && Origin.Item("crowstormccc").GetValue<bool>())
+                    if (AggroTarget.NetworkId == Friendly().NetworkId && Origin.Item("crowstormccc").GetValue<bool>())
                     {
-                        if (FriendlyTarget().CountHerosInRange(true, 1000) >=
-                            FriendlyTarget().CountHerosInRange(false, 1000) || IncomeDamage >= FriendlyTarget().Health)
+                        if (Friendly().CountHerosInRange("hostile") >=
+                            Friendly().CountHerosInRange("allies") || IncomeDamage >= Friendly().Health)
                         {
-                            Danger = true;
                             DangerUlt = true;
                             Attacker = GetEnemy("Fiddlesticks");
                         }
@@ -298,10 +262,10 @@ namespace Oracle
 
             if (_minefield.Included)
             {
-                if (_minefield.Obj.IsValid && FriendlyTarget().Distance(_minefield.Obj.Position, true) <= 300*300 && GetEnemy("Ziggs") != null)
+                if (_minefield.Obj.IsValid && Friendly().Distance(_minefield.Obj.Position, true) <= 300*300 && GetEnemy("Ziggs") != null)
                 {
                     Attacker = GetEnemy("Ziggs");
-                    AggroTarget = FriendlyTarget();
+                    AggroTarget = Friendly();
                     IncomeDamage = _minefield.Damage;
 
                     if (Origin.Item("dbool").GetValue<bool>())
@@ -312,10 +276,10 @@ namespace Oracle
 
             if (_satchel.Included)
             {
-                if (_satchel.Obj.IsValid && FriendlyTarget().Distance(_satchel.Obj.Position, true) <= 300*300 && GetEnemy("Ziggs") != null)
+                if (_satchel.Obj.IsValid && Friendly().Distance(_satchel.Obj.Position, true) <= 300*300 && GetEnemy("Ziggs") != null)
                 {
                     Attacker = GetEnemy("Ziggs");
-                    AggroTarget = FriendlyTarget();
+                    AggroTarget = Friendly();
                     IncomeDamage = _satchel.Damage;
 
                     if (Origin.Item("dbool").GetValue<bool>())
@@ -326,10 +290,10 @@ namespace Oracle
 
             if (_tormentsoil.Included)
             {
-                if (_satchel.Obj.IsValid && FriendlyTarget().Distance(_tormentsoil.Obj.Position, true) <= 300*300 && GetEnemy("Morgana") != null)
+                if (_satchel.Obj.IsValid && Friendly().Distance(_tormentsoil.Obj.Position, true) <= 300*300 && GetEnemy("Morgana") != null)
                 {
                     Attacker = GetEnemy("Morgana");
-                    AggroTarget = FriendlyTarget();
+                    AggroTarget = Friendly();
                     IncomeDamage = _tormentsoil.Damage;
 
                     if (Origin.Item("dbool").GetValue<bool>())
@@ -340,10 +304,10 @@ namespace Oracle
 
             if (_miasma.Included)
             {
-                if (_miasma.Obj.IsValid && FriendlyTarget().Distance(_miasma.Obj.Position, true) <= 300*300 && GetEnemy("Cassiopeia") != null)
+                if (_miasma.Obj.IsValid && Friendly().Distance(_miasma.Obj.Position, true) <= 300*300 && GetEnemy("Cassiopeia") != null)
                 {
                     Attacker = GetEnemy("Cassiopeia");
-                    AggroTarget = FriendlyTarget();
+                    AggroTarget = Friendly();
                     IncomeDamage = _satchel.Damage;
 
                     if (Origin.Item("dbool").GetValue<bool>())
@@ -354,10 +318,10 @@ namespace Oracle
 
             if (_lightstrike.Included)
             {
-                if (_lightstrike.Obj.IsValid && FriendlyTarget().Distance(_lightstrike.Obj.Position, true) <= 300*300 && GetEnemy("Lux") != null)
+                if (_lightstrike.Obj.IsValid && Friendly().Distance(_lightstrike.Obj.Position, true) <= 300*300 && GetEnemy("Lux") != null)
                 {
                     Attacker = GetEnemy("Lux");
-                    AggroTarget = FriendlyTarget();
+                    AggroTarget = Friendly();
                     IncomeDamage = _lightstrike.Damage;
 
                     if (Origin.Item("dbool").GetValue<bool>())
@@ -368,10 +332,10 @@ namespace Oracle
 
             if (_equinox.Included)
             {
-                if (_equinox.Obj.IsValid && FriendlyTarget().Distance(_equinox.Obj.Position, true) <= 300*300 && GetEnemy("Soraka") != null)
+                if (_equinox.Obj.IsValid && Friendly().Distance(_equinox.Obj.Position, true) <= 300*300 && GetEnemy("Soraka") != null)
                 {
                     Attacker = GetEnemy("Lux");
-                    AggroTarget = FriendlyTarget();
+                    AggroTarget = Friendly();
                     IncomeDamage = _equinox.Damage;
 
                     if (Origin.Item("dbool").GetValue<bool>())
@@ -379,9 +343,24 @@ namespace Oracle
                             AggroTarget.SkinName + " is in Equinox (Ground Object) for: " + IncomeDamage);
                 }
             }
+
+            // reset income damage/danger safely
+            if (IncomeDamage >= 1)
+                Utility.DelayAction.Add(Game.Ping + 50, () => IncomeDamage = 0);
+            if (MinionDamage >= 1)
+                Utility.DelayAction.Add(Game.Ping + 50, () => MinionDamage = 0);
+
+            if (Danger)
+                Utility.DelayAction.Add(Game.Ping + 130, () => Danger = false);
+            if (DangerCC)
+                Utility.DelayAction.Add(Game.Ping + 130, () => DangerCC = false);
+            if (DangerUlt)
+                Utility.DelayAction.Add(Game.Ping + 130, () => DangerUlt = false);
+            if (Spell)
+                Utility.DelayAction.Add(Game.Ping + 130, () => Spell = false);
         }
 
-        public static Obj_AI_Hero FriendlyTarget()
+        public static Obj_AI_Hero Friendly()
         {
             Obj_AI_Hero target = null;
 
@@ -404,7 +383,7 @@ namespace Oracle
             foreach (
                 var enemy in
                     ObjectManager.Get<Obj_AI_Hero>()
-                        .Where(ene => ene.Team != Me.Team)
+                        .Where(hero => hero.Team != Me.Team)
                         .Where(enemy => enemy.ChampionName == championname))
             {
                 obj = enemy;
@@ -413,35 +392,30 @@ namespace Oracle
             return obj;
         }
 
-        public static int CountHerosInRange(this Obj_AI_Hero target, bool enemy = true, float range = float.MaxValue)
+        public static int CountHerosInRange(this Obj_AI_Hero target, string team, float range = 1200f)
         {
-            int count;
+            var enemy = team == "hostile";
             var objListTeam =
                 ObjectManager.Get<Obj_AI_Hero>()
                 .Where(x => x.NetworkId != target.NetworkId && x.IsValidTarget(range, enemy) && enemy ? x.IsEnemy : x.IsAlly);
 
             var objAiHeroes = objListTeam as Obj_AI_Hero[] ?? objListTeam.ToArray();
-            count = enemy ? objAiHeroes.Count() - 1: objAiHeroes.Count();
+            var count = enemy ? objAiHeroes.Count() - 1: objAiHeroes.Count();
 
             return count;
         }
 
-        public static bool NotRecalling(this Obj_AI_Hero target)
-        {
-            return !target.HasBuff("Recall", true) && !target.HasBuff("RecallImproved", true) && !target.HasBuff("OdinRecall", true) &&
-                   !target.HasBuff("OdinRecallImproved", true);
-        }
-
         public static float GetComboDamage(Obj_AI_Hero player, Obj_AI_Base target)
         {
-            // todo: need to get states for e.g nidalee
             var ignite = player.GetSpellSlot("summonerdot");
 
+            // todo: get damage for different spell states
             var qready = player.Spellbook.CanUseSpell(SpellSlot.Q) == SpellState.Ready;
             var wready = player.Spellbook.CanUseSpell(SpellSlot.W) == SpellState.Ready;
             var eready = player.Spellbook.CanUseSpell(SpellSlot.E) == SpellState.Ready;
             var rready = player.Spellbook.CanUseSpell(SpellSlot.R) == SpellState.Ready;
             var iready = player.Spellbook.CanUseSpell(ignite) == SpellState.Ready;
+
 
             var tmt = Items.HasItem(3077) && Items.CanUseItem(3077)
                 ? Me.GetItemDamage(target, Damage.DamageItems.Tiamat)
@@ -472,17 +446,20 @@ namespace Oracle
                 : 0;
 
             var items = tmt + hyd + bwc + brk + dfg + torch + guise;
-
             var aa = player.GetAutoAttackDamage(target);
+
             var qq = qready ? player.GetSpellDamage(target, SpellSlot.Q) : 0;
             var ww = wready ? player.GetSpellDamage(target, SpellSlot.W) : 0;
             var ee = eready ? player.GetSpellDamage(target, SpellSlot.E) : 0;
             var rr = rready ? player.GetSpellDamage(target, SpellSlot.R) : 0;
-            var ii = iready ? player.GetSummonerSpellDamage(target, Damage.SummonerSpell.Ignite) : 0;
+
+            var ii = iready 
+                ? player.GetSummonerSpellDamage(target, Damage.SummonerSpell.Ignite) 
+                : 0;
 
             var damage = aa + qq + ww + ee + rr + ii + items;
 
-            return (float)damage;
+            return (float) damage;
         }
 
         private static void Obj_AI_Base_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
@@ -524,9 +501,6 @@ namespace Oracle
             Attacker = null;
             if (sender.Type == GameObjectType.obj_AI_Hero && sender.IsEnemy)
             {
-                if (GameBuff.CleanseBuffs.Any(buff => args.SData.Name == buff.SpellName))
-                    SinceSpellCast = Environment.TickCount;
-
                 var HeroSender = ObjectManager.Get<Obj_AI_Hero>().First(x => x.NetworkId == sender.NetworkId);
                 if (HeroSender.GetSpellSlot(args.SData.Name) == SpellSlot.Unknown && args.Target.Type == Me.Type)
                 {
@@ -618,7 +592,7 @@ namespace Oracle
                         HeroSender.ServerPosition.To2D(), endPosition, HeroSender);
 
                     var castTime = (o.DontAddExtraDuration ? 0 : o.ExtraDuration) + o.Delay +
-                                   (int)(1000 * HeroSender.Distance(FriendlyTarget().ServerPosition) / o.MissileSpeed) -
+                                   (int)(1000 * HeroSender.Distance(Friendly().ServerPosition) / o.MissileSpeed) -
                                    (Environment.TickCount - skillShot.StartTick);
 
                     AggroTarget =
@@ -662,7 +636,7 @@ namespace Oracle
                 if (args.Target.Type == Me.Type)
                 {
                     Danger = false; DangerCC = false; DangerUlt = false;
-                    if (sender.Distance(FriendlyTarget().ServerPosition, true) <= 900*900)
+                    if (sender.Distance(Friendly().ServerPosition, true) <= 900*900)
                     {
                         AggroTarget = ObjectManager.GetUnitByNetworkId<Obj_AI_Hero>(args.Target.NetworkId);
 
