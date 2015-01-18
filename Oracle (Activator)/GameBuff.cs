@@ -54,7 +54,7 @@ namespace Oracle
                 BuffName = "leblancsoulshackle",
                 SpellName = "leblancsoulshackle",
                 Slot = SpellSlot.E,
-                Delay = 0
+                Delay = 500
             });
 
             CleanseBuffs.Add(new GameBuff
@@ -63,7 +63,7 @@ namespace Oracle
                 BuffName = "leblancsoulshacklem",
                 SpellName = "leblancsoulshacklem",
                 Slot = SpellSlot.R,
-                Delay = 0
+                Delay = 500
             });
 
             CleanseBuffs.Add(new GameBuff

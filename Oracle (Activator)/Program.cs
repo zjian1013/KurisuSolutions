@@ -108,60 +108,72 @@ namespace Oracle
         public static bool CanManamune;
         public static int SinceSpellCast;
 
-        private static GameObj _satchel, _miasma, _minefield, _crowstorm, _fizzbait;
+        private static GameObj _satchel, _miasma, _minefield, _crowstorm, _fizzbait, _caittrap;
         private static GameObj _chaosstorm, _glacialstorm, _lightstrike, _equinox, _tormentsoil;
 
         private static void GameObject_OnCreate(GameObject obj, EventArgs args)
-        {
-            if (obj.Name.Contains("Crowstorm_red") && GetEnemy("Fiddlesticks") != null)
+        {           
+            if (obj.Name.Contains("Crowstorm_red") && GetEnemy("Fiddlesticks").IsValid)
             {
                 var dmg = (float) GetEnemy("Fiddlesticks").GetSpellDamage(Friendly(), SpellSlot.R);
                 _crowstorm = new GameObj(obj.Name, obj, true, dmg);
             }
 
-            else if (obj.Name.Contains("LuxLightstrike_tar_red") && GetEnemy("Lux") != null)
+            else if (obj.Name.Contains("need_fizz_bait_name") && GetEnemy("Fiddlesticks").IsValid)
+            {
+                var dmg = (float) GetEnemy("Fizz").GetSpellDamage(Friendly(), SpellSlot.R);
+                _fizzbait = new GameObj(obj.Name, obj, true, dmg);
+            }
+
+            else if (obj.Name.Contains("caitlyn_Base_yordleTrap_idle_red") && GetEnemy("Caitlyn").IsValid)
+            {
+                var dmg = (float) GetEnemy("Caitlyn").GetSpellDamage(Friendly(), SpellSlot.W);
+                _caittrap = new GameObj(obj.Name, obj, true, dmg);
+            }
+
+            else if (obj.Name.Contains("LuxLightstrike_tar_red") && GetEnemy("Lux").IsValid)
             {
                 var dmg = (float) GetEnemy("Lux").GetSpellDamage(Friendly(), SpellSlot.E);
                 _lightstrike = new GameObj(obj.Name, obj, true, dmg);
             }
 
-            else if (obj.Name.Contains("Viktor_ChaosStorm_red") && GetEnemy("Viktor") != null)
+            else if (obj.Name.Contains("Viktor_ChaosStorm_red") && GetEnemy("Viktor").IsValid)
             {
                 var dmg = (float) GetEnemy("Viktor").GetSpellDamage(Friendly(), SpellSlot.R);
                 _chaosstorm = new GameObj(obj.Name, obj, true, dmg);
             }
 
-            else if (obj.Name.Contains("cryo_storm_red") && GetEnemy("Anivia") != null)
+            else if (obj.Name.Contains("cryo_storm_red") && GetEnemy("Anivia").IsValid)
             {
                 var dmg = (float) GetEnemy("Anivia").GetSpellDamage(Friendly(), SpellSlot.R);
                 _glacialstorm = new GameObj(obj.Name, obj, true, dmg);
             }
 
-            else if (obj.Name.Contains("ZiggsE_red") && GetEnemy("Ziggs") != null)
+            else if (obj.Name.Contains("ZiggsE_red") && GetEnemy("Ziggs").IsValid)
             {
                 var dmg = (float) GetEnemy("Ziggs").GetSpellDamage(Friendly(), SpellSlot.E);
                 _minefield = new GameObj(obj.Name, obj, true, dmg);
             }
 
-            else if (obj.Name.Contains("ZiggsWRingRed") && GetEnemy("Ziggs") != null)
+            else if (obj.Name.Contains("ZiggsWRingRed") && GetEnemy("Ziggs").IsValid)
             {
                 var dmg = (float) GetEnemy("Ziggs").GetSpellDamage(Friendly(), SpellSlot.W);
                 _satchel = new GameObj(obj.Name, obj, true, dmg);
             }
 
-            else if (obj.Name.Contains("CassMiasma_tar_red") && GetEnemy("Cassiopeia") != null)
+            else if (obj.Name.Contains("CassMiasma_tar_red") && GetEnemy("Cassiopeia").IsValid)
             {
                 var dmg = (float) GetEnemy("Cassiopeia").GetSpellDamage(Friendly(), SpellSlot.W);
                 _miasma = new GameObj(obj.Name, obj, true, dmg);
             }
 
-            else if (obj.Name.Contains("Soraka_Base_E_rune_RED") && GetEnemy("Soraka") != null)
+            else if (obj.Name.Contains("Soraka_Base_E_rune_RED") && GetEnemy("Soraka").IsValid)
             {
                 var dmg = (float) GetEnemy("Soraka").GetSpellDamage(Friendly(), SpellSlot.E);
                 _equinox = new GameObj(obj.Name, obj, true, dmg);
             }
 
-            else if (obj.Name.Contains("Morgana_Base_W_Tar_red") && GetEnemy("Morgana") != null)
+            else if (obj.Name.Contains("Morgana_Base_W_Tar_red") && GetEnemy("Morgana").IsValid)
             {
                 var dmg = (float) GetEnemy("Morgana").GetSpellDamage(Friendly(), SpellSlot.W);
                 _tormentsoil = new GameObj(obj.Name, obj, true, dmg);
@@ -246,6 +258,40 @@ namespace Oracle
                     if (Origin.Item("dbool").GetValue<bool>())
                         Console.WriteLine(
                             AggroTarget.SkinName + " is in Chaostorm (Ground Object) for: " + IncomeDamage);
+                }
+            }
+
+            if (_fizzbait.Included && GetEnemy("Fizz").IsValid)
+            {
+                if (_fizzbait.Obj.IsValid && Friendly().Distance(_fizzbait.Obj.Position, true) <= 300 * 300)
+                {
+                    if (Environment.TickCount - _fizzbait.Starttick >= 2000)
+                    {
+                        Attacker = GetEnemy("Fizz");
+                        AggroTarget = Friendly();
+                        IncomeDamage = _fizzbait.Damage;
+
+                        if (Friendly().CountHerosInRange("hostile") >=
+                            Friendly().CountHerosInRange("allies") || IncomeDamage >= Friendly().Health)
+                        {
+                            Danger = true;
+                            DangerUlt = true;
+                        }
+                    }
+
+                    if (Origin.Item("dbool").GetValue<bool>())
+                        Console.WriteLine(
+                            AggroTarget.SkinName + " is in fizz bait (Ground Object) for: " + IncomeDamage);
+                }
+            }
+
+            if (_caittrap.Included && GetEnemy("Caitlyn").IsValid)
+            {
+                if (_caittrap.Obj.IsValid && Friendly().Distance(_caittrap.Obj.Position, true) <= 150 * 150)
+                {
+                    Attacker = GetEnemy("Caitlyn");
+                    AggroTarget = Friendly();
+                    IncomeDamage = _caittrap.Damage;
                 }
             }
 
@@ -403,8 +449,7 @@ namespace Oracle
             var objListTeam =
                 ObjectManager.Get<Obj_AI_Hero>()
                     .Where(
-                        x =>
-                            x.NetworkId != target.NetworkId && x.IsValidTarget(range, false));
+                        x => x.IsValidTarget(range, false));
 
             return objListTeam.Count(hero => enemy ? hero.Team != target.Team : hero.Team == target.Team);
         }
