@@ -59,6 +59,15 @@ namespace Oracle
 
             CleanseBuffs.Add(new GameBuff
             {
+                ChampionName = "LeeSin",
+                BuffName = "blindmonkqonechaos",
+                SpellName = "blindmonkqone",
+                Slot = SpellSlot.Q,
+                Delay = 100
+            });
+
+            CleanseBuffs.Add(new GameBuff
+            {
                 ChampionName = "Leblanc",
                 BuffName = "leblancsoulshacklem",
                 SpellName = "leblancsoulshacklem",

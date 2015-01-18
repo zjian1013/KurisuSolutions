@@ -19,7 +19,7 @@ namespace Oracle
 
         public static Menu Origin;
         public static string ChampionName;
-        public const string Revision = "204";
+        public const string Revision = "205";
         public static Obj_AI_Hero Attacker;
         public static Obj_AI_Hero AggroTarget;
         public static Obj_AI_Hero CurrentTarget;
@@ -567,7 +567,6 @@ namespace Oracle
                 {
                     Spell = true;
                     Stealth = o.Stealth;
-                    DangerCC = o.CcType != CcType.No && o.Type != SpellType.AutoAttack;
 
                     if (o.Type == SpellType.Skillshot)
                     {
@@ -578,6 +577,7 @@ namespace Oracle
                     {
                         Utility.DelayAction.Add((int)(o.Delay), delegate
                         {
+
                             AggroTarget =
                                 ObjectManager.Get<Obj_AI_Hero>()
                                     .OrderBy(x => x.Distance(HeroSender.ServerPosition))
@@ -598,6 +598,7 @@ namespace Oracle
 
                                 Danger = Origin.Item(o.Name.ToLower() + "ccc").GetValue<bool>();
                                 DangerUlt = Origin.Item(o.Name.ToLower() + "ccc").GetValue<bool>() && o.Spellslot.ToString() == "R";
+                                DangerCC = o.CcType != CcType.No && o.Type != SpellType.AutoAttack;
 
                             }
                         });
@@ -624,6 +625,7 @@ namespace Oracle
 
                             Danger = Origin.Item(o.Name.ToLower() + "ccc").GetValue<bool>();
                             DangerUlt = Origin.Item(o.Name.ToLower() + "ccc").GetValue<bool>() && o.Spellslot.ToString() == "R";
+                            DangerCC = o.CcType != CcType.No && o.Type != SpellType.AutoAttack;
                         });
                     }
                 }

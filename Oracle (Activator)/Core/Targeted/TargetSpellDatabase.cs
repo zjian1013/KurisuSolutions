@@ -441,8 +441,8 @@ namespace Oracle.Core.Targeted
                 new TargetSpellData("leesin", "blindmonkwone", SpellSlot.W, SpellType.Targeted, CcType.No, 700, 0, 1500),
                 new TargetSpellData("leesin", "blindmonkwtwo", SpellSlot.W, SpellType.Self, CcType.No, 700, 0, float.MaxValue),
                 new TargetSpellData("leesin", "blindmonkeone", SpellSlot.E, SpellType.Self, CcType.No, 425, 500, float.MaxValue),
-                new TargetSpellData("leesin", "blindmonketwo", SpellSlot.E, SpellType.Self, CcType.Slow, 425, 500, float.MaxValue),
-                new TargetSpellData("leesin", "blindmonkrkick", SpellSlot.R, SpellType.Targeted, CcType.Knockback, 375, 500, 1500, true),
+                new TargetSpellData("leesin", "blindmonketwo", SpellSlot.E, SpellType.Self, CcType.Slow, 350, 0, float.MaxValue),
+                new TargetSpellData("leesin", "blindmonkrkick", SpellSlot.R, SpellType.Targeted, CcType.Knockback, 375, 150, 1500, true),
 
                 #endregion LeeSin
 

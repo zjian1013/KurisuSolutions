@@ -455,7 +455,7 @@ namespace Oracle.Extensions
                             return;
                         }
                         
-                        if (smitetarg.Health <= Me.GetSummonerSpellDamage(smitetarg, Damage.SummonerSpell.Smite))
+                        if (smitetarg.Health <= 20 + 8 * Me.Level)
                             Me.Spellbook.CastSpell(slot, smitetarg);
                     }
                 }
