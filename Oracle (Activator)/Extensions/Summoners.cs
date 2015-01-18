@@ -80,7 +80,7 @@ namespace Oracle.Extensions
                 Smite.AddItem(new MenuItem("smitemode", "Smite Enemies: "))
                     .SetValue(new StringList(new[] { "Killsteal", "Combo", "No One" }));
                 Smite.AddItem(
-                    new MenuItem("smiteSave", "Save a Smite Charge").SetValue(true);
+                    new MenuItem("smiteSave", "Save a Smite Charge").SetValue(true));
                 _mainMenu.AddSubMenu(Smite);
             }
 
