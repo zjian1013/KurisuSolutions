@@ -72,12 +72,15 @@ namespace Oracle.Extensions
                 _ss = true;
                 var Smite = new Menu("Smite", "msmite");
                 Smite.AddItem(new MenuItem("useSmite", "Use Smite")).SetValue(new KeyBind(77, KeyBindType.Toggle, true));
-                Smite.AddItem(new MenuItem("smiteEnemy", "Smite Enemies")).SetValue(true);
                 Smite.AddItem(new MenuItem("smiteSpell", "Smite + Ability")).SetValue(true);
                 Smite.AddItem(new MenuItem("drawSmite", "Draw Smite Range")).SetValue(true);
-                Smite.AddItem(new MenuItem("smiteSmall", "Smite Small Camps")).SetValue(true);
+                Smite.AddItem(new MenuItem("smiteSmall", "Smite Small Camps")).SetValue(false);
                 Smite.AddItem(new MenuItem("smiteLarge", "Smite Large Camps")).SetValue(true);
                 Smite.AddItem(new MenuItem("smiteEpic", "Smite Epic Camps")).SetValue(true);
+                Smite.AddItem(new MenuItem("smitemode", "Smite Enemies: "))
+                    .SetValue(new StringList(new[] { "Killsteal", "Combo", "No One" }));
+                Smite.AddItem(
+                    new MenuItem("smiteSave", "Save a Smite Charge").SetValue(true);
                 _mainMenu.AddSubMenu(Smite);
             }
 
@@ -430,22 +433,45 @@ namespace Oracle.Extensions
             CheckChampSmite("MonkeyKing", "target", 300f, SpellSlot.Q);
 
             if (Me.Spellbook.CanUseSpell(smite) != SpellState.Ready)
-            {
                 return;
+
+            if (_smiteSlot != "s5_summonersmiteplayerganker")
+                return;
+
+            var slot = Me.GetSpellSlot(_smiteSlot);
+            var save = _mainMenu.Item("saveSmite").GetValue<bool>();
+            if (_mainMenu.Item("smitemode").GetValue<StringList>().SelectedIndex == 0)
+            {
+                if (Me.Spellbook.CanUseSpell(slot) == SpellState.Ready)
+                {
+                    foreach (var smitetarg in
+                        ObjectManager.Get<Obj_AI_Hero>()
+                            .Where(
+                                hero =>
+                                    hero.IsValidTarget(760) &&
+                                    hero.Health <= Me.GetSummonerSpellDamage(hero, Damage.SummonerSpell.Smite)))
+                    {
+                        if (save && Me.Spellbook.GetSpell(slot).Ammo <= 1)
+                        {
+                            return;
+                        }
+                        
+                        Me.Spellbook.CastSpell(slot, smitetarg);
+                    }
+                }
             }
 
-            if (_mainMenu.Item("smiteEnemy").GetValue<bool>())
+            if (_mainMenu.Item("smitemode").GetValue<StringList>().SelectedIndex == 1)
             {
-                if (_smiteSlot != "s5_summonersmiteplayerganker")
-                {
-                    return;
-                }
-
-                var slot = Me.GetSpellSlot(_smiteSlot);
-                if (OC.Origin.Item("ComboKey").GetValue<KeyBind>().Active && Me.Spellbook.GetSpell(slot).Ammo > 1)
+                if (OC.Origin.Item("ComboKey").GetValue<KeyBind>().Active)
                 {
                     if (Me.Spellbook.CanUseSpell(slot) == SpellState.Ready)
                     {
+                        if (save && Me.Spellbook.GetSpell(slot).Ammo <= 1)
+                        {
+                            return;
+                        }
+
                         Me.Spellbook.CastSpell(slot, OC.CurrentTarget);
                     }
                 }
