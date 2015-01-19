@@ -4,7 +4,6 @@ using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
 using System.Collections.Generic;
-using LeagueSharp.Network.Packets;
 using Color = System.Drawing.Color;
 
 namespace KurisuNidalee
@@ -905,14 +904,7 @@ namespace KurisuNidalee
 
             if (usepacket)
             {
-                new PKT_NPC_CastSpellReq()
-                {
-                    From = Me.ServerPosition.To2D(),
-                    NetworkId = Me.NetworkId,
-                    SpellSlot = (byte)spell.Slot,
-                    Unknown1 = true,
-                    Unknown2 = true,
-                }.Encode().SendAsPacket();
+                spell.Cast();
             }
             else
             {
@@ -928,15 +920,7 @@ namespace KurisuNidalee
 
             if (usepacket)
             {
-                new PKT_NPC_CastSpellReq()
-                {
-                    From = Me.ServerPosition.To2D(),
-                    To = pos.To2D(),
-                    NetworkId = Me.NetworkId,
-                    SpellSlot = (byte)spell.Slot,
-                    Unknown1 = true,
-                    Unknown2 = true,
-                }.Encode().SendAsPacket();
+                spell.Cast(pos);
             }
             else
             {
