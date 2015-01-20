@@ -119,9 +119,9 @@ namespace Oracle
                 _crowstorm = new GameObj(obj.Name, obj, true, dmg, Environment.TickCount);
             }
 
-            else if (obj.Name.Contains("shark") && GetEnemy("Fizz").IsValid)
+            else if ((obj.Name.Contains("Bait") || obj.Name.Contains("bait")) && GetEnemy("Fizz").IsValid)
             {
-                var dmg = (float) GetEnemy("Fizz").GetSpellDamage(Friendly(), SpellSlot.R);
+                var dmg = (float)GetEnemy("Fizz").GetSpellDamage(Friendly(), SpellSlot.R);
                 _fizzbait = new GameObj(obj.Name, obj, true, dmg, Environment.TickCount);
             }
 
@@ -182,6 +182,7 @@ namespace Oracle
 
         private static void Game_OnGameUpdate(EventArgs args)
         {
+            // prevent errors before spawning to the rift
             if (!Me.IsValidTarget(300, false))
             {
                 return;
@@ -196,7 +197,7 @@ namespace Oracle
             {
                 CurrentTarget = targ;
             }
-             
+
             // Get dangerous buff update for zhonya (vladimir R) etc)
             foreach (var buff in GameBuff.EvadeBuffs)
             {
@@ -210,7 +211,7 @@ namespace Oracle
                             AggroTarget = Friendly();
                             IncomeDamage = (float) GetEnemy(buff.ChampionName).GetSpellDamage(AggroTarget, buff.Slot);
 
-                            // check if we still have buff
+                            // check if we still have buff and didn't walk out of it
                             if (buffinst.Any(aura => aura.Name.ToLower().Contains(buff.SpellName)))
                                 DangerUlt = Origin.Item(buff.SpellName + "ccc").GetValue<bool>();
 
@@ -275,8 +276,8 @@ namespace Oracle
                         AggroTarget = Friendly();
                         IncomeDamage = _fizzbait.Damage;
 
-                        if (Friendly().CountHerosInRange("hostile") >=
-                            Friendly().CountHerosInRange("allies") || IncomeDamage >= Friendly().Health)
+                        if (Friendly().CountHerosInRange("hostile") >= Friendly().CountHerosInRange("allies") ||
+                            IncomeDamage >= Friendly().Health)
                         {
                             Danger = true;
                             DangerUlt = true;
@@ -297,6 +298,10 @@ namespace Oracle
                     Attacker = GetEnemy("Caitlyn");
                     AggroTarget = Friendly();
                     IncomeDamage = _caittrap.Damage;
+
+                    if (Origin.Item("dbool").GetValue<bool>())
+                        Console.WriteLine(
+                            AggroTarget.SkinName + " is in yordle trap (Ground Object) for: " + IncomeDamage);
                 }
             }
 
