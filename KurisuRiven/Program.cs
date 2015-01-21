@@ -721,7 +721,7 @@ namespace KurisuRiven
             {
                 if (Me.Spellbook.CanUseSpell(ignote) == SpellState.Ready)
                 {
-                    if (ulton)
+                    if (ulton && target.Distance(Me.ServerPosition) <= 600)
                         Me.Spellbook.CastSpell(ignote, target);
                 }              
             }
