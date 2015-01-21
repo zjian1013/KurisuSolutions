@@ -65,10 +65,19 @@ namespace KurisuRiven
 
             var menuQ = new Menu("Q Menu", "cleave");
             menuQ.AddItem(new MenuItem("prediction", "Predict movement")).SetValue(true);
+            menuQ.AddItem(new MenuItem("usejungleq", "Use in jungle")).SetValue(true);
+            menuQ.AddItem(new MenuItem("uselaneq", "Use in laneclear")).SetValue(true);
             SMenu.AddSubMenu(menuQ);
+
+            var menuW = new Menu("W Menu", "kiburst");
+            menuW.AddItem(new MenuItem("usejunglew", "Use in jungle")).SetValue(true);
+            menuW.AddItem(new MenuItem("uselanew", "Use in laneclear")).SetValue(true);
+            SMenu.AddSubMenu(menuW);
 
             var menuE = new Menu("E Menu", "valor");
             menuE.AddItem(new MenuItem("vhealth", "Valor health %")).SetValue(new Slider(40, 1));
+            menuE.AddItem(new MenuItem("usejunglee", "Use in jungle")).SetValue(true);
+            menuE.AddItem(new MenuItem("uselanee", "Use in laneclear")).SetValue(true);
             SMenu.AddSubMenu(menuE);
 
             var menuR = new Menu("R Menu", "blade");
@@ -414,6 +423,12 @@ namespace KurisuRiven
                 Combo(Maintarget);
             }
 
+            if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear)
+            {
+                LaneClear();
+                JungleClear();
+            }
+
             //mode = mainmenu.Item("rivenmode").GetValue<StringList>();
 
             // other modes broke somewhat and aren't ready yet
@@ -504,6 +519,72 @@ namespace KurisuRiven
             {
                 isdashing = false;
                 canmove = true;
+            }
+        }
+
+        private static void LaneClear()
+        {
+            var minionListerino = MinionManager.GetMinions(Me.ServerPosition, e.Range);
+            foreach (var minion in minionListerino)
+            {
+                Orb(minion);
+                if (q.IsReady() && cancleave && minion.Distance(Me.ServerPosition) <= q.Range)
+                {
+                    if (Config.Item("uselaneq").GetValue<bool>())
+                        q.Cast(minion.ServerPosition);
+                }
+
+                if (w.IsReady() && cankiburst)
+                {
+                    if (minionListerino.Count(m => m.Distance(Me.ServerPosition) <= w.Range) >= 4)
+                    {
+                        if (Config.Item("uselanew").GetValue<bool>())
+                            w.Cast();
+                    }
+                }
+
+                if (e.IsReady() && candash)
+                {
+                    if (minion.Distance(Me.ServerPosition) > e.Range)
+                    {
+                        if (Config.Item("uselanee").GetValue<bool>())
+                            e.Cast(Game.CursorPos);
+                    }
+                }
+            }
+        }
+
+        private static void JungleClear()
+        {
+            foreach (var minion in
+                ObjectManager.Get<Obj_AI_Minion>()
+                    .Where(
+                        m =>
+                            minionList.Any(x => m.Name.StartsWith(x)) && !m.Name.StartsWith("Minion") &&
+                            !m.Name.Contains("Mini")))
+            {
+                Orb(minion);
+                if (cancleave && q.IsReady() && minion.Distance(Me.ServerPosition) <= q.Range)
+                {
+                    if (Config.Item("usejungleq").GetValue<bool>())
+                        q.Cast(minion.ServerPosition);
+                }
+
+                if (cankiburst && w.IsReady() && minion.Distance(Me.ServerPosition) <= w.Range)
+                {
+                    if (Config.Item("usejunglew").GetValue<bool>())
+                        w.Cast();
+                }
+
+                if (e.IsReady() && candash)
+                {
+                    if (minion.Distance(Me.ServerPosition) > e.Range ||
+                        Me.Health / Me.MaxHealth * 100 <= Config.Item("vhealth").GetValue<Slider>().Value)
+                    {
+                        if (Config.Item("uselanee").GetValue<bool>())
+                            e.Cast(Game.CursorPos);
+                    }
+                }
             }
         }
 
@@ -627,7 +708,7 @@ namespace KurisuRiven
 
                 if ((float)ua * 3 + uq * 3 + uw + rr + ri + ritems >= target.Health)
                 {
-                    if (cleavecount <= 1)
+                    if (cleavecount <= 1 && q.IsReady())
                         r.Cast();
                 }
             }
