@@ -514,8 +514,7 @@ namespace KurisuRiven
                 return;
             }
 
-            var target = ObjectManager.Get<Obj_AI_Hero>().FirstOrDefault(x => x.IsValidTarget(r.Range));
-            if (target != null)
+            foreach (var target in ObjectManager.Get<Obj_AI_Hero>().Where(x => x.IsValidTarget(r.Range)))
             {
                 if (target.Health <= rr && canwindslash)
                 {
