@@ -715,6 +715,16 @@ namespace KurisuRiven
                 }
             }
 
+            // ignite
+            var ignote = Me.GetSpellSlot("summonerdot");
+            if ((float)ua * 3 + uq * 3 + uw + rr + ri + ritems >= target.Health)
+            {
+                if (Me.Spellbook.CanUseSpell(ignote) == SpellState.Ready)
+                {
+                    if (ulton)
+                        Me.Spellbook.CastSpell(ignote, target);
+                }              
+            }
         }
      
         private static void Orb(Obj_AI_Base target)
@@ -741,11 +751,6 @@ namespace KurisuRiven
                     if (cleavecount <= 1 && q.IsReady())
                     {
                         r.Cast();
-                        if (Me.Spellbook.CanUseSpell(ignote) == SpellState.Ready)
-                        {
-                            if (ulton)
-                                Me.Spellbook.CastSpell(ignote, target);
-                        }
                     }
                 }
             }
