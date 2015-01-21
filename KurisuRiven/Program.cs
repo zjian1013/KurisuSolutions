@@ -232,6 +232,7 @@ namespace KurisuRiven
                 return;
             }
 
+
             if (args.Animation.Contains("Idle"))
             {
                 canattack = true;
@@ -256,6 +257,11 @@ namespace KurisuRiven
                 cancleave = false;
                 canmove = false;
 
+                if (Config.Item("fleemode").GetValue<KeyBind>().Active)
+                {
+                    return;
+                }
+
                 if (Maintarget.IsValidTarget(truerange + 100))
                 {
                     Utility.DelayAction.Add(
@@ -265,6 +271,11 @@ namespace KurisuRiven
 
             if (args.Animation.Contains("Spell1c"))
             {
+                if (Config.Item("fleemode").GetValue<KeyBind>().Active)
+                {
+                    return;
+                }
+
                 if (Maintarget.IsValidTarget(truerange + 100))
                 {
                     if (args.Animation != "Idle")
