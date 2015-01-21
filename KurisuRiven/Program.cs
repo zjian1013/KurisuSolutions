@@ -12,6 +12,7 @@ namespace KurisuRiven
         private static Obj_AI_Hero Me = ObjectManager.Player;
         private static Obj_AI_Hero Maintarget;
         private static Orbwalking.Orbwalker Orbwalker;
+
         static void Main(string[] args)
         {
             Console.WriteLine("Riven injected...");
@@ -57,9 +58,16 @@ namespace KurisuRiven
             TargetSelector.AddToMenu(TsMenu);
             Config.AddSubMenu(TsMenu);
 
-            var OMenu = new Menu("Orbwalker", "orbwalker");
-            Orbwalker = new Orbwalking.Orbwalker(OMenu);
-            Config.AddSubMenu(OMenu);
+            var OwMenu = new Menu("Orbwalker", "Orbwalk");
+            Orbwalker = new Orbwalking.Orbwalker(OwMenu);
+            Config.AddSubMenu(OwMenu);
+
+            var DrMenu = new Menu("Drawings", "drawings");
+            DrMenu.AddItem(new MenuItem("drawrange", "Draw W")).SetValue(true);
+            DrMenu.AddItem(new MenuItem("drawengage", "Draw Engage")).SetValue(true);
+            DrMenu.AddItem(new MenuItem("drawkill", "Draw Killable")).SetValue(true);
+            DrMenu.AddItem(new MenuItem("drawtarg", "Draw Target Circle")).SetValue(true);
+            Config.AddSubMenu(DrMenu);
 
             var SMenu = new Menu("Spells", "Spells");
 
@@ -189,13 +197,16 @@ namespace KurisuRiven
             {
                 //var wts = Drawing.WorldToScreen(Me.Position);
 
-                Render.Circle.DrawCircle(Me.Position, wrange, System.Drawing.Color.White);
-                Render.Circle.DrawCircle(Me.Position, Me.AttackRange + e.Range + 10, System.Drawing.Color.White);
+                if (Config.Item("drawrange").GetValue<bool>())
+                    Render.Circle.DrawCircle(Me.Position, wrange, System.Drawing.Color.White);
 
-                if (Maintarget.IsValidTarget(900))
+                if (Config.Item("drawengage").GetValue<bool>())
+                    Render.Circle.DrawCircle(Me.Position, Me.AttackRange + e.Range + 10, System.Drawing.Color.White);
+
+                if (Maintarget.IsValidTarget(900) && Config.Item("drawtarg").GetValue<bool>())
                 {
                     Render.Circle.DrawCircle(
-                        Maintarget.Position, Maintarget.BoundingRadius + 30, System.Drawing.Color.Yellow, 8);
+                        Maintarget.Position, Maintarget.BoundingRadius - 50, System.Drawing.Color.Yellow, 6);
                 }
 
                 //Drawing.DrawText(
@@ -219,7 +230,7 @@ namespace KurisuRiven
                         "Combo Damage: " + (float)(ua * 3 + uq * 3 + uw + rr + ri + ritems));
             }
 
-            if (Maintarget.IsValidTarget(1000))
+            if (Maintarget.IsValidTarget(1000) && Config.Item("drawkill").GetValue<bool>())
             {
                 var wts = Drawing.WorldToScreen(Maintarget.Position);
 
@@ -357,13 +368,13 @@ namespace KurisuRiven
             Orbwalker.SetMovement(canmove);
             Orbwalker.SetMovement(canattack);
 
-            wrange = ulton || r.IsReady() ? w.Range + 135 : w.Range;
+            wrange = ulton ? w.Range + 135 : w.Range;
             animationtime = 1 / (0.318 * Me.AttackSpeedMod);
             truerange = Me.AttackRange + Me.Distance(Me.BBox.Minimum) + 1;
 
             ulton = Me.GetSpell(SpellSlot.R).Name != "RivenFengShuiEngine";
             hashydra = Items.HasItem(3077) || Items.HasItem(3074);
-            canhydra = Items.CanUseItem(3077) || Items.CanUseItem(3074);
+            canhydra = !isattacking && (Items.CanUseItem(3077) || Items.CanUseItem(3074));
 
             if (Maintarget.IsValidTarget(1000))
             {
@@ -478,24 +489,26 @@ namespace KurisuRiven
                 cankiburst = true;
             }
 
+            var obj = (Orbwalker.GetTarget() != null ? (Obj_AI_Base)Orbwalker.GetTarget() : Maintarget) ?? Me;
+
+            var time = (int)(Me.AttackCastDelay * 1000) - 100 + Game.Ping / 2 +
+                    1000 * (int)Me.Distance(obj.ServerPosition) / (int)Me.BasicAttack.MissileSpeed;
+
             if (!canmove && !(isattacking || iscleaving || iskibursting || isdashing) &&
-                Environment.TickCount - lastattack >= 188)
+                Environment.TickCount - lastattack >= time)
             {
-                // Convert.ToInt32(animationtime * 100) - 20
                 canmove = true;
             }
 
-            if (!canattack && !(iscleaving || isdashing || iskibursting) &&
-                Environment.TickCount - lastattack >= 164)
+           if (!canattack && !(iscleaving || isdashing || iskibursting) &&
+                Environment.TickCount - lastattack >= time + 200)
             {
-                // Convert.ToInt32(animationtime * 100) - 20
                 canattack = true;
             }
 
             if (isattacking && Environment.TickCount - lastattack >=
                (Convert.ToInt32(animationtime * 100) - 20) - (Me.Level * 10 / 2))
             {
-                //97
                 isattacking = false;
                 cancleave = true;
                 canmove = true;
@@ -539,20 +552,17 @@ namespace KurisuRiven
 
                 if (w.IsReady() && cankiburst)
                 {
-                    if (minionListerino.Count(m => m.Distance(Me.ServerPosition) <= w.Range) >= 4)
+                    if (minionListerino.Count(m => m.IsValidTarget(w.Range)) >= 4)
                     {
                         if (Config.Item("uselanew").GetValue<bool>())
                             w.Cast();
                     }
                 }
 
-                if (e.IsReady() && candash)
+                if (e.IsReady() && candash && minion.IsValidTarget(e.Range + q.Range))
                 {
-                    if (minion.Distance(Me.ServerPosition) > e.Range)
-                    {
-                        if (Config.Item("uselanee").GetValue<bool>())
-                            e.Cast(Game.CursorPos);
-                    }
+                    if (Config.Item("uselanee").GetValue<bool>())
+                        e.Cast(Game.CursorPos);
                 }
             }
         }
@@ -581,7 +591,7 @@ namespace KurisuRiven
 
                 if (e.IsReady() && candash)
                 {
-                    if (minion.Distance(Me.ServerPosition) > e.Range ||
+                    if (minion.Distance(Me.ServerPosition) <= e.Range + q.Range ||
                         Me.Health / Me.MaxHealth * 100 <= Config.Item("vhealth").GetValue<Slider>().Value)
                     {
                         if (Config.Item("uselanee").GetValue<bool>())
@@ -617,7 +627,6 @@ namespace KurisuRiven
             }
 
             Orb(target);
-
             // valor
             if (candash && e.IsReady() && (target.Distance(Me.ServerPosition) > truerange + 50))
             {
@@ -734,7 +743,8 @@ namespace KurisuRiven
                         r.Cast();
                         if (Me.Spellbook.CanUseSpell(ignote) == SpellState.Ready)
                         {
-                            Me.Spellbook.CastSpell(ignote, target);
+                            if (ulton)
+                                Me.Spellbook.CastSpell(ignote, target);
                         }
                     }
                 }
