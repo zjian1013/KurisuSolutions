@@ -183,7 +183,6 @@ namespace KurisuRiven
             return (float)dmg;
         }
 
-
         private static void Drawing_OnDraw(EventArgs args)
         {
             if (!Me.IsDead)
@@ -244,7 +243,6 @@ namespace KurisuRiven
                 return;
             }
 
-
             if (args.Animation.Contains("Idle"))
             {
                 canattack = true;
@@ -252,8 +250,9 @@ namespace KurisuRiven
 
             if (args.Animation.Contains("Attack"))
             {
-                lastattack = Environment.TickCount;
                 canmove = false;
+                canattack = false;
+                lastattack = Environment.TickCount;
                 isattacking = true;
                 cancleave = false;
                 cankiburst = false;
@@ -420,6 +419,7 @@ namespace KurisuRiven
 
             if (!Me.HasBuff("RivenTriCleave", true))
                 Utility.DelayAction.Add(1000, () => cleavecount = 0);
+
 
             if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
             {
@@ -674,7 +674,7 @@ namespace KurisuRiven
             {
                 if (!Config.Item("usecomboq").GetValue<bool>())
                 {
-                    return;                
+                    return;
                 }
 
                 if (Environment.TickCount - lasthydra >= 800 &&
@@ -707,16 +707,13 @@ namespace KurisuRiven
             }
 
         }
-
+     
         private static void Orb(Obj_AI_Base target)
         {
-            if (canmove && canattack)
+            if (target.IsValidTarget(truerange + 100) && canattack)
             {
-                if (target.IsValidTarget(truerange + 100))
-                {
-                    canmove = false;
-                    Me.IssueOrder(GameObjectOrder.AttackUnit, target);
-                }
+                canmove = false;
+                Me.IssueOrder(GameObjectOrder.AttackUnit, target);
             }
         }
 
