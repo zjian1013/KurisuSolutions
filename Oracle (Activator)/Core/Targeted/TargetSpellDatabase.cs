@@ -728,7 +728,7 @@ namespace Oracle.Core.Targeted
                 #region Shaco
                 new TargetSpellData("shaco", "deceive", SpellSlot.Q, SpellType.Skillshot, CcType.No, 400, 500, float.MaxValue, false, true),
                 new TargetSpellData("shaco", "jackinthebox", SpellSlot.W, SpellType.Skillshot, CcType.Fear, 425, 500, 1450),
-                new TargetSpellData("shaco", "twoshivpoisen", SpellSlot.E, SpellType.Targeted, CcType.Slow, 625, 500, 1500),
+                new TargetSpellData("shaco", "twoshivpoison", SpellSlot.E, SpellType.Targeted, CcType.Slow, 625, 0, 1500),
                 new TargetSpellData("shaco", "hallucinatefull", SpellSlot.R, SpellType.Skillshot, CcType.No, 1125, 500, 395, false, false, true),
 
                 #endregion Shaco

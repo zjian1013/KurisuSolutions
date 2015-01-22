@@ -131,7 +131,7 @@ namespace Oracle
                 _acidtrail = new GameObj(obj.Name, obj, true, dmg, Environment.TickCount);
             }
 
-            else if (obj.Name.Contains("Tremors_cas") && GetEnemy("Rammus").IsValid)
+            else if (obj.Name.Contains("Tremors_cas") && obj.IsEnemy && GetEnemy("Rammus").IsValid)
             {
                 var dmg = (float) GetEnemy("Rammus").GetSpellDamage(Friendly(), SpellSlot.R);
                 _tremors = new GameObj(obj.Name, obj, true, dmg, Environment.TickCount);
