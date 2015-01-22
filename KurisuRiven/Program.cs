@@ -317,6 +317,18 @@ namespace KurisuRiven
                 cankiburst = false;
                 candash = false;
                 canwindslash = false;
+                if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
+                {
+                    if (canhydra && hashydra)
+                    {
+                        Utility.DelayAction.Add(
+                            100, delegate
+                            {
+                                Items.UseItem(3077);
+                                Items.UseItem(3074);
+                            });
+                    }
+                }
             }
 
             if (args.Animation.Contains("Spell1a"))
@@ -376,7 +388,6 @@ namespace KurisuRiven
                     break;
                 case "ItemTiamatCleave":
                     lasthydra = Environment.TickCount;
-                    canattack = true;
                     if (q.IsReady() && 
                         Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
                             q.Cast(Maintarget.ServerPosition);
@@ -714,11 +725,11 @@ namespace KurisuRiven
                             CheckR(target);
                             if (Config.Item("usecombow").GetValue<bool>())
                                 w.Cast();
-                                
+
                             Items.UseItem(3077);
                             Items.UseItem(3074);
-                        }
 
+                        }
 
                         else
                         {
@@ -759,8 +770,8 @@ namespace KurisuRiven
                         return;
                     }
 
-                    if ((Environment.TickCount - lasthydra < 400 ||
-                         Environment.TickCount - lasthydra > 20000 && w.IsReady()) && hashydra)
+                    if ((Environment.TickCount - lasthydra < 500 || (Environment.TickCount - lasthydra > 20000 && w.IsReady()) &&
+                        (Config.Item("engage").GetValue<StringList>().SelectedIndex == 1 && hashydra)))
                     {
                         return;
                     }
