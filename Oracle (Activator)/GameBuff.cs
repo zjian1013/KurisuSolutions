@@ -162,7 +162,7 @@ namespace Oracle
                 BuffName = "zedulttargetmark",
                 SpellName = "zedult",
                 Slot = SpellSlot.R,
-                Delay = 2500
+                Delay = 2800
             });
 
             EvadeBuffs.Add(new GameBuff

@@ -202,7 +202,8 @@ namespace Oracle
             foreach (var buff in GameBuff.EvadeBuffs)
             {
                 var buffinst = Friendly().Buffs;
-                if (buffinst.Any(aura => aura.Name.ToLower().Contains(buff.SpellName)))
+                if (buffinst.Any(
+                        aura => aura.Name.ToLower().Contains(buff.SpellName) || aura.Name.ToLower() == buff.BuffName))           
                 {
                     Utility.DelayAction.Add(
                         buff.Delay, delegate
@@ -212,8 +213,13 @@ namespace Oracle
                             IncomeDamage = (float) GetEnemy(buff.ChampionName).GetSpellDamage(AggroTarget, buff.Slot);
 
                             // check if we still have buff and didn't walk out of it
-                            if (buffinst.Any(aura => aura.Name.ToLower().Contains(buff.SpellName)))
+                            if (buffinst.Any(
+                                    aura =>
+                                        aura.Name.ToLower().Contains(buff.SpellName) ||
+                                        aura.Name.ToLower() == buff.BuffName))
+                            {
                                 DangerUlt = Origin.Item(buff.SpellName + "ccc").GetValue<bool>();
+                            }
 
                             if (Origin.Item("dbool").GetValue<bool>())
                             {

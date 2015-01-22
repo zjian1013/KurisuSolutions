@@ -71,7 +71,7 @@ namespace Oracle.Extensions
             CreateMenuItem(0, "fioradance", "Blade Waltz", "herofiorazhonya", SpellSlot.R, false);
             CreateMenuItem(0, "elisespidereinitial", "Rappel", "teamelisezhonya", SpellSlot.E, false);
             CreateMenuItem(0, "fizzjump", "Playful Trickster", "teamfizzzhonyaCC", SpellSlot.E);
-            CreateMenuItem(0, "lissandra", "Frozen Tomb", "teamlissandrazhonya", SpellSlot.R, false);
+            CreateMenuItem(0, "lissandrar", "Frozen Tomb", "teamlissandrazhonya", SpellSlot.R, false);
             CreateMenuItem(0, "maokaiunstablegrowth", "Unstabe Growth", "heromaokaizhonya", SpellSlot.W);
             CreateMenuItem(0, "alphastrike", "Alpha Strike", "heromasteryizhonyaCC", SpellSlot.Q);
             CreateMenuItem(0, "blackshield", "Black Shield", "teammorganazhonyaCC", SpellSlot.E);
@@ -115,7 +115,7 @@ namespace Oracle.Extensions
             UseEvade("fioradance", "herofiorazhonya", 300f, false);
             UseEvade("elisespidereinitial", "teamelisezhonya", float.MaxValue, false);
             UseEvade("fizzjump", "teamfizzzhonyaCC");
-            UseEvade("lissandra", "teamlissandrazhonya");
+            UseEvade("lissandrar", "teamlissandrazhonya");
             UseEvade("maokaiunstablegrowth", "heromaokaizhonya", 525f);
             UseEvade("alphastrike", "heromasteryizhonyaCC", 600f);
             UseEvade("hallucinatefull", "teamshacozhonya", float.MaxValue, false);
