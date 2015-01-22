@@ -2,6 +2,7 @@
 using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
+using ItemData = LeagueSharp.Common.Data.ItemData;
 using SharpDX;
 
 namespace KurisuRiven
@@ -99,16 +100,20 @@ namespace KurisuRiven
             menuE.AddItem(new MenuItem("usejunglee", "Use in jungle")).SetValue(true);
             menuE.AddItem(new MenuItem("uselanee", "Use in laneclear")).SetValue(true);
             menuE.AddItem(new MenuItem("engage", "Engage :"))
-    .SetValue(new StringList(new[] { "E->Tiamat->R->W", "E->R->W->Tiamat", "E->R->Tiamat->W" }));
+                .SetValue(new StringList(new[] { "E->Tiamat->R->W", "E->R->W->Tiamat", "E->R->Tiamat->W" }));
             menuE.AddItem(new MenuItem("vhealth", "Valor health %")).SetValue(new Slider(40, 1));
             SMenu.AddSubMenu(menuE);
 
             var menuR = new Menu("R Menu", "blade");
             menuR.AddItem(new MenuItem("user", "Use R")).SetValue(true);
-            menuR.AddItem(new MenuItem("usews", "Use Windslash")).SetValue(true);
+            menuR.AddItem(new MenuItem("usews", "Use windslash")).SetValue(true);
             SMenu.AddSubMenu(menuR);
 
             Config.AddSubMenu(SMenu);
+
+            var MMenu = new Menu("Misc", "misc");
+            MMenu.AddItem(new MenuItem("forceaa", "Laneclear force attack")).SetValue(false);
+            Config.AddSubMenu(MMenu);
 
             var DMenu = new Menu("Debug", "debug");
             DMenu.AddItem(new MenuItem("debugtrue", "Debug true range")).SetValue(false);     
@@ -580,7 +585,7 @@ namespace KurisuRiven
             var minionListerino = MinionManager.GetMinions(Me.ServerPosition, e.Range);
             foreach (var minion in minionListerino)
             {
-                Orb(minion);
+                Orb(minion, "Lane");
                 if (q.IsReady() && cancleave && minion.Distance(Me.ServerPosition) <= q.Range)
                 {
                     if (Config.Item("uselaneq").GetValue<bool>())
@@ -593,6 +598,7 @@ namespace KurisuRiven
                     {
                         if (Config.Item("uselanew").GetValue<bool>())
                         {
+
                             ItemData.Tiamat_Melee_Only.GetItem().Cast();
                             ItemData.Ravenous_Hydra_Melee_Only.GetItem().Cast();
                             w.Cast();
@@ -617,7 +623,7 @@ namespace KurisuRiven
                             minionList.Any(x => m.Name.StartsWith(x)) && !m.Name.StartsWith("Minion") &&
                             !m.Name.Contains("Mini")))
             {
-                Orb(minion);
+                Orb(minion, "Combo");
                 if (cancleave && q.IsReady() && minion.Distance(Me.ServerPosition) <= q.Range)
                 {
                     if (Config.Item("usejungleq").GetValue<bool>())
@@ -654,7 +660,7 @@ namespace KurisuRiven
                 return;
             }
 
-            Orb(target);
+            Orb(target, "Combo");
             // valor
             if (candash && e.IsReady() && (target.Distance(Me.ServerPosition) > truerange + 50))
             {
@@ -817,10 +823,15 @@ namespace KurisuRiven
 
         #endregion
 
-        private static void Orb(Obj_AI_Base target)
-        {
+        private static void Orb(Obj_AI_Base target, string mode)
+        {         
             if (target.IsValidTarget(truerange + 100) && canattack)
             {
+                if (mode == "Lane" && !Config.Item("forceaa").GetValue<bool>())
+                {
+                    return;
+                }
+
                 canmove = false;
                 Me.IssueOrder(GameObjectOrder.AttackUnit, target);
             }
