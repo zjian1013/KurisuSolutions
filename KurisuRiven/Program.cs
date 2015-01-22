@@ -753,14 +753,14 @@ namespace KurisuRiven
             {
                 if (Config.Item("usecomboq").GetValue<bool>())
                 {
-                    if ((Environment.TickCount - lasthydra < 1000 || Environment.TickCount - lasthydra >= 9000) &&
-                        (Config.Item("engage").GetValue<StringList>().SelectedIndex == 0 && hashydra) && ulton)
+                    if ((Environment.TickCount - lasthydra < 1000 || (Environment.TickCount - lasthydra > 20000 && w.IsReady()) &&
+                        (Config.Item("engage").GetValue<StringList>().SelectedIndex == 0 && hashydra)))
                     {
                         return;
                     }
 
-                    if ((Environment.TickCount - lasthydra < 400 || Environment.TickCount - lasthydra >= 9000) &&
-                        hashydra)
+                    if ((Environment.TickCount - lasthydra < 400 ||
+                         Environment.TickCount - lasthydra > 20000 && w.IsReady()) && hashydra)
                     {
                         return;
                     }
