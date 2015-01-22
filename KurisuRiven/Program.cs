@@ -670,7 +670,7 @@ namespace KurisuRiven
                         Utility.DelayAction.Add(250, () => CheckR(target));
                     }
 
-                    if (!hashydra || !canhydra)
+                    else
                     {
                         CheckR(target);
                     }
@@ -689,7 +689,7 @@ namespace KurisuRiven
                         Utility.DelayAction.Add(300, () => w.Cast());
                 }
 
-                if (!hashydra || !canhydra)
+                else
                 {
                     CheckR(target);
                     if (Config.Item("usecombow").GetValue<bool>())
