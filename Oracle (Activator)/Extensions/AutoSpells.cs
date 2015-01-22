@@ -57,10 +57,11 @@ namespace Oracle.Extensions
             CreateMenuItem(80, "Imbue", "Imbue", "taricheal", SpellSlot.Q);
 
             // auto ultimates
-            CreateMenuItem(25, "lulur", "Wild Growth", "luluult", SpellSlot.R);
+            CreateMenuItem(25, "lulur", "Wild Growth", "luluult", SpellSlot.R, false);
             CreateMenuItem(15, "undyingrage", "Undying Rage", "tryndult", SpellSlot.R, false);
-            CreateMenuItem(15, "chronoshift", "Chorno Shift", "zilult", SpellSlot.R);
-            CreateMenuItem(15, "yorickreviveally", "Omen of Death", "yorickult", SpellSlot.R);
+            CreateMenuItem(15, "chronoshift", "Chorno Shift", "zilult", SpellSlot.R, false);
+            CreateMenuItem(15, "yorickreviveally", "Omen of Death", "yorickult", SpellSlot.R, false);
+            CreateMenuItem(15, "kalistarx", "Fate's Call", "kalistault", SpellSlot.R, false);
 
             // slow removers
             CreateMenuItem(0, "evelynnw", "Draw Frenzy", "eveslow", SpellSlot.W, false);
@@ -155,25 +156,60 @@ namespace Oracle.Extensions
             UseSpell("undyingrage", "tryndult", float.MaxValue, false);
             UseSpell("chronoshift", "zilult", 900f, false);
             UseSpell("yorickreviveally", "yorickult", 900f, false);
+
+            // kalista save soulbound
+            if (Me.ChampionName == OC.ChampionName)
+            {
+                var slot = Me.GetSpellSlot("kalistarx");
+                if (slot != SpellSlot.Unknown && !_mainMenu.Item("usekalistault").GetValue<bool>())
+                {
+                    return;
+                }
+
+                var target =
+                    ObjectManager.Get<Obj_AI_Hero>().FirstOrDefault(hero => hero.HasBuff("kalistacoopstrikeally", true));
+
+                var kalistar = new Spell(slot, 1200f);
+                if (target.IsValidTarget(kalistar.Range, false) && target.IsAlly)
+                {
+                    if (kalistar.IsReady() && _menuConfig.Item("ason" + target.SkinName).GetValue<bool>())
+                    {
+                        var aHealthPercent = (int)((target.Health / target.MaxHealth) * 100);
+                        if (aHealthPercent <= _mainMenu.Item("usekalistaultpct").GetValue<Slider>().Value)
+                        {
+                            if (OC.AggroTarget.NetworkId == target.NetworkId)
+                                kalistar.Cast();
+                        }
+                    }
+                }
+            }
         }
 
         private static void UseSpellShield(string sname, string menuvar, float range = float.MaxValue, bool usemana = true)
         {
             if (!menuvar.Contains(OC.ChampionName.ToLower()))
+            {
                 return;
+            }
 
             var slot = Me.GetSpellSlot(sname);
             if (slot != SpellSlot.Unknown && !_mainMenu.Item("use" + menuvar).GetValue<bool>())
+            {
                 return;
+            }
 
             var spell = new Spell(slot, range);
 
             var target = range < 5000 ? OC.Friendly() : Me;
             if (target.Distance(Me.ServerPosition, true) > range * range)
+            {
                 return;
+            }
 
             if (!spell.IsReady() || !_menuConfig.Item("ason" + target.SkinName).GetValue<bool>())
+            {
                 return;
+            }
 
 
             if (_mainMenu.Item("use" + menuvar + "Ults").GetValue<bool>())
@@ -399,11 +435,11 @@ namespace Oracle.Extensions
                     menuName.AddItem(new MenuItem("use" + menuvar + "Slow", "Remove slows").SetValue(true));
 
                 if (!menuvar.Contains("slow"))
-                    menuName.AddItem(new MenuItem("use" + menuvar + "Pct", "Use spell on HP %"))
+                    menuName.AddItem(new MenuItem("use" + menuvar + "Pct", "Use on HP %"))
                         .SetValue(new Slider(dfv, 1, 99));
 
                 if (!menuvar.Contains("ult") && !menuvar.Contains("slow"))
-                    menuName.AddItem(new MenuItem("use" + menuvar + "Dmg", "Use spell on Dmg %"))
+                    menuName.AddItem(new MenuItem("use" + menuvar + "Dmg", "Use on Dmg dealt %"))
                         .SetValue(new Slider(45));
 
                 if (menuvar.Contains("soraka"))

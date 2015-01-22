@@ -127,7 +127,7 @@ namespace KurisuNidalee
         #region Nidalee: Menu
         private static void NidaMenu()
         {
-            MainMenu = new Menu("Kurisu: Nidaleee", "nidalee", true);
+            MainMenu = new Menu("KurisuNidalee", "nidalee", true);
 
             var nidaOrb = new Menu("Nidalee: Orbwalker", "orbwalker");
             Orbwalker = new Orbwalking.Orbwalker(nidaOrb);
@@ -213,6 +213,7 @@ namespace KurisuNidalee
             nidaD.AddItem(new MenuItem("drawQ", "Draw Q")).SetValue(new Circle(true, Color.FromArgb(150, Color.White)));
             nidaD.AddItem(new MenuItem("drawW", "Draw W")).SetValue(new Circle(true, Color.FromArgb(150, Color.White)));
             nidaD.AddItem(new MenuItem("drawE", "Draw E")).SetValue(new Circle(true, Color.FromArgb(150, Color.White)));
+            nidaD.AddItem(new MenuItem("drawline", "Draw Line")).SetValue(true);
             nidaD.AddItem(new MenuItem("drawcds", "Draw Cooldowns")).SetValue(true);
             MainMenu.AddSubMenu(nidaD);
 
@@ -220,7 +221,7 @@ namespace KurisuNidalee
             MainMenu.AddItem(new MenuItem("usepackets", "Use Packets")).SetValue(false);
             MainMenu.AddToMainMenu();
 
-            Game.PrintChat("<font color=\"#FF9900\">KurisuNidalee</font> - Loaded");
+            Game.PrintChat("<font color=\"#FF9900\"><b>KurisuNidalee</b></font> - Loaded");
 
         }
 
@@ -827,8 +828,17 @@ namespace KurisuNidalee
         #region Nidalee: On Draw
         private static void NidaleeOnDraw(EventArgs args)
         {
+            if (Target != null && MainMenu.Item("drawline").GetValue<bool>())
+            {
+                if (Me.IsDead)
+                {
+                    return;
+                }
 
-            if (Target != null) Render.Circle.DrawCircle(Target.Position, Target.BoundingRadius, Color.Red, 2);
+                var pos1 = Drawing.WorldToScreen(Me.Position);
+                var pos2 = Drawing.WorldToScreen(Target.Position);
+                Drawing.DrawLine(pos1, pos2, 3, Color.White);
+            }
 
             foreach (var spell in CougarList)
             {

@@ -19,7 +19,7 @@ namespace Oracle
 
         public static Menu Origin;
         public static string ChampionName;
-        public const string Revision = "205";
+        public const string Revision = "206";
         public static Obj_AI_Hero Attacker;
         public static Obj_AI_Hero AggroTarget;
         public static Obj_AI_Hero CurrentTarget;
@@ -112,17 +112,18 @@ namespace Oracle
         private static GameObj _chaosstorm, _glacialstorm, _lightstrike, _equinox, _tormentsoil;
 
         private static void GameObject_OnCreate(GameObject obj, EventArgs args)
-        {           
+        {
+            var missile = (Obj_SpellMissile) obj;
+            if (missile.Name == "FizzMarinerDoomMissile" && missile.IsEnemy && GetEnemy("Fizz").IsValid)
+            {
+                var dmg = (float)GetEnemy("Fizz").GetSpellDamage(Friendly(), SpellSlot.R);
+                _fizzbait = new GameObj(missile.Name, missile, true, dmg, Environment.TickCount);
+            }
+
             if (obj.Name.Contains("Crowstorm_red") && GetEnemy("Fiddlesticks").IsValid)
             {
                 var dmg = (float) GetEnemy("Fiddlesticks").GetSpellDamage(Friendly(), SpellSlot.R);
                 _crowstorm = new GameObj(obj.Name, obj, true, dmg, Environment.TickCount);
-            }
-
-            else if ((obj.Name.Contains("Bait") || obj.Name.Contains("bait")) && GetEnemy("Fizz").IsValid)
-            {
-                var dmg = (float)GetEnemy("Fizz").GetSpellDamage(Friendly(), SpellSlot.R);
-                _fizzbait = new GameObj(obj.Name, obj, true, dmg, Environment.TickCount);
             }
 
             else if (obj.Name.Contains("caitlyn_Base_yordleTrap_idle_red") && GetEnemy("Caitlyn").IsValid)
@@ -366,7 +367,7 @@ namespace Oracle
 
             if (_tormentsoil.Included && GetEnemy("Morgana").IsValid)
             {
-                if (_satchel.Obj.IsValid && Friendly().Distance(_tormentsoil.Obj.Position, true) <= 300 * 300)
+                if (_tormentsoil.Obj.IsValid && Friendly().Distance(_tormentsoil.Obj.Position, true) <= 300 * 300)
                 {
                     Attacker = GetEnemy("Morgana");
                     AggroTarget = Friendly();
@@ -609,7 +610,9 @@ namespace Oracle
                                     Console.WriteLine(HeroSender.SkinName + " hit (Self Spell) " + AggroTarget.SkinName + " for: " + IncomeDamage);
 
                                 if (o.Wait)
+                                {
                                     return;
+                                }
 
                                 Spell = true;
                                 Danger = Origin.Item(o.Name.ToLower() + "ccc").GetValue<bool>();
@@ -637,7 +640,9 @@ namespace Oracle
                             }
 
                             if (o.Wait)
+                            {
                                 return;
+                            }
 
                             Spell = true;
                             Danger = Origin.Item(o.Name.ToLower() + "ccc").GetValue<bool>();

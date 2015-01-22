@@ -562,6 +562,7 @@ namespace KurisuRiven
                 isdashing = false;
                 canmove = true;
             }
+
         }
 
         #region Minion Clear
@@ -582,7 +583,11 @@ namespace KurisuRiven
                     if (minionListerino.Count(m => m.IsValidTarget(w.Range)) >= 4)
                     {
                         if (Config.Item("uselanew").GetValue<bool>())
+                        {
+                            ItemData.Tiamat_Melee_Only.GetItem().Cast();
+                            ItemData.Ravenous_Hydra_Melee_Only.GetItem().Cast();
                             w.Cast();
+                        }
                     }
                 }
 
@@ -646,6 +651,7 @@ namespace KurisuRiven
                 if (target.Distance(Me.ServerPosition) <= truerange + e.Range + 100 ||
                     healthpercent <= Config.Item("vhealth").GetValue<Slider>().Value)
                 {
+                    
                     ItemData.Youmuus_Ghostblade.GetItem().Cast();
                     ItemData.Blade_of_the_Ruined_King.GetItem().Cast(target);
                     ItemData.Bilgewater_Cutlass.GetItem().Cast(target);

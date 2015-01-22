@@ -90,7 +90,7 @@ namespace Oracle.Extensions
                 _ii = true;
                 var Ignite = new Menu("Ignite", "mignite");
                 Ignite.AddItem(new MenuItem("useIgnite", "Enable Ignite")).SetValue(true);
-                Ignite.AddItem(new MenuItem("dotMode", "Mode: ")).SetValue(new StringList(new[] {"KSMode", "Combo"}, 1));
+                Ignite.AddItem(new MenuItem("dotMode", "Mode: ")).SetValue(new StringList(new[] {"KSMode", "Combo"}));
                 _mainMenu.AddSubMenu(Ignite);
             }
 
@@ -101,7 +101,7 @@ namespace Oracle.Extensions
                 var Heal = new Menu("Heal", "mheal");
                 Heal.AddItem(new MenuItem("useHeal", "Enable Heal")).SetValue(true);
                 Heal.AddItem(new MenuItem("useHealPct", "Heal on min HP % ")).SetValue(new Slider(25, 1));
-                Heal.AddItem(new MenuItem("useHealDmg", "Heal on damage %")).SetValue(new Slider(40, 1));
+                Heal.AddItem(new MenuItem("useHealDmg", "Heal on Dmg dealt %")).SetValue(new Slider(40, 1));
                 _mainMenu.AddSubMenu(Heal);
             }
 
@@ -122,7 +122,7 @@ namespace Oracle.Extensions
                 var Barrier = new Menu("Barrier", "mbarrier");
                 Barrier.AddItem(new MenuItem("useBarrier", "Enable Barrier")).SetValue(true);
                 Barrier.AddItem(new MenuItem("useBarrierPct", "Barrior on min HP % ")).SetValue(new Slider(25, 1));
-                Barrier.AddItem(new MenuItem("useBarrierDmg", "Barrier on damage %")).SetValue(new Slider(40, 1));
+                Barrier.AddItem(new MenuItem("useBarrierDmg", "Barrier on Dmg dealt %")).SetValue(new Slider(40, 1));
                 _mainMenu.AddSubMenu(Barrier);
             }
 
@@ -323,7 +323,7 @@ namespace Oracle.Extensions
             var target = OC.Friendly();
             var iDamagePercent = (int) ((incdmg/Me.MaxHealth)*100);
 
-            if (target.Distance(Me.Position) <= 700f)
+            if (target.Distance(Me.ServerPosition) <= 700f)
             {
                 var aHealthPercent = (int) ((target.Health/target.MaxHealth)*100);
                 if (aHealthPercent <= _mainMenu.Item("useHealPct").GetValue<Slider>().Value &&

@@ -223,7 +223,7 @@ namespace Oracle.Extensions
 
             if (!itemcount)
             {
-                menuName.AddItem(new MenuItem("use" + name + "Dmg", "Use on Dmg %")).SetValue(new Slider(dmgvalue));
+                menuName.AddItem(new MenuItem("use" + name + "Dmg", "Use on Dmg Dealt %")).SetValue(new Slider(dmgvalue));
                 menuName.AddItem(new MenuItem("use" + name + "Pct", "Use on HP %")).SetValue(new Slider(hpvalue));
             }
 
