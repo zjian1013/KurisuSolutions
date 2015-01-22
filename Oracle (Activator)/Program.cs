@@ -64,7 +64,7 @@ namespace Oracle
                         TargetSpellDatabase.Spells.Where(spell => spell.ChampionName == i.ChampionName.ToLower()))
                 {
                     var danger = spell.Spellslot.ToString() == "R" ||
-                                 spell.CcType != CcType.No && (spell.Type == SpellType.Skillshot || spell.Type == SpellType.Targeted);
+                                    spell.CcType != CcType.No && (spell.Type == SpellType.Skillshot || spell.Type == SpellType.Targeted);
 
                     menu.AddItem(new MenuItem(spell.Name + "ccc", spell.Name + " | " + spell.Spellslot)).SetValue(danger);
                 }
@@ -745,7 +745,7 @@ namespace Oracle
                             {
                                 Console.WriteLine("Dangerous (Targetd Spells): " + Danger);
                                 Console.WriteLine(HeroSender.SkinName + " hit (Target Spell) " + AggroTarget.SkinName +
-                                                  " for: " + IncomeDamage);
+                                                    " for: " + IncomeDamage);
                             }
 
                             if (o.Wait)
@@ -765,17 +765,17 @@ namespace Oracle
                 {
                     var skillData =
                         new SkillshotData(o.ChampionName, o.SpellName, o.Slot, o.Type, o.Delay, o.Range,
-                                          o.Radius, o.MissileSpeed, o.AddHitbox, o.FixedRange, o.DangerValue);
+                                            o.Radius, o.MissileSpeed, o.AddHitbox, o.FixedRange, o.DangerValue);
 
                     var endPosition = args.Start.To2D() +
-                                      o.Range * (args.End.To2D() - HeroSender.ServerPosition.To2D()).Normalized();
+                                        o.Range * (args.End.To2D() - HeroSender.ServerPosition.To2D()).Normalized();
 
                     var skillShot = new Skillshot(DetectionType.ProcessSpell, skillData, Environment.TickCount,
                         HeroSender.ServerPosition.To2D(), endPosition, HeroSender);
 
                     var castTime = (o.DontAddExtraDuration ? 0 : o.ExtraDuration) + o.Delay +
-                                   (int)(1000 * HeroSender.Distance(Friendly().ServerPosition) / o.MissileSpeed) -
-                                   (Environment.TickCount - skillShot.StartTick);
+                                    (int)(1000 * HeroSender.Distance(Friendly().ServerPosition) / o.MissileSpeed) -
+                                    (Environment.TickCount - skillShot.StartTick);
 
                     AggroTarget =
                         ObjectManager.Get<Obj_AI_Hero>()

@@ -770,17 +770,17 @@ namespace KurisuRiven
             {
                 if (Config.Item("usecomboq").GetValue<bool>())
                 {
-                    if ((Environment.TickCount - lasthydra < 1000 || (Environment.TickCount - lasthydra > 20000 && w.IsReady()) &&
-                        (Config.Item("engage").GetValue<StringList>().SelectedIndex == 0 && hashydra)))
-                    {
-                        return;
-                    }
+                    //if ((Environment.TickCount - lasthydra < 1000 || (Environment.TickCount - lasthydra > 20000 && w.IsReady()) &&
+                    //    (Config.Item("engage").GetValue<StringList>().SelectedIndex == 0 && hashydra)))
+                    //{
+                    //    return;
+                    //}
 
-                    if ((Environment.TickCount - lasthydra < 500 || (Environment.TickCount - lasthydra > 20000 && w.IsReady()) &&
-                        (Config.Item("engage").GetValue<StringList>().SelectedIndex == 1 && hashydra)))
-                    {
-                        return;
-                    }
+                    //if ((Environment.TickCount - lasthydra < 500 || (Environment.TickCount - lasthydra > 20000 && w.IsReady()) &&
+                    //    (Config.Item("engage").GetValue<StringList>().SelectedIndex == 1 && hashydra)))
+                    //{
+                    //    return;
+                    //}
 
                     if (Config.Item("prediction").GetValue<bool>())
                             q.CastIfHitchanceEquals(target, HitChance.Medium);
