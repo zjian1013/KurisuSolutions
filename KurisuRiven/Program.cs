@@ -2,7 +2,6 @@
 using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
-using ItemData = LeagueSharp.Common.Data.ItemData;
 using SharpDX;
 
 namespace KurisuRiven
@@ -99,8 +98,6 @@ namespace KurisuRiven
             menuE.AddItem(new MenuItem("usecomboe", "Use in combo")).SetValue(true);
             menuE.AddItem(new MenuItem("usejunglee", "Use in jungle")).SetValue(true);
             menuE.AddItem(new MenuItem("uselanee", "Use in laneclear")).SetValue(true);
-            menuE.AddItem(new MenuItem("engage", "Engage :"))
-                .SetValue(new StringList(new[] { "E->Tiamat->R->W", "E->R->W->Tiamat", "E->R->Tiamat->W" }));
             menuE.AddItem(new MenuItem("vhealth", "Valor health %")).SetValue(new Slider(40, 1));
             SMenu.AddSubMenu(menuE);
 
@@ -116,7 +113,7 @@ namespace KurisuRiven
             Config.AddSubMenu(MMenu);
 
             var DMenu = new Menu("Debug", "debug");
-            DMenu.AddItem(new MenuItem("debugtrue", "Debug true range")).SetValue(false);     
+            DMenu.AddItem(new MenuItem("debugtrue", "Debug true range")).SetValue(false);
             DMenu.AddItem(new MenuItem("debugdmg", "Debug combo damage")).SetValue(false);
             Config.AddSubMenu(DMenu);
 
@@ -138,7 +135,7 @@ namespace KurisuRiven
             {
                 if (w.IsReady() && Config.Item("wint").GetValue<bool>())
                     w.Cast();
-            }         
+            }
         }
 
         private static void AntiGapcloser_OnEnemyGapcloser(ActiveGapcloser gapcloser)
@@ -322,18 +319,6 @@ namespace KurisuRiven
                 cankiburst = false;
                 candash = false;
                 canwindslash = false;
-                if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
-                {
-                    if (canhydra && hashydra)
-                    {
-                        Utility.DelayAction.Add(
-                            100, delegate
-                            {
-                                Items.UseItem(3077);
-                                Items.UseItem(3074);
-                            });
-                    }
-                }
             }
 
             if (args.Animation.Contains("Spell1a"))
@@ -389,11 +374,14 @@ namespace KurisuRiven
                     iskibursting = true;
                     cankiburst = false;
                     canmove = false;
-                    canattack = false;
+                    if (q.IsReady() && cancleave && Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
+                    {
+                        Utility.DelayAction.Add(Game.Ping + 70, () => q.Cast(Maintarget.ServerPosition));
+                    }
                     break;
                 case "ItemTiamatCleave":
                     lasthydra = Environment.TickCount;
-                    if (q.IsReady() && 
+                    if (q.IsReady() &&
                         Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
                             q.Cast(Maintarget.ServerPosition);
                     break;
@@ -402,7 +390,6 @@ namespace KurisuRiven
                     isdashing = true;
                     canmove = false;
                     candash = false;
-                    canattack = false;
                     break;
                 case "RivenFengShuiEngine":
                     if (Maintarget.Distance(Me.ServerPosition) <= wrange)
@@ -512,7 +499,7 @@ namespace KurisuRiven
                 LaneClear();
                 JungleClear();
             }
-      
+
             if (!canwindslash && !isattacking && ulton && r.IsReady())
             {
                 canwindslash = true;
@@ -539,13 +526,13 @@ namespace KurisuRiven
                 canmove = true;
             }
 
-           if (!canattack && !(iscleaving || isdashing || iskibursting) &&
-                Environment.TickCount - lastattack >= time + 200)
+            if (!canattack && !(iscleaving || isdashing || iskibursting) &&
+                 Environment.TickCount - lastattack >= time + 200)
             {
                 canattack = true;
             }
 
-            if (isattacking && Environment.TickCount - lastattack >= 
+            if (isattacking && Environment.TickCount - lastattack >=
                 Convert.ToInt32((astime * 100) - 10) - (Me.Level * 8 / 2))
             {
                 isattacking = false;
@@ -563,17 +550,16 @@ namespace KurisuRiven
                 canattack = true;
             }
 
-            if (iskibursting && Environment.TickCount - lastkiburst >= 235)
+            if (iskibursting && Environment.TickCount - lastkiburst >= 148)
             {
                 iskibursting = false;
                 canattack = true;
                 canmove = true;
             }
 
-            if (isdashing && Environment.TickCount - lastdash >= 350)
+            if (isdashing && Environment.TickCount - lastdash >= 300)
             {
                 isdashing = false;
-                canattack = true;
                 canmove = true;
             }
 
@@ -598,7 +584,6 @@ namespace KurisuRiven
                     {
                         if (Config.Item("uselanew").GetValue<bool>())
                         {
-
                             ItemData.Tiamat_Melee_Only.GetItem().Cast();
                             ItemData.Ravenous_Hydra_Melee_Only.GetItem().Cast();
                             w.Cast();
@@ -653,7 +638,6 @@ namespace KurisuRiven
         #region Combos
         private static void NormalCombo(Obj_AI_Base target)
         {
-            var engage = Config.Item("engage").GetValue<StringList>();
             var healthpercent = Me.Health / Me.MaxHealth * 100;
             if (!target.IsValidTarget(r.Range * 2))
             {
@@ -667,7 +651,7 @@ namespace KurisuRiven
                 if (target.Distance(Me.ServerPosition) <= truerange + e.Range + 100 ||
                     healthpercent <= Config.Item("vhealth").GetValue<Slider>().Value)
                 {
-                    
+
                     ItemData.Youmuus_Ghostblade.GetItem().Cast();
                     ItemData.Blade_of_the_Ruined_King.GetItem().Cast(target);
                     ItemData.Bilgewater_Cutlass.GetItem().Cast(target);
@@ -675,30 +659,20 @@ namespace KurisuRiven
                     if (Config.Item("usecomboe").GetValue<bool>())
                         e.Cast(target.ServerPosition);
 
-                    switch (engage.SelectedIndex)
+                    if (hashydra && canhydra)
                     {
-                        case 0:
-                            if (hashydra && canhydra)
-                            {
-                                if (w.IsReady())
-                                {
-                                    Items.UseItem(3077);
-                                    Items.UseItem(3074);
-                                }
+                        if (w.IsReady())
+                        {
+                            Items.UseItem(3077);
+                            Items.UseItem(3074);
+                        }
 
-                                Utility.DelayAction.Add(250, () => CheckR(target));
-                            }
+                        Utility.DelayAction.Add(250, () => CheckR(target));
+                    }
 
-                            else
-                            {
-                                CheckR(target);
-                            }
-                            break;
-                        case 1:
-                        case 2:
-                            CheckR(target);
-                            break;
-
+                    if (!hashydra || !canhydra)
+                    {
+                        CheckR(target);
                     }
                 }
             }
@@ -706,86 +680,38 @@ namespace KurisuRiven
             // kiburst
             if (w.IsReady() && cankiburst && target.Distance(Me.ServerPosition) <= wrange)
             {
-                switch (engage.SelectedIndex)
+                if (hashydra && canhydra)
                 {
-                    case 0:
-                        if (hashydra && canhydra && (r.IsReady() || ulton))
-                        {
-                            Items.UseItem(3077);
-                            Items.UseItem(3074);
-                            Utility.DelayAction.Add(100, () => CheckR(target));
-                            if (Config.Item("usecombow").GetValue<bool>())
-                                Utility.DelayAction.Add(300, () => w.Cast());
-                        }
+                    Items.UseItem(3077);
+                    Items.UseItem(3074);
+                    Utility.DelayAction.Add(250, () => CheckR(target));
+                    if (Config.Item("usecombow").GetValue<bool>())
+                        Utility.DelayAction.Add(300, () => w.Cast());
+                }
 
-                        else
-                        {
-                            CheckR(target);
-                            if (Config.Item("usecombow").GetValue<bool>())
-                                w.Cast();
-                        }
-                        break;
-                    case 1:
-                        if (hashydra && canhydra)
-                        {
-                            CheckR(target);
-                            if (Config.Item("usecombow").GetValue<bool>())
-                                w.Cast();
-
-                            Items.UseItem(3077);
-                            Items.UseItem(3074);
-
-                        }
-
-                        else
-                        {
-                            CheckR(target);
-                            if (Config.Item("usecombow").GetValue<bool>())
-                                w.Cast();
-                        }
-                        break;
-                    case 2:
-                        if (hashydra && canhydra)
-                        {
-                            CheckR(target);
-                            Items.UseItem(3077);
-                            Items.UseItem(3074);
-                            if (Config.Item("usecombow").GetValue<bool>())
-                                Utility.DelayAction.Add(100, () => w.Cast());
-                        }
-
-                        else
-                        {
-                            CheckR(target);
-                            if (Config.Item("usecombow").GetValue<bool>())
-                                w.Cast();
-
-                        }
-                        break;
+                if (!hashydra || !canhydra)
+                {
+                    CheckR(target);
+                    if (Config.Item("usecombow").GetValue<bool>())
+                        w.Cast();
                 }
             }
 
             // cleaves
             if (cancleave && q.IsReady() && target.Distance(Me.ServerPosition) <= truerange + 100)
             {
-                if (Config.Item("usecomboq").GetValue<bool>())
+                if (!Config.Item("usecomboq").GetValue<bool>())
                 {
-                    //if ((Environment.TickCount - lasthydra < 1000 || (Environment.TickCount - lasthydra > 20000 && w.IsReady()) &&
-                    //    (Config.Item("engage").GetValue<StringList>().SelectedIndex == 0 && hashydra)))
-                    //{
-                    //    return;
-                    //}
+                    return;
+                }
 
-                    //if ((Environment.TickCount - lasthydra < 500 || (Environment.TickCount - lasthydra > 20000 && w.IsReady()) &&
-                    //    (Config.Item("engage").GetValue<StringList>().SelectedIndex == 1 && hashydra)))
-                    //{
-                    //    return;
-                    //}
-
+                if (Environment.TickCount - lasthydra >= 800 &&
+                    Environment.TickCount - lastdash >= 200)
+                {
                     if (Config.Item("prediction").GetValue<bool>())
-                            q.CastIfHitchanceEquals(target, HitChance.Medium);
-                        else
-                            q.Cast(target.ServerPosition);
+                        q.CastIfHitchanceEquals(target, HitChance.Medium);
+                    else
+                        q.Cast(target.ServerPosition);
                 }
             }
 
@@ -804,8 +730,7 @@ namespace KurisuRiven
                         return;
                     }
 
-                    if (Environment.TickCount - lastdash >= 350)
-                        q.Cast(target.ServerPosition);
+                    q.Cast(target.ServerPosition);
                 }
             }
 
@@ -817,14 +742,14 @@ namespace KurisuRiven
                 {
                     if (ulton && target.Distance(Me.ServerPosition) <= 600)
                         Me.Spellbook.CastSpell(ignote, target);
-                }              
+                }
             }
         }
 
         #endregion
 
         private static void Orb(Obj_AI_Base target, string mode)
-        {         
+        {
             if (target.IsValidTarget(truerange + 100) && canattack)
             {
                 if (mode == "Lane" && !Config.Item("forceaa").GetValue<bool>())
