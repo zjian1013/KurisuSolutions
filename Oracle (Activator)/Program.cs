@@ -18,8 +18,15 @@ namespace Oracle
     {
 
         public static Menu Origin;
+        public static bool Spell;
+        public static bool Stealth;
+        public static bool Danger;
+        public static bool DangerCC;
+        public static bool DangerUlt;
+        public static bool CanManamune;
         public static string ChampionName;
-        public const string Revision = "206";
+        public const string Revision = "207";
+
         public static Obj_AI_Hero Attacker;
         public static Obj_AI_Hero AggroTarget;
         public static Obj_AI_Hero CurrentTarget;
@@ -100,27 +107,37 @@ namespace Oracle
             Game.PrintChat("<font color=\"#1FFF8F\">Oracle r." + Revision + " -</font> by Kurisu");
         }
 
-        public static bool Spell;
-        public static bool Stealth;
-        public static bool Danger;
-        public static bool DangerCC;
-        public static bool DangerUlt;
-        public static bool CanManamune;
-        public static int SinceSpellCast;
-
         private static GameObj _satchel, _miasma, _minefield, _crowstorm, _fizzbait, _caittrap;
         private static GameObj _chaosstorm, _glacialstorm, _lightstrike, _equinox, _tormentsoil;
+        private static GameObj _depthcharge, _tremors, _acidtrail;
 
         private static void GameObject_OnCreate(GameObject obj, EventArgs args)
         {
-            var missile = (Obj_SpellMissile) obj;
-            if (missile.Name == "FizzMarinerDoomMissile" && missile.IsEnemy && GetEnemy("Fizz").IsValid)
+            //if (obj.Name == "FizzMarinerDoomMissile" && obj.IsEnemy && GetEnemy("Fizz").IsValid)
+            //{
+            //    var dmg = (float)GetEnemy("Fizz").GetSpellDamage(Friendly(), SpellSlot.R);
+            //    _fizzbait = new GameObj(missile.Name, missile, true, dmg, Environment.TickCount);
+            //}
+
+            if (obj.Name.Contains("Nautilus_R_sequence_impact") && GetEnemy("Nautilus").IsValid)
             {
-                var dmg = (float)GetEnemy("Fizz").GetSpellDamage(Friendly(), SpellSlot.R);
-                _fizzbait = new GameObj(missile.Name, missile, true, dmg, Environment.TickCount);
+                var dmg = (float) GetEnemy("Nautilus").GetSpellDamage(Friendly(), SpellSlot.R, 1);
+                _depthcharge = new GameObj(obj.Name, obj, true, dmg, Environment.TickCount);
             }
 
-            if (obj.Name.Contains("Crowstorm_red") && GetEnemy("Fiddlesticks").IsValid)
+            else if (obj.Name.Contains("Acidtrail_buf_red") && GetEnemy("Singed").IsValid)
+            {
+                var dmg = (float)GetEnemy("Singed").GetSpellDamage(Friendly(), SpellSlot.Q);
+                _acidtrail = new GameObj(obj.Name, obj, true, dmg, Environment.TickCount);
+            }
+
+            else if (obj.Name.Contains("Tremors_cas") && GetEnemy("Rammus").IsValid)
+            {
+                var dmg = (float) GetEnemy("Rammus").GetSpellDamage(Friendly(), SpellSlot.R);
+                _tremors = new GameObj(obj.Name, obj, true, dmg, Environment.TickCount);
+            }
+
+            else if (obj.Name.Contains("Crowstorm_red") && GetEnemy("Fiddlesticks").IsValid)
             {
                 var dmg = (float) GetEnemy("Fiddlesticks").GetSpellDamage(Friendly(), SpellSlot.R);
                 _crowstorm = new GameObj(obj.Name, obj, true, dmg, Environment.TickCount);
@@ -223,201 +240,291 @@ namespace Oracle
                             }
 
                             if (Origin.Item("dbool").GetValue<bool>())
-                            {
-                                Console.WriteLine(
-                                    "Dangerous buff on " + AggroTarget.SkinName + " should zhonyas!");
-                                Console.WriteLine("Damage: " + IncomeDamage);
-                                Console.WriteLine("Aggro Target: " + AggroTarget.SkinName);
-                            }
-
+                                Console.WriteLine("Dangerous buff on " + AggroTarget.SkinName + " should zhonyas!");
                         });
                 }
             }
             
             // Get ground object damage update
-            if (_glacialstorm.Included && GetEnemy("Anivia").IsValid)
+            if (_tremors.Included)
+            {
+                if (_tremors.Obj.IsValid && Friendly().Distance(_tremors.Obj.Position, true) <= 400 * 400)
+                {
+                    if (GetEnemy("Rammus").IsValid)
+                    {
+                        Attacker = GetEnemy("Rammus");
+                        AggroTarget = Friendly();
+                        IncomeDamage = _tremors.Damage;
+
+                        if (Origin.Item("dbool").GetValue<bool>())
+                            Console.WriteLine(
+                                AggroTarget.SkinName + " is in Tremors (Ground Object) for: " + IncomeDamage);
+                    }
+                }
+            }
+
+            if (_acidtrail.Included)
+            {
+                if (_acidtrail.Obj.IsValid && Friendly().Distance(_acidtrail.Obj.Position, true) <= 150 * 150)
+                {
+                    if (GetEnemy("Singed").IsValid)
+                    {
+                        Attacker = GetEnemy("Singed");
+                        AggroTarget = Friendly();
+                        IncomeDamage = _acidtrail.Damage;
+
+                        if (Origin.Item("dbool").GetValue<bool>())
+                            Console.WriteLine(
+                                AggroTarget.SkinName + " is in Poison Trail (Game Object) for: " + IncomeDamage);
+                    }
+                }
+            }
+
+            if (_glacialstorm.Included)
             {
                 if (_glacialstorm.Obj.IsValid && Friendly().Distance(_glacialstorm.Obj.Position, true) <= 400 * 400)
                 {
-                    Attacker = GetEnemy("Anivia");
-                    AggroTarget = Friendly();
-                    IncomeDamage = _glacialstorm.Damage;
+                    if (GetEnemy("Anivia").IsValid)
+                    {
+                        Attacker = GetEnemy("Anivia");
+                        AggroTarget = Friendly();
+                        IncomeDamage = _glacialstorm.Damage;
 
-                    if (Origin.Item("dbool").GetValue<bool>())
-                        Console.WriteLine(
-                            AggroTarget.SkinName + " is in Glacialstorm (Ground Object) for: " + IncomeDamage);
+                        if (Origin.Item("dbool").GetValue<bool>())
+                            Console.WriteLine(
+                                AggroTarget.SkinName + " is in Glacialstorm (Ground Object) for: " + IncomeDamage);
+                    }
                 }
             }
 
-            if (_chaosstorm.Included && GetEnemy("Viktor").IsValid)
+            if (_chaosstorm.Included)
             {
                 if (_chaosstorm.Obj.IsValid && Friendly().Distance(_chaosstorm.Obj.Position, true) <= 400 * 400) 
                 {
-                    Attacker = GetEnemy("Viktor");
-                    AggroTarget = Friendly();
-                    IncomeDamage = _chaosstorm.Damage;
-
-                    if (AggroTarget.NetworkId == Friendly().NetworkId && Origin.Item("viktorchaosstormccc").GetValue<bool>())
+                    if (GetEnemy("Viktor").IsValid)
                     {
-                        if (Friendly().CountHerosInRange("hostile") >=
-                            Friendly().CountHerosInRange("allies") || IncomeDamage >= Friendly().Health)
-                        {
-                            Danger = true;
-                            DangerUlt = true;
-                        }
-                    }
+                        Attacker = GetEnemy("Viktor");
+                        AggroTarget = Friendly();
+                        IncomeDamage = _chaosstorm.Damage;
 
-                    if (Origin.Item("dbool").GetValue<bool>())
-                        Console.WriteLine(
-                            AggroTarget.SkinName + " is in Chaostorm (Ground Object) for: " + IncomeDamage);
+                        if (AggroTarget.NetworkId == Friendly().NetworkId &&
+                            Origin.Item("viktorchaosstormccc").GetValue<bool>())
+                        {
+                            if (Friendly().CountHerosInRange("hostile") >= Friendly().CountHerosInRange("allies") ||
+                                IncomeDamage >= Friendly().Health)
+                            {
+                                Danger = true;
+                                DangerUlt = true;
+                            }
+                        }
+
+                        if (Origin.Item("dbool").GetValue<bool>())
+                            Console.WriteLine(
+                                AggroTarget.SkinName + " is in Chaostorm (Ground Object) for: " + IncomeDamage);
+                    }
                 }
             }
 
-            if (_fizzbait.Included && GetEnemy("Fizz").IsValid)
+            if (_fizzbait.Included)
             {
                 if (_fizzbait.Obj.IsValid && Friendly().Distance(_fizzbait.Obj.Position, true) <= 300 * 300)
                 {
                     if (Environment.TickCount - _fizzbait.Start >= 2500)
                     {
-                        Attacker = GetEnemy("Fizz");
-                        AggroTarget = Friendly();
-                        IncomeDamage = _fizzbait.Damage;
-
-                        if (Friendly().CountHerosInRange("hostile") >= Friendly().CountHerosInRange("allies") ||
-                            IncomeDamage >= Friendly().Health)
+                        if (GetEnemy("Fizz").IsValid)
                         {
-                            Danger = true;
-                            DangerUlt = true;
-                            DangerCC = true;
-                        }
-                    }
+                            Attacker = GetEnemy("Fizz");
+                            AggroTarget = Friendly();
+                            IncomeDamage = _fizzbait.Damage;
 
-                    if (Origin.Item("dbool").GetValue<bool>())
-                        Console.WriteLine(
-                            AggroTarget.SkinName + " is in fizz bait (Ground Object) for: " + IncomeDamage);
+                            if (Friendly().CountHerosInRange("hostile") >= Friendly().CountHerosInRange("allies") ||
+                                IncomeDamage >= Friendly().Health)
+                            {
+                                Danger = true;
+                                DangerUlt = true;
+                                DangerCC = true;
+                            }
+                        }
+
+                        if (Origin.Item("dbool").GetValue<bool>())
+                            Console.WriteLine(
+                                AggroTarget.SkinName + " is in fizz bait (Ground Object) for: " + IncomeDamage);
+                    }
                 }
             }
 
-            if (_caittrap.Included && GetEnemy("Caitlyn").IsValid)
+            if (_depthcharge.Included)
+            {
+                if (_depthcharge.Obj.IsValid && Friendly().Distance(_depthcharge.Obj.Position, true) <= 300 * 300)
+                {
+                    if (Friendly().HasBuff("nautilusgrandlinetarget", true))
+                    {
+                        if (GetEnemy("Nautilus").IsValid)
+                        {
+                            Attacker = GetEnemy("Nautilus");
+                            AggroTarget = Friendly();
+                            IncomeDamage = _depthcharge.Damage;
+
+                            if (Friendly().CountHerosInRange("hostile") >= Friendly().CountHerosInRange("allies") ||
+                                IncomeDamage >= Friendly().Health)
+                            {
+                                DangerCC = true;
+                                DangerUlt = true;
+                            }
+
+                            if (Origin.Item("dbool").GetValue<bool>())
+                                Console.WriteLine(
+                                    "Nautilus depth charge is homing " + AggroTarget.SkinName + " for: " + IncomeDamage);
+                        }
+                    }
+                }
+            }
+
+            if (_caittrap.Included)
             {
                 if (_caittrap.Obj.IsValid && Friendly().Distance(_caittrap.Obj.Position, true) <= 150 * 150)
                 {
-                    Attacker = GetEnemy("Caitlyn");
-                    AggroTarget = Friendly();
-                    IncomeDamage = _caittrap.Damage;
+                    if (GetEnemy("Caitlyn").IsValid)
+                    {
+                        Attacker = GetEnemy("Caitlyn");
+                        AggroTarget = Friendly();
+                        IncomeDamage = _caittrap.Damage;
 
-                    if (Origin.Item("dbool").GetValue<bool>())
-                        Console.WriteLine(
-                            AggroTarget.SkinName + " is in yordle trap (Ground Object) for: " + IncomeDamage);
+                        if (Origin.Item("dbool").GetValue<bool>())
+                            Console.WriteLine(
+                                AggroTarget.SkinName + " is in yordle trap (Ground Object) for: " + IncomeDamage);
+                    }
                 }
             }
 
-            if (_crowstorm.Included && GetEnemy("Fiddlesticks").IsValid)
+            if (_crowstorm.Included)
             {
                 // 575 Fear Range
                 if (_crowstorm.Obj.IsValid && Friendly().Distance(_crowstorm.Obj.Position, true) <= 575 * 575)
                 {
-                    Attacker = GetEnemy("Fiddlesticks");
-                    AggroTarget = Friendly();
-                    IncomeDamage = _chaosstorm.Damage;
-
-                    if (AggroTarget.NetworkId == Friendly().NetworkId && Origin.Item("crowstormccc").GetValue<bool>())
+                    if (GetEnemy("Fiddlesticks").IsValid)
                     {
-                        if (Friendly().CountHerosInRange("hostile") >=
-                            Friendly().CountHerosInRange("allies") || IncomeDamage >= Friendly().Health)
-                        {
-                            DangerUlt = true;
-                            Attacker = GetEnemy("Fiddlesticks");
-                        }
-                    }
+                        Attacker = GetEnemy("Fiddlesticks");
+                        AggroTarget = Friendly();
+                        IncomeDamage = _chaosstorm.Damage;
 
-                    if (Origin.Item("dbool").GetValue<bool>())
-                        Console.WriteLine(
-                            AggroTarget.SkinName + " is in Crowstorm (Ground Object) for: " + IncomeDamage);
+                        if (AggroTarget.NetworkId == Friendly().NetworkId &&
+                            Origin.Item("crowstormccc").GetValue<bool>())
+                        {
+                            if (Friendly().CountHerosInRange("hostile") >= Friendly().CountHerosInRange("allies") ||
+                                IncomeDamage >= Friendly().Health)
+                            {
+                                DangerUlt = true;
+                                Attacker = GetEnemy("Fiddlesticks");
+                            }
+                        }
+
+                        if (Origin.Item("dbool").GetValue<bool>())
+                            Console.WriteLine(
+                                AggroTarget.SkinName + " is in Crowstorm (Ground Object) for: " + IncomeDamage);
+                    }
                 }
             }
 
-            if (_minefield.Included && GetEnemy("Ziggs").IsValid)
+            if (_minefield.Included)
             {
                 if (_minefield.Obj.IsValid && Friendly().Distance(_minefield.Obj.Position, true) <= 300 * 300)
                 {
-                    Attacker = GetEnemy("Ziggs");
-                    AggroTarget = Friendly();
-                    IncomeDamage = _minefield.Damage;
+                    if (GetEnemy("Ziggs").IsValid)
+                    {
+                        Attacker = GetEnemy("Ziggs");
+                        AggroTarget = Friendly();
+                        IncomeDamage = _minefield.Damage;
 
-                    if (Origin.Item("dbool").GetValue<bool>())
-                        Console.WriteLine(
-                            AggroTarget.SkinName + " is in Minefield (Ground Object) for: " + IncomeDamage);
+                        if (Origin.Item("dbool").GetValue<bool>())
+                            Console.WriteLine(
+                                AggroTarget.SkinName + " is in Minefield (Ground Object) for: " + IncomeDamage);
+                    }
                 }
             }
 
-            if (_satchel.Included && GetEnemy("Ziggs").IsValid)
+            if (_satchel.Included)
             {
                 if (_satchel.Obj.IsValid && Friendly().Distance(_satchel.Obj.Position, true) <= 300 * 300)
                 {
-                    Attacker = GetEnemy("Ziggs");
-                    AggroTarget = Friendly();
-                    IncomeDamage = _satchel.Damage;
+                    if (GetEnemy("Ziggs").IsValid)
+                    {
+                        Attacker = GetEnemy("Ziggs");
+                        AggroTarget = Friendly();
+                        IncomeDamage = _satchel.Damage;
 
-                    if (Origin.Item("dbool").GetValue<bool>())
-                        Console.WriteLine(
-                            AggroTarget.SkinName + " is in Satchel (Ground Object) for: " + IncomeDamage);
+                        if (Origin.Item("dbool").GetValue<bool>())
+                            Console.WriteLine(
+                                AggroTarget.SkinName + " is in Satchel (Ground Object) for: " + IncomeDamage);
+                    }
                 }
             }
 
-            if (_tormentsoil.Included && GetEnemy("Morgana").IsValid)
+            if (_tormentsoil.Included)
             {
                 if (_tormentsoil.Obj.IsValid && Friendly().Distance(_tormentsoil.Obj.Position, true) <= 300 * 300)
                 {
-                    Attacker = GetEnemy("Morgana");
-                    AggroTarget = Friendly();
-                    IncomeDamage = _tormentsoil.Damage;
+                    if (GetEnemy("Morgana").IsValid)
+                    {
+                        Attacker = GetEnemy("Morgana");
+                        AggroTarget = Friendly();
+                        IncomeDamage = _tormentsoil.Damage;
 
-                    if (Origin.Item("dbool").GetValue<bool>())
-                        Console.WriteLine(
-                            AggroTarget.SkinName + " is in Torment Soil (Ground Object) for: " + IncomeDamage);
+                        if (Origin.Item("dbool").GetValue<bool>())
+                            Console.WriteLine(
+                                AggroTarget.SkinName + " is in Torment Soil (Ground Object) for: " + IncomeDamage);
+                    }
                 }
             }
 
-            if (_miasma.Included && GetEnemy("Cassiopeia").IsValid)
+            if (_miasma.Included)
             {
                 if (_miasma.Obj.IsValid && Friendly().Distance(_miasma.Obj.Position, true) <= 300 * 300)
                 {
-                    Attacker = GetEnemy("Cassiopeia");
-                    AggroTarget = Friendly();
-                    IncomeDamage = _satchel.Damage;
+                    if (GetEnemy("Cassiopeia").IsValid)
+                    {
+                        Attacker = GetEnemy("Cassiopeia");
+                        AggroTarget = Friendly();
+                        IncomeDamage = _satchel.Damage;
 
-                    if (Origin.Item("dbool").GetValue<bool>())
-                        Console.WriteLine(
-                            AggroTarget.SkinName + " is in Miasma (Ground Object) for: " + IncomeDamage);
+                        if (Origin.Item("dbool").GetValue<bool>())
+                            Console.WriteLine(
+                                AggroTarget.SkinName + " is in Miasma (Ground Object) for: " + IncomeDamage);
+                    }
                 }
             }
 
-            if (_lightstrike.Included && GetEnemy("Lux").IsValid)
+            if (_lightstrike.Included)
             {
                 if (_lightstrike.Obj.IsValid && Friendly().Distance(_lightstrike.Obj.Position, true) <= 300*300)
                 {
-                    Attacker = GetEnemy("Lux");
-                    AggroTarget = Friendly();
-                    IncomeDamage = _lightstrike.Damage;
+                    if (GetEnemy("Lux").IsValid)
+                    {
+                        Attacker = GetEnemy("Lux");
+                        AggroTarget = Friendly();
+                        IncomeDamage = _lightstrike.Damage;
 
-                    if (Origin.Item("dbool").GetValue<bool>())
-                        Console.WriteLine(
-                            AggroTarget.SkinName + " is in Lightstrike (Ground Object) for: " + IncomeDamage);
+                        if (Origin.Item("dbool").GetValue<bool>())
+                            Console.WriteLine(
+                                AggroTarget.SkinName + " is in Lightstrike (Ground Object) for: " + IncomeDamage);
+                    }
                 }
             }
 
-            if (_equinox.Included && GetEnemy("Soraka").IsValid)
+            if (_equinox.Included)
             {
                 if (_equinox.Obj.IsValid && Friendly().Distance(_equinox.Obj.Position, true) <= 300 * 300)
                 {
-                    Attacker = GetEnemy("Lux");
-                    AggroTarget = Friendly();
-                    IncomeDamage = _equinox.Damage;
+                    if (GetEnemy("Soraka").IsValid)
+                    {
+                        Attacker = GetEnemy("Lux");
+                        AggroTarget = Friendly();
+                        IncomeDamage = _equinox.Damage;
 
-                    if (Origin.Item("dbool").GetValue<bool>())
-                        Console.WriteLine(
-                            AggroTarget.SkinName + " is in Equinox (Ground Object) for: " + IncomeDamage);
+                        if (Origin.Item("dbool").GetValue<bool>())
+                            Console.WriteLine(
+                                AggroTarget.SkinName + " is in Equinox (Ground Object) for: " + IncomeDamage);
+                    }
                 }
             }
 
@@ -670,7 +777,7 @@ namespace Oracle
 
                     AggroTarget =
                         ObjectManager.Get<Obj_AI_Hero>()
-                            .FirstOrDefault(x => !skillShot.IsSafe(x.ServerPosition.To2D()));
+                            .FirstOrDefault(x => !skillShot.IsSafe(x.ServerPosition.To2D()) && x.IsAlly);
 
                     if (AggroTarget != null)
                     {
@@ -684,8 +791,7 @@ namespace Oracle
                             if (Origin.Item("dbool").GetValue<bool>())
                             {
                                 Console.WriteLine("Dangerous (Skillshot Spells): " + Danger);
-                                Console.WriteLine(HeroSender.SkinName + " may hit (SkillShot) " + AggroTarget.SkinName +
-                                                  " for: " + IncomeDamage);
+                                Console.WriteLine(HeroSender.SkinName + " may hit (SkillShot) " + AggroTarget.SkinName + " for: " + IncomeDamage);
                             }
                         });
                     }

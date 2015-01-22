@@ -305,7 +305,7 @@ namespace Oracle.Core.Targeted
                 new TargetSpellData("irelia", "ireliagatotsu", SpellSlot.Q, SpellType.Targeted, CcType.No, 650, 0, 2200),
                 new TargetSpellData("irelia", "ireliahitenstyle", SpellSlot.W, SpellType.Self, CcType.No, 0, 230, 347),
                 new TargetSpellData("irelia", "ireliaequilibriumstrike", SpellSlot.E, SpellType.Targeted, CcType.Stun, 325, 500, float.MaxValue),
-                new TargetSpellData("irelia", "ireliatranscendentblades", SpellSlot.R, SpellType.Skillshot, CcType.No, 1200, 500, 779),
+                new TargetSpellData("irelia", "ireliatranscendentblades", SpellSlot.R, SpellType.Skillshot, CcType.No, 1200, 500, 779, false, false, true),
 
                 #endregion Irelia
 
