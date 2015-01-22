@@ -887,10 +887,10 @@ namespace Oracle.Core.Targeted
 
                 #region TwistedFate
                 new TargetSpellData("twistedfate", "wildcards", SpellSlot.Q, SpellType.Skillshot, CcType.No, 1450, 500, 1450),
-                new TargetSpellData("twistedfate", "pickacard", SpellSlot.W, SpellType.Self, CcType.No, 0, 500, float.MaxValue),
-                new TargetSpellData("twistedfate", "goldcardpreattack", SpellSlot.W, SpellType.Targeted, CcType.Stun, 600, 500, float.MaxValue),
-                new TargetSpellData("twistedfate", "redcardpreattack", SpellSlot.W, SpellType.Targeted, CcType.Slow, 600, 500, float.MaxValue),
-                new TargetSpellData("twistedfate", "bluecardpreattack", SpellSlot.W, SpellType.Targeted, CcType.No, 600, 500, float.MaxValue),
+                new TargetSpellData("twistedfate", "pickacard", SpellSlot.W, SpellType.Self, CcType.No, 0, 500, float.MaxValue, false, false, true),
+                new TargetSpellData("twistedfate", "goldcardpreattack", SpellSlot.W, SpellType.Targeted, CcType.Stun, 600, 0, float.MaxValue),
+                new TargetSpellData("twistedfate", "redcardpreattack", SpellSlot.W, SpellType.Targeted, CcType.Slow, 600, 0, float.MaxValue),
+                new TargetSpellData("twistedfate", "bluecardpreattack", SpellSlot.W, SpellType.Targeted, CcType.No, 600, 0, float.MaxValue),
                 new TargetSpellData("twistedfate", "cardmasterstack", SpellSlot.E, SpellType.Self, CcType.No, 525, 500, 1200),
                 new TargetSpellData("twistedfate", "destiny", SpellSlot.R, SpellType.Skillshot, CcType.No, 5500, 500, float.MaxValue, false, false, true),
 

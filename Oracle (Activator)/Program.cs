@@ -368,6 +368,7 @@ namespace Oracle
                             if (Friendly().CountHerosInRange("hostile") >= Friendly().CountHerosInRange("allies") ||
                                 IncomeDamage >= Friendly().Health)
                             {
+                                Danger = true;
                                 DangerCC = true;
                                 DangerUlt = true;
                             }
@@ -414,6 +415,7 @@ namespace Oracle
                             if (Friendly().CountHerosInRange("hostile") >= Friendly().CountHerosInRange("allies") ||
                                 IncomeDamage >= Friendly().Health)
                             {
+                                Danger = true;
                                 DangerUlt = true;
                                 Attacker = GetEnemy("Fiddlesticks");
                             }
@@ -710,12 +712,6 @@ namespace Oracle
                             {
                                 IncomeDamage = (float)HeroSender.GetSpellDamage(AggroTarget, (SpellSlot)o.Spellslot);
 
-                                if (Origin.Item("dbool").GetValue<bool>())
-                                    Console.WriteLine("Danger (Self): " + Danger);
-
-                                if (Origin.Item("dbool").GetValue<bool>())
-                                    Console.WriteLine(HeroSender.SkinName + " hit (Self Spell) " + AggroTarget.SkinName + " for: " + IncomeDamage);
-
                                 if (o.Wait)
                                 {
                                     return;
@@ -725,6 +721,12 @@ namespace Oracle
                                 Danger = Origin.Item(o.Name.ToLower() + "ccc").GetValue<bool>();
                                 DangerUlt = Origin.Item(o.Name.ToLower() + "ccc").GetValue<bool>() && o.Spellslot.ToString() == "R";
                                 DangerCC = o.CcType != CcType.No && o.Type != SpellType.AutoAttack;
+
+                                if (Origin.Item("dbool").GetValue<bool>())
+                                    Console.WriteLine("Danger (Self): " + Danger);
+
+                                if (Origin.Item("dbool").GetValue<bool>())
+                                    Console.WriteLine(HeroSender.SkinName + " hit (Self Spell) " + AggroTarget.SkinName + " for: " + IncomeDamage);
 
                             }
                         });
