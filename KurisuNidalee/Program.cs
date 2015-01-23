@@ -434,6 +434,11 @@ namespace KurisuNidalee
                         PacketCast(swipe, prediction.CastPosition, Packets());
                 }
 
+                else
+                {
+                    pounce.Cast(target.ServerPosition);
+                }
+
 
                 // force transform if q ready and no collision 
                 if (HQ == 0 && MainMenu.Item("usecougarr").GetValue<bool>())
@@ -461,11 +466,6 @@ namespace KurisuNidalee
                 {
                     if (aspectofcougar.IsReady())
                         PacketCast(aspectofcougar, Packets());
-                }
-
-                if (target.Distance(Me.ServerPosition, true) > pounce.RangeSqr)
-                {
-                    pounce.Cast(target.ServerPosition);
                 }
 
             }
