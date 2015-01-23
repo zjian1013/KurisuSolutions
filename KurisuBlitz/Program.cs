@@ -25,7 +25,7 @@ namespace KurisuBlitz
 
         static void Main(string[] args)
         {
-            Console.WriteLine("Blitzcrank assembly is loading...");
+            Console.WriteLine("Blitzcrank injected...");
             CustomEvents.Game.OnGameLoad += BlitzOnLoad;
         }
 
@@ -37,7 +37,7 @@ namespace KurisuBlitz
             }
 
             // Set spells      
-            q = new Spell(SpellSlot.Q, 925f);
+            q = new Spell(SpellSlot.Q, 1050);
             q.SetSkillshot(0.25f, 70f, 1800f, true, SkillshotType.SkillshotLine);
 
             e = new Spell(SpellSlot.E, _player.AttackRange);
@@ -182,7 +182,6 @@ namespace KurisuBlitz
                 }
             }
         }
-
 
         private static void GodKS(Spell spell)
         {

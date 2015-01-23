@@ -384,14 +384,14 @@ namespace KurisuRiven
                     iskibursting = true;
                     cankiburst = false;
                     canmove = false;
-
-                    if (mode.SelectedIndex == 0)
+                    if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
                     {
-                        if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
-                        {
-                            if (q.IsReady() && cancleave)
-                                q.Cast(Maintarget.ServerPosition);
-                        }
+                        Utility.DelayAction.Add(
+                            Game.Ping + 75, delegate
+                            {
+                                if (q.IsReady() && cancleave)
+                                    q.Cast(Maintarget.ServerPosition);
+                            });
                     }
                     break;
 
