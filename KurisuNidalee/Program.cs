@@ -215,12 +215,12 @@ namespace KurisuNidalee
             nidaD.AddItem(new MenuItem("drawQ", "Draw Q")).SetValue(new Circle(true, Color.FromArgb(150, Color.White)));
             nidaD.AddItem(new MenuItem("drawW", "Draw W")).SetValue(new Circle(true, Color.FromArgb(150, Color.White)));
             nidaD.AddItem(new MenuItem("drawE", "Draw E")).SetValue(new Circle(true, Color.FromArgb(150, Color.White)));
-            nidaD.AddItem(new MenuItem("drawline", "Draw Line")).SetValue(true);
+            nidaD.AddItem(new MenuItem("drawline", "Draw Target")).SetValue(true);
             nidaD.AddItem(new MenuItem("drawcds", "Draw Cooldowns")).SetValue(true);
             MainMenu.AddSubMenu(nidaD);
 
             MainMenu.AddItem(new MenuItem("useignote", "Use Ignite")).SetValue(true);
-            MainMenu.AddItem(new MenuItem("usepackets", "Use Packets")).SetValue(false);
+            MainMenu.AddItem(new MenuItem("usepackets", "Use Packets (No Work)")).SetValue(false);
             MainMenu.AddToMainMenu();
 
             Game.PrintChat("<font color=\"#FF9900\"><b>KurisuNidalee</b></font> - Loaded");
@@ -416,7 +416,7 @@ namespace KurisuNidalee
                 }
 
                 // Check is pounce is ready 
-                if (CW == 0 && MainMenu.Item("usecougarw").GetValue<bool>()
+                else if (CW == 0 && MainMenu.Item("usecougarw").GetValue<bool>()
                     && target.Distance(Me.ServerPosition, true) > 30 * 30)
                 {
                     if (TargetHunted(target) & target.Distance(Me.ServerPosition, true) <= 750 * 750)
@@ -427,7 +427,7 @@ namespace KurisuNidalee
                 }
 
                 // Check if swipe is ready (prediction)
-                if (CE == 0 && MainMenu.Item("usecougare").GetValue<bool>())
+                else if (CE == 0 && MainMenu.Item("usecougare").GetValue<bool>())
                 {
                     var prediction = swipe.GetPrediction(target);
                     if (prediction.Hitchance >= HitChance.Low && target.Distance(Me.ServerPosition, true) <= swipe.RangeSqr)
@@ -463,6 +463,11 @@ namespace KurisuNidalee
                         PacketCast(aspectofcougar, Packets());
                 }
 
+                if (target.Distance(Me.ServerPosition, true) > pounce.RangeSqr)
+                {
+                    pounce.Cast(target.ServerPosition);
+                }
+
             }
 
             // Human combo
@@ -478,7 +483,7 @@ namespace KurisuNidalee
                         PacketCast(aspectofcougar, Packets());
                 }
 
-                if (HQ == 0 && MainMenu.Item("usehumanq").GetValue<bool>())
+                else if (HQ == 0 && MainMenu.Item("usehumanq").GetValue<bool>())
                 {
                     var prediction = javelin.GetPrediction(target);
                     switch (MainMenu.Item("seth").GetValue<StringList>().SelectedIndex)
@@ -499,8 +504,8 @@ namespace KurisuNidalee
                 }
 
                 // Check bushwack and cast underneath targets feet.
-                if (HW == 0 && MainMenu.Item("usehumanw").GetValue<bool>()
-                    && target.Distance(Me.ServerPosition, true) <= bushwack.RangeSqr)
+                if (HW == 0 && MainMenu.Item("usehumanw").GetValue<bool>() &&
+                         target.Distance(Me.ServerPosition, true) <= bushwack.RangeSqr)
                 {
                     var prediction = bushwack.GetPrediction(target);
                     if (prediction.Hitchance >= HitChance.Medium)
@@ -598,20 +603,20 @@ namespace KurisuNidalee
                             PacketCast(aspectofcougar, Packets());
                     }
 
-                    if (m.Distance(Me.ServerPosition, true) <= swipe.RangeSqr && CE == 0)
+                    else if (m.Distance(Me.ServerPosition, true) <= swipe.RangeSqr && CE == 0)
                     {
                         if (MainMenu.Item("lccougare").GetValue<bool>())
                             PacketCast(swipe, m.ServerPosition, Packets());
                     }
 
 
-                    if (m.Distance(Me.ServerPosition, true) <= pounce.RangeSqr && CW == 0)
+                    else if (m.Distance(Me.ServerPosition, true) <= pounce.RangeSqr && CW == 0)
                     {
                         if (MainMenu.Item("lccougarw").GetValue<bool>())
                             PacketCast(pounce, m.ServerPosition, Packets());
                     }
 
-                    if (m.Distance(Me.ServerPosition) <= takedown.RangeSqr && CQ == 0)
+                    else if (m.Distance(Me.ServerPosition) <= takedown.RangeSqr && CQ == 0)
                     {
                         if (MainMenu.Item("lccougarq").GetValue<bool>())
                             PacketCast(takedown, Packets());
@@ -837,9 +842,7 @@ namespace KurisuNidalee
                     return;
                 }
 
-                var pos1 = Drawing.WorldToScreen(Me.Position);
-                var pos2 = Drawing.WorldToScreen(Target.Position);
-                Drawing.DrawLine(pos1, pos2, 3, Color.White);
+                Render.Circle.DrawCircle(Target.Position, Target.BoundingRadius - 50, Color.Yellow);
             }
 
             foreach (var spell in CougarList)
