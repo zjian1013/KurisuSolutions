@@ -818,13 +818,13 @@ namespace KurisuRiven
                     return;
                 }
 
-                //if ((float)ua * 3 + uq * 3 + uw + rr + ri + ritems >= target.Health)
-                //{
+                if ((float)ua * 3 + uq * 3 + uw + rr + ri + ritems >= target.Health)
+                {
                     if (cleavecount <= 1 && q.IsReady())
                     {
                         r.Cast();
                     }
-                //}
+                }
             }
         }
 
