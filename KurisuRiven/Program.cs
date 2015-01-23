@@ -664,7 +664,7 @@ namespace KurisuRiven
             if (e.IsReady() && candash && (target.Distance(Me.ServerPosition) > truerange + 50))
             {
                 if (target.Distance(Me.ServerPosition) <= truerange + e.Range + 100 ||
-                    healthpercent <= Config.Item("vhealth").GetValue<Slider>().Value) 
+                    healthpercent <= Config.Item("vhealth").GetValue<Slider>().Value)
                 {
 
                     ItemData.Youmuus_Ghostblade.GetItem().Cast();
@@ -748,6 +748,7 @@ namespace KurisuRiven
             // cleaves
             else if (cancleave && q.IsReady() && target.Distance(Me.ServerPosition) <= q.Range + 10)
             {
+                CheckR(target);
                 if (!Config.Item("usecomboq").GetValue<bool>())
                 {
                     return;
@@ -787,7 +788,7 @@ namespace KurisuRiven
             {
                 if (Me.Spellbook.CanUseSpell(ignote) == SpellState.Ready)
                 {
-                    if (ulton && target.Distance(Me.ServerPosition) <= 600 && cleavecount <= 1)                 
+                    if (ulton && target.Distance(Me.ServerPosition) <= 600 && cleavecount <= 1)
                         Me.Spellbook.CastSpell(ignote, target);
                 }
             }
@@ -818,13 +819,13 @@ namespace KurisuRiven
                     return;
                 }
 
-                //if ((float)ua * 3 + uq * 3 + uw + rr + ri + ritems >= target.Health)
-                //{
+                if ((float)ua * 3 + uq * 3 + uw + rr + ri + ritems >= target.Health)
+                {
                     if (cleavecount <= 1 && q.IsReady())
                     {
                         r.Cast();
                     }
-                //}
+                }
             }
         }
 
