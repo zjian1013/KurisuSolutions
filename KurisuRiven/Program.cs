@@ -381,9 +381,7 @@ namespace KurisuRiven
                     break;
                 case "ItemTiamatCleave":
                     lasthydra = Environment.TickCount;
-                    if (q.IsReady() &&
-                        Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
-                            q.Cast(Maintarget.ServerPosition);
+                    canattack = true;
                     break;
                 case "RivenFeint":
                     lastdash = Environment.TickCount;
@@ -414,8 +412,8 @@ namespace KurisuRiven
             Maintarget = TargetSelector.GetTarget(1100, TargetSelector.DamageType.Physical);
             CheckDamage(Maintarget);
 
-            Orbwalker.SetMovement(canmove);
-            Orbwalker.SetMovement(canattack);
+            Orbwalker.SetAttack(!canattack);
+            Orbwalker.SetMovement(!canmove);
 
             wrange = ulton ? w.Range + 135 : w.Range;
             astime = 1 / (0.318 * Me.AttackSpeedMod);
@@ -678,7 +676,7 @@ namespace KurisuRiven
             }
 
             // kiburst
-            if (w.IsReady() && cankiburst && target.Distance(Me.ServerPosition) <= wrange)
+            else if (w.IsReady() && cankiburst && target.Distance(Me.ServerPosition) <= wrange)
             {
                 if (hashydra && canhydra)
                 {
@@ -697,16 +695,16 @@ namespace KurisuRiven
                 }
             }
 
+
             // cleaves
-            if (cancleave && q.IsReady() && target.Distance(Me.ServerPosition) <= truerange + 100)
+            else if (cancleave && q.IsReady() && target.Distance(Me.ServerPosition) <= truerange + 100)
             {
                 if (!Config.Item("usecomboq").GetValue<bool>())
                 {
                     return;
                 }
 
-                if (Environment.TickCount - lasthydra >= 800 &&
-                    Environment.TickCount - lastdash >= 200)
+                if (Environment.TickCount - lasthydra >= 800 && Environment.TickCount - lastdash >= 200)
                 {
                     if (Config.Item("prediction").GetValue<bool>())
                         q.CastIfHitchanceEquals(target, HitChance.Medium);
@@ -716,7 +714,7 @@ namespace KurisuRiven
             }
 
             // gapclose
-            if (target.Distance(Me.ServerPosition) > truerange + 101)
+            else if (target.Distance(Me.ServerPosition) > truerange + 101)
             {
                 if (!Config.Item("usecomboq").GetValue<bool>())
                 {
