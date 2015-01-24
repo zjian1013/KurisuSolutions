@@ -553,7 +553,7 @@ namespace KurisuNidalee
 
         private static void PrimalSurge()
         {
-            if (HE != 0 || !MainMenu.Item("usedemheals").GetValue<bool>())
+            if (HE != 0 || !MainMenu.Item("usedemheals").GetValue<bool>() || Me.IsRecalling())
                 return;
 
             var actualHeroManaPercent = (int)((Me.Mana / Me.MaxMana) * 100);
