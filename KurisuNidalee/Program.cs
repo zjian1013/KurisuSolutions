@@ -12,7 +12,7 @@ namespace KurisuNidalee
     // |   | |_|_| |___| |___ ___ 
     // | | | | | . | .'| | -_| -_|
     // |_|___|_|___|__,|_|___|___|
-    // Copyright © Kurisu Solutions 2014
+    // Copyright © Kurisu Solutions 2015
 
     internal class Program
     {

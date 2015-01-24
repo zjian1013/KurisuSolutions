@@ -245,7 +245,7 @@ namespace KurisuRiven
             {
                 dmg += Me.CalcDamage(
                     target, Damage.DamageType.Physical,
-                    (new double[] { 80, 80, 120, 160 }[r.Level-1] +
+                    (new double[] { 80, 80, 120, 160 }[r.Level] +
                      (0.6 * Me.FlatPhysicalDamageMod) * ((target.MaxHealth - combodamage) / target.MaxHealth * 2.67 + 1)));
             }
 
@@ -320,7 +320,7 @@ namespace KurisuRiven
                     Drawing.DrawText(wts[0] - 20, wts[1] + 20, System.Drawing.Color.LawnGreen, "Kill!");
                 else if ((float)(ra * 2 + rq * 2 + rw + ritems) > Maintarget.Health)
                     Drawing.DrawText(wts[0] - 40, wts[1] + 20, System.Drawing.Color.LawnGreen, "Easy Kill!");
-                else if ((float)(ua * 3 + uq * 2 + uw + ri + rrb4(Maintarget) + ritems) > Maintarget.Health)
+                else if ((float)(ra * 3 + ra * 3 + rw + ri + rrb4(Maintarget) + ritems) > Maintarget.Health)
                     Drawing.DrawText(wts[0] - 65, wts[1] + 20, System.Drawing.Color.LawnGreen, "Full Combo Kill!");
                 else if ((float)(ua * 3 + uq * 3 + uw + rrb4(Maintarget) + ri + ritems) > Maintarget.Health)
                     Drawing.DrawText(wts[0] - 70, wts[1] + 20, System.Drawing.Color.LawnGreen, "Full Combo Hard Kill!");
