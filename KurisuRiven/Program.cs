@@ -930,7 +930,7 @@ namespace KurisuRiven
 
                 if ((float)ua * 3 + uq * 3 + uw + rr + ri + ritems >= target.Health)
                 {
-                    if ((float) ra * 2 + rq * 2 + uw + ritems >= target.Health &&
+                    if (target.Health <= (float) ra * 2 + rq * 2 + uw + ritems &&
                         Config.Item("checkover").GetValue<bool>())
                     {
                         return;
