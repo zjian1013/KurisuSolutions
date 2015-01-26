@@ -25,7 +25,7 @@ namespace Oracle
         public static bool DangerUlt;
         public static bool CanManamune;
         public static string ChampionName;
-        public const string Revision = "208";
+        public const string Revision = "209";
 
         public static Obj_AI_Hero Attacker;
         public static Obj_AI_Hero AggroTarget;
@@ -104,7 +104,7 @@ namespace Oracle
             GameObject.OnCreate += GameObject_OnCreate;
             Obj_AI_Base.OnProcessSpellCast += Obj_AI_Base_OnProcessSpellCast;
 
-            Game.PrintChat("<font color=\"#1FFF8F\">Oracle r." + Revision + " -</font> by Kurisu");
+            Game.PrintChat("<font color=\"#1FFF8F\">Oracle# r." + Revision + " -</font> by Kurisu");
         }
 
         private static GameObj _satchel, _miasma, _minefield, _crowstorm, _fizzbait, _caittrap;
@@ -289,6 +289,7 @@ namespace Oracle
                         Attacker = GetEnemy("Anivia");
                         AggroTarget = Friendly();
                         IncomeDamage = _glacialstorm.Damage;
+                        DangerCC = true;
 
                         if (Origin.Item("dbool").GetValue<bool>())
                             Console.WriteLine(
@@ -305,7 +306,8 @@ namespace Oracle
                     {
                         Attacker = GetEnemy("Viktor");
                         AggroTarget = Friendly();
-                        IncomeDamage = _chaosstorm.Damage;
+                        IncomeDamage = _chaosstorm.Damage; 
+                        DangerCC = true;
 
                         if (AggroTarget.NetworkId == Friendly().NetworkId &&
                             Origin.Item("viktorchaosstormccc").GetValue<bool>())
@@ -390,6 +392,7 @@ namespace Oracle
                         Attacker = GetEnemy("Caitlyn");
                         AggroTarget = Friendly();
                         IncomeDamage = _caittrap.Damage;
+                        DangerCC = true;
 
                         if (Origin.Item("dbool").GetValue<bool>())
                             Console.WriteLine(
@@ -437,6 +440,7 @@ namespace Oracle
                         Attacker = GetEnemy("Ziggs");
                         AggroTarget = Friendly();
                         IncomeDamage = _minefield.Damage;
+                        DangerCC = true;
 
                         if (Origin.Item("dbool").GetValue<bool>())
                             Console.WriteLine(
@@ -454,6 +458,7 @@ namespace Oracle
                         Attacker = GetEnemy("Ziggs");
                         AggroTarget = Friendly();
                         IncomeDamage = _satchel.Damage;
+                        DangerCC = true;
 
                         if (Origin.Item("dbool").GetValue<bool>())
                             Console.WriteLine(
@@ -488,6 +493,7 @@ namespace Oracle
                         Attacker = GetEnemy("Cassiopeia");
                         AggroTarget = Friendly();
                         IncomeDamage = _satchel.Damage;
+                        DangerCC = true;
 
                         if (Origin.Item("dbool").GetValue<bool>())
                             Console.WriteLine(
@@ -505,6 +511,7 @@ namespace Oracle
                         Attacker = GetEnemy("Lux");
                         AggroTarget = Friendly();
                         IncomeDamage = _lightstrike.Damage;
+                        DangerCC = true;
 
                         if (Origin.Item("dbool").GetValue<bool>())
                             Console.WriteLine(
@@ -522,6 +529,7 @@ namespace Oracle
                         Attacker = GetEnemy("Lux");
                         AggroTarget = Friendly();
                         IncomeDamage = _equinox.Damage;
+                        DangerCC = true;
 
                         if (Origin.Item("dbool").GetValue<bool>())
                             Console.WriteLine(
