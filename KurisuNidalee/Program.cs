@@ -418,8 +418,13 @@ namespace KurisuNidalee
 
                 }
 
+                else if (target.Distance(Me.ServerPosition, true) > Me.AttackRange*Me.AttackRange)
+                {
+                    Pounce.Cast(target.ServerPosition);
+                }
+
                 // Check if swipe is ready (prediction)
-                else if (CE == 0 && _mainMenu.Item("usecougare").GetValue<bool>())
+                if (CE == 0 && _mainMenu.Item("usecougare").GetValue<bool>())
                 {
                     var prediction = Swipe.GetPrediction(target);
                     if (prediction.Hitchance >= HitChance.Low &&
@@ -428,12 +433,6 @@ namespace KurisuNidalee
                         Swipe.Cast(prediction.CastPosition);
                     }
                 }
-
-                else if (target.Distance(Me.ServerPosition, true) > Me.AttackRange*Me.AttackRange)
-                {
-                    Pounce.Cast(target.ServerPosition);
-                }
-
 
                 // force transform if q ready and no collision 
                 if (HQ == 0 && _mainMenu.Item("usecougarr").GetValue<bool>())
