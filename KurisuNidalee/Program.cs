@@ -426,7 +426,7 @@ namespace KurisuNidalee
                     }
                 }
 
-                else
+                else if (target.Distance(Me.ServerPosition, true) > Me.AttackRange*Me.AttackRange)
                 {
                     Pounce.Cast(target.ServerPosition);
                 }

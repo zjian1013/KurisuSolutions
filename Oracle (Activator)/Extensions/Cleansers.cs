@@ -26,6 +26,7 @@ namespace Oracle.Extensions
             CreateMenuItem("Quicksilver Sash", "Quicksilver", 1);
             CreateMenuItem("Mercurial Scimitar", "Mercurial", 1);
             CreateMenuItem("Mikael's Crucible", "Mikaels", 1);
+            _mainMenu.AddItem(new MenuItem("cleansedelay", "Cleanse delay ")).SetValue(new Slider(0));
 
             _mainMenu.AddItem(
                 new MenuItem("cmode", "Mode: "))
@@ -61,45 +62,46 @@ namespace Oracle.Extensions
             {
                 if (target.Distance(Me.ServerPosition, true) <= range * range)
                 {
+                    var delay = _mainMenu.Item("cleansedelay").GetValue<Slider>().Value * 10;
                     foreach (var buff in GameBuff.CleanseBuffs)
                     {
                         var buffinst = target.Buffs;
                         if (buffinst.Any(aura => aura.Name.ToLower() == buff.BuffName))
-                            Utility.DelayAction.Add(100 + buff.Delay, () => Items.UseItem(itemId, target));
+                            Utility.DelayAction.Add(delay + buff.Delay, () => Items.UseItem(itemId, target));
                     }
 
                     if (OC.Origin.Item("slow").GetValue<bool>() && target.HasBuffOfType(BuffType.Slow))
-                        Utility.DelayAction.Add(100, () => Items.UseItem(itemId, target));
+                        Utility.DelayAction.Add(delay, () => Items.UseItem(itemId, target));
 
                     if (OC.Origin.Item("stun").GetValue<bool>() && target.HasBuffOfType(BuffType.Stun))
-                        Utility.DelayAction.Add(100, () => Items.UseItem(itemId, target));
+                        Utility.DelayAction.Add(delay, () => Items.UseItem(itemId, target));
 
                     if (OC.Origin.Item("charm").GetValue<bool>() && target.HasBuffOfType(BuffType.Charm))
-                        Utility.DelayAction.Add(100, () => Items.UseItem(itemId, target));
+                        Utility.DelayAction.Add(delay, () => Items.UseItem(itemId, target));
 
                     if (OC.Origin.Item("taunt").GetValue<bool>() && target.HasBuffOfType(BuffType.Taunt))
-                        Utility.DelayAction.Add(100, () => Items.UseItem(itemId, target));
+                        Utility.DelayAction.Add(delay, () => Items.UseItem(itemId, target));
 
                     if (OC.Origin.Item("fear").GetValue<bool>() && target.HasBuffOfType(BuffType.Fear))
-                        Utility.DelayAction.Add(100, () => Items.UseItem(itemId, target));
+                        Utility.DelayAction.Add(delay, () => Items.UseItem(itemId, target));
 
                     if (OC.Origin.Item("snare").GetValue<bool>() && target.HasBuffOfType(BuffType.Snare))
-                        Utility.DelayAction.Add(100, () => Items.UseItem(itemId, target));
+                        Utility.DelayAction.Add(delay, () => Items.UseItem(itemId, target));
 
                     if (OC.Origin.Item("silence").GetValue<bool>() && target.HasBuffOfType(BuffType.Silence))
-                        Utility.DelayAction.Add(100, () => Items.UseItem(itemId, target));
+                        Utility.DelayAction.Add(delay, () => Items.UseItem(itemId, target));
 
                     if (OC.Origin.Item("suppression").GetValue<bool>() && target.HasBuffOfType(BuffType.Suppression))
-                        Utility.DelayAction.Add(100, () => Items.UseItem(itemId, target));
+                        Utility.DelayAction.Add(delay, () => Items.UseItem(itemId, target));
 
                     if (OC.Origin.Item("polymorph").GetValue<bool>() && target.HasBuffOfType(BuffType.Polymorph))
-                        Utility.DelayAction.Add(100, () => Items.UseItem(itemId, target));
+                        Utility.DelayAction.Add(delay, () => Items.UseItem(itemId, target));
 
                     if (OC.Origin.Item("blind").GetValue<bool>() && target.HasBuffOfType(BuffType.Blind))
-                        Utility.DelayAction.Add(100, () => Items.UseItem(itemId, target));
+                        Utility.DelayAction.Add(delay, () => Items.UseItem(itemId, target));
 
                     if (OC.Origin.Item("poison").GetValue<bool>() && target.HasBuffOfType(BuffType.Poison))
-                        Utility.DelayAction.Add(100, () => Items.UseItem(itemId, target));
+                        Utility.DelayAction.Add(delay, () => Items.UseItem(itemId, target));
                 }
             }
         }
