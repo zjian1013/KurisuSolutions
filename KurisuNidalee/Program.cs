@@ -557,14 +557,14 @@ namespace KurisuNidalee
             {
                 target =
                     ObjectManager.Get<Obj_AI_Hero>()
-                        .Where(hero => hero.IsValidTarget(float.MaxValue, false) && hero.IsAlly)
+                        .Where(hero => hero.IsValidTarget(Primalsurge.Range + 100, false) && hero.IsAlly)
                         .OrderBy(xe => xe.Health/xe.MaxHealth*100).First();
             }
             else
             {
                 target =
                     ObjectManager.Get<Obj_AI_Hero>()
-                        .Where(hero => hero.IsValidTarget(float.MaxValue, false) && hero.IsAlly)
+                        .Where(hero => hero.IsValidTarget(Primalsurge.Range + 100, false) && hero.IsAlly)
                         .OrderByDescending(xe => xe.FlatPhysicalDamageMod).First();
             }
 
