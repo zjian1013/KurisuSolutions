@@ -14,6 +14,7 @@ namespace KurisuRiven
         private static Obj_AI_Hero _maintarget;
         private static Orbwalking.Orbwalker _orbwalker;
         private static int _cleavecount;
+        private static SpellDataInst _qDataInst;
 
         static void Main(string[] args)
         {
@@ -33,6 +34,7 @@ namespace KurisuRiven
             _e = new Spell(SpellSlot.E, 270f);
 
             _q = new Spell(SpellSlot.Q, 260f);
+            _qDataInst = Me.Spellbook.GetSpell(_q.Slot);
             _q.SetSkillshot(0.25f, 100f, 1400f, false, SkillshotType.SkillshotCircle);
 
             _r = new Spell(SpellSlot.R, 1100f);
@@ -400,6 +402,7 @@ namespace KurisuRiven
         #endregion
 
         #region OnSpellCast
+
         private static void Obj_AI_Base_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
         {
             if (!sender.IsMe)
@@ -454,6 +457,7 @@ namespace KurisuRiven
                     }
                     break;
                 case "RivenFengShuiEngine":
+
                     break;
                 case "rivenizunablade":
                     _canwindslash = false;
@@ -461,7 +465,6 @@ namespace KurisuRiven
                         _q.Cast(_maintarget.ServerPosition);
                     break;
             }
-
         }
 
         #endregion
@@ -593,8 +596,8 @@ namespace KurisuRiven
                 _canattack = true;
             }
 
-            if (_isattacking && Environment.TickCount - _lastattack >= 
-                Convert.ToInt32((_astime * 100) - 10) - (Me.Level * 8 / 2))
+            var time2 = (int) ((_astime*100) - 10 - (Me.Level*8/2) + Game.Ping/2);
+            if (_isattacking && Environment.TickCount - _lastattack >= time2)
             {
                 _isattacking = false;
                 _canmove = true;
@@ -638,41 +641,44 @@ namespace KurisuRiven
             if (_ulton && _config.Item("usews").GetValue<bool>())
             {
                 var needed = _config.Item("multir2").GetValue<Slider>().Value;
-                foreach (
-                    var target in
-                        ObjectManager.Get<Obj_AI_Hero>()
-                            .Where(x => x.IsValidTarget(_r.Range))
-                            .OrderBy(huro => huro.Health/huro.MaxHealth*100))
+                var target =
+                    ObjectManager.Get<Obj_AI_Hero>()
+                        .Where(huro => huro.IsValidTarget(_r.Range + 100))
+                        .OrderBy(huro => huro.Health/huro.MaxHealth*100).FirstOrDefault();
+
+                if (target == null)
                 {
-                    var poutput = _r.GetPrediction(target, true);
-                    if (_config.Item("reckless").GetValue<KeyBind>().Active)
+                    return;
+                }
+
+                var po = _r.GetPrediction(target, true);
+                if (_config.Item("reckless").GetValue<KeyBind>().Active)
+                {
+                    if (po.AoeTargetsHitCount >= _config.Item("multir1").GetValue<Slider>().Value)
                     {
-                        if (poutput.AoeTargetsHitCount >= _config.Item("multir1").GetValue<Slider>().Value)
-                        {
-                            if (_r.IsReady() && _canwindslash)
-                                _r.Cast(poutput.CastPosition);
-                        }
-
-                        if ((int) (_rr/target.MaxHealth*100) >= target.Health/target.MaxHealth*needed)
-                        {
-                            if (poutput.Hitchance >= HitChance.Medium && _canwindslash && _r.IsReady())
-                                _r.Cast(poutput.CastPosition);
-                        }
-
-                        if (target.Health < _rr + _ua*1 + _uq*2 &&
-                            target.Distance(Me.ServerPosition) <= _truerange + 100)
-                        {
-                            if (poutput.Hitchance >= HitChance.Medium && _canwindslash && _r.IsReady())
-                                _r.Cast(poutput.CastPosition);
-                        }
-
+                        if (_r.IsReady() && _canwindslash)
+                            _r.Cast(po.CastPosition);
                     }
 
-                    if (target.Health <= _rr && _canwindslash)
+                    if ((int) (_rr/target.MaxHealth*100) >= target.Health/target.MaxHealth*needed)
                     {
-                        if (poutput.Hitchance >= HitChance.Medium && _canwindslash)
-                            _r.Cast(poutput.CastPosition);
+                        if (po.Hitchance >= HitChance.Medium && _canwindslash && _r.IsReady())
+                            _r.Cast(po.CastPosition);
                     }
+
+                    if (target.Health < _rr + _ua*1 + _uq*2 &&
+                        target.Distance(Me.ServerPosition) <= _truerange + 100)
+                    {
+                        if (po.Hitchance >= HitChance.Medium && _canwindslash && _r.IsReady())
+                            _r.Cast(po.CastPosition);
+                    }
+
+                }
+
+                if (target.Health <= _rr && _canwindslash)
+                {
+                    if (po.Hitchance >= HitChance.Medium && _canwindslash)
+                        _r.Cast(po.CastPosition);
                 }
             }
         }
@@ -762,11 +768,11 @@ namespace KurisuRiven
             Orb(target, "Combo");
 
             // valor
-            if (_e.IsReady() && _candash && (target.Distance(Me.ServerPosition) > _truerange + 50))
+            if (_e.IsReady() && _candash && (target.Distance(Me.ServerPosition) > _truerange + 10))
             {
-                if (target.Distance(Me.ServerPosition) > _truerange + 50 ||
+                if (target.Distance(Me.ServerPosition) <= _r.Range + 100 ||
                     healthpercent <= _config.Item("vhealth").GetValue<Slider>().Value &&
-                    target.Distance(Me.ServerPosition) <= _truerange + 100)
+                    target.Distance(Me.ServerPosition) <= _r.Range)
                 {
                     if (_config.Item("useitems").GetValue<bool>())
                     {
@@ -884,7 +890,7 @@ namespace KurisuRiven
                     return;
                 }
 
-                if (Environment.TickCount - _lastcleave >= 1000 && !_isattacking)
+                if (Environment.TickCount - _lastcleave >= 1200 && !_isattacking)
                 {
                     if (_e.IsReady())
                     {
