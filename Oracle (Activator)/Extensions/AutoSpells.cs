@@ -111,6 +111,11 @@ namespace Oracle.Extensions
             UseSpell("sorakaw", "sorakaheal", 450f, false);
             UseSpell("imbue", "taricheal", 750f);
 
+            if (!(OC.IncomeDamage >= 1))
+            {
+                return;
+            }
+
             // untargable/evade spells            
             UseEvade("judicatorintervention", "teamkaylezhonya", 900f, false);
             UseEvade("fioradance", "herofiorazhonya", 300f, false);
@@ -122,11 +127,6 @@ namespace Oracle.Extensions
             UseEvade("hallucinatefull", "teamshacozhonya", float.MaxValue, false);
             UseEvade("vladimirsanguinepool", "teamvladimirzhonya", float.MaxValue, false);
             UseEvade("zedult", "herozedzhonya", 625f, false);
-
-            if (!(OC.IncomeDamage >= 1))
-            {
-                return;
-            }
 
             // auto shields
             UseSpell("braume", "braumshield");
@@ -303,14 +303,14 @@ namespace Oracle.Extensions
 
             if (_mainMenu.Item("use" + menuvar + "Ults").GetValue<bool>())
             {
-                if ((OC.DangerUlt || OC.IncomeDamage >= target.Health || target.Health/target.MaxHealth*100 <= 10) &&
+                if ((OC.DangerUlt || OC.IncomeDamage >= target.Health || target.Health/target.MaxHealth*100 <= 18) &&
                     menuvar.Contains("team"))
                 {
                     if (OC.AggroTarget.NetworkId == target.NetworkId)
                         spell.CastOnUnit(target);
                 }
 
-                if ((OC.DangerUlt || OC.IncomeDamage >= target.Health || target.Health/target.MaxHealth*100 <= 10) &&
+                if ((OC.DangerUlt || OC.IncomeDamage >= target.Health || target.Health/target.MaxHealth*100 <= 18) &&
                     menuvar.Contains("hero"))
                 {
                     if (Me.CountHerosInRange("hostile") > Me.CountHerosInRange("allies"))
