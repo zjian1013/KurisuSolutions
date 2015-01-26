@@ -544,8 +544,6 @@ namespace Oracle
                 Utility.DelayAction.Add(Game.Ping + 130, () => DangerUlt = false);
             if (Spell)
                 Utility.DelayAction.Add(Game.Ping + 130, () => Spell = false);
-
-            Console.WriteLine(Friendly().SkinName);
         }
 
         public static Obj_AI_Hero Friendly()
