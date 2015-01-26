@@ -270,15 +270,18 @@ namespace Oracle.Extensions
 
             if (_mainMenu.Item("use" + menuvar + "Norm").GetValue<bool>())
             {
-                if ((OC.Danger || OC.IncomeDamage >= target.Health || target.Health / target.MaxHealth * 100 <= 20) && menuvar.Contains("team"))
+                if ((OC.Danger || OC.IncomeDamage >= target.Health || target.Health/target.MaxHealth*100 <= 20) &&
+                    menuvar.Contains("team"))
                 {
                     if (OC.AggroTarget.NetworkId == target.NetworkId)
                         spell.CastOnUnit(target);
                 }
 
-                if ((OC.Danger || OC.IncomeDamage >= target.Health || target.Health / target.MaxHealth * 100 <= 20) && menuvar.Contains("hero"))
+                if ((OC.Danger || OC.IncomeDamage >= target.Health || target.Health/target.MaxHealth*100 <= 20) &&
+                    menuvar.Contains("hero"))
                 {
-                    if (Me.CountHerosInRange("hostile") > Me.CountHerosInRange("allies"))
+                    if (Me.CountHerosInRange("hostile") > Me.CountHerosInRange("allies") || 
+                        target.CountHerosInRange("allies") + 1 >= target.CountHerosInRange("hostile")) // +1 to allow for potential counterplay
                     {
                         if (OC.AggroTarget.NetworkId != Me.NetworkId)
                             return;
@@ -287,7 +290,7 @@ namespace Oracle.Extensions
                             var ene in
                                 ObjectManager.Get<Obj_AI_Hero>()
                                     .Where(x => x.IsValidTarget(range))
-                                    .OrderByDescending(ene => ene.Health / ene.MaxHealth * 100))
+                                    .OrderByDescending(ene => ene.Health/ene.MaxHealth*100))
                         {
                             spell.CastOnUnit(ene);
                         }
@@ -322,7 +325,7 @@ namespace Oracle.Extensions
                             var ene in
                                 ObjectManager.Get<Obj_AI_Hero>()
                                     .Where(x => x.IsValidTarget(range))
-                                    .OrderByDescending(ene => ene.Health/ene.MaxHealth*100))
+                                    .OrderBy(ene => ene.Health/ene.MaxHealth*100))
                         {
                             spell.CastOnUnit(ene);
                         }

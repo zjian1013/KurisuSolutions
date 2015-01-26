@@ -174,11 +174,12 @@ namespace Oracle.Extensions
                 return;
             }
 
-            if (target.CountHerosInRange("allies") >= target.CountHerosInRange("hostile"))
+            if (target.CountHerosInRange("allies") >= target.CountHerosInRange("hostile") || 
+                target.CountHerosInRange("allies") + 1 >= target.CountHerosInRange("hostile")) // +1 to allow potential counterplay
             {
                 if (_mainMenu.Item("use" + name + "Ults").GetValue<bool>())
                 {
-                    if ((OC.DangerUlt || OC.IncomeDamage >= target.Health || target.Health / target.MaxHealth * 100 <= 15) 
+                    if ((OC.DangerUlt || OC.IncomeDamage >= target.Health || target.Health/target.MaxHealth*100 <= 15)
                         && OC.AggroTarget.NetworkId == target.NetworkId)
                     {
                         Items.UseItem(itemId, target);
@@ -187,7 +188,7 @@ namespace Oracle.Extensions
 
                 if (_mainMenu.Item("use" + name + "Zhy").GetValue<bool>())
                 {
-                    if ((OC.Danger || OC.IncomeDamage >= target.Health || target.Health /target.MaxHealth *100 <= 15) 
+                    if ((OC.Danger || OC.IncomeDamage >= target.Health || target.Health/target.MaxHealth*100 <= 15)
                         && OC.AggroTarget.NetworkId == target.NetworkId)
                     {
                         Items.UseItem(itemId, target);
@@ -199,7 +200,8 @@ namespace Oracle.Extensions
             {
                 if (menuvar.Contains("zhonya"))
                 {
-                    if (_mainMenu.Item("use" + name + "Only").GetValue<bool>() && !(target.Health/target.MaxHealth*100 <= 20))
+                    if (_mainMenu.Item("use" + name + "Only").GetValue<bool>() &&
+                        !(target.Health/target.MaxHealth*100 <= 20))
                     {
                         return;
                     }
