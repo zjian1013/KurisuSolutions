@@ -764,9 +764,9 @@ namespace KurisuRiven
             // valor
             if (_e.IsReady() && _candash && (target.Distance(Me.ServerPosition) > _truerange + 50))
             {
-                if (target.Distance(Me.ServerPosition) > _truerange + _e.Range ||
+                if (target.Distance(Me.ServerPosition) > _truerange + 50 ||
                     healthpercent <= _config.Item("vhealth").GetValue<Slider>().Value &&
-                    target.Distance(Me.ServerPosition) <= 400)
+                    target.Distance(Me.ServerPosition) <= _truerange + 100)
                 {
                     if (_config.Item("useitems").GetValue<bool>())
                     {
