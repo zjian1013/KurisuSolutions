@@ -144,23 +144,26 @@ namespace KurisuNidalee
             nidaSpells.AddItem(new MenuItem("usehumanq", "Use Javelin Toss")).SetValue(true);
             nidaSpells.AddItem(new MenuItem("useonhigh", "Use on Dashing/Immobile")).SetValue(true);
             nidaSpells.AddItem(new MenuItem("usehumanw", "Use Bushwack")).SetValue(true);
+            nidaSpells.AddItem(new MenuItem("usehumanwauto", "Use on Dashing/Immobile")).SetValue(true);
             nidaSpells.AddItem(new MenuItem("usecougarq", "Use Takedown")).SetValue(true);
             nidaSpells.AddItem(new MenuItem("usecougarw", "Use Pounce")).SetValue(true);
             nidaSpells.AddItem(new MenuItem("usecougare", "Use Swipe")).SetValue(true);
             nidaSpells.AddItem(new MenuItem("usecougarr", "Auto Switch Forms")).SetValue(true);
             nidaSpells.AddItem(new MenuItem("useitems", "Use Items")).SetValue(true);
             nidaSpells.AddItem(new MenuItem("gapcloser", "Use Anti-Gapcloser")).SetValue(true);
-            nidaSpells.AddItem(new MenuItem("usehumanwauto", "Bushwack on Immobile")).SetValue(true);
+            
             nidaSpells.AddItem(new MenuItem("javelinks", "Killsteal with Javelin")).SetValue(true);
             nidaSpells.AddItem(new MenuItem("ksform", "Killsteal switch Form")).SetValue(true);
             _mainMenu.AddSubMenu(nidaSpells);
 
             var nidaHeals = new Menu("Nidalee: Heal", "hengine");
             nidaHeals.AddItem(new MenuItem("usedemheals", "Enable")).SetValue(true);
+            nidaHeals.AddItem(new MenuItem("sezz", "Heal Priority: ")).SetValue(new StringList(new[] { "Low HP", "Highest AD" }));
+
             foreach (var hero in ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsAlly))
             {
                 nidaHeals.AddItem(new MenuItem("heal" + hero.SkinName, hero.SkinName)).SetValue(true);
-                nidaHeals.AddItem(new MenuItem("healpct" + hero.SkinName, hero.SkinName + " heal %")).SetValue(new Slider(50));
+                nidaHeals.AddItem(new MenuItem("healpct" + hero.SkinName, hero.SkinName + " if under heal %")).SetValue(new Slider(50));
             }
 
             nidaHeals.AddItem(new MenuItem("healmanapct", "Minimum Mana %")).SetValue(new Slider(40));
@@ -538,6 +541,7 @@ namespace KurisuNidalee
         #endregion
 
         #region Nidalee: Heal
+
         private static void PrimalSurge()
         {
             if (HE != 0 || !_mainMenu.Item("usedemheals").GetValue<bool>() || Me.IsRecalling())
@@ -545,26 +549,36 @@ namespace KurisuNidalee
                 return;
             }
 
-            var actualHeroManaPercent = (int)((Me.Mana / Me.MaxMana) * 100);
+            var actualHeroManaPercent = (int) ((Me.Mana/Me.MaxMana)*100);
             var selfManaPercent = _mainMenu.Item("healmanapct").GetValue<Slider>().Value;
 
-            foreach (
-                var hero in
-                    ObjectManager.Get<Obj_AI_Hero>()
-                        .Where(hero => hero.IsValidTarget(Primalsurge.Range, false) && hero.IsAlly)
-                        .OrderByDescending(xe => xe.Health / xe.MaxHealth * 100))
+            Obj_AI_Hero target;
+            if (_mainMenu.Item("sezz").GetValue<StringList>().SelectedIndex == 0)
             {
+                target =
+                    ObjectManager.Get<Obj_AI_Hero>()
+                        .Where(hero => hero.IsValidTarget(float.MaxValue, false) && hero.IsAlly)
+                        .OrderBy(xe => xe.Health/xe.MaxHealth*100).First();
+            }
+            else
+            {
+                target =
+                    ObjectManager.Get<Obj_AI_Hero>()
+                        .Where(hero => hero.IsValidTarget(float.MaxValue, false) && hero.IsAlly)
+                        .OrderByDescending(xe => xe.FlatPhysicalDamageMod).First();
+            }
 
-                if (!_cougarForm && _mainMenu.Item("heal" + hero.SkinName).GetValue<bool>())
-                {
-                    var needed = _mainMenu.Item("healpct" + hero.SkinName).GetValue<Slider>().Value;
-                    var hp = (int)((hero.Health / hero.MaxHealth) * 100);
+            if (!_cougarForm && _mainMenu.Item("heal" + target.SkinName).GetValue<bool>())
+            {
+                var needed = _mainMenu.Item("healpct" + target.SkinName).GetValue<Slider>().Value;
+                var hp = (int)((target.Health / target.MaxHealth) * 100);
 
-                    if (actualHeroManaPercent > selfManaPercent && hp <= needed || _hasBlue && hp <= needed)
-                        Primalsurge.CastOnUnit(hero);
-                }
+                if (actualHeroManaPercent > selfManaPercent && hp <= needed || _hasBlue && hp <= needed)
+                    Primalsurge.CastOnUnit(target);
             }
         }
+
+
 
         #endregion
 
@@ -585,26 +599,27 @@ namespace KurisuNidalee
 
                 if (_cougarForm)
                 {
-                    if (HQ == 0 && _mainMenu.Item("lccougarr").GetValue<bool>())
+                    if ((HQ == 0 && _mainMenu.Item("lchumanq").GetValue<bool>() || CW != 0 && CQ != 0 && CE != 0) &&
+                        _mainMenu.Item("lccougarr").GetValue<bool>())
                     {
                         if (Aspectofcougar.IsReady())
                             Aspectofcougar.Cast();
                     }
 
-                    else if (m.Distance(Me.ServerPosition, true) <= Swipe.RangeSqr && CE == 0)
+                    if (m.Distance(Me.ServerPosition, true) <= Swipe.RangeSqr && CE == 0)
                     {
                         if (_mainMenu.Item("lccougare").GetValue<bool>())
                             Swipe.Cast(m.ServerPosition);
                     }
 
 
-                    else if (m.Distance(Me.ServerPosition, true) <= Pounce.RangeSqr && CW == 0)
+                    if (m.Distance(Me.ServerPosition, true) <= Pounce.RangeSqr && CW == 0)
                     {
                         if (_mainMenu.Item("lccougarw").GetValue<bool>())
                             Pounce.Cast(m.ServerPosition);
                     }
 
-                    else if (m.Distance(Me.ServerPosition) <= Takedown.RangeSqr && CQ == 0)
+                    if (m.Distance(Me.ServerPosition) <= Takedown.RangeSqr && CQ == 0)
                     {
                         if (_mainMenu.Item("lccougarq").GetValue<bool>())
                             Takedown.CastOnUnit(Me);
@@ -644,12 +659,13 @@ namespace KurisuNidalee
                 ObjectManager.Get<Obj_AI_Minion>()
                     .Where(
                         m =>
-                            m.IsValidTarget(1500) && Jungleminions.Any(name => m.Name.StartsWith(name)) &&
+                            m.IsValidTarget(700) && Jungleminions.Any(name => m.Name.StartsWith(name)) &&
                             !m.Name.Contains("Mini")))
             {
                 if (_cougarForm)
                 {
-                    if (HQ == 0 && _mainMenu.Item("jgcougarr").GetValue<bool>())
+                    if ((HQ == 0 && _mainMenu.Item("jghumanq").GetValue<bool>() || CW != 0 && CQ != 0 && CE != 0) &&
+                        _mainMenu.Item("jgcougarr").GetValue<bool>())
                     {
                         if (Aspectofcougar.IsReady())
                             Aspectofcougar.Cast();
@@ -678,7 +694,11 @@ namespace KurisuNidalee
                     if (actualHeroManaPercent > minPercent && HQ == 0)
                     {
                         if (_mainMenu.Item("jghumanq").GetValue<bool>())
-                            Javelin.Cast(m.ServerPosition);
+                        {
+                            var prediction = Javelin.GetPrediction(m);
+                            if (prediction.Hitchance >= HitChance.Low)
+                                Javelin.Cast(m.ServerPosition);
+                        }
                     }
 
                     if (m.Distance(Me.ServerPosition, true) <= Bushwack.RangeSqr && actualHeroManaPercent > minPercent && HW == 0)
