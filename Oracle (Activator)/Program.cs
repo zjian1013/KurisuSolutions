@@ -25,7 +25,7 @@ namespace Oracle
         public static bool DangerUlt;
         public static bool CanManamune;
         public static string ChampionName;
-        public const string Revision = "207";
+        public const string Revision = "208";
 
         public static Obj_AI_Hero Attacker;
         public static Obj_AI_Hero AggroTarget;
