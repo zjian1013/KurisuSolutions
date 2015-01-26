@@ -270,13 +270,13 @@ namespace Oracle.Extensions
 
             if (_mainMenu.Item("use" + menuvar + "Norm").GetValue<bool>())
             {
-                if (OC.Danger && menuvar.Contains("team"))
+                if ((OC.Danger || OC.IncomeDamage >= target.Health || target.Health / target.MaxHealth * 100 <= 20) && menuvar.Contains("team"))
                 {
                     if (OC.AggroTarget.NetworkId == target.NetworkId)
                         spell.CastOnUnit(target);
                 }
 
-                if (OC.Danger && menuvar.Contains("hero"))
+                if ((OC.Danger || OC.IncomeDamage >= target.Health || target.Health / target.MaxHealth * 100 <= 20) && menuvar.Contains("hero"))
                 {
                     if (Me.CountHerosInRange("hostile") > Me.CountHerosInRange("allies"))
                     {
@@ -303,13 +303,15 @@ namespace Oracle.Extensions
 
             if (_mainMenu.Item("use" + menuvar + "Ults").GetValue<bool>())
             {
-                if (OC.DangerUlt && menuvar.Contains("team"))
+                if ((OC.DangerUlt || OC.IncomeDamage >= target.Health || target.Health/target.MaxHealth*100 <= 10) &&
+                    menuvar.Contains("team"))
                 {
                     if (OC.AggroTarget.NetworkId == target.NetworkId)
                         spell.CastOnUnit(target);
                 }
 
-                if (OC.DangerUlt && menuvar.Contains("hero"))
+                if ((OC.DangerUlt || OC.IncomeDamage >= target.Health || target.Health/target.MaxHealth*100 <= 10) &&
+                    menuvar.Contains("hero"))
                 {
                     if (Me.CountHerosInRange("hostile") > Me.CountHerosInRange("allies"))
                     {
@@ -320,7 +322,7 @@ namespace Oracle.Extensions
                             var ene in
                                 ObjectManager.Get<Obj_AI_Hero>()
                                     .Where(x => x.IsValidTarget(range))
-                                    .OrderByDescending(ene => ene.Health / ene.MaxHealth * 100))
+                                    .OrderByDescending(ene => ene.Health/ene.MaxHealth*100))
                         {
                             spell.CastOnUnit(ene);
                         }
@@ -375,7 +377,9 @@ namespace Oracle.Extensions
                 if (iDamagePercent >= 1 || OC.IncomeDamage >= target.Health)
                 {
                     if (OC.AggroTarget.NetworkId != target.NetworkId)
+                    {
                         return;
+                    }
 
                     switch (menuvar)
                     {

@@ -162,26 +162,36 @@ namespace Oracle.Extensions
 
             var target = itemRange > 5000 ? Me : OC.Friendly();
             if (target.Distance(Me.ServerPosition, true) > itemRange*itemRange)
+            {
                 return;
+            }
             
             var aHealthPercent = (int) ((target.Health/target.MaxHealth)*100);
             var iDamagePercent = (int) (OC.IncomeDamage/target.MaxHealth*100);
 
             if (!_mainMenu.Item("DefenseOn" + target.SkinName).GetValue<bool>())
+            {
                 return;
+            }
 
-            if (target.CountHerosInRange("allies") >= target.CountHerosInRange("hostile") || OC.IncomeDamage >= target.Health)
+            if (target.CountHerosInRange("allies") >= target.CountHerosInRange("hostile"))
             {
                 if (_mainMenu.Item("use" + name + "Ults").GetValue<bool>())
                 {
-                    if (OC.DangerUlt && OC.AggroTarget.NetworkId == target.NetworkId)
+                    if ((OC.DangerUlt || OC.IncomeDamage >= target.Health || target.Health / target.MaxHealth * 100 <= 15) 
+                        && OC.AggroTarget.NetworkId == target.NetworkId)
+                    {
                         Items.UseItem(itemId, target);
+                    }
                 }
 
                 if (_mainMenu.Item("use" + name + "Zhy").GetValue<bool>())
                 {
-                    if (OC.Danger && OC.AggroTarget.NetworkId == target.NetworkId)
+                    if ((OC.Danger || OC.IncomeDamage >= target.Health || target.Health /target.MaxHealth *100 <= 15) 
+                        && OC.AggroTarget.NetworkId == target.NetworkId)
+                    {
                         Items.UseItem(itemId, target);
+                    }
                 }
             }
 
@@ -189,12 +199,11 @@ namespace Oracle.Extensions
             {
                 if (menuvar.Contains("zhonya"))
                 {
-                    if (_mainMenu.Item("use" + name + "Only").GetValue<bool>() || !(OC.IncomeDamage >= target.Health))
+                    if (_mainMenu.Item("use" + name + "Only").GetValue<bool>() && !(target.Health/target.MaxHealth*100 <= 20))
                     {
                         return;
                     }
                 }
-
                 if (aHealthPercent <= _mainMenu.Item("use" + name + "Pct").GetValue<Slider>().Value)
                 {
                     if ((iDamagePercent >= 1 || OC.IncomeDamage >= target.Health))
