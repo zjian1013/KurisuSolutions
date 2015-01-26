@@ -136,7 +136,7 @@ namespace KurisuNidalee
             nidaKeys.AddItem(new MenuItem("usejungle", "Jungleclear")).SetValue(new KeyBind(86, KeyBindType.Press));
             nidaKeys.AddItem(new MenuItem("useclear", "Laneclear")).SetValue(new KeyBind(86, KeyBindType.Press));
             nidaKeys.AddItem(new MenuItem("uselasthit", "Last Hit")).SetValue(new KeyBind(35, KeyBindType.Press));
-            //nidaKeys.AddItem(new MenuItem("useflee", "Flee Mode")).SetValue(new KeyBind(65, KeyBindType.Press));
+            nidaKeys.AddItem(new MenuItem("useflee", "Flee Mode")).SetValue(new KeyBind(65, KeyBindType.Press));
             _mainMenu.AddSubMenu(nidaKeys);
 
             var nidaSpells = new Menu("Nidalee: Combo", "spells");
@@ -244,8 +244,8 @@ namespace KurisuNidalee
                 UseJungleFarm();
             if (_mainMenu.Item("uselasthit").GetValue<KeyBind>().Active)
                 UseLastHit();
-            //if (MainMenu.Item("useflee").GetValue<KeyBind>().Active)
-            //    UseFlee();
+            if (_mainMenu.Item("useflee").GetValue<KeyBind>().Active)
+                UseFlee();
 
             if (Me.HasBuff("Takedown", true))
             {
@@ -379,8 +379,11 @@ namespace KurisuNidalee
         private static void UseFlee()
         {
             Me.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPos);
+
             if (_cougarForm && CW == 0)
                 Pounce.Cast(Game.CursorPos);
+            if (!_cougarForm && Aspectofcougar.IsReady() && CW == 0)
+                Aspectofcougar.Cast();
         }
 
         #endregion
