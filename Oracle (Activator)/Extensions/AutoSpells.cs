@@ -117,16 +117,16 @@ namespace Oracle.Extensions
             }
 
             // untargable/evade spells            
-            UseEvade("judicatorintervention", "teamkaylezhonya", 900f, false);
-            UseEvade("fioradance", "herofiorazhonya", 300f, false);
-            UseEvade("elisespidereinitial", "teamelisezhonya", float.MaxValue, false);
+            UseEvade("judicatorintervention", "teamkaylezhonya", 900f);
+            UseEvade("fioradance", "herofiorazhonya", 300f);
+            UseEvade("elisespidereinitial", "teamelisezhonya");
             UseEvade("fizzjump", "teamfizzzhonyaCC");
             UseEvade("lissandrar", "teamlissandrazhonya");
             UseEvade("maokaiunstablegrowth", "heromaokaizhonya", 525f);
             UseEvade("alphastrike", "heromasteryizhonyaCC", 600f);
-            UseEvade("hallucinatefull", "teamshacozhonya", float.MaxValue, false);
-            UseEvade("vladimirsanguinepool", "teamvladimirzhonya", float.MaxValue, false);
-            UseEvade("zedult", "herozedzhonya", 625f, false);
+            UseEvade("hallucinatefull", "teamshacozhonya");
+            UseEvade("vladimirsanguinepool", "teamvladimirzhonya");
+            UseEvade("zedult", "herozedzhonya", 625f);
 
             // auto shields
             UseSpell("braume", "braumshield");
@@ -164,21 +164,28 @@ namespace Oracle.Extensions
             }
 
             var slot = Me.GetSpellSlot("kalistarx");
-            if (slot != SpellSlot.Unknown && _mainMenu.Item("usekalistault").GetValue<bool>())
+            var kalistar = new Spell(slot, 1200f);
+            if (!kalistar.IsReady())
             {
-                var target =
-                    ObjectManager.Get<Obj_AI_Hero>().FirstOrDefault(hero => hero.HasBuff("kalistacoopstrikeally", true));
+                return;
+            }
 
-                var kalistar = new Spell(slot, 1200f);
-                if (target.IsValidTarget(kalistar.Range, false) && target.IsAlly)
+            if (slot != SpellSlot.Unknown && _mainMenu.Item("usekalistault").GetValue<bool>())
+            {           
+                var cooptarget =
+                    ObjectManager.Get<Obj_AI_Hero>()
+                        .FirstOrDefault(hero => hero.HasBuff("kalistacoopstrikeally", true));
+             
+                if (cooptarget.IsValidTarget(1200, false) && cooptarget.IsAlly && 
+                    _menuConfig.Item("ason" + cooptarget.SkinName).GetValue<bool>())
                 {
-                    if (kalistar.IsReady() && _menuConfig.Item("ason" + target.SkinName).GetValue<bool>())
+                    var aHealthPercent = (int) ((cooptarget.Health/cooptarget.MaxHealth)*100);
+                    if (aHealthPercent <= _mainMenu.Item("usekalistaultPct").GetValue<Slider>().Value)
                     {
-                        var aHealthPercent = (int) ((target.Health/target.MaxHealth)*100);
-                        if (aHealthPercent <= _mainMenu.Item("usekalistaultpct").GetValue<Slider>().Value)
+                        if (OC.AggroTarget.NetworkId == cooptarget.NetworkId)
                         {
-                            if (OC.AggroTarget.NetworkId == target.NetworkId)
-                                kalistar.Cast();
+                            kalistar.Cast();
+                            OC.Logger(Program.LogType.Action, "Saving soulbound target: " + cooptarget.SkinName);
                         }
                     }
                 }
@@ -206,18 +213,21 @@ namespace Oracle.Extensions
                 return;
             }
 
-            if (!spell.IsReady() || !_menuConfig.Item("ason" + target.SkinName).GetValue<bool>())
+            if (!spell.IsReady() || !_menuConfig.Item("ason" + target.SkinName).GetValue<bool>() || Me.IsRecalling())
             {
                 return;
             }
-
 
             if (_mainMenu.Item("use" + menuvar + "Ults").GetValue<bool>())
             {
                 if (OC.DangerUlt && menuvar.Contains("team"))
                 {
                     if (OC.AggroTarget.NetworkId == target.NetworkId)
+                    {
                         spell.CastOnUnit(target);
+                        OC.Logger(Program.LogType.Action,
+                            "(Auto Spell: Spell Shield) Casting " + spell.Slot + "(Dangerous Ult) on " + target.SkinName);
+                    }
                 }
             }
 
@@ -226,7 +236,11 @@ namespace Oracle.Extensions
                 if (OC.Dangercc && menuvar.Contains("team"))
                 {
                     if (OC.AggroTarget.NetworkId == target.NetworkId)
+                    {
                         spell.CastOnUnit(target);
+                        OC.Logger(Program.LogType.Action,
+                            "(Auto Spell: Spell Shield) Casting " + spell.Slot + "(Dangerous CC) on " + target.SkinName);
+                    }
                 }
             }
 
@@ -235,7 +249,11 @@ namespace Oracle.Extensions
                  if (OC.Danger && menuvar.Contains("team"))
                 {
                     if (OC.AggroTarget.NetworkId == target.NetworkId)
+                    {
                         spell.CastOnUnit(target);
+                        OC.Logger(Program.LogType.Action,
+                            "(Auto Spell: Spell Shield) Casting " + spell.Slot + "(Dangerous Spell) on " + target.SkinName);
+                    }
                 }               
             }
 
@@ -244,13 +262,17 @@ namespace Oracle.Extensions
                 if (OC.Spell && menuvar.Contains("team"))
                 {
                     if (OC.AggroTarget.NetworkId == target.NetworkId)
+                    {
                         spell.CastOnUnit(target);
+                        OC.Logger(Program.LogType.Action,
+                            "(Auto Spell: Spell Shield) Casting " + spell.Slot + "(Any Spell) on " + target.SkinName);
+                    }
                 }
             }
         }
 
 
-        private static void UseEvade(string sdataname, string menuvar, float range = float.MaxValue, bool usemana = true)
+        private static void UseEvade(string sdataname, string menuvar, float range = float.MaxValue)
         {
             if (!menuvar.Contains(OC.ChampionName.ToLower()))
                 return;
@@ -265,7 +287,7 @@ namespace Oracle.Extensions
             if (target.Distance(Me.ServerPosition, true) > range * range)
                 return;
 
-            if (!spell.IsReady() || !_menuConfig.Item("ason" + target.SkinName).GetValue<bool>())
+            if (!spell.IsReady() || !_menuConfig.Item("ason" + target.SkinName).GetValue<bool>() || Me.IsRecalling())
                 return;
 
             if (_mainMenu.Item("use" + menuvar + "Norm").GetValue<bool>())
@@ -274,33 +296,35 @@ namespace Oracle.Extensions
                     menuvar.Contains("team"))
                 {
                     if (OC.AggroTarget.NetworkId == target.NetworkId)
+                    {
                         spell.CastOnUnit(target);
+                        OC.Logger(Program.LogType.Action,
+                            "(Auto Spell: Evade) Casting " + spell.Slot + "(Dangerous Spell) on " + target.SkinName);
+                    }
                 }
 
                 if ((OC.Danger || OC.IncomeDamage >= target.Health || target.Health/target.MaxHealth*100 <= 20) &&
                     menuvar.Contains("hero"))
                 {
-                    if (target.CountHerosInRange(false) + 1 >= target.CountHerosInRange(true)) // +1 to allow for potential counterplay
+                    // +1 to allow for potential counterplay
+                    if (target.CountHerosInRange(false) + 1 >= target.CountHerosInRange(true)) 
                     {
-                        if (OC.AggroTarget.NetworkId != Me.NetworkId)
-                        {
-                            return;
-                        }
-
-                        foreach (
-                            var ene in
-                                ObjectManager.Get<Obj_AI_Hero>()
-                                    .Where(x => x.IsValidTarget(range))
-                                    .OrderByDescending(ene => ene.Health/ene.MaxHealth*100))
-                        {
-                            spell.CastOnUnit(ene);
-                        }
-                    }
-                    else
-                    {
-                        // if its 1v1 cast on the sender
                         if (OC.AggroTarget.NetworkId == Me.NetworkId)
-                            spell.CastOnUnit(OC.Attacker);
+                        {
+                            foreach (
+                                var ene in
+                                    ObjectManager.Get<Obj_AI_Hero>()
+                                        .Where(x => x.IsValidTarget(range))
+                                        .OrderByDescending(ene => ene.Health/ene.MaxHealth*100))
+                            {
+                                spell.CastOnUnit(ene);
+                                OC.Logger(Program.LogType.Action,
+                                    "(Auto Spell: Evade) Casting " + spell.Slot + "(Dangerous Spell) on " + ene.SkinName);
+                                OC.Logger(OC.LogType.Info, "Evade target info: ");
+                                OC.Logger(OC.LogType.Info, "HP %: " + ene.Health/ene.MaxHealth*100);
+                                OC.Logger(OC.LogType.Info, "Current HP %: " + ene.Health);
+                            }
+                        }
                     }
                 }
             }
@@ -311,7 +335,11 @@ namespace Oracle.Extensions
                     menuvar.Contains("team"))
                 {
                     if (OC.AggroTarget.NetworkId == target.NetworkId)
+                    {
                         spell.CastOnUnit(target);
+                        OC.Logger(Program.LogType.Action,
+                                    "(Auto Spell: Evade) Casting " + spell.Slot + "(Dangerous Spell) on " + target.SkinName);
+                    }
                 }
 
                 if ((OC.DangerUlt || OC.IncomeDamage >= target.Health || target.Health/target.MaxHealth*100 <= 18) &&
@@ -319,25 +347,22 @@ namespace Oracle.Extensions
                 {
                     if (Me.CountHerosInRange(true) > Me.CountHerosInRange(false))
                     {
-                        if (OC.AggroTarget.NetworkId != Me.NetworkId)
-                        {
-                            return;
-                        }
-
-                        foreach (
-                            var ene in
-                                ObjectManager.Get<Obj_AI_Hero>()
-                                    .Where(x => x.IsValidTarget(range))
-                                    .OrderByDescending(ene => ene.Health/ene.MaxHealth*100))
-                        {
-                            spell.CastOnUnit(ene);
-                        }
-                    }
-                    else
-                    {
-                        // if its 1v1 cast on the sender
                         if (OC.AggroTarget.NetworkId == Me.NetworkId)
-                            spell.CastOnUnit(OC.Attacker);
+                        {
+                            foreach (
+                                var ene in
+                                    ObjectManager.Get<Obj_AI_Hero>()
+                                        .Where(x => x.IsValidTarget(range))
+                                        .OrderByDescending(ene => ene.Health/ene.MaxHealth*100))
+                            {
+                                spell.CastOnUnit(ene);
+                                OC.Logger(Program.LogType.Action,
+                                    "(Auto Spell: Evade) Casting " + spell.Slot + "(Dangerous Spell) on " + ene.SkinName);
+                                OC.Logger(OC.LogType.Info, "Evade target info: ");
+                                OC.Logger(OC.LogType.Info, "HP %: " + ene.Health / ene.MaxHealth * 100);
+                                OC.Logger(OC.LogType.Info, "Current HP %: " + ene.Health);
+                            }
+                        }
                     }
                 }
             }
@@ -358,7 +383,7 @@ namespace Oracle.Extensions
             if (target.Distance(Me.ServerPosition, true) > range*range)
                 return;    
 
-            if (!spell.IsReady() || !_menuConfig.Item("ason" + target.SkinName).GetValue<bool>())
+            if (!spell.IsReady() || !_menuConfig.Item("ason" + target.SkinName).GetValue<bool>() || Me.IsRecalling())
                 return;
          
             var manaPercent = (int) (Me.Mana/Me.MaxMana*100);
@@ -367,7 +392,11 @@ namespace Oracle.Extensions
             var iDamagePercent = (int)((OC.IncomeDamage / target.MaxHealth) * 100);
 
             if (menuvar.Contains("slow") && Me.HasBuffOfType(BuffType.Slow))
+            {
                 spell.Cast();
+                OC.Logger(Program.LogType.Action,
+                    "(Auto Spell: Slow) Im slowed, casting " + spell.Slot);
+            }
 
             if (menuvar.Contains("slow")) 
                 return;
@@ -382,22 +411,22 @@ namespace Oracle.Extensions
 
                 if (iDamagePercent >= 1 || OC.IncomeDamage >= target.Health)
                 {
-                    if (OC.AggroTarget.NetworkId != target.NetworkId)
+                    if (OC.AggroTarget.NetworkId == target.NetworkId)
                     {
-                        return;
-                    }
-
-                    switch (menuvar)
-                    {
-                        case "rivenshield":
-                            spell.Cast(Game.CursorPos);
-                            break;
-                        case "luxshield":
-                            spell.Cast(target.IsMe ? Game.CursorPos : target.ServerPosition);
-                            break;
-                        default:
-                            spell.CastOnUnit(target);
-                            break;
+                        switch (menuvar)
+                        {
+                            case "rivenshield":
+                                spell.Cast(Game.CursorPos);
+                                OC.Logger(OC.LogType.Action, "(Auto Spell: Shield) Casting " + spell.Slot + " to game cursor! (Low HP)");
+                                break;
+                            case "luxshield":
+                                spell.Cast(target.IsMe ? Game.CursorPos : target.ServerPosition);
+                                break;
+                            default:
+                                spell.CastOnUnit(target);
+                                OC.Logger(OC.LogType.Action, "(Auto Spell: Shield) Casting " + spell.Slot + " on " + target.SkinName + " (Low HP)");
+                                break;
+                        }
                     }
                 }
             }
@@ -418,14 +447,20 @@ namespace Oracle.Extensions
 
                 if (Me.ChampionName == "Sona") 
                     spell.Cast(); 
-                else 
+                else
+                {
                     spell.Cast(target);
+                    OC.Logger(OC.LogType.Action, "(Auto Spell: Heal) Casting " + spell.Slot + " on " + target.SkinName + " (Low HP)");
+                }
             }
 
             if (!menuvar.Contains("zhonya"))
             {
                 if (iDamagePercent >= _mainMenu.Item("use" + menuvar + "Dmg").GetValue<Slider>().Value)
+                {
                     spell.Cast(target);
+                    OC.Logger(OC.LogType.Action, "(Auto Spell: Shield) Casting " + spell.Slot + " on " + target.SkinName + " (Damage Chunk)");
+                }
             }
 
         }

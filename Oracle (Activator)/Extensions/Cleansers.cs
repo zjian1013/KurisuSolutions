@@ -67,49 +67,86 @@ namespace Oracle.Extensions
                     {
                         var buffinst = target.Buffs;
                         if (buffinst.Any(aura => aura.Name.ToLower() == buff.BuffName))
+                        {
                             Utility.DelayAction.Add(delay + buff.Delay, () => Items.UseItem(itemId, target));
+                            OC.Logger(OC.LogType.Action,
+                                "Used cleanser on " + target.SkinName + "for: " + buff.BuffName);
+                        }
                     }
 
                     if (OC.Origin.Item("slow").GetValue<bool>() && target.HasBuffOfType(BuffType.Slow))
+                    {
                         Utility.DelayAction.Add(delay, () => Items.UseItem(itemId, target));
+                        OC.Logger(OC.LogType.Action, "Used cleanser on " + target.SkinName + "(slow)");
+                    }
 
                     if (OC.Origin.Item("stun").GetValue<bool>() && target.HasBuffOfType(BuffType.Stun))
+                    {
                         Utility.DelayAction.Add(delay, () => Items.UseItem(itemId, target));
+                        OC.Logger(OC.LogType.Action, "Used cleanser on " + target.SkinName + "(stun)");
+                    }
 
                     if (OC.Origin.Item("charm").GetValue<bool>() && target.HasBuffOfType(BuffType.Charm))
+                    {
                         Utility.DelayAction.Add(delay, () => Items.UseItem(itemId, target));
+                        OC.Logger(OC.LogType.Action, "Used cleanser on " + target.SkinName + "(charm)");
+                    }
 
                     if (OC.Origin.Item("taunt").GetValue<bool>() && target.HasBuffOfType(BuffType.Taunt))
+                    {
                         Utility.DelayAction.Add(delay, () => Items.UseItem(itemId, target));
+                        OC.Logger(OC.LogType.Action, "Used cleanser on " + target.SkinName + "(taunt)");
+                    }
 
                     if (OC.Origin.Item("fear").GetValue<bool>() && target.HasBuffOfType(BuffType.Fear))
+                    {
                         Utility.DelayAction.Add(delay, () => Items.UseItem(itemId, target));
+                        OC.Logger(OC.LogType.Action, "Used cleanser on " + target.SkinName + "(fear)");
+                    }
 
                     if (OC.Origin.Item("snare").GetValue<bool>() && target.HasBuffOfType(BuffType.Snare))
+                    {
                         Utility.DelayAction.Add(delay, () => Items.UseItem(itemId, target));
+                        OC.Logger(OC.LogType.Action, "Used cleanser on " + target.SkinName + "(snare)");
+                    }
 
                     if (OC.Origin.Item("silence").GetValue<bool>() && target.HasBuffOfType(BuffType.Silence))
+                    {
                         Utility.DelayAction.Add(delay, () => Items.UseItem(itemId, target));
+                        OC.Logger(OC.LogType.Action, "Used cleanser on " + target.SkinName + "(silence)");
+                    }
 
                     if (OC.Origin.Item("suppression").GetValue<bool>() && target.HasBuffOfType(BuffType.Suppression))
+                    {
                         Utility.DelayAction.Add(delay, () => Items.UseItem(itemId, target));
+                        OC.Logger(OC.LogType.Action, "Used cleanser on " + target.SkinName + "(suppression)");
+                    }
 
                     if (OC.Origin.Item("polymorph").GetValue<bool>() && target.HasBuffOfType(BuffType.Polymorph))
+                    {
                         Utility.DelayAction.Add(delay, () => Items.UseItem(itemId, target));
+                        OC.Logger(OC.LogType.Action, "Used cleanser on " + target.SkinName + "(polymorph)");
+                    }
 
                     if (OC.Origin.Item("blind").GetValue<bool>() && target.HasBuffOfType(BuffType.Blind))
+                    {
                         Utility.DelayAction.Add(delay, () => Items.UseItem(itemId, target));
+                        OC.Logger(OC.LogType.Action, "Used cleanser on " + target.SkinName + "(blind)");
+                    }
 
                     if (OC.Origin.Item("poison").GetValue<bool>() && target.HasBuffOfType(BuffType.Poison))
+                    {
                         Utility.DelayAction.Add(delay, () => Items.UseItem(itemId, target));
+                        OC.Logger(OC.LogType.Action, "Used cleanser on " + target.SkinName + "(poison)");
+                    }
                 }
             }
         }
 
         private static void CreateMenuItem(string displayname, string name, int ccvalue)
         {
-            var menuName = new Menu(displayname, name);
-            menuName.AddItem(new MenuItem("use" + name, "Use " + name)).SetValue(true);
+            var menuName = new Menu(name, name);
+            menuName.AddItem(new MenuItem("use" + name, "Use " + displayname)).SetValue(true);
             menuName.AddItem(new MenuItem(name + "Count", "Min spells to use"));//.SetValue(new Slider(ccvalue, 1, 5));
             menuName.AddItem(new MenuItem(name + "Duration", "Buff duration to use"));//.SetValue(new Slider(2, 1, 5));
             _mainMenu.AddSubMenu(menuName);

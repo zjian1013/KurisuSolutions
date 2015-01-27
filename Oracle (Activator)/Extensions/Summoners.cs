@@ -123,6 +123,7 @@ namespace Oracle.Extensions
                 Barrier.AddItem(new MenuItem("useBarrier", "Enable Barrier")).SetValue(true);
                 Barrier.AddItem(new MenuItem("useBarrierPct", "Barrior on min HP % ")).SetValue(new Slider(25, 1));
                 Barrier.AddItem(new MenuItem("useBarrierDmg", "Barrier on Dmg dealt %")).SetValue(new Slider(40, 1));
+                Barrier.AddItem(new MenuItem("barrierDot", "Use barrier on Ignite")).SetValue(true);
                 _mainMenu.AddSubMenu(Barrier);
             }
 
@@ -212,7 +213,6 @@ namespace Oracle.Extensions
         #endregion
 
         #region Ignite
-
         private static void CheckIgnite()
         {
             if (!_ii)
@@ -221,7 +221,6 @@ namespace Oracle.Extensions
             var ignite = Me.GetSpellSlot("summonerdot");
             if (ignite == SpellSlot.Unknown)
                 return;
-
 
             if (ignite != SpellSlot.Unknown && !_mainMenu.Item("useIgnite").GetValue<bool>())
                 return;
@@ -241,6 +240,7 @@ namespace Oracle.Extensions
                     if (target.Health <= Me.GetSummonerSpellDamage(target, Damage.SummonerSpell.Ignite))
                     {
                         Me.Spellbook.CastSpell(ignite, target);
+                        OC.Logger(OC.LogType.Action, "Used ignite (KS) on " + target.SkinName + "!");
                     }
                 }
             }
@@ -252,7 +252,10 @@ namespace Oracle.Extensions
                     OC.CurrentTarget.Health <= OC.GetComboDamage(Me, OC.CurrentTarget))
                 {
                     if (OC.Origin.Item("ComboKey").GetValue<KeyBind>().Active)
+                    {
                         Me.Spellbook.CastSpell(ignite, OC.CurrentTarget);
+                        OC.Logger(OC.LogType.Action, "Used ignite (Combo) on " + OC.CurrentTarget.SkinName + "!");
+                    }
                 }
             }
         }
@@ -260,7 +263,6 @@ namespace Oracle.Extensions
         #endregion
 
         #region Barrier
-
         private static void CheckBarrier(float incdmg = 0)
         {
             if (!_bb)
@@ -285,23 +287,35 @@ namespace Oracle.Extensions
                 if ((iDamagePercent >= 1 || incdmg >= Me.Health))
                 {
                     if (OC.AggroTarget.NetworkId == Me.NetworkId)
+                    {
                         Me.Spellbook.CastSpell(barrier, Me);
+                        OC.Logger(OC.LogType.Action, "Used barrier (Low HP) on me!");
+                    }
                 }
             }
 
             else if (iDamagePercent >= _mainMenu.Item("useBarrierDmg").GetValue<Slider>().Value)
+            {
                 if (OC.AggroTarget.NetworkId == Me.NetworkId)
+                {
                     Me.Spellbook.CastSpell(barrier, Me);
+                    OC.Logger(OC.LogType.Action, "Used barrier (Damage Chunk) on me!");
+                }
+            }
 
             else if (Me.HasBuff("summonerdot", true) && _mainMenu.Item("barrierDot").GetValue<bool>())
+            {
                 if (OC.AggroTarget.NetworkId == Me.NetworkId)
+                {
                     Me.Spellbook.CastSpell(barrier, Me);
+                    OC.Logger(OC.LogType.Action, "Used barrier (Ignite) on me!");
+                }
+            }
         }
 
         #endregion
 
         #region Heal
-
         private static void CheckHeal(float incdmg = 0)
         {
             if (!_hh)
@@ -329,7 +343,10 @@ namespace Oracle.Extensions
                     if ((iDamagePercent >= 1 || incdmg >= target.Health))
                     {
                         if (OC.AggroTarget.NetworkId == target.NetworkId)
+                        {
                             Me.Spellbook.CastSpell(heal, target);
+                            OC.Logger(OC.LogType.Action, "Used Heal (Low HP) for: " + target.SkinName + "!");
+                        }
                     }
                 }
 
@@ -337,7 +354,10 @@ namespace Oracle.Extensions
                          _menuConfig.Item("suseOn" + target.SkinName).GetValue<bool>())
                 {
                     if (OC.AggroTarget.NetworkId == target.NetworkId)
+                    {
                         Me.Spellbook.CastSpell(heal, target);
+                        OC.Logger(OC.LogType.Action, "Used Heal (Damage Chunk) for: " + target.SkinName + "!");
+                    }
                 }
             }
         }
@@ -345,7 +365,6 @@ namespace Oracle.Extensions
         #endregion
 
         #region Clarity
-
         private static void CheckClarity()
         {
             if (!_cc)
@@ -373,13 +392,15 @@ namespace Oracle.Extensions
                 return;
 
             if (!Me.InFountain() && !Me.IsRecalling())
+            {
                 Me.Spellbook.CastSpell(clarity, target);
+                OC.Logger(OC.LogType.Action, "Used Clarity for: " + target.SkinName + "!");
+            }
         }
 
         #endregion
 
         #region Smite
-
         private static void FindSmite()
         {
             if (SmiteBlue.Any(x => Items.HasItem(x)))
@@ -446,6 +467,7 @@ namespace Oracle.Extensions
                         if (ou.Health <= 20 + 8 * Me.Level)
                         {
                             Me.Spellbook.CastSpell(smite, ou);
+                            OC.Logger(OC.LogType.Action, "Used Smite (KS) on: " + ou.SkinName + "!");
                         }
                     }
                 }
@@ -460,6 +482,7 @@ namespace Oracle.Extensions
                     if (!save && Me.Spellbook.GetSpell(smite).Ammo > 1)
                     {
                         Me.Spellbook.CastSpell(smite, OC.CurrentTarget);
+                        OC.Logger(OC.LogType.Action, "Used Smite (Combo) on: " + OC.CurrentTarget.SkinName + "!");
                     }
                 }
             }
@@ -472,19 +495,28 @@ namespace Oracle.Extensions
                 if (LargeMinions.Any(name => minion.Name.StartsWith(name) && !minion.Name.Contains("Mini")))
                 {
                     if (minion.Health <= damage && _mainMenu.Item("smiteLarge").GetValue<bool>())
+                    {
                         Me.Spellbook.CastSpell(smite, minion);
+                        OC.Logger(OC.LogType.Action, "Used Smite (Large Minion) on: " + minion.Name + "!");
+                    }
                 }
 
                 else if (SmallMinions.Any(name => minion.Name.StartsWith(name) && !minion.Name.Contains("Mini")))
                 {
                     if (minion.Health <= damage && _mainMenu.Item("smiteSmall").GetValue<bool>())
+                    {
                         Me.Spellbook.CastSpell(smite, minion);
+                        OC.Logger(OC.LogType.Action, "Used Smite (Small Minion) on: " + minion.Name + "!");
+                    }
                 }
 
                 else if (EpicMinions.Any(name => minion.Name.StartsWith(name)))
                 {
                     if (minion.Health <= damage && _mainMenu.Item("smiteEpic").GetValue<bool>())
-                        Me.Spellbook.CastSpell(smite, minion);      
+                    {
+                        Me.Spellbook.CastSpell(smite, minion);
+                        OC.Logger(OC.LogType.Action, "Used Smite (Epic Minion) on: " + minion.Name + "!");
+                    } 
                 }       
             }
         }
@@ -592,6 +624,9 @@ namespace Oracle.Extensions
                     if (OC.Attacker.Distance(Me.ServerPosition, true) <= 650*650)
                     {
                         Me.Spellbook.CastSpell(exhaust, OC.Attacker);
+                        OC.Logger(OC.LogType.Action, "Used Exhaust (Danger) on: " + OC.Attacker.SkinName + "!");
+                        OC.Logger(OC.LogType.Info,
+                            "Attackers AD: " + OC.Attacker.FlatPhysicalDamageMod + OC.Attacker.BaseAttackDamage);
                     }
                 }
 
@@ -609,18 +644,29 @@ namespace Oracle.Extensions
                         if (eHealthPercent <= _mainMenu.Item("eExhaustPct").GetValue<Slider>().Value)
                         {
                             if (!enemy.IsFacing(target))
+                            {
                                 Me.Spellbook.CastSpell(exhaust, enemy);
+                                OC.Logger(OC.LogType.Action, "Used Exhaust (Offensive) on: " + enemy.SkinName + "!");
+                                OC.Logger(OC.LogType.Info,
+                                    "Attackers AD: " + OC.Attacker.FlatPhysicalDamageMod + OC.Attacker.BaseAttackDamage);
+                            }
                         }
 
                         else if (aHealthPercent <= _mainMenu.Item("aExhaustPct").GetValue<Slider>().Value)
                         {
                             if (enemy.IsFacing(target))
+                            {
                                 Me.Spellbook.CastSpell(exhaust, enemy);
+                                OC.Logger(OC.LogType.Action, "Used Exhaust (Defensive) on: " + enemy.SkinName + "!");
+                                OC.Logger(OC.LogType.Info,
+                                    "Attackers AD: " + OC.Attacker.FlatPhysicalDamageMod + OC.Attacker.BaseAttackDamage);
+                            }
                         }
                     }
                 }
             }
         }
+
         #endregion
     }
 }

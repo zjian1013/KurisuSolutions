@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
@@ -21,9 +22,10 @@ namespace Oracle
         public static bool Danger;
         public static bool Dangercc;
         public static bool DangerUlt;
+        public static string FileName;
         public static bool CanManamune;
         public static string ChampionName;
-        public const string Revision = "211";
+        public const string Revision = "212";
 
         public static Menu Origin;
         public static Obj_AI_Hero Attacker;
@@ -31,6 +33,15 @@ namespace Oracle
         public static Obj_AI_Hero CurrentTarget;
         public static float IncomeDamage, MinionDamage;
         private static readonly Obj_AI_Hero Me = ObjectManager.Player;
+
+        internal enum LogType
+        {
+            Error = 0,
+            Danger = 1,
+            Info = 2,
+            Damage = 3,
+            Action = 4
+        };
 
         private static void Main(string[] args)
         {
@@ -40,11 +51,34 @@ namespace Oracle
 
         private static void OnGameLoad(EventArgs args)
         {
+            FileName = "Oracle - " + DateTime.Now.ToString("yy.MM.dd") +
+                       " " + DateTime.Now.ToString("h.mm.ss") + ".txt";
+      
+            ChampionName = Me.ChampionName;
             Game.OnGameUpdate += Game_OnGameUpdate;
 
-            ChampionName = Me.ChampionName;
-            Origin = new Menu("Oracle", "oracle", true);
+            Game.PrintChat("<font color=\"#1FFF8F\"><b>Oracle# r." + Revision + "</b> -</font><font color=\"#FFFFCC\"> by Kurisu</font>");
+            if (!Directory.Exists(Config.LeagueSharpDirectory + @"\Logs\Oracle"))
+            {
+                Directory.CreateDirectory(Config.LeagueSharpDirectory + @"\Logs\Oracle");
+                Game.PrintChat(
+                    "<font color=\"#FFFFCC\"><b>Thank you for choosing Oracle! :^)</b></font>");
+                Game.PrintChat(
+                    "<font color=\"#FFFFCC\">Feel free to donate to</font>: xrobinsong@gmail.com");
+                Game.PrintChat(
+                    "<font color=\"#FFFFCC\"><b>Log files are generated in </b></font>" +Config.LeagueSharpDirectory + @"\Logs\Oracle\");
+                Game.PrintChat(
+                    "<font color=\"#FFFFCC\">If you ecounter an error please attach a log along with your post thank you!</font>");
+                Game.PrintChat(
+                    "<font color=\"#FFFFCC\"><b>Oracle would never log sensitive data!</b></font>");
+            }
 
+            else
+            {
+                Game.PrintChat("<font color=\"#FFFFCC\">Feel free to donate to</font>: xrobinsong@gmail.com");
+            }
+
+            Origin = new Menu("Oracle", "oracle", true);
             Cleansers.Initialize(Origin);
             Defensives.Initialize(Origin);
             Summoners.Initialize(Origin);
@@ -71,6 +105,10 @@ namespace Oracle
                 dangerMenu.AddSubMenu(menu);
             }
 
+            config.AddItem(
+                new MenuItem("ComboKey", "Combo (Active)")
+                    .SetValue(new KeyBind(32, KeyBindType.Press)));
+
             config.AddSubMenu(dangerMenu);
          
             var cleanseMenu = new Menu("Cleanse Debuffs", "cdebufs");
@@ -92,19 +130,47 @@ namespace Oracle
             config.AddSubMenu(debugMenu);
 
             Origin.AddSubMenu(config);
-
-            Origin.AddItem(
-                new MenuItem("ComboKey", "Combo (Active)")
-                    .SetValue(new KeyBind(32, KeyBindType.Press)));
-
             Origin.AddToMainMenu();
 
             // Events
             GameObject.OnCreate += GameObject_OnCreate;
             Obj_AI_Base.OnProcessSpellCast += Obj_AI_Base_OnProcessSpellCast;
 
-            Game.PrintChat("<font color=\"#1FFF8F\">Oracle# r." + Revision + " -</font> by Kurisu");
+            Logger(LogType.Info, "Oracle Revision: " + Revision);
+            Logger(LogType.Info, "Local Player: " + ChampionName);
+            Logger(LogType.Info, "Local Version: " + Game.Version);
+            Logger(LogType.Info, "Local Game Map: " + Game.MapId);
+            Logger(LogType.Info, "Local Summoners: " + 
+                Me.Spellbook.GetSpell(SpellSlot.Summoner1).Name + " - " +
+                Me.Spellbook.GetSpell(SpellSlot.Summoner2).Name);
+
+            foreach (var i in ObjectManager.Get<Obj_AI_Hero>())
+            {
+                if (i.Team == Me.Team)
+                {
+                    Logger(LogType.Info, "Ally added: " + i.ChampionName);
+                }
+
+                if (i.Team != Me.Team)
+                {
+                    Logger(LogType.Info, "Enemy added: " + i.ChampionName);
+                }
+            }
         }
+
+        public static void Logger(LogType type, string msg)
+        {
+            var prefix = "[" + DateTime.Now.ToString("T") + " " + type + "]: ";
+            using (var file = new StreamWriter(Config.LeagueSharpDirectory + @"\Logs\Oracle\" + FileName, true))
+            {
+                file.WriteLine(prefix + msg);
+                file.Close();
+            }
+
+            if (Origin.Item("dbool").GetValue<bool>())
+                Console.WriteLine("Oracle: (" + type + ") " + msg);
+        }
+
 
         private static GameObj _satchel, _miasma, _minefield, _crowstorm, _fizzbait, _caittrap;
         private static GameObj _chaosstorm, _glacialstorm, _lightstrike, _equinox, _tormentsoil;
@@ -122,78 +188,91 @@ namespace Oracle
             {
                 var dmg = (float)GetEnemy("Singed").GetSpellDamage(Friendly(), SpellSlot.Q);
                 _acidtrail = new GameObj(obj.Name, obj, true, dmg, Environment.TickCount);
+                Logger(LogType.Info, obj.Name + " detected/created (Poison)");
             }
 
             else if (obj.Name.Contains("Tremors_cas") && obj.IsEnemy && GetEnemy("Rammus").IsValid)
             {
                 var dmg = (float) GetEnemy("Rammus").GetSpellDamage(Friendly(), SpellSlot.R);
                 _tremors = new GameObj(obj.Name, obj, true, dmg, Environment.TickCount);
+                Logger(LogType.Info, obj.Name + " detected/created (Tremors)");
             }
 
             else if (obj.Name.Contains("Crowstorm_red") && GetEnemy("Fiddlesticks").IsValid)
             {
                 var dmg = (float) GetEnemy("Fiddlesticks").GetSpellDamage(Friendly(), SpellSlot.R);
                 _crowstorm = new GameObj(obj.Name, obj, true, dmg, Environment.TickCount);
+                Logger(LogType.Info, obj.Name + " detected/created (Crowstorm)");
             }
                 
             else if (obj.Name.Contains("Nautilus_R_sequence_impact") && obj.IsEnemy && GetEnemy("Nautilus").IsValid)
             {              
                 var dmg = (float) GetEnemy("Nautilus").GetSpellDamage(Friendly(), SpellSlot.R, 1);
                 _depthcharge = new GameObj(obj.Name, obj, true, dmg, Environment.TickCount);
+                Logger(LogType.Info, obj.Name + " detected/created (Depth Charge)");
             }
 
             else if (obj.Name.Contains("caitlyn_Base_yordleTrap_idle_red") && GetEnemy("Caitlyn").IsValid)
             {
                 var dmg = (float) GetEnemy("Caitlyn").GetSpellDamage(Friendly(), SpellSlot.W);
                 _caittrap = new GameObj(obj.Name, obj, true, dmg, Environment.TickCount);
+                Logger(LogType.Info, obj.Name + " detected/created (Yordle Trap)");
             }
 
             else if (obj.Name.Contains("LuxLightstrike_tar_red") && GetEnemy("Lux").IsValid)
             {
                 var dmg = (float) GetEnemy("Lux").GetSpellDamage(Friendly(), SpellSlot.E);
                 _lightstrike = new GameObj(obj.Name, obj, true, dmg, Environment.TickCount);
+                Logger(LogType.Info, obj.Name + " detected/created (Lightstrike)");
             }
 
             else if (obj.Name.Contains("Viktor_ChaosStorm_red") && GetEnemy("Viktor").IsValid)
             {
                 var dmg = (float) GetEnemy("Viktor").GetSpellDamage(Friendly(), SpellSlot.R);
                 _chaosstorm = new GameObj(obj.Name, obj, true, dmg, Environment.TickCount);
+                Logger(LogType.Info, obj.Name + " detected/created (Chaos Storm)");
             }
 
             else if (obj.Name.Contains("cryo_storm_red") && GetEnemy("Anivia").IsValid)
             {
                 var dmg = (float) GetEnemy("Anivia").GetSpellDamage(Friendly(), SpellSlot.R);
                 _glacialstorm = new GameObj(obj.Name, obj, true, dmg, Environment.TickCount);
+                Logger(LogType.Info, obj.Name + " detected/created (Glacialstorm)");
             }
 
             else if (obj.Name.Contains("ZiggsE_red") && GetEnemy("Ziggs").IsValid)
             {
                 var dmg = (float) GetEnemy("Ziggs").GetSpellDamage(Friendly(), SpellSlot.E);
                 _minefield = new GameObj(obj.Name, obj, true, dmg, Environment.TickCount);
+                Logger(LogType.Info, obj.Name + " detected/created (Minefield)");
             }
 
             else if (obj.Name.Contains("ZiggsWRingRed") && GetEnemy("Ziggs").IsValid)
             {
                 var dmg = (float) GetEnemy("Ziggs").GetSpellDamage(Friendly(), SpellSlot.W);
                 _satchel = new GameObj(obj.Name, obj, true, dmg, Environment.TickCount);
+                Logger(LogType.Info, obj.Name + " detected/created (Satchel)");
             }
 
             else if (obj.Name.Contains("CassMiasma_tar_red") && GetEnemy("Cassiopeia").IsValid)
             {
                 var dmg = (float) GetEnemy("Cassiopeia").GetSpellDamage(Friendly(), SpellSlot.W);
                 _miasma = new GameObj(obj.Name, obj, true, dmg, Environment.TickCount);
+                Logger(LogType.Info, obj.Name + " detected/created (Miasma)");
             }
 
             else if (obj.Name.Contains("Soraka_Base_E_rune_RED") && GetEnemy("Soraka").IsValid)
             {
                 var dmg = (float) GetEnemy("Soraka").GetSpellDamage(Friendly(), SpellSlot.E);
                 _equinox = new GameObj(obj.Name, obj, true, dmg, Environment.TickCount);
+                Logger(LogType.Info, obj.Name + " detected/created (Equinox)");
             }
 
             else if (obj.Name.Contains("Morgana_Base_W_Tar_red") && GetEnemy("Morgana").IsValid)
             {
                 var dmg = (float) GetEnemy("Morgana").GetSpellDamage(Friendly(), SpellSlot.W);
                 _tormentsoil = new GameObj(obj.Name, obj, true, dmg, Environment.TickCount);
+                Logger(LogType.Info, obj.Name + " detected/created (Tormentsoil)");
             }
         }
 
@@ -238,8 +317,8 @@ namespace Oracle
                                 DangerUlt = Origin.Item(buff.SpellName + "ccc").GetValue<bool>();
                             }
 
-                            if (Origin.Item("dbool").GetValue<bool>())
-                                Console.WriteLine("Dangerous buff on " + AggroTarget.SkinName + " should zhonyas!");
+                            Logger(LogType.Danger,
+                                "(" + Attacker.SkinName + ") Dangerous buff on " + AggroTarget.SkinName + " should zhonyas!");
                         });
                 }
             }
@@ -254,10 +333,8 @@ namespace Oracle
                         Attacker = GetEnemy("Rammus");
                         AggroTarget = Friendly();
                         IncomeDamage = _tremors.Damage;
-
-                        if (Origin.Item("dbool").GetValue<bool>())
-                            Console.WriteLine(
-                                AggroTarget.SkinName + " is in Tremors (Ground Object) for: " + IncomeDamage);
+                        Logger(LogType.Damage,
+                            AggroTarget.SkinName + " is in Tremors (Ground Object) for: " + IncomeDamage);
                     }
                 }
             }
@@ -272,9 +349,8 @@ namespace Oracle
                         AggroTarget = Friendly();
                         IncomeDamage = _acidtrail.Damage;
 
-                        if (Origin.Item("dbool").GetValue<bool>())
-                            Console.WriteLine(
-                                AggroTarget.SkinName + " is in Poison Trail (Game Object) for: " + IncomeDamage);
+                        Logger(LogType.Damage,
+                            AggroTarget.SkinName + " is in Poison Trail (Game Object) for: " + IncomeDamage);
                     }
                 }
             }
@@ -290,9 +366,8 @@ namespace Oracle
                         IncomeDamage = _glacialstorm.Damage;
                         Dangercc = true;
 
-                        if (Origin.Item("dbool").GetValue<bool>())
-                            Console.WriteLine(
-                                AggroTarget.SkinName + " is in Glacialstorm (Ground Object) for: " + IncomeDamage);
+                        Logger(LogType.Danger,
+                            AggroTarget.SkinName + " is in Glacialstorm (Ground Object) for: " + IncomeDamage);
                     }
                 }
             }
@@ -308,8 +383,7 @@ namespace Oracle
                         IncomeDamage = _chaosstorm.Damage; 
                         Dangercc = true;
 
-                        if (AggroTarget.NetworkId == Friendly().NetworkId &&
-                            Origin.Item("viktorchaosstormccc").GetValue<bool>())
+                        if (AggroTarget.NetworkId == Friendly().NetworkId && Origin.Item("viktorchaosstormccc").GetValue<bool>())
                         {
                             if (Friendly().CountHerosInRange(false) + 1 >= Friendly().CountHerosInRange(true) ||
                                 IncomeDamage >= Friendly().Health)
@@ -319,9 +393,7 @@ namespace Oracle
                             }
                         }
 
-                        if (Origin.Item("dbool").GetValue<bool>())
-                            Console.WriteLine(
-                                AggroTarget.SkinName + " is in Chaostorm (Ground Object) for: " + IncomeDamage);
+                        Logger(LogType.Danger, AggroTarget.SkinName + " is in Chaostorm (Ground Object) for: " + IncomeDamage);
                     }
                 }
             }
@@ -347,9 +419,7 @@ namespace Oracle
                             }
                         }
 
-                        if (Origin.Item("dbool").GetValue<bool>())
-                            Console.WriteLine(
-                                AggroTarget.SkinName + " is in fizz bait (Ground Object) for: " + IncomeDamage);
+                        Logger(LogType.Danger, AggroTarget.SkinName + " is in fizz bait (Ground Object) for: " + IncomeDamage);
                     }
                 }
             }
@@ -374,9 +444,8 @@ namespace Oracle
                                 DangerUlt = true;
                             }
 
-                            if (Origin.Item("dbool").GetValue<bool>())
-                                Console.WriteLine(
-                                    "Nautilus depth charge is homing " + AggroTarget.SkinName + " for: " + IncomeDamage);
+                            Logger(LogType.Danger,
+                                "Nautilus depth charge is homing " + AggroTarget.SkinName + " for: " + IncomeDamage);
                         }
                     }
                 }
@@ -393,9 +462,8 @@ namespace Oracle
                         IncomeDamage = _caittrap.Damage;
                         Dangercc = true;
 
-                        if (Origin.Item("dbool").GetValue<bool>())
-                            Console.WriteLine(
-                                AggroTarget.SkinName + " is in yordle trap (Ground Object) for: " + IncomeDamage);
+                        Logger(LogType.Danger,
+                            AggroTarget.SkinName + " is in yordle trap (Ground Object) for: " + IncomeDamage);
                     }
                 }
             }
@@ -423,9 +491,8 @@ namespace Oracle
                             }
                         }
 
-                        if (Origin.Item("dbool").GetValue<bool>())
-                            Console.WriteLine(
-                                AggroTarget.SkinName + " is in Crowstorm (Ground Object) for: " + IncomeDamage);
+                        Logger(LogType.Danger,
+                            AggroTarget.SkinName + " is in Crowstorm (Ground Object) for: " + IncomeDamage);
                     }
                 }
             }
@@ -441,9 +508,8 @@ namespace Oracle
                         IncomeDamage = _minefield.Damage;
                         Dangercc = true;
 
-                        if (Origin.Item("dbool").GetValue<bool>())
-                            Console.WriteLine(
-                                AggroTarget.SkinName + " is in Minefield (Ground Object) for: " + IncomeDamage);
+                        Logger(LogType.Danger,
+                            AggroTarget.SkinName + " is in Minefield (Ground Object) for: " + IncomeDamage);
                     }
                 }
             }
@@ -459,9 +525,8 @@ namespace Oracle
                         IncomeDamage = _satchel.Damage;
                         Dangercc = true;
 
-                        if (Origin.Item("dbool").GetValue<bool>())
-                            Console.WriteLine(
-                                AggroTarget.SkinName + " is in Satchel (Ground Object) for: " + IncomeDamage);
+                        Logger(LogType.Danger,
+                            AggroTarget.SkinName + " is in Satchel (Ground Object) for: " + IncomeDamage);
                     }
                 }
             }
@@ -476,9 +541,8 @@ namespace Oracle
                         AggroTarget = Friendly();
                         IncomeDamage = _tormentsoil.Damage;
 
-                        if (Origin.Item("dbool").GetValue<bool>())
-                            Console.WriteLine(
-                                AggroTarget.SkinName + " is in Torment Soil (Ground Object) for: " + IncomeDamage);
+                        Logger(LogType.Damage,
+                            AggroTarget.SkinName + " is in Torment Soil (Ground Object) for: " + IncomeDamage);
                     }
                 }
             }
@@ -494,9 +558,8 @@ namespace Oracle
                         IncomeDamage = _satchel.Damage;
                         Dangercc = true;
 
-                        if (Origin.Item("dbool").GetValue<bool>())
-                            Console.WriteLine(
-                                AggroTarget.SkinName + " is in Miasma (Ground Object) for: " + IncomeDamage);
+                        Logger(LogType.Danger,
+                            AggroTarget.SkinName + " is in Miasma (Ground Object) for: " + IncomeDamage);
                     }
                 }
             }
@@ -512,9 +575,8 @@ namespace Oracle
                         IncomeDamage = _lightstrike.Damage;
                         Dangercc = true;
 
-                        if (Origin.Item("dbool").GetValue<bool>())
-                            Console.WriteLine(
-                                AggroTarget.SkinName + " is in Lightstrike (Ground Object) for: " + IncomeDamage);
+                        Logger(LogType.Danger,
+                            AggroTarget.SkinName + " is in Lightstrike (Ground Object) for: " + IncomeDamage);
                     }
                 }
             }
@@ -530,9 +592,8 @@ namespace Oracle
                         IncomeDamage = _equinox.Damage;
                         Dangercc = true;
 
-                        if (Origin.Item("dbool").GetValue<bool>())
-                            Console.WriteLine(
-                                AggroTarget.SkinName + " is in Equinox (Ground Object) for: " + IncomeDamage);
+                        Logger(LogType.Danger,
+                            AggroTarget.SkinName + " is in Equinox (Ground Object) for: " + IncomeDamage);
                     }
                 }
             }
@@ -689,8 +750,8 @@ namespace Oracle
 
                     IncomeDamage = (float)heroSender.GetAutoAttackDamage(AggroTarget);
 
-                    if (Origin.Item("dbool").GetValue<bool>())
-                        Console.WriteLine(heroSender.SkinName + " hit (Auto Attack) " + AggroTarget.SkinName + " for: " + IncomeDamage);
+                    Logger(LogType.Damage,
+                        heroSender.SkinName + " hit (Auto Attack) " + AggroTarget.SkinName + " for: " + IncomeDamage);
                 }
 
                 Attacker = heroSender;
@@ -727,12 +788,9 @@ namespace Oracle
                                 DangerUlt = Origin.Item(o.Name.ToLower() + "ccc").GetValue<bool>() && o.Spellslot.ToString() == "R";
                                 Dangercc = o.CcType != CcType.No && o.Type != SpellType.AutoAttack;
 
-                                if (Origin.Item("dbool").GetValue<bool>())
-                                    Console.WriteLine("Danger (Self): " + Danger);
-
-                                if (Origin.Item("dbool").GetValue<bool>())
-                                    Console.WriteLine(heroSender.SkinName + " hit (Self Spell) " + AggroTarget.SkinName + " for: " + IncomeDamage);
-
+                                Logger(LogType.Damage, "Danger (Self: " + o.Spellslot + "): " + Danger);
+                                Logger(LogType.Damage,
+                                    heroSender.SkinName + " hit (Self: " + o.Spellslot + ") " + AggroTarget.SkinName + " for: " + IncomeDamage);
                             }
                         });
                     }
@@ -746,12 +804,9 @@ namespace Oracle
 
                             IncomeDamage = (float)heroSender.GetSpellDamage(AggroTarget, (SpellSlot)o.Spellslot);
 
-                            if (Origin.Item("dbool").GetValue<bool>())
-                            {
-                                Console.WriteLine("Dangerous (Targetd Spells): " + Danger);
-                                Console.WriteLine(heroSender.SkinName + " hit (Target Spell) " + AggroTarget.SkinName +
-                                                    " for: " + IncomeDamage);
-                            }
+                            Logger(LogType.Damage, "Dangerous (Targetd: " + o.Spellslot + "): " + Danger);
+                            Logger(LogType.Damage, 
+                                heroSender.SkinName + " hit (Targeted: " + o.Spellslot +") " + AggroTarget.SkinName + " for: " + IncomeDamage);
 
                             if (o.Wait)
                             {
@@ -795,11 +850,10 @@ namespace Oracle
                             DangerUlt = Origin.Item(o.SpellName.ToLower() + "ccc").GetValue<bool>() && o.Slot.ToString() == "R";
                             IncomeDamage = (float)heroSender.GetSpellDamage(AggroTarget, (SpellSlot)skillShot.SkillshotData.Slot);
 
-                            if (Origin.Item("dbool").GetValue<bool>())
-                            {
-                                Console.WriteLine("Dangerous (Skillshot Spells): " + Danger);
-                                Console.WriteLine(heroSender.SkinName + " may hit (SkillShot) " + AggroTarget.SkinName + " for: " + IncomeDamage);
-                            }
+                            Logger(LogType.Damage, "Dangerous (Skillshot " + o.Slot + "): " + Danger);
+                            Logger(LogType.Damage,
+                                heroSender.SkinName + " may hit (SkillShot: " + o.Slot + ") " + AggroTarget.SkinName + " for: " + IncomeDamage);
+
                         });
                     }
                 }
@@ -831,8 +885,8 @@ namespace Oracle
                             (float)sender.CalcDamage(AggroTarget, Damage.DamageType.Physical,
                                 sender.BaseAttackDamage + sender.FlatPhysicalDamageMod);
 
-                        if (Origin.Item("dbool").GetValue<bool>())
-                            Console.WriteLine("A turret hit (Turret Attack) " + AggroTarget.SkinName + " for: " + IncomeDamage);
+                        Logger(LogType.Damage,
+                            sender.Name + " (Turret Attack) " + AggroTarget.SkinName + " for: " + IncomeDamage);
                     }
                 }
             }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
 using OC = Oracle.Program;
@@ -17,10 +16,11 @@ namespace Oracle.Extensions
 
             _mainMenu = new Menu("Consumables", "imenu");
 
-            CreateMenuItem("Mana Potion", "Mana", 45, 0);
             CreateMenuItem("Biscuit", "BiscuitHealthMana", 45, 35);
+            CreateMenuItem("Mana Potion", "Mana", 45, 0);
             CreateMenuItem("Crystaline Flask", "FlaskHealthMana", 45, 35);
             CreateMenuItem("Health Potion", "Health", 45, 45);
+            CreateMenuItem("Red Elixir", "ElixirHealth,", 20, 45);
 
             root.AddSubMenu(_mainMenu);
         }
@@ -31,6 +31,7 @@ namespace Oracle.Extensions
             UseItem("ItemMiniRegenPotion", 2010, "BiscuitHealthMana");
             UseItem("ItemCrystalFlask", 2041, "FlaskHealthMana");
             UseItem("RegenerationPotion", 2003, "Health");
+            UseItem("ElixirOfWrath", 2140, "Health");
         }
 
         private static void UseItem(string name, int itemId, string menuvar)
@@ -62,13 +63,19 @@ namespace Oracle.Extensions
                     mDamagePercent >= 1 || OC.MinionDamage >= Me.Health || Me.HasBuffOfType(BuffType.Damage))
                 {
                     if (OC.AggroTarget.NetworkId == Me.NetworkId)
+                    {
                         Items.UseItem(itemId);
+                        OC.Logger(OC.LogType.Action, "Used " + name + " (Low HP) on " + Me.SkinName + "!");
+                    }
                 }
 
                 else if (iDamagePercent >= _mainMenu.Item("use" + menuvar + "Dmg").GetValue<Slider>().Value)
                 {
                     if (OC.AggroTarget.NetworkId == Me.NetworkId)
+                    {
                         Items.UseItem(itemId);
+                        OC.Logger(OC.LogType.Action, "Used " + name + " (Damage Chunk) on " + Me.SkinName + "!");
+                    }
                 }
             }
         }

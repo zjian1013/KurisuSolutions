@@ -135,21 +135,30 @@ namespace Oracle.Extensions
 
                         var po = Prediction.GetPrediction(pi);
                         if (po.Hitchance >= HitChance.Medium)
+                        {
                             Items.UseItem(itemId, po.CastPosition);
+                            OC.Logger(OC.LogType.Action,
+                                "Used " + name + " near " + po.CastPosition.CountEnemiesInRange(300) + " enemies!");
+                        }
 
                     }
+
                     else if (targeted)
                     {
                         if ((itemId == 3128 || itemId == 3188) && damage <= OC.CurrentTarget.Health / 2)
                             return;
 
                         Items.UseItem(itemId, OC.CurrentTarget);
+                        OC.Logger(Program.LogType.Action, "Used " + name + " (Targeted Enemy HP) on " + OC.CurrentTarget.SkinName);
                     }
+
                     else
                     {
                         Items.UseItem(itemId);
+                        OC.Logger(Program.LogType.Action, "Used " + name + " (Self Enemy HP) on " + OC.CurrentTarget.SkinName);
                     }
                 }
+
                 else if (aHealthPercent <= _mainMenu.Item("use" + name + "Me").GetValue<Slider>().Value &&
                          _mainMenu.Item("ouseOn" + OC.CurrentTarget.SkinName).GetValue<bool>())
                 {
@@ -158,14 +167,15 @@ namespace Oracle.Extensions
                     else
                         Items.UseItem(itemId);
 
+                    OC.Logger(Program.LogType.Action, "Used " + name + " (Low My HP) on " + OC.CurrentTarget.SkinName);
                 }
             }
         }
 
         private static void CreateMenuItem(string displayname, string name, int evalue, int avalue, bool usemana = false)
         {
-            var menuName = new Menu(displayname, name.ToLower());
-            menuName.AddItem(new MenuItem("use" + name, "Use " + name)).SetValue(true);
+            var menuName = new Menu(name, name.ToLower());
+            menuName.AddItem(new MenuItem("use" + name, "Use " + displayname)).SetValue(true);
             menuName.AddItem(new MenuItem("use" + name + "Pct", "Use on enemy HP %")).SetValue(new Slider(evalue));
 
             if (!usemana)
@@ -179,7 +189,5 @@ namespace Oracle.Extensions
 
             _mainMenu.AddSubMenu(menuName);
         }
-
-        public static Obj_AI_Hero _current { get; set; }
     }
 }
