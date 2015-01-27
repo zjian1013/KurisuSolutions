@@ -694,7 +694,7 @@ namespace Oracle.Core.Targeted
                 #region Riven
                 new TargetSpellData("riven", "riventricleave", SpellSlot.Q, SpellType.Skillshot, CcType.No, 250, 500, 0),
                 new TargetSpellData("riven", "riventricleave_03", SpellSlot.Q, SpellType.Skillshot, CcType.Knockup, 250, 500, 0),
-                new TargetSpellData("riven", "rivenmartyr", SpellSlot.W, SpellType.Self, CcType.Stun, 260, 250, 1500, true),
+                new TargetSpellData("riven", "rivenmartyr", SpellSlot.W, SpellType.Self, CcType.Stun, 260, 0, float.MaxValue, true),
                 new TargetSpellData("riven", "rivenfeint", SpellSlot.E, SpellType.Skillshot, CcType.No, 325, 0, 1450),
                 new TargetSpellData("riven", "rivenfengshuiengine", SpellSlot.R, SpellType.Self, CcType.No, 0, 500, 1200, false, false, true),
                 new TargetSpellData("riven", "rivenizunablade", SpellSlot.R, SpellType.Skillshot, CcType.No, 900, 300, 2200, true),

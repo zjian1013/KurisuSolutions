@@ -48,10 +48,10 @@ namespace Oracle.Extensions
         };
 
         private static bool _hh, _cc, _bb, _ee, _ii, _ss;
-        private static readonly int[] _smitePurple = { 3713, 3726, 3725, 3724, 3723 };
-        private static readonly int[] _smiteGrey = { 3711, 3722, 3721, 3720, 3719 };
-        private static readonly int[] _smiteRed = { 3715, 3718, 3717, 3716, 3714 };
-        private static readonly int[] _smiteBlue = { 3706, 3710, 3709, 3708, 3707 };
+        private static readonly int[] SmitePurple = { 3713, 3726, 3725, 3724, 3723 };
+        private static readonly int[] SmiteGrey = { 3711, 3722, 3721, 3720, 3719 };
+        private static readonly int[] SmiteRed = { 3715, 3718, 3717, 3716, 3714 };
+        private static readonly int[] SmiteBlue = { 3706, 3710, 3709, 3708, 3707 };
 
         public static void Initialize(Menu root)
         {
@@ -382,18 +382,16 @@ namespace Oracle.Extensions
 
         private static void FindSmite()
         {
-            if (_smiteBlue.Any(x => Items.HasItem(x)))
+            if (SmiteBlue.Any(x => Items.HasItem(x)))
                 _smiteSlot = "s5_summonersmiteplayerganker";
-            else if (_smiteRed.Any(x => Items.HasItem(x)))
+            else if (SmiteRed.Any(x => Items.HasItem(x)))
                 _smiteSlot = "s5_summonersmiteduel";
-            else if (_smiteGrey.Any(x => Items.HasItem(x)))
+            else if (SmiteGrey.Any(x => Items.HasItem(x)))
                 _smiteSlot = "s5_summonersmitequick";
-            else if (_smitePurple.Any(x => Items.HasItem(x)))
+            else if (SmitePurple.Any(x => Items.HasItem(x)))
                 _smiteSlot = "itemsmiteaoe";
             else
-            {
                 _smiteSlot = "summonersmite";
-            }
 
             _isJungling = SmiteAll.Any(x => Items.HasItem(x));
         }
@@ -438,8 +436,7 @@ namespace Oracle.Extensions
             {
                 if (Me.Spellbook.CanUseSpell(smite) == SpellState.Ready)
                 {
-                    foreach (var ou in ObjectManager.Get<Obj_AI_Hero>()
-                        .Where(hero => hero.IsValidTarget(760)))
+                    foreach (var ou in ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsValidTarget(760)))
                     {
                         if (save && Me.Spellbook.GetSpell(smite).Ammo <= 1)
                         {
@@ -583,7 +580,9 @@ namespace Oracle.Extensions
 
             if (!OC.Origin.Item("ComboKey").GetValue<KeyBind>().Active &&
                 _mainMenu.Item("exhaustMode").GetValue<StringList>().SelectedIndex == 1)
+            {
                 return;
+            }
 
             var target = OC.Friendly();
             if (Me.Spellbook.CanUseSpell(exhaust) == SpellState.Ready)

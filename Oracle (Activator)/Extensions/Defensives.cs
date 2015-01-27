@@ -116,20 +116,20 @@ namespace Oracle.Extensions
 
                 var LowHpEnemy =
                     ObjectManager.Get<Obj_AI_Hero>()
-                        .OrderByDescending(ex => ex.Health/ex.MaxHealth*100)
+                        .OrderBy(ex => ex.Health/ex.MaxHealth*100)
                         .First(x => x.IsValidTarget(1000));
 
                 var aHealthPercent = target.Health/target.MaxHealth*100;
                 var eHealthPercent = LowHpEnemy.Health/LowHpEnemy.MaxHealth*100;
 
                 if (LowHpEnemy.Distance(target.ServerPosition, true) <= 900 * 900 &&
-                    (target.CountHerosInRange("allies") > target.CountHerosInRange("hostile") &&
+                    (target.CountHerosInRange(false) > target.CountHerosInRange(true) &&
                      eHealthPercent <= _mainMenu.Item("useEnemyPct").GetValue<Slider>().Value))
                 {
                     Items.UseItem(3069);
                 }
 
-                if (target.CountHerosInRange("hostile") > target.CountHerosInRange("allies") &&
+                if (target.CountHerosInRange(false) > target.CountHerosInRange(true) &&
                     aHealthPercent <= _mainMenu.Item("useAllyPct").GetValue<Slider>().Value)
                 {
                     Items.UseItem(3069);
@@ -140,11 +140,13 @@ namespace Oracle.Extensions
         private static void UseItemCount(string name, int itemId, float itemRange)
         {
             if (!Items.HasItem(itemId) || !Items.CanUseItem(itemId))
+            {
                 return;
+            }
 
             if (_mainMenu.Item("use" + name).GetValue<bool>())
             {
-                if (Me.CountHerosInRange("hostile", itemRange) >=
+                if (Me.CountHerosInRange(true, itemRange) >=
                     _mainMenu.Item("use" + name + "Count").GetValue<Slider>().Value)
                 {
                     Items.UseItem(itemId);
@@ -174,8 +176,7 @@ namespace Oracle.Extensions
                 return;
             }
 
-            if (target.CountHerosInRange("allies") >= target.CountHerosInRange("hostile") || 
-                target.CountHerosInRange("allies") + 1 >= target.CountHerosInRange("hostile")) // +1 to allow potential counterplay
+            if (target.CountHerosInRange(false) + 1 >= target.CountHerosInRange(true)) // +1 to allow potential counterplay
             {
                 if (_mainMenu.Item("use" + name + "Ults").GetValue<bool>())
                 {

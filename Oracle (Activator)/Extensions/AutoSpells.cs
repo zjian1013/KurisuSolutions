@@ -158,14 +158,14 @@ namespace Oracle.Extensions
             UseSpell("yorickreviveally", "yorickult", 900f, false);
 
             // kalista save soulbound
-            if (Me.ChampionName == OC.ChampionName)
+            if (OC.ChampionName != "Kalista")
             {
-                var slot = Me.GetSpellSlot("kalistarx");
-                if (slot != SpellSlot.Unknown && !_mainMenu.Item("usekalistault").GetValue<bool>())
-                {
-                    return;
-                }
+                return;
+            }
 
+            var slot = Me.GetSpellSlot("kalistarx");
+            if (slot != SpellSlot.Unknown && _mainMenu.Item("usekalistault").GetValue<bool>())
+            {
                 var target =
                     ObjectManager.Get<Obj_AI_Hero>().FirstOrDefault(hero => hero.HasBuff("kalistacoopstrikeally", true));
 
@@ -174,7 +174,7 @@ namespace Oracle.Extensions
                 {
                     if (kalistar.IsReady() && _menuConfig.Item("ason" + target.SkinName).GetValue<bool>())
                     {
-                        var aHealthPercent = (int)((target.Health / target.MaxHealth) * 100);
+                        var aHealthPercent = (int) ((target.Health/target.MaxHealth)*100);
                         if (aHealthPercent <= _mainMenu.Item("usekalistaultpct").GetValue<Slider>().Value)
                         {
                             if (OC.AggroTarget.NetworkId == target.NetworkId)
@@ -223,7 +223,7 @@ namespace Oracle.Extensions
 
             if (_mainMenu.Item("use" + menuvar + "CC").GetValue<bool>())
             {
-                if (OC.DangerCC && menuvar.Contains("team"))
+                if (OC.Dangercc && menuvar.Contains("team"))
                 {
                     if (OC.AggroTarget.NetworkId == target.NetworkId)
                         spell.CastOnUnit(target);
@@ -280,11 +280,12 @@ namespace Oracle.Extensions
                 if ((OC.Danger || OC.IncomeDamage >= target.Health || target.Health/target.MaxHealth*100 <= 20) &&
                     menuvar.Contains("hero"))
                 {
-                    if (Me.CountHerosInRange("hostile") > Me.CountHerosInRange("allies") || 
-                        target.CountHerosInRange("allies") + 1 >= target.CountHerosInRange("hostile")) // +1 to allow for potential counterplay
+                    if (target.CountHerosInRange(false) + 1 >= target.CountHerosInRange(true)) // +1 to allow for potential counterplay
                     {
                         if (OC.AggroTarget.NetworkId != Me.NetworkId)
+                        {
                             return;
+                        }
 
                         foreach (
                             var ene in
@@ -316,16 +317,18 @@ namespace Oracle.Extensions
                 if ((OC.DangerUlt || OC.IncomeDamage >= target.Health || target.Health/target.MaxHealth*100 <= 18) &&
                     menuvar.Contains("hero"))
                 {
-                    if (Me.CountHerosInRange("hostile") > Me.CountHerosInRange("allies"))
+                    if (Me.CountHerosInRange(true) > Me.CountHerosInRange(false))
                     {
                         if (OC.AggroTarget.NetworkId != Me.NetworkId)
+                        {
                             return;
+                        }
 
                         foreach (
                             var ene in
                                 ObjectManager.Get<Obj_AI_Hero>()
                                     .Where(x => x.IsValidTarget(range))
-                                    .OrderBy(ene => ene.Health/ene.MaxHealth*100))
+                                    .OrderByDescending(ene => ene.Health/ene.MaxHealth*100))
                         {
                             spell.CastOnUnit(ene);
                         }
@@ -431,7 +434,9 @@ namespace Oracle.Extensions
         {
             var champslot = Me.GetSpellSlot(sdname.ToLower());
             if (champslot == SpellSlot.Unknown || champslot != SpellSlot.Unknown && champslot != slot)
+            {
                 return;
+            }
 
             var menuName = new Menu(name + " | " + slot, menuvar);
             menuName.AddItem(new MenuItem("use" + menuvar, "Use " + name)).SetValue(true);

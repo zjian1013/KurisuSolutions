@@ -16,17 +16,16 @@ namespace Oracle
     // Copyright © Kurisu Solutions 2015
     internal static class Program
     {
-
-        public static Menu Origin;
         public static bool Spell;
         public static bool Stealth;
         public static bool Danger;
-        public static bool DangerCC;
+        public static bool Dangercc;
         public static bool DangerUlt;
         public static bool CanManamune;
         public static string ChampionName;
-        public const string Revision = "209";
+        public const string Revision = "211";
 
+        public static Menu Origin;
         public static Obj_AI_Hero Attacker;
         public static Obj_AI_Hero AggroTarget;
         public static Obj_AI_Hero CurrentTarget;
@@ -53,8 +52,8 @@ namespace Oracle
             Consumables.Initialize(Origin);
             AutoSpells.Initialize(Origin);
 
-            var Config = new Menu("Oracle Config", "oracleconfig");
-            var DangerMenu = new Menu("Dangerous Config", "dangerconfig");
+            var config = new Menu("Oracle Config", "oracleconfig");
+            var dangerMenu = new Menu("Dangerous Config", "dangerconfig");
 
             foreach (var i in ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.Team != Me.Team))
             {
@@ -69,30 +68,30 @@ namespace Oracle
                     menu.AddItem(new MenuItem(spell.Name + "ccc", spell.Name + " | " + spell.Spellslot)).SetValue(danger);
                 }
 
-                DangerMenu.AddSubMenu(menu);
+                dangerMenu.AddSubMenu(menu);
             }
 
-            Config.AddSubMenu(DangerMenu);
+            config.AddSubMenu(dangerMenu);
          
-            var CleanseMenu = new Menu("Cleanse Debuffs", "cdebufs");
-            CleanseMenu.AddItem(new MenuItem("stun", "Stuns")).SetValue(true);
-            CleanseMenu.AddItem(new MenuItem("charm", "Charms")).SetValue(true);
-            CleanseMenu.AddItem(new MenuItem("taunt", "Taunts")).SetValue(true);
-            CleanseMenu.AddItem(new MenuItem("fear", "Fears")).SetValue(true);
-            CleanseMenu.AddItem(new MenuItem("snare", "Snares")).SetValue(true);
-            CleanseMenu.AddItem(new MenuItem("silence", "Silences")).SetValue(true);
-            CleanseMenu.AddItem(new MenuItem("suppression", "Supression")).SetValue(true);
-            CleanseMenu.AddItem(new MenuItem("polymorph", "Polymorphs")).SetValue(true);
-            CleanseMenu.AddItem(new MenuItem("blind", "Blinds")).SetValue(false);
-            CleanseMenu.AddItem(new MenuItem("slow", "Slows")).SetValue(false);
-            CleanseMenu.AddItem(new MenuItem("poison", "Poisons")).SetValue(false);
-            Config.AddSubMenu(CleanseMenu);
+            var cleanseMenu = new Menu("Cleanse Debuffs", "cdebufs");
+            cleanseMenu.AddItem(new MenuItem("stun", "Stuns")).SetValue(true);
+            cleanseMenu.AddItem(new MenuItem("charm", "Charms")).SetValue(true);
+            cleanseMenu.AddItem(new MenuItem("taunt", "Taunts")).SetValue(true);
+            cleanseMenu.AddItem(new MenuItem("fear", "Fears")).SetValue(true);
+            cleanseMenu.AddItem(new MenuItem("snare", "Snares")).SetValue(true);
+            cleanseMenu.AddItem(new MenuItem("silence", "Silences")).SetValue(true);
+            cleanseMenu.AddItem(new MenuItem("suppression", "Supression")).SetValue(true);
+            cleanseMenu.AddItem(new MenuItem("polymorph", "Polymorphs")).SetValue(true);
+            cleanseMenu.AddItem(new MenuItem("blind", "Blinds")).SetValue(false);
+            cleanseMenu.AddItem(new MenuItem("slow", "Slows")).SetValue(false);
+            cleanseMenu.AddItem(new MenuItem("poison", "Poisons")).SetValue(false);
+            config.AddSubMenu(cleanseMenu);
 
-            var DebugMenu = new Menu("Debugging", "debugmenu");
-            DebugMenu.AddItem(new MenuItem("dbool", "Enable Console Debugging")).SetValue(false);
-            Config.AddSubMenu(DebugMenu);
+            var debugMenu = new Menu("Debugging", "debugmenu");
+            debugMenu.AddItem(new MenuItem("dbool", "Enable Console Debugging")).SetValue(false);
+            config.AddSubMenu(debugMenu);
 
-            Origin.AddSubMenu(Config);
+            Origin.AddSubMenu(config);
 
             Origin.AddItem(
                 new MenuItem("ComboKey", "Combo (Active)")
@@ -119,13 +118,7 @@ namespace Oracle
             //    _fizzbait = new GameObj(missile.Name, missile, true, dmg, Environment.TickCount);
             //}
 
-            if (obj.Name.Contains("Nautilus_R_sequence_impact") && GetEnemy("Nautilus").IsValid)
-            {
-                var dmg = (float) GetEnemy("Nautilus").GetSpellDamage(Friendly(), SpellSlot.R, 1);
-                _depthcharge = new GameObj(obj.Name, obj, true, dmg, Environment.TickCount);
-            }
-
-            else if (obj.Name.Contains("Acidtrail_buf_red") && GetEnemy("Singed").IsValid)
+            if (obj.Name.Contains("Acidtrail_buf_red") && GetEnemy("Singed").IsValid)
             {
                 var dmg = (float)GetEnemy("Singed").GetSpellDamage(Friendly(), SpellSlot.Q);
                 _acidtrail = new GameObj(obj.Name, obj, true, dmg, Environment.TickCount);
@@ -141,6 +134,12 @@ namespace Oracle
             {
                 var dmg = (float) GetEnemy("Fiddlesticks").GetSpellDamage(Friendly(), SpellSlot.R);
                 _crowstorm = new GameObj(obj.Name, obj, true, dmg, Environment.TickCount);
+            }
+                
+            else if (obj.Name.Contains("Nautilus_R_sequence_impact") && obj.IsEnemy && GetEnemy("Nautilus").IsValid)
+            {              
+                var dmg = (float) GetEnemy("Nautilus").GetSpellDamage(Friendly(), SpellSlot.R, 1);
+                _depthcharge = new GameObj(obj.Name, obj, true, dmg, Environment.TickCount);
             }
 
             else if (obj.Name.Contains("caitlyn_Base_yordleTrap_idle_red") && GetEnemy("Caitlyn").IsValid)
@@ -221,7 +220,7 @@ namespace Oracle
             {
                 var buffinst = Friendly().Buffs;
                 if (buffinst.Any(
-                        aura => aura.Name.ToLower().Contains(buff.SpellName) || aura.Name.ToLower() == buff.BuffName))           
+                        aura => aura.Name.ToLower().Contains(buff.SpellName) || aura.Name.ToLower() == buff.BuffName))
                 {
                     Utility.DelayAction.Add(
                         buff.Delay, delegate
@@ -289,7 +288,7 @@ namespace Oracle
                         Attacker = GetEnemy("Anivia");
                         AggroTarget = Friendly();
                         IncomeDamage = _glacialstorm.Damage;
-                        DangerCC = true;
+                        Dangercc = true;
 
                         if (Origin.Item("dbool").GetValue<bool>())
                             Console.WriteLine(
@@ -307,12 +306,12 @@ namespace Oracle
                         Attacker = GetEnemy("Viktor");
                         AggroTarget = Friendly();
                         IncomeDamage = _chaosstorm.Damage; 
-                        DangerCC = true;
+                        Dangercc = true;
 
                         if (AggroTarget.NetworkId == Friendly().NetworkId &&
                             Origin.Item("viktorchaosstormccc").GetValue<bool>())
                         {
-                            if (Friendly().CountHerosInRange("hostile") >= Friendly().CountHerosInRange("allies") ||
+                            if (Friendly().CountHerosInRange(false) + 1 >= Friendly().CountHerosInRange(true) ||
                                 IncomeDamage >= Friendly().Health)
                             {
                                 Danger = true;
@@ -339,12 +338,12 @@ namespace Oracle
                             AggroTarget = Friendly();
                             IncomeDamage = _fizzbait.Damage;
 
-                            if (Friendly().CountHerosInRange("hostile") >= Friendly().CountHerosInRange("allies") ||
+                            if (Friendly().CountHerosInRange(false) + 1 >= Friendly().CountHerosInRange(true) ||
                                 IncomeDamage >= Friendly().Health)
                             {
                                 Danger = true;
                                 DangerUlt = true;
-                                DangerCC = true;
+                                Dangercc = true;
                             }
                         }
 
@@ -367,11 +366,11 @@ namespace Oracle
                             AggroTarget = Friendly();
                             IncomeDamage = _depthcharge.Damage;
 
-                            if (Friendly().CountHerosInRange("hostile") >= Friendly().CountHerosInRange("allies") ||
+                            if (Friendly().CountHerosInRange(false) + 1 >= Friendly().CountHerosInRange(true) ||
                                 IncomeDamage >= Friendly().Health)
                             {
                                 Danger = true;
-                                DangerCC = true;
+                                Dangercc = true;
                                 DangerUlt = true;
                             }
 
@@ -392,7 +391,7 @@ namespace Oracle
                         Attacker = GetEnemy("Caitlyn");
                         AggroTarget = Friendly();
                         IncomeDamage = _caittrap.Damage;
-                        DangerCC = true;
+                        Dangercc = true;
 
                         if (Origin.Item("dbool").GetValue<bool>())
                             Console.WriteLine(
@@ -415,7 +414,7 @@ namespace Oracle
                         if (AggroTarget.NetworkId == Friendly().NetworkId &&
                             Origin.Item("crowstormccc").GetValue<bool>())
                         {
-                            if (Friendly().CountHerosInRange("hostile") >= Friendly().CountHerosInRange("allies") ||
+                            if (Friendly().CountHerosInRange(false) + 1 >= Friendly().CountHerosInRange(true) ||
                                 IncomeDamage >= Friendly().Health)
                             {
                                 Danger = true;
@@ -440,7 +439,7 @@ namespace Oracle
                         Attacker = GetEnemy("Ziggs");
                         AggroTarget = Friendly();
                         IncomeDamage = _minefield.Damage;
-                        DangerCC = true;
+                        Dangercc = true;
 
                         if (Origin.Item("dbool").GetValue<bool>())
                             Console.WriteLine(
@@ -458,7 +457,7 @@ namespace Oracle
                         Attacker = GetEnemy("Ziggs");
                         AggroTarget = Friendly();
                         IncomeDamage = _satchel.Damage;
-                        DangerCC = true;
+                        Dangercc = true;
 
                         if (Origin.Item("dbool").GetValue<bool>())
                             Console.WriteLine(
@@ -493,7 +492,7 @@ namespace Oracle
                         Attacker = GetEnemy("Cassiopeia");
                         AggroTarget = Friendly();
                         IncomeDamage = _satchel.Damage;
-                        DangerCC = true;
+                        Dangercc = true;
 
                         if (Origin.Item("dbool").GetValue<bool>())
                             Console.WriteLine(
@@ -511,7 +510,7 @@ namespace Oracle
                         Attacker = GetEnemy("Lux");
                         AggroTarget = Friendly();
                         IncomeDamage = _lightstrike.Damage;
-                        DangerCC = true;
+                        Dangercc = true;
 
                         if (Origin.Item("dbool").GetValue<bool>())
                             Console.WriteLine(
@@ -529,7 +528,7 @@ namespace Oracle
                         Attacker = GetEnemy("Lux");
                         AggroTarget = Friendly();
                         IncomeDamage = _equinox.Damage;
-                        DangerCC = true;
+                        Dangercc = true;
 
                         if (Origin.Item("dbool").GetValue<bool>())
                             Console.WriteLine(
@@ -546,8 +545,8 @@ namespace Oracle
 
             if (Danger)
                 Utility.DelayAction.Add(Game.Ping + 130, () => Danger = false);
-            if (DangerCC)
-                Utility.DelayAction.Add(Game.Ping + 130, () => DangerCC = false);
+            if (Dangercc)
+                Utility.DelayAction.Add(Game.Ping + 130, () => Dangercc = false);
             if (DangerUlt)
                 Utility.DelayAction.Add(Game.Ping + 130, () => DangerUlt = false);
             if (Spell)
@@ -577,15 +576,14 @@ namespace Oracle
                     .First(enemy => enemy.Team != Me.Team && enemy.ChampionName == championnmame);
         }
 
-        public static int CountHerosInRange(this Obj_AI_Hero target, string team, float range = 1200f)
+        public static int CountHerosInRange(this Obj_AI_Hero target, bool checkteam, float range = 1200f)
         {
-            var enemy = team == "hostile";
             var objListTeam =
                 ObjectManager.Get<Obj_AI_Hero>()
                     .Where(
                         x => x.IsValidTarget(range, false));
 
-            return objListTeam.Count(hero => enemy ? hero.Team != target.Team : hero.Team == target.Team);
+            return objListTeam.Count(hero => checkteam ? hero.Team != target.Team : hero.Team == target.Team);
         }
 
         public static float GetComboDamage(Obj_AI_Hero player, Obj_AI_Base target)
@@ -598,7 +596,6 @@ namespace Oracle
             var eready = player.Spellbook.CanUseSpell(SpellSlot.E) == SpellState.Ready;
             var rready = player.Spellbook.CanUseSpell(SpellSlot.R) == SpellState.Ready;
             var iready = player.Spellbook.CanUseSpell(ignite) == SpellState.Ready;
-
 
             var tmt = Items.HasItem(3077) && Items.CanUseItem(3077)
                 ? Me.GetItemDamage(target, Damage.DamageItems.Tiamat)
@@ -684,19 +681,19 @@ namespace Oracle
             Attacker = null;
             if (sender.Type == GameObjectType.obj_AI_Hero && sender.IsEnemy)
             {
-                var HeroSender = ObjectManager.Get<Obj_AI_Hero>().First(x => x.NetworkId == sender.NetworkId);
-                if (HeroSender.GetSpellSlot(args.SData.Name) == SpellSlot.Unknown && args.Target.Type == Me.Type)
+                var heroSender = ObjectManager.Get<Obj_AI_Hero>().First(x => x.NetworkId == sender.NetworkId);
+                if (heroSender.GetSpellSlot(args.SData.Name) == SpellSlot.Unknown && args.Target.Type == Me.Type)
                 {
-                    Danger = false; DangerCC = false; DangerUlt = false;
+                    Danger = false; Dangercc = false; DangerUlt = false;
                     AggroTarget = ObjectManager.GetUnitByNetworkId<Obj_AI_Hero>(args.Target.NetworkId);
 
-                    IncomeDamage = (float)HeroSender.GetAutoAttackDamage(AggroTarget);
+                    IncomeDamage = (float)heroSender.GetAutoAttackDamage(AggroTarget);
 
                     if (Origin.Item("dbool").GetValue<bool>())
-                        Console.WriteLine(HeroSender.SkinName + " hit (Auto Attack) " + AggroTarget.SkinName + " for: " + IncomeDamage);
+                        Console.WriteLine(heroSender.SkinName + " hit (Auto Attack) " + AggroTarget.SkinName + " for: " + IncomeDamage);
                 }
 
-                Attacker = HeroSender;
+                Attacker = heroSender;
                 foreach (var o in TargetSpellDatabase.Spells.Where(x => x.Name == args.SData.Name.ToLower()))
                 {
                     
@@ -713,12 +710,12 @@ namespace Oracle
 
                             AggroTarget =
                                 ObjectManager.Get<Obj_AI_Hero>()
-                                    .OrderBy(x => x.Distance(HeroSender.ServerPosition))
+                                    .OrderBy(x => x.Distance(heroSender.ServerPosition))
                                     .FirstOrDefault(x => x.IsAlly);
 
-                            if (AggroTarget != null && AggroTarget.Distance(HeroSender.ServerPosition, true) <= o.Range*o.Range)
+                            if (AggroTarget != null && AggroTarget.Distance(heroSender.ServerPosition, true) <= o.Range*o.Range)
                             {
-                                IncomeDamage = (float)HeroSender.GetSpellDamage(AggroTarget, (SpellSlot)o.Spellslot);
+                                IncomeDamage = (float)heroSender.GetSpellDamage(AggroTarget, (SpellSlot)o.Spellslot);
 
                                 if (o.Wait)
                                 {
@@ -728,13 +725,13 @@ namespace Oracle
                                 Spell = true;
                                 Danger = Origin.Item(o.Name.ToLower() + "ccc").GetValue<bool>();
                                 DangerUlt = Origin.Item(o.Name.ToLower() + "ccc").GetValue<bool>() && o.Spellslot.ToString() == "R";
-                                DangerCC = o.CcType != CcType.No && o.Type != SpellType.AutoAttack;
+                                Dangercc = o.CcType != CcType.No && o.Type != SpellType.AutoAttack;
 
                                 if (Origin.Item("dbool").GetValue<bool>())
                                     Console.WriteLine("Danger (Self): " + Danger);
 
                                 if (Origin.Item("dbool").GetValue<bool>())
-                                    Console.WriteLine(HeroSender.SkinName + " hit (Self Spell) " + AggroTarget.SkinName + " for: " + IncomeDamage);
+                                    Console.WriteLine(heroSender.SkinName + " hit (Self Spell) " + AggroTarget.SkinName + " for: " + IncomeDamage);
 
                             }
                         });
@@ -747,12 +744,12 @@ namespace Oracle
                             AggroTarget =
                                 ObjectManager.GetUnitByNetworkId<Obj_AI_Hero>(args.Target.NetworkId);
 
-                            IncomeDamage = (float)HeroSender.GetSpellDamage(AggroTarget, (SpellSlot)o.Spellslot);
+                            IncomeDamage = (float)heroSender.GetSpellDamage(AggroTarget, (SpellSlot)o.Spellslot);
 
                             if (Origin.Item("dbool").GetValue<bool>())
                             {
                                 Console.WriteLine("Dangerous (Targetd Spells): " + Danger);
-                                Console.WriteLine(HeroSender.SkinName + " hit (Target Spell) " + AggroTarget.SkinName +
+                                Console.WriteLine(heroSender.SkinName + " hit (Target Spell) " + AggroTarget.SkinName +
                                                     " for: " + IncomeDamage);
                             }
 
@@ -764,7 +761,7 @@ namespace Oracle
                             Spell = true;
                             Danger = Origin.Item(o.Name.ToLower() + "ccc").GetValue<bool>();
                             DangerUlt = Origin.Item(o.Name.ToLower() + "ccc").GetValue<bool>() && o.Spellslot.ToString() == "R";
-                            DangerCC = o.CcType != CcType.No && o.Type != SpellType.AutoAttack;
+                            Dangercc = o.CcType != CcType.No && o.Type != SpellType.AutoAttack;
                         });
                     }
                 }
@@ -776,13 +773,13 @@ namespace Oracle
                                             o.Radius, o.MissileSpeed, o.AddHitbox, o.FixedRange, o.DangerValue);
 
                     var endPosition = args.Start.To2D() +
-                                        o.Range * (args.End.To2D() - HeroSender.ServerPosition.To2D()).Normalized();
+                                        o.Range * (args.End.To2D() - heroSender.ServerPosition.To2D()).Normalized();
 
                     var skillShot = new Skillshot(DetectionType.ProcessSpell, skillData, Environment.TickCount,
-                        HeroSender.ServerPosition.To2D(), endPosition, HeroSender);
+                        heroSender.ServerPosition.To2D(), endPosition, heroSender);
 
                     var castTime = (o.DontAddExtraDuration ? 0 : o.ExtraDuration) + o.Delay +
-                                    (int)(1000 * HeroSender.Distance(Friendly().ServerPosition) / o.MissileSpeed) -
+                                    (int)(1000 * heroSender.Distance(Friendly().ServerPosition) / o.MissileSpeed) -
                                     (Environment.TickCount - skillShot.StartTick);
 
                     AggroTarget =
@@ -796,12 +793,12 @@ namespace Oracle
                             Spell = true;
                             Danger = Origin.Item(o.SpellName.ToLower() + "ccc").GetValue<bool>();
                             DangerUlt = Origin.Item(o.SpellName.ToLower() + "ccc").GetValue<bool>() && o.Slot.ToString() == "R";
-                            IncomeDamage = (float)HeroSender.GetSpellDamage(AggroTarget, (SpellSlot)skillShot.SkillshotData.Slot);
+                            IncomeDamage = (float)heroSender.GetSpellDamage(AggroTarget, (SpellSlot)skillShot.SkillshotData.Slot);
 
                             if (Origin.Item("dbool").GetValue<bool>())
                             {
                                 Console.WriteLine("Dangerous (Skillshot Spells): " + Danger);
-                                Console.WriteLine(HeroSender.SkinName + " may hit (SkillShot) " + AggroTarget.SkinName + " for: " + IncomeDamage);
+                                Console.WriteLine(heroSender.SkinName + " may hit (SkillShot) " + AggroTarget.SkinName + " for: " + IncomeDamage);
                             }
                         });
                     }
@@ -812,7 +809,7 @@ namespace Oracle
             {
                 if (args.Target.Type == Me.Type)
                 {
-                    Danger = false; DangerCC = false; DangerUlt = false;
+                    Danger = false; Dangercc = false; DangerUlt = false;
                     AggroTarget = ObjectManager.GetUnitByNetworkId<Obj_AI_Hero>(args.Target.NetworkId);
 
                     MinionDamage =
@@ -825,7 +822,7 @@ namespace Oracle
             {
                 if (args.Target.Type == Me.Type)
                 {
-                    Danger = false; DangerCC = false; DangerUlt = false;
+                    Danger = false; Dangercc = false; DangerUlt = false;
                     if (sender.Distance(Friendly().ServerPosition, true) <= 900*900)
                     {
                         AggroTarget = ObjectManager.GetUnitByNetworkId<Obj_AI_Hero>(args.Target.NetworkId);
