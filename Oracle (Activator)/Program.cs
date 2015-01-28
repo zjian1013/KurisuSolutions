@@ -35,7 +35,7 @@ namespace Oracle
         public static string FileName;
         public static bool CanManamune;
         public static string ChampionName;
-        public const string Revision = "214";
+        public const string Revision = "215";
 
         public static Menu Origin;
         public static Obj_AI_Hero Attacker;

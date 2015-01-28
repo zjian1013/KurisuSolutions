@@ -788,10 +788,10 @@ namespace Oracle.Core.Targeted
                 #endregion Skarner
 
                 #region Sona
-                new TargetSpellData("sona", "sonahymnofvalor", SpellSlot.Q, SpellType.Self, CcType.No, 700, 500, 1500),
-                new TargetSpellData("sona", "sonaariaofperseverance", SpellSlot.W, SpellType.Self, CcType.No, 1000, 500, 1500),
-                new TargetSpellData("sona", "sonasongofdiscord", SpellSlot.E, SpellType.Self, CcType.No, 1000, 500, 1500),
-                new TargetSpellData("sona", "sonacrescendo", SpellSlot.R, SpellType.Skillshot, CcType.Stun, 900, 500, 2400),
+                new TargetSpellData("sona", "sonaq", SpellSlot.Q, SpellType.Self, CcType.No, 700, 500, 1500),
+                new TargetSpellData("sona", "sonaw", SpellSlot.W, SpellType.Self, CcType.No, 1000, 500, 1500),
+                new TargetSpellData("sona", "sonae", SpellSlot.E, SpellType.Self, CcType.Slow, 1000, 500, 1500),
+                new TargetSpellData("sona", "sonar", SpellSlot.R, SpellType.Skillshot, CcType.Stun, 900, 500, 2400, true),
 
                 #endregion Sona
 
