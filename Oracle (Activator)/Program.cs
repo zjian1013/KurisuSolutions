@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Net;
 using LeagueSharp;
 using LeagueSharp.Common;
 using Oracle.Extensions;
@@ -17,6 +18,15 @@ namespace Oracle
     // Copyright © Kurisu Solutions 2015
     internal static class Program
     {
+        internal enum LogType
+        {
+            Error = 0,
+            Danger = 1,
+            Info = 2,
+            Damage = 3,
+            Action = 4
+        };
+
         public static bool Spell;
         public static bool Stealth;
         public static bool Danger;
@@ -33,15 +43,6 @@ namespace Oracle
         public static Obj_AI_Hero CurrentTarget;
         public static float IncomeDamage, MinionDamage;
         private static readonly Obj_AI_Hero Me = ObjectManager.Player;
-
-        internal enum LogType
-        {
-            Error = 0,
-            Danger = 1,
-            Info = 2,
-            Damage = 3,
-            Action = 4
-        };
 
         private static void Main(string[] args)
         {
@@ -76,6 +77,25 @@ namespace Oracle
             else
             {
                 Game.PrintChat("<font color=\"#FFFFCC\">Feel free to donate to</font>: xrobinsong@gmail.com");
+            }
+
+            try
+            {
+                var wc = new WebClient { Proxy = null };
+                var gitrevision =
+                    wc.DownloadString(
+                        "https://raw.githubusercontent.com/xKurisu/KurisuSolutions/master/Oracle%20Revision.txt");
+
+                if (Revision != gitrevision)
+                {
+                    Game.PrintChat("<font color=\"#FFFFCC\"><b>Oracle is Outdated! Please press F8</b></font>");
+                }
+            }
+
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                Game.PrintChat("Something went wrong with update checker!");
             }
 
             Origin = new Menu("Oracle", "oracle", true);
