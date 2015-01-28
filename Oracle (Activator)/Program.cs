@@ -56,8 +56,8 @@ namespace Oracle
       
             ChampionName = Me.ChampionName;
             Game.OnGameUpdate += Game_OnGameUpdate;
-
             Game.PrintChat("<font color=\"#1FFF8F\">Oracle# r." + Revision + " -</font><font color=\"#FFFFCC\"> by Kurisu</font>");
+
             if (!Directory.Exists(Config.LeagueSharpDirectory + @"\Logs\Oracle"))
             {
                 Directory.CreateDirectory(Config.LeagueSharpDirectory + @"\Logs\Oracle");
@@ -66,7 +66,7 @@ namespace Oracle
                 Game.PrintChat(
                     "<font color=\"#FFFFCC\">Feel free to donate to</font>: xrobinsong@gmail.com");
                 Game.PrintChat(
-                    "<font color=\"#FFFFCC\"><b>Log files are generated in </b></font>" +Config.LeagueSharpDirectory + @"\Logs\Oracle\");
+                    "<font color=\"#FFFFCC\"><b>Log files are generated in </b></font>" + Config.LeagueSharpDirectory + @"\Logs\Oracle\");
                 Game.PrintChat(
                     "<font color=\"#FFFFCC\">If you ecounter an error please attach a log along with your post thank you!</font>");
                 Game.PrintChat(

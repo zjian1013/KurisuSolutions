@@ -234,13 +234,15 @@ namespace Oracle.Extensions
                         .Where(target => target.IsValidTarget(600)) 
                         .Where(target => !target.HasBuff("summonerdot", true)))
             {
-                
+
+                var tHealthPercent = target.Health/target.MaxHealth*100;
                 if (_mainMenu.Item("dotMode").GetValue<StringList>().SelectedIndex == 0)
                 {
                     if (target.Health <= Me.GetSummonerSpellDamage(target, Damage.SummonerSpell.Ignite))
                     {
                         Me.Spellbook.CastSpell(ignite, target);
-                        OC.Logger(OC.LogType.Action, "Used ignite (KS) on " + target.SkinName + "!");
+                        OC.Logger(OC.LogType.Action,
+                            "Used ignite (KS) on " + target.SkinName + " (" + tHealthPercent + "%)!");
                     }
                 }
             }
@@ -254,7 +256,9 @@ namespace Oracle.Extensions
                     if (OC.Origin.Item("ComboKey").GetValue<KeyBind>().Active)
                     {
                         Me.Spellbook.CastSpell(ignite, OC.CurrentTarget);
-                        OC.Logger(OC.LogType.Action, "Used ignite (Combo) on " + OC.CurrentTarget.SkinName + "!");
+                        OC.Logger(OC.LogType.Action,
+                            "Used ignite (Combo) on " + OC.CurrentTarget.SkinName + " (" +
+                            OC.CurrentTarget.Health/OC.CurrentTarget.MaxHealth*100 + "%)!");
                     }
                 }
             }
@@ -289,7 +293,7 @@ namespace Oracle.Extensions
                     if (OC.AggroTarget.NetworkId == Me.NetworkId)
                     {
                         Me.Spellbook.CastSpell(barrier, Me);
-                        OC.Logger(OC.LogType.Action, "Used barrier (Low HP) on me!");
+                        OC.Logger(OC.LogType.Action, "Used barrier (Low HP) on me(" + mHealthPercent + "%)!");
                     }
                 }
             }
@@ -299,7 +303,7 @@ namespace Oracle.Extensions
                 if (OC.AggroTarget.NetworkId == Me.NetworkId)
                 {
                     Me.Spellbook.CastSpell(barrier, Me);
-                    OC.Logger(OC.LogType.Action, "Used barrier (Damage Chunk) on me!");
+                    OC.Logger(OC.LogType.Action, "Used barrier (Damage Chunk) on me (" + mHealthPercent + ")!");
                 }
             }
 
@@ -308,7 +312,7 @@ namespace Oracle.Extensions
                 if (OC.AggroTarget.NetworkId == Me.NetworkId)
                 {
                     Me.Spellbook.CastSpell(barrier, Me);
-                    OC.Logger(OC.LogType.Action, "Used barrier (Ignite) on me!");
+                    OC.Logger(OC.LogType.Action, "Used barrier (Ignite) on me (" + mHealthPercent + "%)!");
                 }
             }
         }
@@ -345,7 +349,8 @@ namespace Oracle.Extensions
                         if (OC.AggroTarget.NetworkId == target.NetworkId)
                         {
                             Me.Spellbook.CastSpell(heal, target);
-                            OC.Logger(OC.LogType.Action, "Used Heal (Low HP) for: " + target.SkinName + "!");
+                            OC.Logger(OC.LogType.Action,
+                                "Used Heal (Low HP) for: " + target.SkinName + " (" + aHealthPercent + "%)!");
                         }
                     }
                 }
@@ -356,7 +361,8 @@ namespace Oracle.Extensions
                     if (OC.AggroTarget.NetworkId == target.NetworkId)
                     {
                         Me.Spellbook.CastSpell(heal, target);
-                        OC.Logger(OC.LogType.Action, "Used Heal (Damage Chunk) for: " + target.SkinName + "!");
+                        OC.Logger(OC.LogType.Action,
+                            "Used Heal (Damage Chunk) for: " + target.SkinName + " (" + aHealthPercent + "%)!");
                     }
                 }
             }
@@ -394,7 +400,7 @@ namespace Oracle.Extensions
             if (!Me.InFountain() && !Me.IsRecalling())
             {
                 Me.Spellbook.CastSpell(clarity, target);
-                OC.Logger(OC.LogType.Action, "Used Clarity for: " + target.SkinName + "!");
+                OC.Logger(OC.LogType.Action, "Used Clarity for: " + target.SkinName + " (" + aManaPercent + "%)!");
             }
         }
 
@@ -646,7 +652,7 @@ namespace Oracle.Extensions
                             if (!enemy.IsFacing(target))
                             {
                                 Me.Spellbook.CastSpell(exhaust, enemy);
-                                OC.Logger(OC.LogType.Action, "Used Exhaust (Offensive) on: " + enemy.SkinName + "!");
+                                OC.Logger(OC.LogType.Action, "Used Exhaust (Offensive) on: " + enemy.SkinName + " (" + eHealthPercent + "%)!");
                                 OC.Logger(OC.LogType.Info,
                                     "Attackers AD: " + OC.Attacker.FlatPhysicalDamageMod + OC.Attacker.BaseAttackDamage);
                             }
@@ -657,7 +663,7 @@ namespace Oracle.Extensions
                             if (enemy.IsFacing(target))
                             {
                                 Me.Spellbook.CastSpell(exhaust, enemy);
-                                OC.Logger(OC.LogType.Action, "Used Exhaust (Defensive) on: " + enemy.SkinName + "!");
+                                OC.Logger(OC.LogType.Action, "Used Exhaust (Defensive) on: " + enemy.SkinName + " (" + aHealthPercent + "%)!");
                                 OC.Logger(OC.LogType.Info,
                                     "Attackers AD: " + OC.Attacker.FlatPhysicalDamageMod + OC.Attacker.BaseAttackDamage);
                             }

@@ -131,16 +131,15 @@ namespace Oracle.Extensions
                      eHealthPercent <= _mainMenu.Item("useEnemyPct").GetValue<Slider>().Value))
                 {
                     Items.UseItem(3069);
-                    if (OC.Origin.Item("dbool").GetValue<bool>())
-                        OC.Logger(OC.LogType.Action,
-                            "Using speed item on enemy (" + lowTarget.SkinName + ") is low!");
+                    OC.Logger(OC.LogType.Action, "Using speed item on enemy " + lowTarget.SkinName + " (" +
+                        lowTarget.Health/lowTarget.MaxHealth*100 + "%) is low!");
                 }
 
                 if (target.CountHerosInRange(false) > target.CountHerosInRange(true) &&
                     aHealthPercent <= _mainMenu.Item("useAllyPct").GetValue<Slider>().Value)
                 {
                     Items.UseItem(3069);
-                    OC.Logger(OC.LogType.Action, "Using speed item on ally (" + target.SkinName + ") is low!");
+                    OC.Logger(OC.LogType.Action, "Using speed item on ally " + target.SkinName + " (" + aHealthPercent + "%) is low!");
                 }
             }
         }
@@ -195,7 +194,7 @@ namespace Oracle.Extensions
                         {
                             Items.UseItem(itemId, target);
                             OC.Logger(OC.LogType.Action,
-                                "Used " + name + " on " + target.SkinName + "! (Dangerous Ult)");
+                                "Used " + name + " on " + target.SkinName + " (" + aHealthPercent + "%)! (Dangerous Ult)");
                         }
                     }
                 }
@@ -208,7 +207,7 @@ namespace Oracle.Extensions
                         {
                             Items.UseItem(itemId, target);
                             OC.Logger(OC.LogType.Action,
-                                "Used " + name + " on " + target.SkinName + "! (Dangerous Spell)");
+                                "Used " + name + " on " + target.SkinName + " (" + aHealthPercent + "%)! (Dangerous Spell)");
                         }
                     }
                 }
@@ -231,7 +230,8 @@ namespace Oracle.Extensions
                         if (OC.AggroTarget.NetworkId == target.NetworkId)
                         {
                             Items.UseItem(itemId, target);
-                            OC.Logger(OC.LogType.Action, "Used " + name + " on " + target.SkinName + "! (Low HP)");
+                            OC.Logger(OC.LogType.Action,
+                                "Used " + name + " on " + target.SkinName + " (" + aHealthPercent + "%)! (Low HP)");
                         }
                     }
 
@@ -241,7 +241,7 @@ namespace Oracle.Extensions
                         {
                             Items.UseItem(itemId, target);
                             OC.Logger(OC.LogType.Action,
-                                "Used " + name + " on " + target.SkinName + "! (Damage Chunk)");
+                                "Used " + name + " on " + target.SkinName + " (" + aHealthPercent + "%)! (Damage Chunk)");
                         }
                     }                    
                 }
