@@ -35,7 +35,7 @@ namespace Oracle
         public static string FileName;
         public static bool CanManamune;
         public static string ChampionName;
-        public const string Revision = "212";
+        public const string Revision = "213";
 
         public static Menu Origin;
         public static Obj_AI_Hero Attacker;
@@ -194,7 +194,7 @@ namespace Oracle
 
         private static GameObj _satchel, _miasma, _minefield, _crowstorm, _fizzbait, _caittrap;
         private static GameObj _chaosstorm, _glacialstorm, _lightstrike, _equinox, _tormentsoil;
-        private static GameObj _depthcharge, _tremors, _acidtrail;
+        private static GameObj _depthcharge, _tremors, _acidtrail, _catalyst;
 
         private static void GameObject_OnCreate(GameObject obj, EventArgs args)
         {
@@ -251,6 +251,12 @@ namespace Oracle
                 var dmg = (float) GetEnemy("Viktor").GetSpellDamage(Friendly(), SpellSlot.R);
                 _chaosstorm = new GameObj(obj.Name, obj, true, dmg, Environment.TickCount);
                 Logger(LogType.Info, obj.Name + " detected/created (Chaos Storm)");
+            }
+
+            else if (obj.Name.Contains("Viktor_Catalyst_red") && GetEnemy("Viktor").IsValid)
+            {
+                _catalyst = new GameObj(obj.Name, obj, true, 0, Environment.TickCount);
+                Logger(LogType.Info, obj.Name + " detected/created (Gravity Field)");
             }
 
             else if (obj.Name.Contains("cryo_storm_red") && GetEnemy("Anivia").IsValid)
@@ -371,6 +377,22 @@ namespace Oracle
 
                         Logger(LogType.Damage,
                             AggroTarget.SkinName + " is in Poison Trail (Game Object) for: " + IncomeDamage);
+                    }
+                }
+            }
+
+            if (_catalyst.Included)
+            {
+                if (_catalyst.Obj.IsValid && Friendly().Distance(_catalyst.Obj.Position, true) <= 400*400)
+                {
+                    if (GetEnemy("Viktor").IsValid)
+                    {
+                        Attacker = GetEnemy("Viktor");
+                        AggroTarget = Friendly();
+                        Dangercc = true;
+
+                        Logger(LogType.Danger,
+                            AggroTarget.SkinName + " is in Gravity Field (Ground Object) for: 0");
                     }
                 }
             }
