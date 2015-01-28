@@ -40,13 +40,13 @@ namespace Oracle.Extensions
             _mainMenu.AddSubMenu(bMenu);
 
             CreateMenuItem("Wooglet's Witchcap", "Wooglets", "selfzhonya", 35, 40);
+            CreateMenuItem("Odyn's Veil", "Odyns", "selfcount", 40, 40);
+
             var oMenu = new Menu("Oracle's Lens", "olens");
             oMenu.AddItem(new MenuItem("useOracles", "Use on Stealth")).SetValue(true);
             oMenu.AddItem(new MenuItem("oracleMode", "Mode: ")).SetValue(new StringList(new[] { "Always", "Combo" }));
             _mainMenu.AddSubMenu(oMenu);
 
-            CreateMenuItem("Odyn's Veil", "Odyns", "selfcount", 40, 40); 
-   
             root.AddSubMenu(_mainMenu);
         }
 
@@ -251,13 +251,12 @@ namespace Oracle.Extensions
         private static void CreateMenuItem(string displayname, string name, string type, int hpvalue, int dmgvalue)
         {
             var menuName = new Menu(name, name.ToLower());
-
             menuName.AddItem(new MenuItem("use" + name, "Use " + displayname)).SetValue(true);
 
             if (!type.Contains("count"))
             {
-                menuName.AddItem(new MenuItem("use" + name + "Dmg", "Use on Dmg dealt %")).SetValue(new Slider(dmgvalue));
                 menuName.AddItem(new MenuItem("use" + name + "Pct", "Use on HP %")).SetValue(new Slider(hpvalue));
+                menuName.AddItem(new MenuItem("use" + name + "Dmg", "Use on Dmg dealt %")).SetValue(new Slider(dmgvalue));
             }
 
             if (type.Contains("count"))
@@ -269,9 +268,9 @@ namespace Oracle.Extensions
                 menuName.AddItem(new MenuItem("use" + name + "Ults", "Use on Dangerous (Ultimates Only)")).SetValue(true);
 
                 if (type.Contains("zhonya"))
-                    menuName.AddItem(new MenuItem("use" + name + "Only", "Use Only on Dangerous")).SetValue(true);           
+                    menuName.AddItem(new MenuItem("use" + name + "Only", "Use Only on Dangerous")).SetValue(true);
             }
-     
+  
             _mainMenu.AddSubMenu(menuName);
         }      
     }

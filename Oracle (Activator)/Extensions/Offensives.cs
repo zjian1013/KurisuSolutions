@@ -24,7 +24,6 @@ namespace Oracle.Extensions
 
             CreateMenuItem("Muramana", "Muramana", 90, 30, true);
             CreateMenuItem("Tiamat/Hydra", "Hydra", 90, 30);
-            CreateMenuItem("Deathfire Grasp", "DFG", 100, 30);
             CreateMenuItem("Hextech Gunblade", "Hextech", 90, 30);
             CreateMenuItem("Youmuu's Ghostblade", "Youmuus", 90, 30);
             CreateMenuItem("Bilgewater's Cutlass", "Cutlass", 90, 30);
@@ -32,7 +31,6 @@ namespace Oracle.Extensions
             CreateMenuItem("Frost Queen's Claim", "Frostclaim", 100, 30);
             CreateMenuItem("Sword of Divine", "Divine", 90, 30);
             CreateMenuItem("Guardians Horn", "Guardians", 90, 30);
-            CreateMenuItem("Blackfire Torch", "Torch", 100, 30);
             CreateMenuItem("Entropy", "Entropy", 90, 30);
 
             root.AddSubMenu(_mainMenu);
@@ -83,8 +81,6 @@ namespace Oracle.Extensions
                     UseItem("Entropy", 3184, 450f, true);
                     UseItem("Guardians", 2051, 450f);
                     UseItem("Entropy", 3184, 450f, true);
-                    UseItem("Torch", 3188, 750f, true);
-                    UseItem("Torch", 3188, 750f, true);
                     UseItem("Frostclaim", 3092, 850f, true);
                     UseItem("Youmuus", 3142, 650f);
                     UseItem("Hydra", 3077, 250f);
@@ -93,22 +89,17 @@ namespace Oracle.Extensions
                     UseItem("Cutlass", 3144, 450f, true);
                     UseItem("Botrk", 3153, 450f, true);
                     UseItem("Divine", 3131, 650f);
-                    UseItem("DFG", 3128, 750f, true);
                 }
             }
         }
 
         private static void UseItem(string name, int itemId, float range, bool targeted = false)
         {
-            var damage = 0f;
             if (!Items.HasItem(itemId) || !Items.CanUseItem(itemId))
                 return;
 
             if (!_mainMenu.Item("use" + name).GetValue<bool>())
                 return;
-
-            if (itemId == 3128 || itemId == 3188)
-                damage = OC.GetComboDamage(Me, OC.CurrentTarget);
 
             if (OC.CurrentTarget.Distance(Me.Position) <= range)
             {
@@ -145,9 +136,6 @@ namespace Oracle.Extensions
 
                     else if (targeted)
                     {
-                        if ((itemId == 3128 || itemId == 3188) && damage <= OC.CurrentTarget.Health / 2)
-                            return;
-
                         Items.UseItem(itemId, OC.CurrentTarget);
                         OC.Logger(Program.LogType.Action, "Used " + name + " (Targeted Enemy HP) on " + OC.CurrentTarget.SkinName);
                     }
@@ -175,6 +163,7 @@ namespace Oracle.Extensions
         private static void CreateMenuItem(string displayname, string name, int evalue, int avalue, bool usemana = false)
         {
             var menuName = new Menu(name, name.ToLower());
+
             menuName.AddItem(new MenuItem("use" + name, "Use " + displayname)).SetValue(true);
             menuName.AddItem(new MenuItem("use" + name + "Pct", "Use on enemy HP %")).SetValue(new Slider(evalue));
 
@@ -184,8 +173,10 @@ namespace Oracle.Extensions
             if (usemana)
                 menuName.AddItem(new MenuItem("use" + name + "Mana", "Minimum mana % to use")).SetValue(new Slider(35));
 
+
             if (name == "Muramana")
-                menuName.AddItem( new MenuItem("muraMode", " Muramana Mode: ").SetValue(new StringList(new[] {"Always", "Combo"}, 1)));
+                menuName.AddItem(
+                    new MenuItem("muraMode", " Muramana Mode: ").SetValue(new StringList(new[] {"Always", "Combo"}, 1)));
 
             _mainMenu.AddSubMenu(menuName);
         }

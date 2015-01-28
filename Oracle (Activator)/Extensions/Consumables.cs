@@ -46,7 +46,7 @@ namespace Oracle.Extensions
                 return;
 
             var aManaPercent = (int)((Me.Mana / Me.MaxMana) * 100);
-            var aHealthPercent = (int) ((Me.Health/Me.MaxHealth)*100);
+            var mHealthPercent = (int) ((Me.Health/Me.MaxHealth)*100);
 
             var iDamagePercent = (int) ((OC.IncomeDamage/Me.MaxHealth)*100);
             var mDamagePercent = (int) ((OC.MinionDamage/Me.MaxHealth)*100);
@@ -57,7 +57,7 @@ namespace Oracle.Extensions
                     Items.UseItem(itemId);
             }
 
-            if (menuvar.Contains("Health") && aHealthPercent <= _mainMenu.Item("use" + menuvar + "Pct").GetValue<Slider>().Value)
+            if (menuvar.Contains("Health") && mHealthPercent <= _mainMenu.Item("use" + menuvar + "Pct").GetValue<Slider>().Value)
             {
                 if (iDamagePercent >= 1 || OC.IncomeDamage >= Me.Health || Me.HasBuff("summonerdot", true) ||
                     mDamagePercent >= 1 || OC.MinionDamage >= Me.Health || Me.HasBuffOfType(BuffType.Damage))
@@ -65,7 +65,7 @@ namespace Oracle.Extensions
                     if (OC.AggroTarget.NetworkId == Me.NetworkId)
                     {
                         Items.UseItem(itemId);
-                        OC.Logger(OC.LogType.Action, "Used " + name + " (Low HP) on " + Me.SkinName + "!");
+                        OC.Logger(OC.LogType.Action, "Used " + name + " (Low HP) on " + Me.SkinName + " (" + mHealthPercent + "%) !");
                     }
                 }
 
@@ -74,7 +74,7 @@ namespace Oracle.Extensions
                     if (OC.AggroTarget.NetworkId == Me.NetworkId)
                     {
                         Items.UseItem(itemId);
-                        OC.Logger(OC.LogType.Action, "Used " + name + " (Damage Chunk) on " + Me.SkinName + "!");
+                        OC.Logger(OC.LogType.Action, "Used " + name + " (Damage Chunk) on " + Me.SkinName + " (" + mHealthPercent + "%) !");
                     }
                 }
             }
@@ -84,14 +84,16 @@ namespace Oracle.Extensions
         {
             var menuName = new Menu(name, "m" + menuvar);
             menuName.AddItem(new MenuItem("use" + menuvar, "Use " + name)).SetValue(true);
+
             if (menuvar.Contains("Health"))
             {
-                menuName.AddItem(new MenuItem("use" + menuvar + "Pct", "Use on HP &")).SetValue(new Slider(dvalue));
+                menuName.AddItem(new MenuItem("use" + menuvar + "Pct", "Use on HP %")).SetValue(new Slider(dvalue));
                 menuName.AddItem(new MenuItem("use" + menuvar + "Dmg", "Use on Dmg dealt %")).SetValue(new Slider(dmgvalue));
             }
 
             if (menuvar.Contains("Mana"))
                 menuName.AddItem(new MenuItem("use" + menuvar + "Mana", "Use on Mana %")).SetValue(new Slider(40));
+
             _mainMenu.AddSubMenu(menuName);
         }
     }

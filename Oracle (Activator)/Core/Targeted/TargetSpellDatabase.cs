@@ -853,10 +853,10 @@ namespace Oracle.Core.Targeted
                 #endregion Thresh
 
                 #region Tristana
-                new TargetSpellData("tristana", "rapidfire", SpellSlot.Q, SpellType.Self, CcType.No, 0, 500, float.MaxValue),
-                new TargetSpellData("tristana", "rocketjump", SpellSlot.W, SpellType.Skillshot, CcType.Slow, 900, 500, 1150),
-                new TargetSpellData("tristana", "detonatingshot", SpellSlot.E, SpellType.Targeted, CcType.No, 625, 500, 1400),
-                new TargetSpellData("tristana", "bustershot", SpellSlot.R, SpellType.Targeted, CcType.Knockback, 700, 500, 1600, true),
+                new TargetSpellData("tristana", "tristanaq", SpellSlot.Q, SpellType.Self, CcType.No, 0, 500, float.MaxValue),
+                new TargetSpellData("tristana", "tristanaw", SpellSlot.W, SpellType.Skillshot, CcType.Slow, 900, 500, 1150),
+                new TargetSpellData("tristana", "tristanae", SpellSlot.E, SpellType.Targeted, CcType.No, 625, 500, 1400),
+                new TargetSpellData("tristana", "tristanar", SpellSlot.R, SpellType.Targeted, CcType.Knockback, 700, 500, 1600, true),
 
                 #endregion Tristana
 

@@ -136,9 +136,7 @@ namespace Oracle.Extensions
                 Exhaust.AddItem(new MenuItem("aExhaustPct", "Exhaust on ally HP %")).SetValue(new Slider(35));
                 Exhaust.AddItem(new MenuItem("eExhaustPct", "Exhaust on enemy HP %")).SetValue(new Slider(35));
                 Exhaust.AddItem(new MenuItem("exhDanger", "Use on Dangerous")).SetValue(true);
-                Exhaust.AddItem(new MenuItem("exhaustMode", "Mode: "))
-                    .SetValue(new StringList(new[] {"Always", "Combo"}));
-
+                Exhaust.AddItem(new MenuItem("exhaustMode", "Mode: ")).SetValue(new StringList(new[] {"Always", "Combo"}));
                 _mainMenu.AddSubMenu(Exhaust);
             }
 

@@ -58,10 +58,12 @@ namespace Oracle.Extensions
 
             // auto ultimates
             CreateMenuItem(25, "lulur", "Wild Growth", "luluult", SpellSlot.R, false);
+            CreateMenuItem(25, "sadism", "Sadism", "drmundoult", SpellSlot.R, false);
             CreateMenuItem(15, "undyingrage", "Undying Rage", "tryndult", SpellSlot.R, false);
             CreateMenuItem(15, "chronoshift", "Chorno Shift", "zilult", SpellSlot.R, false);
             CreateMenuItem(15, "yorickreviveally", "Omen of Death", "yorickult", SpellSlot.R, false);
             CreateMenuItem(15, "kalistarx", "Fate's Call", "kalistault", SpellSlot.R, false);
+            CreateMenuItem(15, "sorakar", "Wish", "sorakault", SpellSlot.R, false);
 
             // slow removers
             CreateMenuItem(0, "evelynnw", "Draw Frenzy", "eveslow", SpellSlot.W, false);
@@ -156,6 +158,43 @@ namespace Oracle.Extensions
             UseSpell("undyingrage", "tryndult", float.MaxValue, false);
             UseSpell("chronoshift", "zilult", 900f, false);
             UseSpell("yorickreviveally", "yorickult", 900f, false);
+            UseSpell("sadism", "drmundoult", float.MaxValue, false);
+
+            // soraka global heal
+            if (OC.ChampionName == "Soraka")
+            {
+                var sorakaslot = Me.GetSpellSlot("sorakar");
+                var sorakar = new Spell(sorakaslot);
+                if (!sorakar.IsReady())
+                {
+                    return;
+                }
+
+                if (sorakaslot == SpellSlot.Unknown && !_mainMenu.Item("usesorakault").GetValue<bool>())
+                {
+                    return;
+                }
+
+                var target =
+                    ObjectManager.Get<Obj_AI_Hero>()
+                        .First(huro => huro.IsValidTarget(float.MaxValue, false) && huro.IsAlly);
+
+                if (!_menuConfig.Item("ason" + target.SkinName).GetValue<bool>())
+                {
+                    return;
+                }
+
+                var aHealthPercent = target.Health/target.MaxHealth*100;
+                if (aHealthPercent <= _mainMenu.Item("usesorakaultPct").GetValue<Slider>().Value)
+                {
+                    if (OC.AggroTarget.NetworkId == target.NetworkId)
+                    {
+                        sorakar.Cast();
+                        OC.Logger(Program.LogType.Action,
+                            "(Auto Spell: Ult) Saving ally target: " + target.SkinName + " (" + aHealthPercent + "%)");
+                    }
+                }
+            }
 
             // kalista save soulbound
             if (OC.ChampionName != "Kalista")
@@ -170,23 +209,25 @@ namespace Oracle.Extensions
                 return;
             }
 
-            if (slot != SpellSlot.Unknown && _mainMenu.Item("usekalistault").GetValue<bool>())
-            {           
-                var cooptarget =
-                    ObjectManager.Get<Obj_AI_Hero>()
-                        .FirstOrDefault(hero => hero.HasBuff("kalistacoopstrikeally", true));
+            if (slot == SpellSlot.Unknown && !_mainMenu.Item("usekalistault").GetValue<bool>())
+            {
+                return;
+            }
+
+            var cooptarget =
+                ObjectManager.Get<Obj_AI_Hero>()
+                    .FirstOrDefault(hero => hero.HasBuff("kalistacoopstrikeally", true));
              
-                if (cooptarget.IsValidTarget(1200, false) && cooptarget.IsAlly && 
-                    _menuConfig.Item("ason" + cooptarget.SkinName).GetValue<bool>())
+            if (cooptarget.IsValidTarget(1200, false) && cooptarget.IsAlly && 
+                _menuConfig.Item("ason" + cooptarget.SkinName).GetValue<bool>())
+            {
+                var aHealthPercent = (int) ((cooptarget.Health/cooptarget.MaxHealth)*100);
+                if (aHealthPercent <= _mainMenu.Item("usekalistaultPct").GetValue<Slider>().Value)
                 {
-                    var aHealthPercent = (int) ((cooptarget.Health/cooptarget.MaxHealth)*100);
-                    if (aHealthPercent <= _mainMenu.Item("usekalistaultPct").GetValue<Slider>().Value)
+                    if (OC.AggroTarget.NetworkId == cooptarget.NetworkId)
                     {
-                        if (OC.AggroTarget.NetworkId == cooptarget.NetworkId)
-                        {
-                            kalistar.Cast();
-                            OC.Logger(Program.LogType.Action, "Saving soulbound target: " + cooptarget.SkinName);
-                        }
+                        kalistar.Cast();
+                        OC.Logger(Program.LogType.Action, "Saving soulbound target: " + cooptarget.SkinName);
                     }
                 }
             }
@@ -417,14 +458,18 @@ namespace Oracle.Extensions
                         {
                             case "rivenshield":
                                 spell.Cast(Game.CursorPos);
-                                OC.Logger(OC.LogType.Action, "(Auto Spell: Shield) Casting " + spell.Slot + " to game cursor! (Low HP)");
+                                OC.Logger(OC.LogType.Action,
+                                    "(Auto Spell: Shield/Ult) Casting " + spell.Slot + " to game cursor! (Low HP)");
+                                OC.Logger(OC.LogType.Action, "Target HP %: " + aHealthPercent);
                                 break;
                             case "luxshield":
                                 spell.Cast(target.IsMe ? Game.CursorPos : target.ServerPosition);
                                 break;
                             default:
                                 spell.CastOnUnit(target);
-                                OC.Logger(OC.LogType.Action, "(Auto Spell: Shield) Casting " + spell.Slot + " on " + target.SkinName + " (Low HP)");
+                                OC.Logger(OC.LogType.Action,
+                                    "(Auto Spell: Shield/Ult) Casting " + spell.Slot + " on " + target.SkinName + " (Low HP)");
+                                OC.Logger(OC.LogType.Action, "Target HP %: " + aHealthPercent);
                                 break;
                         }
                     }
@@ -450,7 +495,9 @@ namespace Oracle.Extensions
                 else
                 {
                     spell.Cast(target);
-                    OC.Logger(OC.LogType.Action, "(Auto Spell: Heal) Casting " + spell.Slot + " on " + target.SkinName + " (Low HP)");
+                    OC.Logger(OC.LogType.Action,
+                        "(Auto Spell: Heal) Casting " + spell.Slot + " on " + target.SkinName + " (Low HP)");
+                    OC.Logger(OC.LogType.Action, "Target HP %: " + aHealthPercent);
                 }
             }
 
@@ -459,7 +506,9 @@ namespace Oracle.Extensions
                 if (iDamagePercent >= _mainMenu.Item("use" + menuvar + "Dmg").GetValue<Slider>().Value)
                 {
                     spell.Cast(target);
-                    OC.Logger(OC.LogType.Action, "(Auto Spell: Shield) Casting " + spell.Slot + " on " + target.SkinName + " (Damage Chunk)");
+                    OC.Logger(OC.LogType.Action,
+                        "(Auto Spell: Shield) Casting " + spell.Slot + " on " + target.SkinName + " (Damage Chunk)");
+                    OC.Logger(OC.LogType.Action, "Target HP %: " + aHealthPercent);
                 }
             }
 
@@ -495,7 +544,6 @@ namespace Oracle.Extensions
                 if (usemana)
                     menuName.AddItem(new MenuItem("use" + menuvar + "Mana", "Minimum mana % to use"))
                         .SetValue(new Slider(45));
-
             }
 
             if (menuvar.Contains("zhonya"))
