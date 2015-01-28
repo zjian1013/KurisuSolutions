@@ -84,7 +84,7 @@ namespace Oracle
                 var wc = new WebClient { Proxy = null };
                 var gitrevision =
                     wc.DownloadString(
-                        "https://raw.githubusercontent.com/xKurisu/KurisuSolutions/master/Oracle%20Revision.txt");
+                        "https://raw.githubusercontent.com/xKurisu/KurisuSolutions/master/Oracle%20(Activator)/Oracle.txt");
 
                 if (Revision != gitrevision)
                 {
