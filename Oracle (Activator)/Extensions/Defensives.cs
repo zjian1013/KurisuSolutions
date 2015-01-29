@@ -72,17 +72,16 @@ namespace Oracle.Extensions
             // Oracle's Lens 
             if (Items.HasItem(3364) && Items.CanUseItem(3364) && _mainMenu.Item("useOracles").GetValue<bool>())
             {
-                if (!OC.Origin.Item("ComboKey").GetValue<KeyBind>().Active &&
-                    _mainMenu.Item("oracleMode").GetValue<StringList>().SelectedIndex == 1)
+                if (OC.Origin.Item("usecombo").GetValue<KeyBind>().Active ||
+                    _mainMenu.Item("oracleMode").GetValue<StringList>().SelectedIndex != 1)
                 {
-                    return;
-                }
-
-                var target = OC.Friendly();
-                if (target.Distance(Me.ServerPosition, true) <= 600*600 && OC.Stealth || target.HasBuff("RengarRBuff", true))
-                {
-                    Items.UseItem(3364, target.ServerPosition);
-                    OC.Logger(OC.LogType.Action, "Using oracle's lens near " + target.SkinName + " (stealth)");
+                    var target = OC.Friendly();
+                    if (target.Distance(Me.ServerPosition, true) <= 600*600 && OC.Stealth ||
+                        target.HasBuff("RengarRBuff", true))
+                    {
+                        Items.UseItem(3364, target.ServerPosition);
+                        OC.Logger(OC.LogType.Action, "Using oracle's lens near " + target.SkinName + " (stealth)");
+                    }
                 }
             }
 
@@ -106,7 +105,7 @@ namespace Oracle.Extensions
             // Talisman of Ascension
             if (Items.HasItem(3069) && Items.CanUseItem(3069) && _mainMenu.Item("useTalisman").GetValue<bool>())
             {
-                if (!OC.Origin.Item("ComboKey").GetValue<KeyBind>().Active &&
+                if (!OC.Origin.Item("usecombo").GetValue<KeyBind>().Active &&
                     _mainMenu.Item("talismanMode").GetValue<StringList>().SelectedIndex == 1)
                 {
                     return;
@@ -126,20 +125,21 @@ namespace Oracle.Extensions
                 var aHealthPercent = target.Health/target.MaxHealth*100;
                 var eHealthPercent = lowTarget.Health/lowTarget.MaxHealth*100;
 
-                if (lowTarget.Distance(target.ServerPosition, true) <= 900 * 900 &&
+                if (lowTarget.Distance(target.ServerPosition, true) <= 900*900 &&
                     (target.CountHerosInRange(false) > target.CountHerosInRange(true) &&
                      eHealthPercent <= _mainMenu.Item("useEnemyPct").GetValue<Slider>().Value))
                 {
                     Items.UseItem(3069);
                     OC.Logger(OC.LogType.Action, "Using speed item on enemy " + lowTarget.SkinName + " (" +
-                        lowTarget.Health/lowTarget.MaxHealth*100 + "%) is low!");
+                                                 lowTarget.Health/lowTarget.MaxHealth*100 + "%) is low!");
                 }
 
                 if (target.CountHerosInRange(false) > target.CountHerosInRange(true) &&
                     aHealthPercent <= _mainMenu.Item("useAllyPct").GetValue<Slider>().Value)
                 {
                     Items.UseItem(3069);
-                    OC.Logger(OC.LogType.Action, "Using speed item on ally " + target.SkinName + " (" + aHealthPercent + "%) is low!");
+                    OC.Logger(OC.LogType.Action,
+                        "Using speed item on ally " + target.SkinName + " (" + aHealthPercent + "%) is low!");
                 }
             }
         }

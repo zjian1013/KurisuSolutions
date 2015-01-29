@@ -47,24 +47,21 @@ namespace Oracle.Extensions
             {
                 if (OC.CanManamune)
                 {
-                    if (_mainMenu.Item("muraMode").GetValue<StringList>().SelectedIndex == 1 &&
-                        !OC.Origin.Item("ComboKey").GetValue<KeyBind>().Active)
+                    if (_mainMenu.Item("muraMode").GetValue<StringList>().SelectedIndex != 1 ||
+                        OC.Origin.Item("usecombo").GetValue<KeyBind>().Active)
                     {
-                        return;
-                    }
+                        var manamune = Me.GetSpellSlot("Muramana");
+                        if (manamune != SpellSlot.Unknown && !Me.HasBuff("Muramana"))
+                        {
+                            if (Me.Mana/Me.MaxMana*100 > _mainMenu.Item("useMuramanaMana").GetValue<Slider>().Value)
+                                Me.Spellbook.CastSpell(manamune);
 
-                    var manamune = Me.GetSpellSlot("Muramana");
-                    if (manamune != SpellSlot.Unknown && !Me.HasBuff("Muramana"))
-                    {
-                        if (Me.Mana/Me.MaxMana*100 > _mainMenu.Item("useMuramanaMana").GetValue<Slider>().Value)
-                            Me.Spellbook.CastSpell(manamune);
-
-                         Utility.DelayAction.Add(400, () => OC.CanManamune = false);
-                        
+                            Utility.DelayAction.Add(400, () => OC.CanManamune = false);
+                        }
                     }
                 }
 
-                if (!OC.CanManamune && !OC.Origin.Item("ComboKey").GetValue<KeyBind>().Active)
+                if (!OC.CanManamune && !OC.Origin.Item("usecombo").GetValue<KeyBind>().Active)
                 {
                     var manamune = Me.GetSpellSlot("Muramana");
                     if (manamune != SpellSlot.Unknown && Me.HasBuff("Muramana"))
@@ -76,7 +73,7 @@ namespace Oracle.Extensions
 
             if (OC.CurrentTarget.IsValidTarget())
             {
-                if (OC.Origin.Item("ComboKey").GetValue<KeyBind>().Active)
+                if (OC.Origin.Item("usecombo").GetValue<KeyBind>().Active)
                 {
                     UseItem("Entropy", 3184, 450f, true);
                     UseItem("Guardians", 2051, 450f);

@@ -36,7 +36,7 @@ namespace Oracle
         public static int LastTick;
         public static bool CanManamune;
         public static string ChampionName;
-        public const string Revision = "216";
+        public const string Revision = "217";
 
         public static Menu Origin;
         public static Obj_AI_Hero Attacker;
@@ -66,13 +66,7 @@ namespace Oracle
                 Game.PrintChat(
                     "<font color=\"#FFFFCC\"><b>Thank you for choosing Oracle! :^)</b></font>");
                 Game.PrintChat(
-                    "<font color=\"#FFFFCC\">Feel free to donate to</font>: xrobinsong@gmail.com");
-                Game.PrintChat(
                     "<font color=\"#FFFFCC\"><b>Log files are generated in </b></font>" + Config.LeagueSharpDirectory + @"\Logs\Oracle\");
-                Game.PrintChat(
-                    "<font color=\"#FFFFCC\">If you encounter an error please attach a log along with your post thank you!</font>");
-                Game.PrintChat(
-                    "<font color=\"#FFFFCC\"><b>Oracle would never log sensitive data!</b></font>");
             }
 
             else
@@ -89,7 +83,7 @@ namespace Oracle
 
                 if (Revision != gitrevision)
                 {
-                    Game.PrintChat("<font color=\"#FFFFCC\"><b>Oracle is <font color=\"#FF3333\">Outdated</font>! Please press F8</b></font>");
+                    Game.PrintChat("<font color=\"#FFFFCC\"><b>Oracle is Outdated! Please press F8</b></font>");
                 }
             }
 
@@ -127,11 +121,17 @@ namespace Oracle
             }
 
             config.AddItem(
-                new MenuItem("ComboKey", "Combo (Active)")
+                new MenuItem("usecombo", "Combo (Active)")
                     .SetValue(new KeyBind(32, KeyBindType.Press)));
 
             config.AddSubMenu(dangerMenu);
-         
+
+            var cskills = new Menu("Cleanse Special", "cskills");
+            foreach (var debuff in GameBuff.CleanseBuffs)
+                cskills.AddItem(new MenuItem("cure" + debuff.BuffName, debuff.ChampionName + " | " + debuff.Slot))
+                    .SetValue(true);
+            config.AddSubMenu(cskills);
+
             var cleanseMenu = new Menu("Cleanse Debuffs", "cdebufs");
             cleanseMenu.AddItem(new MenuItem("stun", "Stuns")).SetValue(true);
             cleanseMenu.AddItem(new MenuItem("charm", "Charms")).SetValue(true);
@@ -786,7 +786,7 @@ namespace Oracle
                 }
 
                 if (Me.GetSpellSlot(args.SData.Name) == SpellSlot.Unknown &&
-                    (Origin.Item("ComboKey").GetValue<KeyBind>().Active || args.Target.Type == Me.Type))
+                   (Origin.Item("usecombo").GetValue<KeyBind>().Active || args.Target.Type == Me.Type))
                 {
                     CanManamune = true;
                 }

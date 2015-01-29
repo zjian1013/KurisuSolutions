@@ -251,7 +251,7 @@ namespace Oracle.Extensions
                 if (OC.CurrentTarget.IsValidTarget(600) && 
                     OC.CurrentTarget.Health <= OC.GetComboDamage(Me, OC.CurrentTarget))
                 {
-                    if (OC.Origin.Item("ComboKey").GetValue<KeyBind>().Active)
+                    if (OC.Origin.Item("usecombo").GetValue<KeyBind>().Active)
                     {
                         Me.Spellbook.CastSpell(ignite, OC.CurrentTarget);
                         OC.Logger(OC.LogType.Action,
@@ -480,7 +480,7 @@ namespace Oracle.Extensions
             if (_mainMenu.Item("smitemode").GetValue<StringList>().SelectedIndex == 1 &&
                 _smiteSlot == "s5_summonersmiteplayerganker")
             {
-                if (OC.Origin.Item("ComboKey").GetValue<KeyBind>().Active &&
+                if (OC.Origin.Item("usecombo").GetValue<KeyBind>().Active &&
                     Me.Spellbook.CanUseSpell(smite) == SpellState.Ready)
                 {
                     if (!save && Me.Spellbook.GetSpell(smite).Ammo > 1)
@@ -614,7 +614,7 @@ namespace Oracle.Extensions
             if (exhaust != SpellSlot.Unknown && !_mainMenu.Item("useExhaust").GetValue<bool>())
                 return;
 
-            if (!OC.Origin.Item("ComboKey").GetValue<KeyBind>().Active &&
+            if (!OC.Origin.Item("usecombo").GetValue<KeyBind>().Active &&
                 _mainMenu.Item("exhaustMode").GetValue<StringList>().SelectedIndex == 1)
             {
                 return;

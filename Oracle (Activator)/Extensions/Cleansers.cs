@@ -37,16 +37,14 @@ namespace Oracle.Extensions
 
         public static void Game_OnGameUpdate(EventArgs args)
         {
-            if (!OC.Origin.Item("ComboKey").GetValue<KeyBind>().Active &&
-                _mainMenu.Item("cmode").GetValue<StringList>().SelectedIndex == 1)
+            if (OC.Origin.Item("usecombo").GetValue<KeyBind>().Active ||
+                _mainMenu.Item("cmode").GetValue<StringList>().SelectedIndex != 1)
             {
-                return;
+                UseItem("Mikaels", 3222, 600f);
+                UseItem("Quicksilver", 3140);
+                UseItem("Mercurial", 3139);
+                UseItem("Dervish", 3137);
             }
-
-            UseItem("Mikaels", 3222, 600f);
-            UseItem("Quicksilver", 3140);
-            UseItem("Mercurial", 3139);
-            UseItem("Dervish", 3137);
         }
 
         private static void UseItem(string name, int itemId, float range = float.MaxValue)
@@ -67,11 +65,23 @@ namespace Oracle.Extensions
                     foreach (var buff in GameBuff.CleanseBuffs)
                     {
                         var buffinst = target.Buffs;
-                        if (buffinst.Any(aura => aura.Name.ToLower() == buff.BuffName))
+                        if (buffinst.Any(aura => aura.Name.ToLower() == buff.BuffName ||
+                                                 aura.Name.ToLower().Contains(buff.SpellName)))
                         {
-                            Utility.DelayAction.Add(delay + buff.Delay, () => Items.UseItem(itemId, target));
-                            OC.Logger(OC.LogType.Action,
-                                "Used cleanser on " + target.SkinName + " (" + tHealthPercent + "%) for: " + buff.BuffName);
+                            if (!OC.Origin.Item("cure" + buff.BuffName).GetValue<bool>())
+                            {
+                                return;
+                            }
+
+                            Utility.DelayAction.Add(delay + buff.Delay, delegate
+                            {
+                                Items.UseItem(itemId, target);
+                                OC.Logger(OC.LogType.Action,
+                                    "Used cleanser on " + target.SkinName + " (" + tHealthPercent + "%) for: " + buff.BuffName);
+                            });
+
+                            OC.Logger(OC.LogType.Danger,
+                                "Dangerous cleanse buff on " + target.SkinName + " (" + tHealthPercent + "%)");
                         }
                     }
 
