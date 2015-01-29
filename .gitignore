@@ -33,3 +33,5 @@ KurisuRiven/bin/Release/KurisuRiven.exe.config
 KurisuRiven/bin/Release/KurisuRiven.vshost.exe.config
 *.sln
 *.force
+KurisuNidalee/bin/Release/KurisuNidalee.vshost.exe.config
+KurisuNidalee/bin/Release/KurisuNidalee.exe.config

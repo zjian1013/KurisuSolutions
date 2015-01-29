@@ -107,9 +107,9 @@ namespace Oracle.Core.Targeted
                 #endregion Blitzcrank
 
                 #region Brand
-                new TargetSpellData("brand", "brandblaze", SpellSlot.Q, SpellType.Skillshot, CcType.No, 1150, 500, 1200),
-                new TargetSpellData("brand", "brandfissure", SpellSlot.W, SpellType.Skillshot, CcType.No, 240, 500, 20),
-                new TargetSpellData("brand", "brandconflagration", SpellSlot.E, SpellType.Targeted, CcType.No, 0, 0, 1800),
+                new TargetSpellData("brand", "brandblaze", SpellSlot.Q, SpellType.Skillshot, CcType.No, 1150, 500, 1200, true),
+                new TargetSpellData("brand", "brandfissure", SpellSlot.W, SpellType.Skillshot, CcType.No, 240, 550, 20, true),
+                new TargetSpellData("brand", "brandconflagration", SpellSlot.E, SpellType.Targeted, CcType.No, 625, 0, 1800),
                 new TargetSpellData("brand", "brandwildfire", SpellSlot.R, SpellType.Targeted, CcType.No, 0, 0, 1000, true),
 
                 #endregion Brand
