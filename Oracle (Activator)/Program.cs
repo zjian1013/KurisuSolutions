@@ -128,7 +128,7 @@ namespace Oracle
 
             var cskills = new Menu("Cleanse Special", "cskills");
             foreach (var debuff in GameBuff.CleanseBuffs)
-                cskills.AddItem(new MenuItem("cure" + debuff.BuffName, debuff.ChampionName + " | " + debuff.Slot))
+                cskills.AddItem(new MenuItem("cure" + debuff.BuffName, debuff.ChampionName + " | " + debuff.BuffName))
                     .SetValue(true);
             config.AddSubMenu(cskills);
 
