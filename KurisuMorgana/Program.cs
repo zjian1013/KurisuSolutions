@@ -56,20 +56,17 @@ namespace KurisuMorgana
             menuQ.AddItem(new MenuItem("useqcombo", "Use in combo")).SetValue(true);
             menuQ.AddItem(new MenuItem("useharassq", "Use in harass")).SetValue(true);
             menuQ.AddItem(new MenuItem("useqanti", "Use on gapcloser")).SetValue(true);
-            //menuQ.AddItem(new MenuItem("useqauto", "Use auto Q on dashing/immobile")).SetValue(true);
+            menuQ.AddItem(new MenuItem("useqauto", "Use on immobile")).SetValue(true);
+            menuQ.AddItem(new MenuItem("useqdash", "Use on dashing")).SetValue(true);
             spellmenu.AddSubMenu(menuQ);
 
             var menuW = new Menu("W Menu", "wmenu");
             menuW.AddItem(new MenuItem("hitchancew", "Tormentsoil Hitchance ")).SetValue(new Slider(2, 1, 4));
             menuW.AddItem(new MenuItem("usewcombo", "Use in combo")).SetValue(true);
             menuW.AddItem(new MenuItem("useharassw", "Use in harass")).SetValue(true);       
-            //menuW.AddItem(new MenuItem("usewauto", "Use auto W on immobile")).SetValue(true);
-            //menuW.AddItem(new MenuItem("waitfor", "Wait for bind or immobile")).SetValue(true);
+            menuW.AddItem(new MenuItem("usewauto", "Use on immobile")).SetValue(true);
+            menuW.AddItem(new MenuItem("waitfor", "Wait for bind or immobile")).SetValue(true);
             spellmenu.AddSubMenu(menuW);
-
-            var menuE = new Menu("E Menu", "emenu");
-            menuE.AddItem(new MenuItem("useoracle", "Please use Oracle"));
-            spellmenu.AddSubMenu(menuE);
 
             spellmenu.AddItem(new MenuItem("harassmana", "Harass Mana %")).SetValue(new Slider(55, 0, 99));
             _menu.AddSubMenu(spellmenu);
@@ -80,22 +77,7 @@ namespace KurisuMorgana
             // events
             Drawing.OnDraw += Drawing_OnDraw;
             Game.OnGameUpdate += Game_OnGameUpdate;
-
-            AntiGapcloser.OnEnemyGapcloser += (gapcloser) =>
-            {
-                if (gapcloser.Sender.IsValidTarget(_q.Range + 10))
-                {
-                    if (_menu.Item("useqanti").GetValue<bool>())
-                    {
-                        var poutput = _r.GetPrediction(gapcloser.Sender);
-                        if (poutput.Hitchance >= HitChance.Low)
-                        {
-                            _q.Cast(poutput.CastPosition);
-                        }
-                    }
-                }
-            };
-
+            AntiGapcloser.OnEnemyGapcloser += AntiGapcloser_OnEnemyGapcloser;
         }
 
         private static void Game_OnGameUpdate(EventArgs args)
@@ -103,10 +85,12 @@ namespace KurisuMorgana
             if (!Me.IsValidTarget(300, false))
             {
                 return;
-            }         
+            }
 
-            //ComboAuto(_menu.Item("useqauto").GetValue<bool>(), 
-            //          _menu.Item("usewauto").GetValue<bool>());
+            Dashing(_menu.Item("useqdash").GetValue<bool>());
+
+            Immobile(_menu.Item("useqauto").GetValue<bool>(),
+                     _menu.Item("usewauto").GetValue<bool>());
 
             if (_orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
             {
@@ -203,9 +187,66 @@ namespace KurisuMorgana
             }
         }
 
-        private static void ComboAuto(bool useq, bool usew)
+        private static void Dashing(bool useq)
         {
+            if (useq && _q.IsReady())
+            {
+                var itarget = ObjectManager.Get<Obj_AI_Hero>()
+                        .FirstOrDefault(h => h.Distance(Me.ServerPosition, true) <= _q.RangeSqr && h.IsEnemy);
 
+                if (itarget.IsValidTarget())
+                {
+                    var poutput = _q.GetPrediction(itarget);
+                    if (poutput.Hitchance == HitChance.Dashing)
+                        _q.Cast(poutput.CastPosition);
+
+                }
+            }
+        }
+
+        private static void Immobile(bool useq, bool usew)
+        {
+            if (usew && _w.IsReady())
+            {
+                var itarget = ObjectManager.Get<Obj_AI_Hero>()
+                    .FirstOrDefault(h => h.Distance(Me.ServerPosition, true) <= _w.RangeSqr && h.IsEnemy);
+
+                if (itarget.IsValidTarget())
+                {
+                    var poutput = _w.GetPrediction(itarget);                  
+                    if (poutput.Hitchance == HitChance.Immobile)
+                        _w.Cast(poutput.CastPosition);
+                }
+            }
+
+            if (useq && _q.IsReady())
+            {
+                var itarget = ObjectManager.Get<Obj_AI_Hero>()
+                        .FirstOrDefault(h => h.Distance(Me.ServerPosition, true) <= _q.RangeSqr && h.IsEnemy);
+
+                if (itarget.IsValidTarget())
+                {
+                    var poutput = _q.GetPrediction(itarget);
+                    if (poutput.Hitchance == HitChance.Immobile)
+                        _q.Cast(poutput.CastPosition);
+
+                }
+            }
+        }
+
+        private static void AntiGapcloser_OnEnemyGapcloser(ActiveGapcloser gapcloser)
+        {
+            if (gapcloser.Sender.IsValidTarget(_q.Range + 10))
+            {
+                if (_menu.Item("useqanti").GetValue<bool>())
+                {
+                    var poutput = _q.GetPrediction(gapcloser.Sender);
+                    if (poutput.Hitchance >= HitChance.Low)
+                    {
+                        _q.Cast(poutput.CastPosition);
+                    }
+                }
+            }
         }
     }
 }

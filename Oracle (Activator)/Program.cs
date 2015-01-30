@@ -83,7 +83,7 @@ namespace Oracle
 
                 if (Revision != gitrevision)
                 {
-                    Game.PrintChat("<font color=\"#FFFFCC\"><b>Oracle is Outdated! Please press F8</b></font>");
+                    Game.PrintChat("<font color=\"#FFFFCC\"><b>Oracle is outdated, please Update!</b></font>");
                 }
             }
 
