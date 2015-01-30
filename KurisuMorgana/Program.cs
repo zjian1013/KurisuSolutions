@@ -68,6 +68,13 @@ namespace KurisuMorgana
             menuW.AddItem(new MenuItem("waitfor", "Wait for bind or immobile")).SetValue(true);
             spellmenu.AddSubMenu(menuW);
 
+            var menuR = new Menu("R Menu", "rmenu");
+            menuR.AddItem(new MenuItem("usercombo", "Enable")).SetValue(true);
+            //menuR.AddItem(new MenuItem("autor", "Use automatic if enemies >= ")).SetValue(new Slider(4, 2, 5));
+            menuR.AddItem(new MenuItem("rcount", "Use in combo if enemies >= ")).SetValue(new Slider(2, 1, 5));
+            menuR.AddItem(new MenuItem("ronlyif", "Use only if main target is immobile")).SetValue(true);
+            spellmenu.AddSubMenu(menuR);
+
             spellmenu.AddItem(new MenuItem("harassmana", "Harass Mana %")).SetValue(new Slider(55, 0, 99));
             _menu.AddSubMenu(spellmenu);
             _menu.AddToMainMenu();
@@ -95,7 +102,8 @@ namespace KurisuMorgana
             if (_orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
             {
                 Combo(_menu.Item("useqcombo").GetValue<bool>(),
-                      _menu.Item("usewcombo").GetValue<bool>());
+                      _menu.Item("usewcombo").GetValue<bool>(), 
+                      _menu.Item("usercombo").GetValue<bool>());
             }
 
             if (_orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Mixed)
@@ -126,7 +134,7 @@ namespace KurisuMorgana
             }
         }
 
-        private static void Combo(bool useq, bool usew)
+        private static void Combo(bool useq, bool usew, bool user)
         {
             if (useq && _q.IsReady())
             {
@@ -152,6 +160,23 @@ namespace KurisuMorgana
                         if (!_menu.Item("waitfor").GetValue<bool>())
                             _w.Cast(poutput.CastPosition);
                     }                  
+                }
+            }
+
+            if (user && _r.IsReady())
+            {
+                var rtarget = TargetSelector.GetTarget(_r.Range, TargetSelector.DamageType.Magical);
+                if (rtarget.IsValidTarget(_r.Range))
+                {
+                    if (Me.CountEnemiesInRange(_r.Range) >= _menu.Item("rcount").GetValue<Slider>().Value)
+                    {
+                        if (_menu.Item("ronlyif").GetValue<bool>() && !rtarget.IsImmovable)
+                        {
+                            return;
+                        }
+
+                        _r.Cast();
+                    }
                 }
             }
         }
