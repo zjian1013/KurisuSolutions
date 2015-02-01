@@ -31,11 +31,11 @@ namespace Oracle.Extensions
             CreateMenuItem(95, "karmasolkimshield", "Inspire", "karmashield", SpellSlot.E);
             CreateMenuItem(95, "lulue", "Help Pix!", "lulushield", SpellSlot.E);
             CreateMenuItem(95, "luxprismaticwave", "Prismatic Barrier", "luxshield", SpellSlot.W);
-            CreateMenuItem(95, "nautiluspiercinggaze", "Titans Wraith", "nautshield", SpellSlot.W);
+            CreateMenuItem(95, "nautiluspiercinggaze", "Titans Wraith", "nautilusshield", SpellSlot.W);
             CreateMenuItem(95, "orianaredactcommand", "Command Protect", "oriannashield", SpellSlot.E);
             CreateMenuItem(95, "shenfeint", "Feint", "shenshield", SpellSlot.W, false);
             CreateMenuItem(95, "moltenshield", "Molten Shield", "annieshield", SpellSlot.E);
-            CreateMenuItem(95, "jarvanivgoldenaegis", "Golden Aegis", "j4shield", SpellSlot.W);
+            CreateMenuItem(95, "jarvanivgoldenaegis", "Golden Aegis", "jarvanivshield", SpellSlot.W);
             CreateMenuItem(95, "blindmonkwone", "Safegaurd", "leeshield", SpellSlot.W, false);
             CreateMenuItem(95, "rivenfeint", "Valor", "rivenshield", SpellSlot.E, false);
             CreateMenuItem(95, "fiorariposte", "Riposte", "fiorashield", SpellSlot.W, false);
@@ -138,10 +138,10 @@ namespace Oracle.Extensions
             UseSpell("eyeofthestorm", "jannashield", 800f);
             UseSpell("karmasolkimshield", "karmashield", 800f);
             UseSpell("luxprismaticwave", "luxshield", 1075f);
-            UseSpell("nautiluspiercinggaze", "nautshield");
+            UseSpell("nautiluspiercinggaze", "nautilusshield");
             UseSpell("orianaredactcommand", "oriannashield", 1100f);
             UseSpell("shenfeint", "shenshield", float.MaxValue, false);
-            UseSpell("jarvanivgoldenaegis", "j4shield");
+            UseSpell("jarvanivgoldenaegis", "jarvanivshield");
             UseSpell("blindmonkwone", "leeshield", 700f, false);
             UseSpell("rivenfeint", "rivenshield", float.MaxValue, false);
             UseSpell("rumbleshield", "rumbleshield");
@@ -415,17 +415,18 @@ namespace Oracle.Extensions
         {
             if (!menuvar.Contains(OC.ChampionName.ToLower()))
                 return;
-
-            var slot = Me.GetSpellSlot(sdataname);
+            
+            var slot = Me.GetSpellSlot(sdataname);        
             if (slot != SpellSlot.Unknown && !_mainMenu.Item("use" + menuvar).GetValue<bool>())
                 return;
 
+            
             var spell = new Spell(slot, range);
             var target = range < 5000 ? OC.Friendly() : Me;
 
             if (target.Distance(Me.ServerPosition, true) > range*range)
-                return;    
-
+                return;
+      
             if (!spell.IsReady() || !_menuConfig.Item("ason" + target.SkinName).GetValue<bool>() || Me.IsRecalling())
                 return;
          
@@ -446,6 +447,7 @@ namespace Oracle.Extensions
 
             if (menuvar.Contains("shield") || menuvar.Contains("ult"))
             {
+                
                 if (aHealthPercent > _mainMenu.Item("use" + menuvar + "Pct").GetValue<Slider>().Value)
                     return;
 

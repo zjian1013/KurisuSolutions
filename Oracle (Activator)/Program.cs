@@ -36,7 +36,7 @@ namespace Oracle
         public static int LastTick;
         public static bool CanManamune;
         public static string ChampionName;
-        public const string Revision = "218";
+        public const string Revision = "219";
 
         public static Menu Origin;
         public static Obj_AI_Hero Attacker;
@@ -128,7 +128,7 @@ namespace Oracle
 
             var cskills = new Menu("Cleanse Special", "cskills");
             foreach (var debuff in GameBuff.CleanseBuffs)
-                cskills.AddItem(new MenuItem("cure" + debuff.BuffName, debuff.ChampionName + " | " + debuff.BuffName))
+                cskills.AddItem(new MenuItem("cure" + debuff.BuffName, debuff.ChampionName + " | " + debuff.Slot))
                     .SetValue(true);
             config.AddSubMenu(cskills);
 
