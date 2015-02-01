@@ -36,7 +36,7 @@ namespace Oracle
         public static int LastTick;
         public static bool CanManamune;
         public static string ChampionName;
-        public const string Revision = "217";
+        public const string Revision = "218";
 
         public static Menu Origin;
         public static Obj_AI_Hero Attacker;
@@ -891,8 +891,8 @@ namespace Oracle
                         heroSender.ServerPosition.To2D(), endPosition, heroSender);
 
                     var castTime = (o.DontAddExtraDuration ? 0 : o.ExtraDuration) + o.Delay +
-                                    (int)(1000 * heroSender.Distance(Friendly().ServerPosition) / o.MissileSpeed) -
-                                    (Environment.TickCount - skillShot.StartTick);
+                                   (int) (1000*heroSender.Distance(Friendly().ServerPosition)/o.MissileSpeed) -
+                                   (Environment.TickCount - skillShot.StartTick);
 
                     AggroTarget =
                         ObjectManager.Get<Obj_AI_Hero>()
