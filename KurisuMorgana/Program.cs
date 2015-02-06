@@ -69,6 +69,7 @@ namespace KurisuMorgana
             menuW.AddItem(new MenuItem("useharassw", "Use in harass")).SetValue(true);       
             menuW.AddItem(new MenuItem("usewauto", "Use on immobile")).SetValue(true);
             menuW.AddItem(new MenuItem("waitfor", "Wait for bind or immobile")).SetValue(true);
+            menuW.AddItem(new MenuItem("calcw", "Calculated ticks")).SetValue(new Slider(3, 1, 5));
             spellmenu.AddSubMenu(menuW);
 
             var menuR = new Menu("R Menu", "rmenu");
@@ -128,6 +129,7 @@ namespace KurisuMorgana
         {
             if (Me.IsValidTarget(300, false))
             {
+                var ticks = _menu.Item("calcw").GetValue<Slider>().Value;
                 Render.Circle.DrawCircle(Me.Position, Me.BoundingRadius - 50, System.Drawing.Color.White, 3);
 
                 if (_menu.Item("drawq").GetValue<bool>())
@@ -152,13 +154,13 @@ namespace KurisuMorgana
                         var wts = Drawing.WorldToScreen(target.Position);
                         if (_ma*3 + _mi + _mq + _guise >= target.Health)
                             Drawing.DrawText(wts[0] - 20, wts[1] + 20, System.Drawing.Color.LimeGreen, "Q Kill!");
-                        else if (_ma*3 + _mi + _mw + _guise >= target.Health)
+                        else if (_ma*3 + _mi + _mw*3 + _guise >= target.Health)
                             Drawing.DrawText(wts[0] - 20, wts[1] + 20, System.Drawing.Color.LimeGreen, "W Kill!");
-                        else if (_mq + _mw + _ma*3 + _mi + _guise >= target.Health)
+                        else if (_mq + _mw * ticks + _ma * 3 + _mi + _guise >= target.Health)
                             Drawing.DrawText(wts[0] - 20, wts[1] + 20, System.Drawing.Color.LimeGreen, "Q + W Kill!");
-                        else if (_mq + _mw + _ma * 3 + _mi + _mr + _guise >= target.Health)
+                        else if (_mq + _mw * ticks + _ma * 3 + _mi + _mr + _guise >= target.Health)
                             Drawing.DrawText(wts[0] - 20, wts[1] + 20, System.Drawing.Color.LimeGreen, "Q + R + W Kill!");
-                        else if (_mq + _mw + _ma * 3 + _mr + _mi + _guise < target.Health)
+                        else if (_mq + _mw * ticks + _ma * 3 + _mr + _mi + _guise < target.Health)
                             Drawing.DrawText(wts[0] - 20, wts[1] + 20, System.Drawing.Color.LimeGreen, "Cant Kill");
                     }
 
@@ -166,7 +168,7 @@ namespace KurisuMorgana
                     {
                         var wts = Drawing.WorldToScreen(target.Position);
                         Drawing.DrawText(wts[0] - 75, wts[1] + 40, System.Drawing.Color.Yellow,
-                                "Combo Damage: " + (float)(_ma * 3 + _mq + _mw + _mi + _mr + _guise));
+                                "Combo Damage: " + (float)(_ma * 3 + _mq + _mw * ticks + _mi + _mr + _guise));
                     }
                 }
             }
@@ -203,10 +205,11 @@ namespace KurisuMorgana
 
             if (user && _r.IsReady())
             {
+                var ticks = _menu.Item("calcw").GetValue<Slider>().Value;
                 var rtarget = TargetSelector.GetTarget(_r.Range, TargetSelector.DamageType.Magical);
                 if (rtarget.IsValidTarget(_r.Range))
                 {
-                    if (_mr + _mq + _mw + _ma*3 + _mi + _guise >= rtarget.Health)
+                    if (_mr + _mq + _mw + _ma * ticks + _mi + _guise >= rtarget.Health)
                     {
                         if (_menu.Item("rkill").GetValue<bool>())
                             _r.Cast();
