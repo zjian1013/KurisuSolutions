@@ -47,6 +47,9 @@ namespace KurisuMorgana
             drmenu.AddItem(new MenuItem("draww", "Draw W")).SetValue(true);
             drmenu.AddItem(new MenuItem("drawe", "Draw E")).SetValue(true);
             drmenu.AddItem(new MenuItem("drawr", "Draw R")).SetValue(true);
+            drmenu.AddItem(new MenuItem("drawkill", "Draw killable")).SetValue(true);
+            drmenu.AddItem(new MenuItem("drawtarg", "Draw target circle")).SetValue(true);
+            drmenu.AddItem(new MenuItem("debugdmg", "Debug combo damage")).SetValue(false);
             _menu.AddSubMenu(drmenu);
 
             var spellmenu = new Menu("Spells", "spells");
@@ -70,16 +73,16 @@ namespace KurisuMorgana
 
             var menuR = new Menu("R Menu", "rmenu");
             menuR.AddItem(new MenuItem("usercombo", "Enable")).SetValue(true);
-            //menuR.AddItem(new MenuItem("autor", "Use automatic if enemies >= ")).SetValue(new Slider(4, 2, 5));
-            menuR.AddItem(new MenuItem("rcount", "Use in combo if enemies >= ")).SetValue(new Slider(2, 1, 5));
-            menuR.AddItem(new MenuItem("ronlyif", "Use only if main target is immobile")).SetValue(true);
+            menuR.AddItem(new MenuItem("rkill", "Use in combo if killable")).SetValue(true);
+            menuR.AddItem(new MenuItem("rcount", "Use in combo if enemies >= ")).SetValue(new Slider(3, 1, 5));
+            menuR.AddItem(new MenuItem("useautor", "Use automatic if enemies >= ")).SetValue(new Slider(4, 2, 5));
             spellmenu.AddSubMenu(menuR);
 
             spellmenu.AddItem(new MenuItem("harassmana", "Harass Mana %")).SetValue(new Slider(55, 0, 99));
             _menu.AddSubMenu(spellmenu);
             _menu.AddToMainMenu();
 
-            Game.PrintChat("<font color=\"#AF7AFF\">KurisuMorgana</font> - Loaded");
+            Game.PrintChat("<font color=\"#AF7AFF\"><b>KurisuMorgana</b></font> - Loaded");
 
             // events
             Drawing.OnDraw += Drawing_OnDraw;
@@ -93,6 +96,14 @@ namespace KurisuMorgana
             {
                 return;
             }
+
+            CheckDamage(TargetSelector.GetTarget(_q.Range + 10, TargetSelector.DamageType.Magical));
+
+            if (Me.CountEnemiesInRange(_r.Range) >= _menu.Item("useautor").GetValue<Slider>().Value)
+            {
+                _r.Cast();
+            }
+       
 
             Dashing(_menu.Item("useqdash").GetValue<bool>());
 
@@ -130,7 +141,34 @@ namespace KurisuMorgana
 
                 var target = TargetSelector.GetTarget(_q.Range + 10, TargetSelector.DamageType.Magical);
                 if (target.IsValidTarget(_q.Range + 10))
-                    Render.Circle.DrawCircle(target.Position, target.BoundingRadius - 50, System.Drawing.Color.Yellow, 3);
+                {
+                    if (_menu.Item("drawtarg").GetValue<bool>())
+                    {
+                        Render.Circle.DrawCircle(target.Position, target.BoundingRadius - 50, System.Drawing.Color.Yellow, 6);                       
+                    }
+
+                    if (_menu.Item("drawkill").GetValue<bool>())
+                    {
+                        var wts = Drawing.WorldToScreen(target.Position);
+                        if (_ma*3 + _mi + _mq + _guise >= target.Health)
+                            Drawing.DrawText(wts[0] - 20, wts[1] + 20, System.Drawing.Color.LimeGreen, "Q Kill!");
+                        else if (_ma*3 + _mi + _mw + _guise >= target.Health)
+                            Drawing.DrawText(wts[0] - 20, wts[1] + 20, System.Drawing.Color.LimeGreen, "W Kill!");
+                        else if (_mq + _mw + _ma*3 + _guise >= target.Health)
+                            Drawing.DrawText(wts[0] - 20, wts[1] + 20, System.Drawing.Color.LimeGreen, "Q + W Kill!");
+                        else if (_mq + _mw + _ma * 3 +  _mr + _guise >= target.Health)
+                            Drawing.DrawText(wts[0] - 20, wts[1] + 20, System.Drawing.Color.LimeGreen, "Q + R + W Kill!");
+                        else if (_mq + _mw + _ma * 3 + _mr + _guise < target.Health)
+                            Drawing.DrawText(wts[0] - 20, wts[1] + 20, System.Drawing.Color.LimeGreen, "Cant Kill");
+                    }
+
+                    if (_menu.Item("debugdmg").GetValue<bool>())
+                    {
+                        var wts = Drawing.WorldToScreen(target.Position);
+                        Drawing.DrawText(wts[0] - 75, wts[1] + 40, System.Drawing.Color.Yellow,
+                                "Combo Damage: " + (float)(_ma * 3 + _mq + _mw + _mi + _mr + _guise));
+                    }
+                }
             }
         }
 
@@ -150,8 +188,8 @@ namespace KurisuMorgana
             }
 
             if (usew && _w.IsReady())
-            {
-                var wtarget = TargetSelector.GetTarget(_w.Range + 10, TargetSelector.DamageType.Magical);
+            {             
+                var wtarget = TargetSelector.GetTarget(_w.Range + 10, TargetSelector.DamageType.Magical);            
                 if (wtarget.IsValidTarget(_w.Range))
                 {
                     var poutput = _w.GetPrediction(wtarget);
@@ -168,13 +206,14 @@ namespace KurisuMorgana
                 var rtarget = TargetSelector.GetTarget(_r.Range, TargetSelector.DamageType.Magical);
                 if (rtarget.IsValidTarget(_r.Range))
                 {
+                    if (_mr + _mq + _mw + _ma*3 + _mi + _guise >= rtarget.Health)
+                    {
+                        if (_menu.Item("rkill").GetValue<bool>())
+                            _r.Cast();
+                    }
+
                     if (Me.CountEnemiesInRange(_r.Range) >= _menu.Item("rcount").GetValue<Slider>().Value)
                     {
-                        if (_menu.Item("ronlyif").GetValue<bool>() && !rtarget.IsImmovable)
-                        {
-                            return;
-                        }
-
                         _r.Cast();
                     }
                 }
@@ -272,6 +311,33 @@ namespace KurisuMorgana
                     }
                 }
             }
+        }
+
+        private static float _mq, _mw, _mr;
+        private static float _ma, _mi, _guise;
+        private static void CheckDamage(Obj_AI_Base target)
+        {
+            if (target == null)
+            {
+                return;
+            }
+
+            var qready = Me.Spellbook.CanUseSpell(SpellSlot.Q) == SpellState.Ready;
+            var wready = Me.Spellbook.CanUseSpell(SpellSlot.W) == SpellState.Ready;
+            var rready = Me.Spellbook.CanUseSpell(SpellSlot.R) == SpellState.Ready;
+            var iready = Me.Spellbook.CanUseSpell(Me.GetSpellSlot("summonerdot")) == SpellState.Ready;
+
+            _ma = (float) Me.GetAutoAttackDamage(target);
+            _mq = (float) (qready ? Me.GetSpellDamage(target, SpellSlot.Q) : 0);
+            _mw = (float) (wready ? Me.GetSpellDamage(target, SpellSlot.W) : 0);
+            _mr = (float) (rready ? Me.GetSpellDamage(target, SpellSlot.R) : 0);
+            _mi = (float) (iready ? Me.GetSummonerSpellDamage(target, Damage.SummonerSpell.Ignite) : 0);
+
+            _guise = (float) (Items.HasItem(3151)
+                ? Me.GetItemDamage(target, Damage.DamageItems.LiandrysTorment)
+                : 0);
+
+
         }
     }
 }
