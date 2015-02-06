@@ -154,11 +154,11 @@ namespace KurisuMorgana
                             Drawing.DrawText(wts[0] - 20, wts[1] + 20, System.Drawing.Color.LimeGreen, "Q Kill!");
                         else if (_ma*3 + _mi + _mw + _guise >= target.Health)
                             Drawing.DrawText(wts[0] - 20, wts[1] + 20, System.Drawing.Color.LimeGreen, "W Kill!");
-                        else if (_mq + _mw + _ma*3 + _guise >= target.Health)
+                        else if (_mq + _mw + _ma*3 + _mi + _guise >= target.Health)
                             Drawing.DrawText(wts[0] - 20, wts[1] + 20, System.Drawing.Color.LimeGreen, "Q + W Kill!");
-                        else if (_mq + _mw + _ma * 3 +  _mr + _guise >= target.Health)
+                        else if (_mq + _mw + _ma * 3 + _mi + _mr + _guise >= target.Health)
                             Drawing.DrawText(wts[0] - 20, wts[1] + 20, System.Drawing.Color.LimeGreen, "Q + R + W Kill!");
-                        else if (_mq + _mw + _ma * 3 + _mr + _guise < target.Health)
+                        else if (_mq + _mw + _ma * 3 + _mr + _mi + _guise < target.Health)
                             Drawing.DrawText(wts[0] - 20, wts[1] + 20, System.Drawing.Color.LimeGreen, "Cant Kill");
                     }
 
