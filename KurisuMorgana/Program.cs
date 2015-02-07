@@ -102,14 +102,13 @@ namespace KurisuMorgana
 
             if (Me.CountEnemiesInRange(_r.Range) >= _menu.Item("useautor").GetValue<Slider>().Value)
             {
-                _r.Cast();
+                if (_r.IsReady())
+                    _r.Cast();
             }
        
 
             Dashing(_menu.Item("useqdash").GetValue<bool>());
-
-            Immobile(_menu.Item("useqauto").GetValue<bool>(),
-                     _menu.Item("usewauto").GetValue<bool>());
+            Immobile(_menu.Item("useqauto").GetValue<bool>(), _menu.Item("usewauto").GetValue<bool>());
 
             if (_orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
             {

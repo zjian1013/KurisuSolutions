@@ -27,17 +27,6 @@ namespace Oracle
             Action = 4
         };
 
-        public static bool Spell;
-        public static bool Stealth;
-        public static bool Danger;
-        public static bool Dangercc;
-        public static bool DangerUlt;
-        public static string FileName;
-        public static int LastTick;
-        public static bool CanManamune;
-        public static string ChampionName;
-        public const string Revision = "219";
-
         public static Menu Origin;
         public static Obj_AI_Hero Attacker;
         public static Obj_AI_Hero AggroTarget;
@@ -50,6 +39,17 @@ namespace Oracle
             Console.WriteLine("Oracle is loading...");
             CustomEvents.Game.OnGameLoad += OnGameLoad;
         }
+
+        public static bool Spell;
+        public static bool Stealth;
+        public static bool Danger;
+        public static bool Dangercc;
+        public static bool DangerUlt;
+        public static string FileName;
+        public static int LastTick;
+        public static bool CanManamune;
+        public static string ChampionName;
+        public const string Revision = "220";
 
         private static void OnGameLoad(EventArgs args)
         {
@@ -148,6 +148,8 @@ namespace Oracle
 
             var debugMenu = new Menu("Debugging", "debugmenu");
             debugMenu.AddItem(new MenuItem("dbool", "Enable Console Debugging")).SetValue(false);
+            debugMenu.AddItem(new MenuItem("catchobject", "Log object names"))
+                .SetValue(new KeyBind(89, KeyBindType.Press));
             config.AddSubMenu(debugMenu);
 
             Origin.AddSubMenu(config);
@@ -203,6 +205,9 @@ namespace Oracle
             //    var dmg = (float)GetEnemy("Fizz").GetSpellDamage(Friendly(), SpellSlot.R);
             //    _fizzbait = new GameObj(missile.Name, missile, true, dmg, Environment.TickCount);
             //}
+
+            if (Origin.Item("catchobject").GetValue<KeyBind>().Active)
+                Console.WriteLine(obj.Name);
 
             if (obj.Name.Contains("Acidtrail_buf_red") && GetEnemy("Singed").IsValid)
             {
@@ -304,6 +309,7 @@ namespace Oracle
 
         private static void Game_OnGameUpdate(EventArgs args)
         {
+            // delay the update .3
             if (Environment.TickCount - LastTick < 300)
             {
                 return;
@@ -353,7 +359,7 @@ namespace Oracle
                 }
             }
             
-            // Get ground object damage update
+            // Get ground game object damage update
             if (_tremors.Included)
             {
                 if (_tremors.Obj.IsValid && Friendly().Distance(_tremors.Obj.Position, true) <= 400 * 400)
@@ -806,9 +812,7 @@ namespace Oracle
                     AggroTarget = ObjectManager.GetUnitByNetworkId<Obj_AI_Hero>(args.Target.NetworkId);
 
                     IncomeDamage = (float)heroSender.GetAutoAttackDamage(AggroTarget);
-
-                    Logger(LogType.Damage,
-                        heroSender.SkinName + " hit (Auto Attack) " + AggroTarget.SkinName + " for: " + IncomeDamage);
+                    Logger(LogType.Damage, heroSender.SkinName + " hit (AA) " + AggroTarget.SkinName + " for: " + IncomeDamage);
                 }
 
                 Attacker = heroSender;
@@ -825,14 +829,13 @@ namespace Oracle
                     {
                         Utility.DelayAction.Add((int)(o.Delay), delegate
                         {
-
-                            AggroTarget =
-                                ObjectManager.Get<Obj_AI_Hero>()
-                                    .OrderBy(x => x.Distance(heroSender.ServerPosition))
+                            var vulnerableTarget =
+                                ObjectManager.Get<Obj_AI_Hero>().OrderBy(x => x.Distance(heroSender.ServerPosition))
                                     .FirstOrDefault(x => x.IsAlly);
 
-                            if (AggroTarget != null && AggroTarget.Distance(heroSender.ServerPosition, true) <= o.Range * o.Range)
+                            if (vulnerableTarget != null && vulnerableTarget.Distance(heroSender.ServerPosition, true) <= o.Range * o.Range)
                             {
+                                AggroTarget = vulnerableTarget;
                                 IncomeDamage = (float)heroSender.GetSpellDamage(AggroTarget, (SpellSlot)o.Spellslot);
 
                                 if (o.Wait)
@@ -894,18 +897,20 @@ namespace Oracle
                                    (int) (1000*heroSender.Distance(Friendly().ServerPosition)/o.MissileSpeed) -
                                    (Environment.TickCount - skillShot.StartTick);
 
-                    AggroTarget =
+                    var vulnerableTarget =
                         ObjectManager.Get<Obj_AI_Hero>()
                             .FirstOrDefault(x => !skillShot.IsSafe(x.ServerPosition.To2D()) && x.IsAlly);
 
-                    if (AggroTarget != null)
+                    if (vulnerableTarget != null && vulnerableTarget.Distance(heroSender.ServerPosition, true) <= o.Range*o.Range)
                     {
                         Utility.DelayAction.Add(castTime - 400, delegate
                         {
+                            AggroTarget = vulnerableTarget;
+                            IncomeDamage = (float)heroSender.GetSpellDamage(AggroTarget, (SpellSlot)skillShot.SkillshotData.Slot);
+
                             Spell = true;
                             Danger = Origin.Item(o.SpellName.ToLower() + "ccc").GetValue<bool>();
                             DangerUlt = Origin.Item(o.SpellName.ToLower() + "ccc").GetValue<bool>() && o.Slot.ToString() == "R";
-                            IncomeDamage = (float)heroSender.GetSpellDamage(AggroTarget, (SpellSlot)skillShot.SkillshotData.Slot);
 
                             Logger(LogType.Damage, "Dangerous (Skillshot " + o.Slot + "): " + Danger);
                             Logger(LogType.Damage,

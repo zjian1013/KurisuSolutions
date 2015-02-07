@@ -100,7 +100,7 @@ namespace Oracle.Extensions
                 _hh = true;
                 var Heal = new Menu("Heal", "mheal");
                 Heal.AddItem(new MenuItem("useHeal", "Enable Heal")).SetValue(true);
-                Heal.AddItem(new MenuItem("useHealPct", "Heal on min HP % ")).SetValue(new Slider(25, 1));
+                Heal.AddItem(new MenuItem("useHealPct", "Heal on min HP % ")).SetValue(new Slider(20, 1));
                 Heal.AddItem(new MenuItem("useHealDmg", "Heal on Dmg dealt %")).SetValue(new Slider(40, 1));
                 _mainMenu.AddSubMenu(Heal);
             }
@@ -121,7 +121,7 @@ namespace Oracle.Extensions
                 _bb = true;
                 var Barrier = new Menu("Barrier", "mbarrier");
                 Barrier.AddItem(new MenuItem("useBarrier", "Enable Barrier")).SetValue(true);
-                Barrier.AddItem(new MenuItem("useBarrierPct", "Barrior on min HP % ")).SetValue(new Slider(25, 1));
+                Barrier.AddItem(new MenuItem("useBarrierPct", "Barrior on min HP % ")).SetValue(new Slider(20, 1));
                 Barrier.AddItem(new MenuItem("useBarrierDmg", "Barrier on Dmg dealt %")).SetValue(new Slider(40, 1));
                 Barrier.AddItem(new MenuItem("barrierDot", "Use barrier on Ignite")).SetValue(true);
                 _mainMenu.AddSubMenu(Barrier);
