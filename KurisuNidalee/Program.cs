@@ -540,15 +540,10 @@ namespace KurisuNidalee
                     Pounce.Cast(target.ServerPosition);
                 }
 
-                // Check if swipe is ready (prediction)
-                if (CE == 0 && _mainMenu.Item("usecougare").GetValue<bool>())
+                // Check if swipe is ready (no prediction)
+                if ((CE == 0 || Swipe.IsReady()) && _mainMenu.Item("usecougare").GetValue<bool>())
                 {
-                    var prediction = Swipe.GetPrediction(target);
-                    if (prediction.Hitchance >= HitChance.Low &&
-                        target.Distance(Me.ServerPosition, true) <= Swipe.RangeSqr)
-                    {
-                        Swipe.Cast(prediction.CastPosition);
-                    }
+                    Swipe.Cast(target.ServerPosition);
                 }
 
                 // force transform if q ready and no collision 
