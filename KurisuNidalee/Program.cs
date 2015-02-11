@@ -525,7 +525,7 @@ namespace KurisuNidalee
                 }
 
                 // Check is pounce is ready 
-                else if ((CW == 0 || Pounce.IsReady()) && _mainMenu.Item("usecougarw").GetValue<bool>()
+                if ((CW == 0 || Pounce.IsReady()) && _mainMenu.Item("usecougarw").GetValue<bool>()
                     && target.Distance(Me.ServerPosition, true) > 30 * 30)
                 {
                     if (TargetHunted(target) & target.Distance(Me.ServerPosition, true) <= 750*750)
