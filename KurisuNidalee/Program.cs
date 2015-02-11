@@ -620,6 +620,9 @@ namespace KurisuNidalee
         #region Nidalee: Harass
         private static void UseHarass(Obj_AI_Base target)
         {
+            if (!target.IsValidTarget(Javelin.Range))
+                return;
+
             var actualHeroManaPercent = (int)((Me.Mana / Me.MaxMana) * 100);
             var minPercent = _mainMenu.Item("humanqpct").GetValue<Slider>().Value;
             if (!_cougarForm && HQ == 0 && _mainMenu.Item("usehumanq2").GetValue<bool>())
@@ -775,7 +778,13 @@ namespace KurisuNidalee
                         Swipe.Cast(m.ServerPosition);
                 }
 
-                if (m.Distance(Me.ServerPosition, true) <= Pounce.RangeSqr && (CW == 0 || Pounce.IsReady()))
+                if (TargetHunted(m) & m.Distance(Me.ServerPosition, true) <= 750 * 750 && (CW == 0 || Pounce.IsReady()))
+                {
+                    if (_mainMenu.Item("jgcougarw").GetValue<bool>())
+                        Pounce.Cast(m.ServerPosition);
+                }
+
+                else if (m.Distance(Me.ServerPosition, true) <= 400 * 400 && (CW == 0 || Pounce.IsReady()))
                 {
                     if (_mainMenu.Item("jgcougarw").GetValue<bool>())
                         Pounce.Cast(m.ServerPosition);
@@ -807,17 +816,20 @@ namespace KurisuNidalee
                     }
                 }
 
-                if (m.Distance(Me.ServerPosition, true) <= Bushwack.RangeSqr && actualHeroManaPercent > minPercent && HW == 0)
+                if (m.Distance(Me.ServerPosition, true) <= Bushwack.RangeSqr && actualHeroManaPercent > minPercent &&
+                    HW == 0 || _hasBlue && HQ == 0)
                 {
                     if (_mainMenu.Item("jghumanw").GetValue<bool>())
                         Bushwack.Cast(m.ServerPosition);
                 }
 
                 if (_mainMenu.Item("jgcougarr").GetValue<bool>() &&
-                    m.Distance(Me.ServerPosition, true) <= Pounce.RangeSqr + Swipe.RangeSqr &&
-                    actualHeroManaPercent > minPercent && Aspectofcougar.IsReady() && HQ != 0)
+                    actualHeroManaPercent > minPercent && Aspectofcougar.IsReady() && HQ != 0 || _hasBlue && HQ == 0)
                 {
-                    Aspectofcougar.Cast();
+                    if (TargetHunted(m) & m.Distance(Me.ServerPosition, true) <= 750 * 750)
+                        Aspectofcougar.Cast();
+                    else if (m.Distance(Me.ServerPosition, true) <= 450 * 450)
+                        Aspectofcougar.Cast();
                 }
             }
             
