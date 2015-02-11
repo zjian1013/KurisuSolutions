@@ -209,12 +209,12 @@ namespace KurisuNidalee
 
             var nidaM = new Menu("Nidalee: Misc", "misc");
             nidaM.AddItem(new MenuItem("useitems", "Use Items")).SetValue(true);
+            nidaM.AddItem(new MenuItem("useignote", "Use Ignite"));
             nidaM.AddItem(new MenuItem("gapcloser", "Use Anti-Gapcloser")).SetValue(true);
             nidaM.AddItem(new MenuItem("javelinks", "Killsteal with Javelin")).SetValue(true);
             nidaM.AddItem(new MenuItem("ksform", "Killsteal switch Form")).SetValue(true);
             _mainMenu.AddSubMenu(nidaM);
 
-            _mainMenu.AddItem(new MenuItem("useignote", "Use Ignite")).SetValue(true);
             _mainMenu.AddToMainMenu();
 
             Game.PrintChat("<font color=\"#FF9900\"><b>KurisuNidalee</b></font> - Loaded");
