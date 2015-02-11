@@ -703,14 +703,13 @@ namespace KurisuNidalee
                             Swipe.Cast(m.ServerPosition);
                     }
 
-
-                    else if (m.Distance(Me.ServerPosition, true) <= Pounce.RangeSqr && (CW == 0 || Pounce.IsReady()))
+                    if (m.Distance(Me.ServerPosition, true) <= Pounce.RangeSqr && (CW == 0 || Pounce.IsReady()))
                     {
                         if (_mainMenu.Item("lccougarw").GetValue<bool>() && !distW.UnderTurret(true))
                             Pounce.Cast(m.ServerPosition);
                     }
 
-                    else if (m.Distance(Me.ServerPosition) <= Takedown.RangeSqr && CQ == 0)
+                    if (m.Distance(Me.ServerPosition) <= Takedown.RangeSqr && CQ == 0)
                     {
                         if (_mainMenu.Item("lccougarq").GetValue<bool>())
                             Takedown.CastOnUnit(Me);
@@ -731,7 +730,7 @@ namespace KurisuNidalee
                             Javelin.Cast(m.ServerPosition);
                     }
 
-                    else if (m.Distance(Me.ServerPosition, true) <= Bushwack.RangeSqr && actualHeroManaPercent > minPercent && HW == 0)
+                    if (m.Distance(Me.ServerPosition, true) <= Bushwack.RangeSqr && actualHeroManaPercent > minPercent && HW == 0)
                     {
                         if (_mainMenu.Item("lchumanw").GetValue<bool>())
                             Bushwack.Cast(m.ServerPosition);
@@ -765,6 +764,8 @@ namespace KurisuNidalee
                             Jungleminions.Any(name => x.Name.StartsWith(name)) && x.IsValidTarget(900));
 
             var m = bigMinion ?? smallMinion;
+            if (m == null)
+                return;
 
             if (_cougarForm)
             {
@@ -774,19 +775,19 @@ namespace KurisuNidalee
                         Swipe.Cast(m.ServerPosition);
                 }
 
-                else if (m.Distance(Me.ServerPosition, true) <= Pounce.RangeSqr && (CW == 0 || Pounce.IsReady()))
+                if (m.Distance(Me.ServerPosition, true) <= Pounce.RangeSqr && (CW == 0 || Pounce.IsReady()))
                 {
                     if (_mainMenu.Item("jgcougarw").GetValue<bool>())
                         Pounce.Cast(m.ServerPosition);
                 }
 
-                else if (m.Distance(Me.ServerPosition, true) <= Takedown.RangeSqr && CQ == 0)
+                if (m.Distance(Me.ServerPosition, true) <= Takedown.RangeSqr && CQ == 0)
                 {
                     if (_mainMenu.Item("jgcougarq").GetValue<bool>())
                         Takedown.CastOnUnit(Me);
                 }
 
-                else if ((HQ == 0 && (CW != 0 || !Pounce.IsReady()) && _mainMenu.Item("jghumanq").GetValue<bool>() ||
+                if ((HQ == 0 && (CW != 0 || !Pounce.IsReady()) && _mainMenu.Item("jghumanq").GetValue<bool>() ||
                           (CW != 0 || !Pounce.IsReady()) && CQ != 0 && CE != 0) &&
                          _mainMenu.Item("jgcougarr").GetValue<bool>())
                 {
