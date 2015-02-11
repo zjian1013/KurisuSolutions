@@ -464,7 +464,8 @@ namespace KurisuNidalee
                                 Me.Distance(wallPositionOpposite) > 200)
                             {
                                 // Check the distance to the opposite side of the wall
-                                if (Me.Distance(wallPositionOpposite, true) < Math.Pow(Pounce.Range - Me.BoundingRadius/2, 2))
+                                if (Me.Distance(wallPositionOpposite, true) <
+                                    Math.Pow(Pounce.Range - Me.BoundingRadius/2, 2))
                                 {
                                     // Make the jump happen
                                     Pounce.Cast(wallPositionOpposite);
@@ -472,7 +473,6 @@ namespace KurisuNidalee
                                     // Update jumpTriggered value to not orbwalk now since we want to jump
                                     jumpTriggered = true;
 
-                                    // Break the loop
                                     break;
                                 }
                                 // If we are not able to jump due to the distance, draw the spot to
@@ -482,6 +482,10 @@ namespace KurisuNidalee
                                     // Update indicator values
                                     wallJumpPossible = true;
                                 }
+                            }
+                            else
+                            {
+                                Render.Circle.DrawCircle(Game.CursorPos, 35, Color.Red, 2);
                             }
                         }
                     }
