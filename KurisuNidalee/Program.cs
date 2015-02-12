@@ -526,18 +526,13 @@ namespace KurisuNidalee
 
                 // Check is pounce is ready 
                 if ((CW == 0 || Pounce.IsReady()) && _mainMenu.Item("usecougarw").GetValue<bool>()
-                    && target.Distance(Me.ServerPosition, true) > 30 * 30)
+                    && target.Distance(Me.ServerPosition, true) > 30*30)
                 {
                     if (TargetHunted(target) & target.Distance(Me.ServerPosition, true) <= 750*750)
                         Pounce.Cast(target.ServerPosition);
                     else if (target.Distance(Me.ServerPosition, true) <= 400*400)
                         Pounce.Cast(target.ServerPosition);
 
-                }
-
-                else if (target.Distance(Me.ServerPosition, true) > Me.AttackRange*Me.AttackRange)
-                {
-                    Pounce.Cast(target.ServerPosition);
                 }
 
                 // Check if swipe is ready (no prediction)
