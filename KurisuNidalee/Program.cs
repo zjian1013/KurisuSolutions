@@ -538,7 +538,8 @@ namespace KurisuNidalee
                 // Check if swipe is ready (no prediction)
                 if ((CE == 0 || Swipe.IsReady()) && _mainMenu.Item("usecougare").GetValue<bool>())
                 {
-                    Swipe.Cast(target.ServerPosition);
+                    if (target.Distance(Me.ServerPosition, true) <= Swipe.RangeSqr)
+                        Swipe.Cast(target.ServerPosition);
                 }
 
                 // force transform if q ready and no collision 
