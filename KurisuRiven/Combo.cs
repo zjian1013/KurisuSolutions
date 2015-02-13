@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Linq;
-using System.Linq.Expressions;
 using LeagueSharp;
 using LeagueSharp.Common;
-using LeagueSharp.Common.Data;
 
 namespace KurisuRiven
 {
@@ -69,7 +67,7 @@ namespace KurisuRiven
                     {
                         if (Base.CanHD && Base.HasHD)
                         {
-                            if (Base.W.IsReady())
+                            if (Base.W.IsReady() && !Base.CanBurst)
                             {
                                 Items.UseItem(3077);
                                 Items.UseItem(3074);
@@ -128,7 +126,7 @@ namespace KurisuRiven
                 else if (Base.GetList("engage") == 1)
                 {
                     // hydra before
-                    if (Base.CanHD && Base.HasHD)
+                    if (Base.CanHD && Base.HasHD && !Base.CanBurst)
                     {
                         Items.UseItem(3077);
                         Items.UseItem(3074);
