@@ -192,9 +192,10 @@ namespace KurisuRiven
                 if (!(DidQ || DidW || DidWS || DidE) && 
                     sender.IsMe && args.Animation.Contains("Idle"))
                 {
-                    Orbwalking.LastAATick = Environment.TickCount + Game.Ping / 2;
+                    Orbwalking.LastAATick = 0;
                     CanAA = true;
                 }
+
             };
 
             // on cast
