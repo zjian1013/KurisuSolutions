@@ -192,7 +192,7 @@ namespace KurisuRiven
                 if (!(DidQ || DidW || DidWS || DidE) && 
                     sender.IsMe && args.Animation.Contains("Idle"))
                 {
-                    Orbwalking.LastAATick = 0;
+                    Orbwalking.LastAATick = Environment.TickCount + Game.Ping/2;
                     CanAA = true;
                 }
 
