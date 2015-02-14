@@ -125,8 +125,10 @@ namespace KurisuRiven
             Orbwalker.SetAttack(CanMV);
             Orbwalker.SetMovement(CanMV);
 
+            var ping = Game.Ping < 35 ? Game.Ping*2 : Game.Ping/2;
+
             // riven spell queue
-            if (DidAA && Environment.TickCount - LastAA >= (int)(Me.AttackDelay * 100) + Game.Ping/2)
+            if (DidAA && Environment.TickCount - LastAA >= (int)(Me.AttackDelay * 100) + ping)
             {
                 DidAA = false;
                 CanMV = true;
@@ -136,7 +138,7 @@ namespace KurisuRiven
                 CanWS = true;
             }
 
-            if (DidQ  && Environment.TickCount - LastQ >= (int)(Me.AttackCastDelay * 1000) + Game.Ping/2 + 57)
+            if (DidQ && Environment.TickCount - LastQ >= (int)(Me.AttackCastDelay * 1000) + ping + 57)
             {
                 DidQ = false;
                 CanMV = true;
