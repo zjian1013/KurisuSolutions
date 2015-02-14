@@ -243,11 +243,6 @@ namespace KurisuRiven
                         Base.OrbTo(minion);
                         if (minionList.Any(x => minion.Name.StartsWith(x) && !minion.Name.Contains("Mini")))
                         {
-                            if (Base.CanHD && minion.Distance(Base.Me.ServerPosition, true) <= Base.W.RangeSqr)
-                            {
-                                Items.UseItem(3077);
-                                Items.UseItem(3074);
-                            }
 
                             if (Base.GetBool("usejungleq") && Base.Q.IsReady() && Base.CanQ)
                             {
@@ -261,7 +256,7 @@ namespace KurisuRiven
                                     Base.W.Cast();
 
                             }
-
+                             
                             if (Base.GetBool("usejunglee"))
                             {
                                 if (minion.Distance(Base.Me.ServerPosition, true) > Math.Pow(Base.Me.AttackRange, 2) &&

@@ -276,24 +276,29 @@ namespace KurisuRiven
                         if (CanBurst || !GetBool("usecombow") || !GetBool("usecomboe"))
                         {
                             // delay till after aa
-                            Utility.DelayAction.Add(50 + (int) (Me.AttackDelay*100) + Game.Ping/2, delegate
+                            Utility.DelayAction.Add(50 + (int)(Me.AttackDelay * 100) + Game.Ping / 2, delegate
                             {
-                                Items.UseItem(3077);
-                                Items.UseItem(3074);
+                                if (Items.CanUseItem(3077))
+                                    Items.UseItem(3077);
+                                if (Items.CanUseItem(3074))
+                                    Items.UseItem(3074);
                             });
                         }
                     }
 
                     else if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear)
                     {
-                        if (!GetBool("usejunglew") || !GetBool("usejungle"))
+                        if (!GetBool("usejunglew") || !GetBool("usejunglee"))
                         {
                             // delay till after aa
                             Utility.DelayAction.Add(50 + (int)(Me.AttackDelay * 100) + Game.Ping / 2, delegate
                             {
-                                Items.UseItem(3077);
-                                Items.UseItem(3074);
+                                if (Items.CanUseItem(3077))
+                                    Items.UseItem(3077);
+                                if (Items.CanUseItem(3074))
+                                    Items.UseItem(3074);
                             });
+
                         }
                     }
                 }
