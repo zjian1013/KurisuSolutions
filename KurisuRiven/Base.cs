@@ -131,12 +131,12 @@ namespace KurisuRiven
                 DidAA = false;
                 CanMV = true;
                 CanQ = true;
-                CanW = true;
                 CanE = true;
+                CanW = true;
                 CanWS = true;
             }
 
-            if (DidQ && Environment.TickCount - LastQ >= (int)(Me.AttackCastDelay * 1000) + Game.Ping/2 + 57)
+            if (DidQ  && Environment.TickCount - LastQ >= (int)(Me.AttackCastDelay * 1000) + Game.Ping/2 + 57)
             {
                 DidQ = false;
                 CanMV = true;
@@ -273,10 +273,23 @@ namespace KurisuRiven
                 {
                     if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
                     {
-                        if (CanBurst)
+                        if (CanBurst || !GetBool("usecombow") || !GetBool("usecomboe"))
                         {
                             // delay till after aa
                             Utility.DelayAction.Add(50 + (int) (Me.AttackDelay*100) + Game.Ping/2, delegate
+                            {
+                                Items.UseItem(3077);
+                                Items.UseItem(3074);
+                            });
+                        }
+                    }
+
+                    else if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear)
+                    {
+                        if (!GetBool("usejunglew") || !GetBool("usejungle"))
+                        {
+                            // delay till after aa
+                            Utility.DelayAction.Add(50 + (int)(Me.AttackDelay * 100) + Game.Ping / 2, delegate
                             {
                                 Items.UseItem(3077);
                                 Items.UseItem(3074);

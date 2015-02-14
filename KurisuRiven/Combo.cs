@@ -41,7 +41,7 @@ namespace KurisuRiven
 
             // valor
             // engage if target is out of aa range
-            if (Base.E.IsReady() && Base.CanE &&
+            if (Base.E.IsReady() && Base.CanE && Base.GetBool("usecomboe") &&
                 Target.Distance(Base.Me.ServerPosition, true) > Base.TrueRange + 100)
             {
                 // is target in combo range or low health
@@ -59,8 +59,10 @@ namespace KurisuRiven
                             Items.UseItem(3153, Target);
                     }
 
+
                     if (Base.GetBool("usecomboe"))
                         Base.E.Cast(Target.ServerPosition);
+
 
                     // after dash event
                     if (Base.GetList("engage") == 1)
@@ -90,7 +92,7 @@ namespace KurisuRiven
 
             // kiburst
             // use w if in range
-            else if (Base.W.IsReady() && Base.CanW &&
+            else if (Base.W.IsReady() && Base.CanW && Base.GetBool("usecombow") &&
                      Target.Distance(Base.Me.ServerPosition, true) <= Math.Pow(Base.W.Range + 25, 2))
             {
                 // item handler
@@ -107,6 +109,7 @@ namespace KurisuRiven
                             Items.UseItem(3153, Target);
                     }
                 }
+
 
                 if (Base.GetList("engage") == 0)
                 {
@@ -146,7 +149,7 @@ namespace KurisuRiven
 
             // broken wings
             // use q if in range
-            else if (Base.Q.IsReady() &&
+            else if (Base.Q.IsReady() && Base.GetBool("usecomboq") &&
                      Target.Distance(Base.Me.ServerPosition, true) <= Math.Pow(Base.Q.Range + 30, 2))
             {
                 // item handler
