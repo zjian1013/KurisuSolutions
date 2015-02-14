@@ -159,11 +159,11 @@ namespace KurisuRiven
             {
                 foreach (var target in ObjectManager.Get<Obj_AI_Hero>().Where(h => h.IsValidTarget(Base.R.Range + 100)))
                 {
+                    var de = Base.R.GetPrediction(target, true);
                     if (Base.GetList("wsmode") == 1)
                     {
                         if ((int) (GetDmg("R")/target.MaxHealth*100) >= target.Health/target.MaxHealth*100)
-                        {
-                            var de = Base.R.GetPrediction(target, true);
+                        {                     
                             if (de.Hitchance >= HitChance.Low && Base.CanWS && Base.R.IsReady())
                                 Base.R.Cast(de.CastPosition);
                         }
@@ -171,7 +171,6 @@ namespace KurisuRiven
                         if (target.Health < GetDmg("R", true) + GetDmg("P", true)*1 + GetDmg("Q", true)*2 &&
                             target.Distance(Base.Me.ServerPosition) <= Base.TrueRange + 100)
                         {
-                            var de = Base.R.GetPrediction(target, true);
                             if (de.Hitchance >= HitChance.Low && Base.CanWS && Base.R.IsReady())
                                 Base.R.Cast(de.CastPosition);
                         }
