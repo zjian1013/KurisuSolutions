@@ -212,6 +212,8 @@ namespace KurisuRiven
                         LastQ = Environment.TickCount;
                         Utility.DelayAction.Add(100,
                             () => Me.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPos));
+                        if (GetList("engage") == 1 && HasHD)
+                            Helpers.CheckR(Combo.Target);
                         CanQ = false;
                         break;
                     case "RivenMartyr":
@@ -225,7 +227,9 @@ namespace KurisuRiven
                         //CanMV = false;
                         LastE = Environment.TickCount;
                         CanE = false;
-
+                        break;
+                    case "RivenFengShuiEngine":
+                        LastR = Environment.TickCount;
                         if (GetBool("multir3") && CanBurst)
                         {
                             var flashslot = Me.GetSpellSlot("summonerflash");
@@ -243,9 +247,6 @@ namespace KurisuRiven
                             }
                         }
                         break;
-                    case "RivenFengShuiEngine":
-                        LastR = Environment.TickCount;
-                        break;
                     case "rivenizunablade":
                         LastWS = Environment.TickCount;
                         CanWS = false;
@@ -260,6 +261,10 @@ namespace KurisuRiven
                             if (CanBurst)
                                 Utility.DelayAction.Add(150, () => R.Cast(Combo.Target.ServerPosition));
                         }
+
+                        if (GetList("engage") == 1 && !CanBurst)
+                            if (Q.IsReady())
+                                Q.Cast(Combo.Target.ServerPosition);
                         break;
 
                     case "summonerflash":

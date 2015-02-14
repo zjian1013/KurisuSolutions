@@ -59,7 +59,6 @@ namespace KurisuRiven
                             Items.UseItem(3153, Target);
                     }
 
-
                     if (Base.GetBool("usecomboe"))
                         Base.E.Cast(Target.ServerPosition);
 
@@ -74,18 +73,18 @@ namespace KurisuRiven
                                 Items.UseItem(3077);
                                 Items.UseItem(3074);
                             }
+
+                            // used hydra or dont own
+                            else
+                            {
+                                Helpers.CheckR(Target);
+                            }
                         }
 
-                        // used hydra or dont own
                         else
                         {
                             Helpers.CheckR(Target);
                         }
-                    }
-
-                    else
-                    {
-                        Helpers.CheckR(Target);
                     }
                 }
             }
@@ -101,7 +100,7 @@ namespace KurisuRiven
                     if (Items.HasItem(3142) && Items.CanUseItem(3142))
                         Items.UseItem(3142);
 
-                    if (Target.Distance(Base.Me.ServerPosition, true) <= 450 * 450)
+                    if (Target.Distance(Base.Me.ServerPosition, true) <= 450*450)
                     {
                         if (Items.HasItem(3144) && Items.CanUseItem(3144))
                             Items.UseItem(3144, Target);
@@ -177,7 +176,7 @@ namespace KurisuRiven
                         return;
                 }
 
-                if (Base.CanQ && Base.GetBool("usecomboq")) 
+                if (Base.CanQ && Base.GetBool("usecomboq"))
                     Base.Q.Cast(Target.ServerPosition);
             }
 
@@ -190,6 +189,7 @@ namespace KurisuRiven
                         Base.Q.Cast(Target.ServerPosition);
                 }
             }
+
         }
 
         internal static void Flee()
