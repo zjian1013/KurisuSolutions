@@ -125,10 +125,8 @@ namespace KurisuRiven
             Orbwalker.SetAttack(CanMV);
             Orbwalker.SetMovement(CanMV);
 
-            var ping = Game.Ping < 35 ? Game.Ping*2 : Game.Ping/2;
-
             // riven spell queue
-            if (DidAA && Environment.TickCount - LastAA >= (int)(Me.AttackDelay * 100) + ping)
+            if (DidAA && Environment.TickCount - LastAA >= (int)(Me.AttackDelay * 100) + Game.Ping/2 + GetSlider("delay"))
             {
                 DidAA = false;
                 CanMV = true;
@@ -138,7 +136,7 @@ namespace KurisuRiven
                 CanWS = true;
             }
 
-            if (DidQ && Environment.TickCount - LastQ >= (int)(Me.AttackCastDelay * 1000) + ping + 57)
+            if (DidQ && Environment.TickCount - LastQ >= (int)(Me.AttackCastDelay * 1000) + Game.Ping/2 + 57)
             {
                 DidQ = false;
                 CanMV = true;
@@ -283,7 +281,7 @@ namespace KurisuRiven
                         if (CanBurst || !GetBool("usecombow") || !GetBool("usecomboe"))
                         {
                             // delay till after aa
-                            Utility.DelayAction.Add(50 + (int)(Me.AttackDelay * 100) + Game.Ping / 2, delegate
+                            Utility.DelayAction.Add(50 + (int)(Me.AttackDelay * 100) + Game.Ping/2 + GetSlider("delay"), delegate
                             {
                                 if (Items.CanUseItem(3077))
                                     Items.UseItem(3077);
@@ -298,7 +296,7 @@ namespace KurisuRiven
                         if (!GetBool("usejunglew") || !GetBool("usejunglee"))
                         {
                             // delay till after aa
-                            Utility.DelayAction.Add(50 + (int)(Me.AttackDelay * 100) + Game.Ping / 2, delegate
+                            Utility.DelayAction.Add(50 + (int)(Me.AttackDelay * 100) + Game.Ping/2 + GetSlider("delay"), delegate
                             {
                                 if (Items.CanUseItem(3077))
                                     Items.UseItem(3077);
@@ -332,7 +330,6 @@ namespace KurisuRiven
                     if (!(DidQ || DidW || DidE || DidAA))
                     {
                         CanQ = false;
-                        //CanMV = false;
                         Me.IssueOrder(GameObjectOrder.AttackUnit, target);                          
                     }
                 }
@@ -375,8 +372,7 @@ namespace KurisuRiven
             menuQ.AddItem(new MenuItem("usejungleq", "Use in Jungle")).SetValue(true);
             menuQ.AddItem(new MenuItem("uselaneq", "Use in Laneclear")).SetValue(true);
             menuQ.AddItem(new MenuItem("qint", "Use for Interrupt")).SetValue(true);
-            menuQ.AddItem(new MenuItem("prediction", "Predict Movement")).SetValue(true);
-            menuQ.AddItem(new MenuItem("keepq", "Keep Q Alive")).SetValue(true);
+            menuQ.AddItem(new MenuItem("qgap", "Use to Gapclose")).SetValue(true);
             sMenu.AddSubMenu(menuQ);
 
             var menuW = new Menu("W Menu", "kiburst");
@@ -405,6 +401,8 @@ namespace KurisuRiven
             oMenu.AddItem(new MenuItem("autow", "Use AutoW")).SetValue(true);
             oMenu.AddItem(new MenuItem("wmin", "AutoW Min Count")).SetValue(new Slider(2, 1, 5));
             oMenu.AddItem(new MenuItem("useitems", "Use Botrk/Youmus")).SetValue(true);
+            oMenu.AddItem(new MenuItem("keepq", "Keep Q Alive")).SetValue(true);
+            oMenu.AddItem(new MenuItem("delay", "AA -> Q Delay")).SetValue(new Slider(0, 0, 200));
             oMenu.AddItem(new MenuItem("debugtrue", "Debug True Range")).SetValue(false);
             oMenu.AddItem(new MenuItem("debugdmg", "Debug Combo Damage")).SetValue(false);
             Settings.AddSubMenu(oMenu);

@@ -181,7 +181,7 @@ namespace KurisuRiven
             }
 
             // gapclose
-            else if (Target.Distance(Base.Me.ServerPosition) > Base.TrueRange + 100)
+            else if (Target.Distance(Base.Me.ServerPosition) > Base.TrueRange + 100 && Base.GetBool("qgap"))
             {
                 if (Environment.TickCount - Base.LastQ >= 1100 && !Base.DidAA)
                 {
