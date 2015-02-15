@@ -89,7 +89,7 @@ namespace KurisuNidalee
 
         private static void AntiGapcloser_OnEnemyGapcloser(ActiveGapcloser gapcloser)
         {
-            if (!_mainMenu.Item("gapcloser").GetValue<bool>())
+            if (!_mainMenu.Item("gapp").GetValue<bool>())
                 return;
 
             var attacker = gapcloser.Sender;
@@ -143,9 +143,7 @@ namespace KurisuNidalee
             var nidaSpells = new Menu("Nidalee: Combo", "spells");
             nidaSpells.AddItem(new MenuItem("seth", "Javelin Hitchance")).SetValue(new Slider(3,1,4));
             nidaSpells.AddItem(new MenuItem("usehumanq", "Use Javelin Toss")).SetValue(true);
-            nidaSpells.AddItem(new MenuItem("useonhigh", "Use on Dashing/Immobile")).SetValue(true);
             nidaSpells.AddItem(new MenuItem("usehumanw", "Use Bushwack")).SetValue(true);
-            nidaSpells.AddItem(new MenuItem("usehumanwauto", "Use on Dashing/Immobile")).SetValue(true);
             nidaSpells.AddItem(new MenuItem("usecougarq", "Use Takedown")).SetValue(true);
             nidaSpells.AddItem(new MenuItem("usecougarw", "Use Pounce")).SetValue(true);
             nidaSpells.AddItem(new MenuItem("usecougare", "Use Swipe")).SetValue(true);
@@ -210,7 +208,9 @@ namespace KurisuNidalee
             var nidaM = new Menu("Nidalee: Misc", "misc");
             nidaM.AddItem(new MenuItem("useitems", "Use Items")).SetValue(true);
             nidaM.AddItem(new MenuItem("useignote", "Use Ignite"));
-            nidaM.AddItem(new MenuItem("gapcloser", "Use Anti-Gapcloser")).SetValue(true);
+            nidaM.AddItem(new MenuItem("dash", "Q on Dashing")).SetValue(false);
+            nidaM.AddItem(new MenuItem("gapp", "Q Anti-Gapcloser")).SetValue(false);
+            nidaM.AddItem(new MenuItem("imm", "Q/W on Immobibile")).SetValue(true);
             nidaM.AddItem(new MenuItem("javelinks", "Killsteal with Javelin")).SetValue(true);
             nidaM.AddItem(new MenuItem("ksform", "Killsteal switch Form")).SetValue(true);
             _mainMenu.AddSubMenu(nidaM);
@@ -255,10 +255,10 @@ namespace KurisuNidalee
                 Orbwalking.LastAATick = 0;
             }
 
-            if (_mainMenu.Item("usehumanwauto").GetValue<bool>())
+            if (_mainMenu.Item("imm").GetValue<bool>())
             {
                 // Human W == 0 -- Bushwack is on CD
-                if (HW != 0)
+                if (HW != 0 || !Bushwack.IsReady())
                 {
                     return;
                 }
@@ -309,21 +309,18 @@ namespace KurisuNidalee
                         }
                     }
 
-                    // use on immoble/dashing (doesn't seem to work)
-                    if (_mainMenu.Item("useonhigh").GetValue<bool>())
+       
+                    if (_cougarForm || (HQ != 0 || !Javelin.IsReady()))
                     {
-
-                        if (_cougarForm || HQ != 0)
-                        {
-                            return;
-                        }
-
-                        if (prediction.Hitchance == HitChance.Immobile)
-                            Javelin.Cast(prediction.CastPosition);
-
-                        if (prediction.Hitchance == HitChance.Dashing)
-                            Javelin.Cast(prediction.CastPosition);
+                        return;
                     }
+
+                    if (prediction.Hitchance == HitChance.Immobile && _mainMenu.Item("imm").GetValue<bool>())
+                        Javelin.Cast(prediction.CastPosition);
+
+                    if (prediction.Hitchance == HitChance.Dashing && _mainMenu.Item("dash").GetValue<bool>())
+                        Javelin.Cast(prediction.CastPosition);
+
                 }
             }
         }
@@ -483,6 +480,7 @@ namespace KurisuNidalee
                                     wallJumpPossible = true;
                                 }
                             }
+
                             else
                             {
                                 Render.Circle.DrawCircle(Game.CursorPos, 35, Color.Red, 2);
@@ -493,12 +491,13 @@ namespace KurisuNidalee
 
                 // Check if the loop triggered the jump, if not just orbwalk
                 if (!jumpTriggered)
-                    Orbwalking.Orbwalk(target, movePosition, 90f, 0f, false, false);
+                    Orbwalking.Orbwalk(target, Game.CursorPos, 90f, 0f, false, false);
             }
+
             // Either no wall or W on cooldown, just move towards to wall then
             else
             {
-                Orbwalking.Orbwalk(target, movePosition, 90f, 0f, false, false);
+                Orbwalking.Orbwalk(target, Game.CursorPos, 90f, 0f, false, false);
                 if (_cougarForm && (CW == 0 || Pounce.IsReady()))
                     Pounce.Cast(Game.CursorPos);
             }
@@ -526,7 +525,7 @@ namespace KurisuNidalee
 
                 // Check is pounce is ready 
                 if ((CW == 0 || Pounce.IsReady()) && _mainMenu.Item("usecougarw").GetValue<bool>()
-                    && target.Distance(Me.ServerPosition, true) > 30*30)
+                    && target.Distance(Me.ServerPosition, true) > 250*250)
                 {
                     if (TargetHunted(target) & target.Distance(Me.ServerPosition, true) <= 750*750)
                         Pounce.Cast(target.ServerPosition);
@@ -563,8 +562,10 @@ namespace KurisuNidalee
                 }
 
                 // Switch to human form if can kill in 5 aa and cougar skill not available      
-                if ((CW != 0 || !Pounce.IsReady()) && CE != 0 && CQ != 0 && target.Distance(Me.ServerPosition, true) > Takedown.RangeSqr && CanKillAA(target)
-                    && _mainMenu.Item("usecougarr").GetValue<bool>() && target.Distance(Me.ServerPosition, true) <= Me.AttackRange * Me.AttackRange + 5 * 5)
+                if ((CW != 0 || !Pounce.IsReady()) && CE != 0 && CQ != 0 &&
+                    target.Distance(Me.ServerPosition, true) > Takedown.RangeSqr && CanKillAA(target)
+                    && _mainMenu.Item("usecougarr").GetValue<bool>() &&
+                    target.Distance(Me.ServerPosition, true) <= Me.AttackRange*Me.AttackRange + 5*5)
                 {
                     if (Aspectofcougar.IsReady())
                         Aspectofcougar.Cast();
@@ -577,7 +578,7 @@ namespace KurisuNidalee
             {
                 // Switch to cougar if target hunted or can kill target 
                 if (Aspectofcougar.IsReady() && _mainMenu.Item("usecougarr").GetValue<bool>()
-                    && (TargetHunted(target) || target.Health <= CougarDamage(target) && HQ != 0))
+                    && (TargetHunted(target) || target.Health <= CougarDamage(target) && (HQ != 0 || !Javelin.IsReady())))
                 {
                     if (TargetHunted(target) && target.Distance(Me.ServerPosition, true) <= 750*750)
                         Aspectofcougar.Cast();
@@ -585,7 +586,7 @@ namespace KurisuNidalee
                         Aspectofcougar.Cast();
                 }
 
-                else if (HQ == 0 && _mainMenu.Item("usehumanq").GetValue<bool>())
+                else if ((HQ == 0 || Javelin.IsReady()) && _mainMenu.Item("usehumanq").GetValue<bool>())
                 {
                     var prediction = Javelin.GetPrediction(target);
                     if (prediction.Hitchance >= (HitChance)_mainMenu.Item("seth").GetValue<Slider>().Value + 2)
@@ -595,7 +596,7 @@ namespace KurisuNidalee
                 }
 
                 // Check bushwack and cast underneath targets feet.
-                if (HW == 0 && _mainMenu.Item("usehumanw").GetValue<bool>() &&
+                if ((HW == 0 || Bushwack.IsReady()) && _mainMenu.Item("usehumanw").GetValue<bool>() &&
                          target.Distance(Me.ServerPosition, true) <= Bushwack.RangeSqr)
                 {
                     var prediction = Bushwack.GetPrediction(target);
@@ -635,7 +636,8 @@ namespace KurisuNidalee
 
         private static void PrimalSurge()
         {
-            if (HE != 0 || !_mainMenu.Item("usedemheals").GetValue<bool>() || Me.IsRecalling() || Me.InFountain())
+            if ((HE != 0 || !Primalsurge.IsReady()) || !_mainMenu.Item("usedemheals").GetValue<bool>() ||
+                Me.IsRecalling() || Me.InFountain())
             {
                 return;
             }
