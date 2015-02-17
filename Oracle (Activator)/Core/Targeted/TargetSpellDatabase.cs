@@ -780,8 +780,8 @@ namespace Oracle.Core.Targeted
                 #region Skarner
                 new TargetSpellData("skarner", "skarnervirulentslash", SpellSlot.Q, SpellType.Self, CcType.No, 350, 0, float.MaxValue),
                 new TargetSpellData("skarner", "skarnerexoskeleton", SpellSlot.W, SpellType.Self, CcType.No, 0, 0, float.MaxValue),
-                new TargetSpellData("skarner", "skarnerfracture", SpellSlot.E, SpellType.Skillshot, CcType.Slow, 1000, 500, 1200),
-                new TargetSpellData("skarner", "skarnerfracturemissilespell", SpellSlot.E, SpellType.Skillshot, CcType.Slow, 1000, 500, 1200),
+                new TargetSpellData("skarner", "skarnerfracture", SpellSlot.E, SpellType.Skillshot, CcType.Slow, 1100, 500, 1200),
+                new TargetSpellData("skarner", "skarnerfracturemissilespell", SpellSlot.E, SpellType.Skillshot, CcType.Slow, 1100, 500, 1200),
                 new TargetSpellData("skarner", "skarnerimpale", SpellSlot.R, SpellType.Targeted, CcType.Suppression, 350, 0, float.MaxValue, true),
 
                 #endregion Skarner
