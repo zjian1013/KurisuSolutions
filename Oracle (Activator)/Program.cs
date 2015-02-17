@@ -49,15 +49,16 @@ namespace Oracle
         public static int LastTick;
         public static bool CanManamune;
         public static string ChampionName;
-        public const string Revision = "220";
+        public const string Revision = "221";
 
         private static void OnGameLoad(EventArgs args)
         {
-            FileName = "Oracle - " + DateTime.Now.ToString("yy.MM.dd") +
-                       " " + DateTime.Now.ToString("h.mm.ss") + ".txt";
+            FileName = "Oracle - " + DateTime.Now.ToString("yy.MM.dd") + " " + DateTime.Now.ToString("h.mm.ss") + ".txt";
       
             ChampionName = Me.ChampionName;
             Game.OnGameUpdate += Game_OnGameUpdate;
+
+
             Game.PrintChat("<font color=\"#1FFF8F\">Oracle# r." + Revision + " -</font><font color=\"#FFFFCC\"> by Kurisu</font>");
 
             if (!Directory.Exists(Config.LeagueSharpDirectory + @"\Logs\Oracle"))
@@ -89,8 +90,7 @@ namespace Oracle
 
             catch (Exception e)
             {
-                Console.WriteLine(e);
-                Game.PrintChat("Something went wrong with update checker!");
+                Logger(LogType.Error, "Something went wrong with update checker!");
             }
 
             Origin = new Menu("Oracle", "oracle", true);
@@ -805,6 +805,7 @@ namespace Oracle
             Attacker = null;
             if (sender.Type == GameObjectType.obj_AI_Hero && sender.IsEnemy)
             {
+                Console.WriteLine(args.SData.Name);
                 var heroSender = ObjectManager.Get<Obj_AI_Hero>().First(x => x.NetworkId == sender.NetworkId);
                 if (heroSender.GetSpellSlot(args.SData.Name) == SpellSlot.Unknown && args.Target.Type == Me.Type)
                 {
