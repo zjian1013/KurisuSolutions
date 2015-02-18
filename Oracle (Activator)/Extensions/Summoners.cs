@@ -12,7 +12,7 @@ namespace Oracle.Extensions
         private static bool _isJungling;
         private static string _smiteSlot;
         private static Menu _mainMenu, _menuConfig;
-        private static readonly Obj_AI_Hero Me = ObjectManager.Player;
+        private static readonly Obj_AI_Hero Me = ObjectHandler.Player;
 
         public static readonly string[] SmallMinions =
         {
@@ -62,7 +62,7 @@ namespace Oracle.Extensions
             _menuConfig = new Menu("Summoner Config", "sconfig");
             _isJungling = SmiteAll.Any(x => Items.HasItem(x));
 
-            foreach (var x in ObjectManager.Get<Obj_AI_Hero>().Where(x => x.IsAlly))
+            foreach (var x in ObjectHandler.Get<Obj_AI_Hero>().Where(x => x.IsAlly))
                 _menuConfig.AddItem(new MenuItem("suseOn" + x.SkinName, "Use for " + x.SkinName)).SetValue(true);
             _mainMenu.AddSubMenu(_menuConfig);
 
@@ -228,7 +228,7 @@ namespace Oracle.Extensions
 
             foreach (
                 var target in
-                    ObjectManager.Get<Obj_AI_Hero>()
+                    ObjectHandler.Get<Obj_AI_Hero>()
                         .Where(target => target.IsValidTarget(600)) 
                         .Where(target => !target.HasBuff("summonerdot", true)))
             {
@@ -461,7 +461,7 @@ namespace Oracle.Extensions
             {
                 if (Me.Spellbook.CanUseSpell(smite) == SpellState.Ready)
                 {
-                    foreach (var ou in ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsValidTarget(760)))
+                    foreach (var ou in ObjectHandler.Get<Obj_AI_Hero>().Where(hero => hero.IsValidTarget(760)))
                     {
                         if (save && Me.Spellbook.GetSpell(smite).Ammo <= 1)
                         {
@@ -543,7 +543,7 @@ namespace Oracle.Extensions
             }
 
             var inst = Me.Spellbook.GetSpell(slot);
-            foreach (var minion in ObjectManager.Get<Obj_AI_Minion>().Where(m => m.IsValidTarget(range)))
+            foreach (var minion in ObjectHandler.Get<Obj_AI_Minion>().Where(m => m.IsValidTarget(range)))
             {              
                 var smitedamage = (float) Me.GetSummonerSpellDamage(minion, Damage.SummonerSpell.Smite);           
                 var champdamage = (float) Me.GetSpellDamage(minion, slot, stage);
@@ -636,7 +636,7 @@ namespace Oracle.Extensions
 
                 foreach (
                     var enemy in
-                        ObjectManager.Get<Obj_AI_Hero>()
+                        ObjectHandler.Get<Obj_AI_Hero>()
                             .Where(x => x.IsValidTarget(900))
                             .OrderByDescending(xe => xe.BaseAttackDamage + xe.FlatPhysicalDamageMod))
                 {

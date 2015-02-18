@@ -9,7 +9,7 @@ namespace Oracle.Extensions
     internal static class AutoSpells
     {
         private static Menu _mainMenu, _menuConfig;
-        private static readonly Obj_AI_Hero Me = ObjectManager.Player;
+        private static readonly Obj_AI_Hero Me = ObjectHandler.Player;
 
         public static void Initialize(Menu root)
         {
@@ -18,7 +18,7 @@ namespace Oracle.Extensions
             _mainMenu = new Menu("Auto Spells", "asmenu");
             _menuConfig = new Menu("Auto Spell Config", "asconfig");
 
-            foreach (var x in ObjectManager.Get<Obj_AI_Hero>().Where(x => x.IsAlly))
+            foreach (var x in ObjectHandler.Get<Obj_AI_Hero>().Where(x => x.IsAlly))
                 _menuConfig.AddItem(new MenuItem("ason" + x.SkinName, "Use for " + x.SkinName)).SetValue(true);
             _mainMenu.AddSubMenu(_menuConfig);
 
@@ -179,7 +179,7 @@ namespace Oracle.Extensions
                 }
 
                 var target =
-                    ObjectManager.Get<Obj_AI_Hero>()
+                    ObjectHandler.Get<Obj_AI_Hero>()
                         .First(huro => huro.IsValidTarget(float.MaxValue, false) && huro.IsAlly);
 
                 if (!_menuConfig.Item("ason" + target.SkinName).GetValue<bool>())
@@ -218,7 +218,7 @@ namespace Oracle.Extensions
             }
 
             var cooptarget =
-                ObjectManager.Get<Obj_AI_Hero>()
+                ObjectHandler.Get<Obj_AI_Hero>()
                     .FirstOrDefault(hero => hero.HasBuff("kalistacoopstrikeally", true));
              
             if (cooptarget.IsValidTarget(1200, false) && cooptarget.IsAlly && 
@@ -360,7 +360,7 @@ namespace Oracle.Extensions
                         {
                             foreach (
                                 var ene in
-                                    ObjectManager.Get<Obj_AI_Hero>()
+                                    ObjectHandler.Get<Obj_AI_Hero>()
                                         .Where(x => x.IsValidTarget(range))
                                         .OrderByDescending(ene => ene.Health/ene.MaxHealth*100))
                             {
@@ -397,7 +397,7 @@ namespace Oracle.Extensions
                         {
                             foreach (
                                 var ene in
-                                    ObjectManager.Get<Obj_AI_Hero>()
+                                    ObjectHandler.Get<Obj_AI_Hero>()
                                         .Where(x => x.IsValidTarget(range))
                                         .OrderByDescending(ene => ene.Health/ene.MaxHealth*100))
                             {

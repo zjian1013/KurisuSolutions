@@ -9,7 +9,7 @@ namespace Oracle.Extensions
     internal static class Defensives
     {
         private static Menu _mainMenu, _menuConfig;
-        private static readonly Obj_AI_Hero Me = ObjectManager.Player;
+        private static readonly Obj_AI_Hero Me = ObjectHandler.Player;
 
         public static void Initialize(Menu root)
         {
@@ -18,7 +18,7 @@ namespace Oracle.Extensions
             _mainMenu = new Menu("Defensives", "dmenu");
             _menuConfig = new Menu("Defensive Config", "dconfig");
 
-            foreach (var x in ObjectManager.Get<Obj_AI_Hero>().Where(x => x.IsAlly))
+            foreach (var x in ObjectHandler.Get<Obj_AI_Hero>().Where(x => x.IsAlly))
                 _menuConfig.AddItem(new MenuItem("DefenseOn" + x.SkinName, "Use for " + x.SkinName)).SetValue(true);
             _mainMenu.AddSubMenu(_menuConfig);
 
@@ -118,7 +118,7 @@ namespace Oracle.Extensions
                 }
 
                 var lowTarget =
-                    ObjectManager.Get<Obj_AI_Hero>()
+                    ObjectHandler.Get<Obj_AI_Hero>()
                         .OrderBy(ex => ex.Health/ex.MaxHealth*100)
                         .First(x => x.IsValidTarget(1000));
 

@@ -932,7 +932,7 @@ namespace Oracle.Core.Targeted
                 #region Veigar
                 new TargetSpellData("veigar", "veigarbalefulstrike", SpellSlot.Q, SpellType.Targeted, CcType.No, 650, 500, 1500),
                 new TargetSpellData("veigar", "veigardarkmatter", SpellSlot.W, SpellType.Skillshot, CcType.No, 900, 1200, 1500),
-                new TargetSpellData("veigar", "veigareventhorizon", SpellSlot.E, SpellType.Skillshot, CcType.Stun, 650, float.MaxValue, 1500),
+                new TargetSpellData("veigar", "veigareventhorizon", SpellSlot.E, SpellType.Skillshot, CcType.Stun, 650, 0, 1500),
                 new TargetSpellData("veigar", "veigarprimordialburst", SpellSlot.R, SpellType.Targeted, CcType.No, 650, 500, 1400, true),
 
                 #endregion Veigar

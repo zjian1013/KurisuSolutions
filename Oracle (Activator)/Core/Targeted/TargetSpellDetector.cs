@@ -76,7 +76,7 @@ namespace Oracle.Core.Targeted
                 if (OnTargetSpell == null)
                     return; // only if subscribers
 
-                if (sender.Position.Distance(ObjectManager.Player.Position) > DetectionRange)
+                if (sender.Position.Distance(ObjectHandler.Player.Position) > DetectionRange)
                     return; // only detect spells in range
 
                 if (!sender.IsValid<Obj_AI_Hero>())
@@ -109,7 +109,7 @@ namespace Oracle.Core.Targeted
 
                 if (data == null)
                 {
-                    Console.WriteLine("Target Spell not Found: " + args.SData.Name);
+                    Program.Logger(Program.LogType.Error, "Target Spell not Found: " + args.SData.Name);
                     return;
                 }
 

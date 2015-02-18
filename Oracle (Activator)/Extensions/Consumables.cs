@@ -8,7 +8,7 @@ namespace Oracle.Extensions
     internal static class Consumables
     {
         private static Menu _mainMenu;
-        private static readonly Obj_AI_Hero Me = ObjectManager.Player;
+        private static readonly Obj_AI_Hero Me = ObjectHandler.Player;
 
         public static void Initialize(Menu root)
         {

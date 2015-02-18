@@ -69,7 +69,7 @@ namespace Oracle.Core.Skillshots
                 GameObject.OnDelete += GameObject_OnDelete;
 
                 // Debug
-                if (ObjectManager.Get<Obj_AI_Hero>().Count(h => !h.IsBot) == 1)
+                if (ObjectHandler.Get<Obj_AI_Hero>().Count(h => !h.IsBot) == 1)
                 {
                     GameObject.OnCreate += DebugSpellMissileOnCreate;
                     GameObject.OnDelete += DebugSpellMissileOnDelete;
@@ -93,7 +93,7 @@ namespace Oracle.Core.Skillshots
                 }
 
                 // Protect
-                foreach (var ally in ObjectManager.Get<Obj_AI_Hero>()
+                foreach (var ally in ObjectHandler.Get<Obj_AI_Hero>()
                     .Where(h => h.IsAlly && h.IsValidTarget(2000, false))
                     .OrderByDescending(h => h.FlatPhysicalDamageMod))
                 {
@@ -171,7 +171,7 @@ namespace Oracle.Core.Skillshots
                 }
 
                 //Check if the skillshot is too far away.
-                if (skillshot.StartPosition.Distance(ObjectManager.Player.ServerPosition.To2D()) >
+                if (skillshot.StartPosition.Distance(ObjectHandler.Player.ServerPosition.To2D()) >
                     (skillshot.SkillshotData.Range + skillshot.SkillshotData.Radius + 1000)*1.5)
                 {
                     return;
@@ -243,12 +243,12 @@ namespace Oracle.Core.Skillshots
                                     -angle/2*(float) Math.PI/180);
                             var edge2 = edge1.Rotated(angle*(float) Math.PI/180);
 
-                            foreach (var minion in ObjectManager.Get<Obj_AI_Minion>())
+                            foreach (var minion in ObjectHandler.Get<Obj_AI_Minion>())
                             {
                                 var v = minion.ServerPosition.To2D() - skillshot.Caster.ServerPosition.To2D();
                                 if (minion.Name == "Seed" && edge1.CrossProduct(v) > 0 && v.CrossProduct(edge2) > 0 &&
                                     minion.Distance(skillshot.Caster) < 800 &&
-                                    (minion.Team != ObjectManager.Player.Team))
+                                    (minion.Team != ObjectHandler.Player.Team))
                                 {
                                     var start = minion.ServerPosition.To2D();
                                     var end = skillshot.Caster.ServerPosition.To2D()
@@ -328,7 +328,7 @@ namespace Oracle.Core.Skillshots
                                 }
                             }
 
-                            foreach (var m in ObjectManager.Get<Obj_AI_Minion>())
+                            foreach (var m in ObjectHandler.Get<Obj_AI_Minion>())
                             {
                                 if (m.BaseSkinName == "jarvanivstandard" && m.Team == skillshot.Caster.Team &&
                                     skillshot.IsDanger(m.Position.To2D()))
@@ -571,7 +571,7 @@ namespace Oracle.Core.Skillshots
 
             if (spellData.FromObject != "")
             {
-                foreach (var obj in ObjectManager.Get<GameObject>())
+                foreach (var obj in ObjectHandler.Get<GameObject>())
                 {
                     if (obj.Name.Contains(spellData.FromObject))
                     {
@@ -587,7 +587,7 @@ namespace Oracle.Core.Skillshots
             //For now only zed support.
             if (spellData.FromObjects != null && spellData.FromObjects.Length > 0)
             {
-                foreach (var obj in ObjectManager.Get<GameObject>().Where(o => o.IsEnemy))
+                foreach (var obj in ObjectHandler.Get<GameObject>().Where(o => o.IsEnemy))
                 {
                     if (spellData.FromObjects.Contains(obj.Name))
                     {
@@ -649,7 +649,7 @@ namespace Oracle.Core.Skillshots
 
                 packet.Position = packet.Size() - 83;
 
-                var unit = ObjectManager.GetUnitByNetworkId<Obj_AI_Hero>(packet.ReadInteger());
+                var unit = ObjectHandler.GetUnitByNetworkId<Obj_AI_Hero>(packet.ReadInteger());
 
                 if (!unit.IsValid<Obj_AI_Hero>())
                 {

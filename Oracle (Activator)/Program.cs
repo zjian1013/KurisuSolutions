@@ -32,7 +32,7 @@ namespace Oracle
         public static Obj_AI_Hero AggroTarget;
         public static Obj_AI_Hero CurrentTarget;
         public static float IncomeDamage, MinionDamage;
-        private static readonly Obj_AI_Hero Me = ObjectManager.Player;
+        private static readonly Obj_AI_Hero Me = ObjectHandler.Player;
 
         private static void Main(string[] args)
         {
@@ -49,7 +49,7 @@ namespace Oracle
         public static int LastTick;
         public static bool CanManamune;
         public static string ChampionName;
-        public const string Revision = "221";
+        public const string Revision = "222";
 
         private static void OnGameLoad(EventArgs args)
         {
@@ -83,6 +83,7 @@ namespace Oracle
                 if (Revision != gitrevision)
                 {
                     Game.PrintChat("<font color=\"#FFFFCC\"><b>Oracle is outdated, please Update!</b></font>");
+                    Game.PrintChat("<font color=\"#FFFFCC\"><b>If comiple error update Common!</b></font>");
                 }
             }
 
@@ -102,7 +103,7 @@ namespace Oracle
             var config = new Menu("Oracle Config", "oracleconfig");
             var dangerMenu = new Menu("Dangerous Config", "dangerconfig");
 
-            foreach (var i in ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.Team != Me.Team))
+            foreach (var i in ObjectHandler.Get<Obj_AI_Hero>().Where(hero => hero.Team != Me.Team))
             {
                 var menu = new Menu(i.SkinName, i.SkinName + "cccmenu");
                 foreach (
@@ -164,7 +165,7 @@ namespace Oracle
             Logger(LogType.Info, "Local Summoners: " + Me.Spellbook.GetSpell(SpellSlot.Summoner1).Name + " - " +
                                                        Me.Spellbook.GetSpell(SpellSlot.Summoner2).Name);
 
-            foreach (var i in ObjectManager.Get<Obj_AI_Hero>())
+            foreach (var i in ObjectHandler.Get<Obj_AI_Hero>())
             {
                 if (i.Team == Me.Team)
                 {
@@ -322,7 +323,7 @@ namespace Oracle
             // Get current target near mouse cursor.
             foreach (
                 var targ in
-                    ObjectManager.Get<Obj_AI_Hero>()
+                    ObjectHandler.Get<Obj_AI_Hero>()
                         .Where(hero => hero.IsValidTarget(2000))
                         .OrderByDescending(hero => hero.Distance(Game.CursorPos)))
             {
@@ -681,7 +682,7 @@ namespace Oracle
 
             foreach (
                 var unit in
-                    ObjectManager.Get<Obj_AI_Hero>()
+                    ObjectHandler.Get<Obj_AI_Hero>()
                         .Where(x => x.IsAlly && x.IsValidTarget(900, false))
                         .OrderByDescending(xe => xe.Health / xe.MaxHealth * 100))
             {
@@ -694,14 +695,14 @@ namespace Oracle
         private static Obj_AI_Hero GetEnemy(string championnmame)
         {
             return
-                ObjectManager.Get<Obj_AI_Hero>()
+                ObjectHandler.Get<Obj_AI_Hero>()
                     .First(enemy => enemy.Team != Me.Team && enemy.ChampionName == championnmame);
         }
 
         public static int CountHerosInRange(this Obj_AI_Hero target, bool checkteam, float range = 1200f)
         {
             var objListTeam =
-                ObjectManager.Get<Obj_AI_Hero>()
+                ObjectHandler.Get<Obj_AI_Hero>()
                     .Where(
                         x => x.IsValidTarget(range, false));
 
@@ -803,11 +804,11 @@ namespace Oracle
             Attacker = null;
             if (sender.Type == GameObjectType.obj_AI_Hero && sender.IsEnemy)
             {
-                var heroSender = ObjectManager.Get<Obj_AI_Hero>().First(x => x.NetworkId == sender.NetworkId);
+                var heroSender = ObjectHandler.Get<Obj_AI_Hero>().First(x => x.NetworkId == sender.NetworkId);
                 if (heroSender.GetSpellSlot(args.SData.Name) == SpellSlot.Unknown && args.Target.Type == Me.Type)
                 {
                     Danger = false; Dangercc = false; DangerUlt = false;
-                    AggroTarget = ObjectManager.GetUnitByNetworkId<Obj_AI_Hero>(args.Target.NetworkId);
+                    AggroTarget = ObjectHandler.GetUnitByNetworkId<Obj_AI_Hero>(args.Target.NetworkId);
 
                     IncomeDamage = (float)heroSender.GetAutoAttackDamage(AggroTarget);
                     Logger(LogType.Damage, heroSender.SkinName + " hit (AA) " + AggroTarget.SkinName + " for: " + IncomeDamage);
@@ -828,7 +829,7 @@ namespace Oracle
                         Utility.DelayAction.Add((int)(o.Delay), delegate
                         {
                             var vulnerableTarget =
-                                ObjectManager.Get<Obj_AI_Hero>().OrderBy(x => x.Distance(heroSender.ServerPosition))
+                                ObjectHandler.Get<Obj_AI_Hero>().OrderBy(x => x.Distance(heroSender.ServerPosition))
                                     .FirstOrDefault(x => x.IsAlly);
 
                             if (vulnerableTarget != null && vulnerableTarget.Distance(heroSender.ServerPosition, true) <= o.Range * o.Range)
@@ -857,8 +858,9 @@ namespace Oracle
                     {
                         Utility.DelayAction.Add((int)(o.Delay), delegate
                         {
+
                             AggroTarget =
-                                ObjectManager.GetUnitByNetworkId<Obj_AI_Hero>(args.Target.NetworkId);
+                                ObjectHandler.GetUnitByNetworkId<Obj_AI_Hero>(args.Target.NetworkId);
 
                             IncomeDamage = (float)heroSender.GetSpellDamage(AggroTarget, (SpellSlot)o.Spellslot);
 
@@ -896,7 +898,7 @@ namespace Oracle
                                    (Environment.TickCount - skillShot.StartTick);
 
                     var vulnerableTarget =
-                        ObjectManager.Get<Obj_AI_Hero>()
+                        ObjectHandler.Get<Obj_AI_Hero>()
                             .FirstOrDefault(x => !skillShot.IsSafe(x.ServerPosition.To2D()) && x.IsAlly);
 
                     if (vulnerableTarget != null && vulnerableTarget.Distance(heroSender.ServerPosition, true) <= o.Range*o.Range)
@@ -924,7 +926,7 @@ namespace Oracle
                 if (args.Target.Type == Me.Type)
                 {
                     Danger = false; Dangercc = false; DangerUlt = false;
-                    AggroTarget = ObjectManager.GetUnitByNetworkId<Obj_AI_Hero>(args.Target.NetworkId);
+                    AggroTarget = ObjectHandler.GetUnitByNetworkId<Obj_AI_Hero>(args.Target.NetworkId);
 
                     MinionDamage =
                         (float)sender.CalcDamage(AggroTarget, Damage.DamageType.Physical,
@@ -939,7 +941,7 @@ namespace Oracle
                     Danger = false; Dangercc = false; DangerUlt = false;
                     if (sender.Distance(Friendly().ServerPosition, true) <= 900*900)
                     {
-                        AggroTarget = ObjectManager.GetUnitByNetworkId<Obj_AI_Hero>(args.Target.NetworkId);
+                        AggroTarget = ObjectHandler.GetUnitByNetworkId<Obj_AI_Hero>(args.Target.NetworkId);
 
                         IncomeDamage =
                             (float)sender.CalcDamage(AggroTarget, Damage.DamageType.Physical,
