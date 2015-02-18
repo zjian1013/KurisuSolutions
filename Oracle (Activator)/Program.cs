@@ -844,7 +844,7 @@ namespace Oracle
                                 Spell = true;
                                 Danger = Origin.Item(o.Name.ToLower() + "ccc").GetValue<bool>();
                                 DangerUlt = Origin.Item(o.Name.ToLower() + "ccc").GetValue<bool>() && o.Spellslot.ToString() == "R";
-                                Dangercc = o.CcType != CcType.No && o.Type != SpellType.AutoAttack;
+                                Dangercc = o.CcType != CcType.No && o.Type != SpellType.AutoAttack && Origin.Item(o.Name.ToLower() + "ccc").GetValue<bool>();
 
                                 Logger(LogType.Damage, "Danger (Self: " + o.Spellslot + "): " + Danger);
                                 Logger(LogType.Damage,
