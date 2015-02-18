@@ -154,7 +154,7 @@ namespace Oracle.Core.Skillshots
             {
                 return (!AddHitbox)
                     ? _radius
-                    : _radius + (int) ObjectHandler.Player.BoundingRadius;
+                    : _radius + (int) ObjectManager.Player.BoundingRadius;
             }
             set { _radius = value; }
         }
@@ -208,7 +208,7 @@ namespace Oracle.Core.Skillshots
                 {
                     return GlobalGetMissilePosition(0) +
                            Direction*SkillshotData.MissileSpeed*
-                           (0.5f + SkillshotData.Radius*2/ObjectHandler.Player.MoveSpeed);
+                           (0.5f + SkillshotData.Radius*2/ObjectManager.Player.MoveSpeed);
                 }
 
                 return EndPosition;
@@ -394,11 +394,11 @@ namespace Oracle.Core.Skillshots
             var Distance = 0f;
             timeOffset += Game.Ping/2;
 
-            speed = (speed == -1) ? (int) ObjectHandler.Player.MoveSpeed : speed;
+            speed = (speed == -1) ? (int) ObjectManager.Player.MoveSpeed : speed;
 
             if (unit == null)
             {
-                unit = ObjectHandler.Player;
+                unit = ObjectManager.Player;
             }
 
             var allIntersections = new List<FoundIntersection>();
@@ -437,7 +437,7 @@ namespace Oracle.Core.Skillshots
                 SkillshotData.Type == SkillShotType.SkillshotMissileCone)
             {
                 //Outside the skillshot
-                if (IsSafe(ObjectHandler.Player.ServerPosition.To2D()))
+                if (IsSafe(ObjectManager.Player.ServerPosition.To2D()))
                 {
                     //No intersections -> Safe
                     if (allIntersections.Count == 0)
@@ -459,7 +459,7 @@ namespace Oracle.Core.Skillshots
                                 new SafePathResult(
                                     (EndPosition.Distance(missilePositionOnIntersection) + 50 <=
                                      EndPosition.Distance(enterIntersectionProjection)) &&
-                                    ObjectHandler.Player.MoveSpeed < SkillshotData.MissileSpeed, allIntersections[0]);
+                                    ObjectManager.Player.MoveSpeed < SkillshotData.MissileSpeed, allIntersections[0]);
                         }
 
 
@@ -502,7 +502,7 @@ namespace Oracle.Core.Skillshots
             }
 
 
-            if (IsSafe(ObjectHandler.Player.ServerPosition.To2D()))
+            if (IsSafe(ObjectManager.Player.ServerPosition.To2D()))
             {
                 if (allIntersections.Count == 0)
                 {

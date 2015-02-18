@@ -9,7 +9,7 @@ namespace Oracle.Extensions
     internal static class Cleansers
     {
         private static Menu _menuConfig, _mainMenu;
-        private static readonly Obj_AI_Hero Me = ObjectHandler.Player;
+        private static readonly Obj_AI_Hero Me = ObjectManager.Player;
 
         public static void Initialize(Menu root)
         {
@@ -18,7 +18,7 @@ namespace Oracle.Extensions
             _mainMenu = new Menu("Cleansers", "cmenu");
             _menuConfig = new Menu("Cleansers Config", "cconfig");
 
-            foreach (var a in ObjectHandler.Get<Obj_AI_Hero>().Where(a => a.Team == Me.Team))
+            foreach (var a in ObjectManager.Get<Obj_AI_Hero>().Where(a => a.Team == Me.Team))
                 _menuConfig.AddItem(new MenuItem("cccon" + a.SkinName, "Use for " + a.SkinName)).SetValue(true);
             _mainMenu.AddSubMenu(_menuConfig);
 

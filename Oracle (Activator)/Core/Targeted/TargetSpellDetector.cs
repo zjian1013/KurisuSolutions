@@ -76,7 +76,7 @@ namespace Oracle.Core.Targeted
                 if (OnTargetSpell == null)
                     return; // only if subscribers
 
-                if (sender.Position.Distance(ObjectHandler.Player.Position) > DetectionRange)
+                if (sender.Position.Distance(ObjectManager.Player.Position) > DetectionRange)
                     return; // only detect spells in range
 
                 if (!sender.IsValid<Obj_AI_Hero>())

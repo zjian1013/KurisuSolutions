@@ -9,7 +9,7 @@ namespace Oracle.Extensions
     internal static class Offensives
     {
         private static Menu _mainMenu, _menuConfig;
-        private static readonly Obj_AI_Hero Me = ObjectHandler.Player;
+        private static readonly Obj_AI_Hero Me = ObjectManager.Player;
 
         public static void Initialize(Menu root)
         {
@@ -18,7 +18,7 @@ namespace Oracle.Extensions
             _mainMenu = new Menu("Offensives", "omenu");
             _menuConfig = new Menu("Offensive Config", "oconfig");
 
-            foreach (var x in ObjectHandler.Get<Obj_AI_Hero>().Where(x => x.IsEnemy))
+            foreach (var x in ObjectManager.Get<Obj_AI_Hero>().Where(x => x.IsEnemy))
                 _menuConfig.AddItem(new MenuItem("ouseOn" + x.SkinName, "Use for " + x.SkinName)).SetValue(true);
             _mainMenu.AddSubMenu(_menuConfig);
 

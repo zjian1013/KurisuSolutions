@@ -67,7 +67,7 @@ namespace SpellDetector.Helpers
 
         private static void Obj_AI_Hero_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
         {
-            if (sender.IsValid && sender.Team == ObjectHandler.Player.Team && args.SData.Name == "YasuoWMovingWall")
+            if (sender.IsValid && sender.Team == ObjectManager.Player.Team && args.SData.Name == "YasuoWMovingWall")
             {
                 _wallCastT = Environment.TickCount;
                 _yasuoWallCastedPos = sender.ServerPosition.To2D();
@@ -120,7 +120,7 @@ namespace SpellDetector.Helpers
                         foreach (var minion in
                             MinionManager.GetMinions(
                                 from.To3D(), 1200, MinionTypes.All,
-                                skillshot.Caster.Team == ObjectHandler.Player.Team
+                                skillshot.Caster.Team == ObjectManager.Player.Team
                                     ? MinionTeam.NotAlly
                                     : MinionTeam.NotAllyForEnemy))
                         {
@@ -153,11 +153,11 @@ namespace SpellDetector.Helpers
 
                     case CollisionObjectTypes.Champions:
                         foreach (var hero in
-                            ObjectHandler.Get<Obj_AI_Hero>()
+                            ObjectManager.Get<Obj_AI_Hero>()
                                 .Where(
                                     h =>
-                                        (h.IsValidTarget(1200, false) && h.Team == ObjectHandler.Player.Team && !h.IsMe ||
-                                         h.Team != ObjectHandler.Player.Team)))
+                                        (h.IsValidTarget(1200, false) && h.Team == ObjectManager.Player.Team && !h.IsMe ||
+                                         h.Team != ObjectManager.Player.Team)))
                         {
                             var pred = FastPrediction(
                                 from, hero,
@@ -186,16 +186,16 @@ namespace SpellDetector.Helpers
 
                     case CollisionObjectTypes.YasuoWall:
                         if (
-                            !ObjectHandler.Get<Obj_AI_Hero>()
+                            !ObjectManager.Get<Obj_AI_Hero>()
                                 .Any(
                                     hero =>
                                         hero.IsValidTarget(float.MaxValue, false) &&
-                                        hero.Team == ObjectHandler.Player.Team && hero.ChampionName == "Yasuo"))
+                                        hero.Team == ObjectManager.Player.Team && hero.ChampionName == "Yasuo"))
                         {
                             break;
                         }
                         GameObject wall = null;
-                        foreach (var gameObject in ObjectHandler.Get<GameObject>())
+                        foreach (var gameObject in ObjectManager.Get<GameObject>())
                         {
                             if (gameObject.IsValid &&
                                 Regex.IsMatch(
