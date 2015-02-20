@@ -83,7 +83,8 @@ namespace KurisuMorgana
             _menu.AddSubMenu(spellmenu);
             _menu.AddToMainMenu();
 
-            Game.PrintChat("<font color=\"#AF7AFF\"><b>KurisuMorgana</b></font> - Loaded");
+            Game.PrintChat("<font color=\"#FF9900\"><b>KurisuMorgana</b></font>: Loaded");
+            Game.PrintChat("Oracle# is <b>recommended</b> for advance spell shield support!");
 
             // events
             Drawing.OnDraw += Drawing_OnDraw;

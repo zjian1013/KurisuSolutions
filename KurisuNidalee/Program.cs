@@ -217,7 +217,7 @@ namespace KurisuNidalee
 
             _mainMenu.AddToMainMenu();
 
-            Game.PrintChat("<font color=\"#FF9900\"><b>KurisuNidalee</b></font> - Loaded");
+            Game.PrintChat("<font color=\"#FF9900\"><b>KurisuNidalee</b></font>: Loaded");
 
         }
 

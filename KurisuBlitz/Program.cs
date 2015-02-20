@@ -267,6 +267,8 @@ namespace KurisuBlitz
             _menu.AddItem(new MenuItem("useE", "Powerfist after grab")).SetValue(true);
             _menu.AddItem(new MenuItem("combokey", "Combo Key")).SetValue(new KeyBind(32, KeyBindType.Press));
             _menu.AddToMainMenu();
+
+            Game.PrintChat("<font color=\"#FF9900\"><b>KurisuBlitz</b></font>: Loaded");
         }
     }
 }
