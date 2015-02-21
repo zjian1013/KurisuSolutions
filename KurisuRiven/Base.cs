@@ -356,7 +356,7 @@ namespace KurisuRiven
             mMenu.AddItem(new MenuItem("ultwhen", "Use R When Killable")).SetValue(new StringList(new[] { "Hard", "Extreme" }));
             mMenu.AddItem(new MenuItem("wsmode", "Smart R Mode"))
                 .SetValue(new StringList(new[] { "Only Kill", "Kill or Max Damage" }, 1));
-            mMenu.AddItem(new MenuItem("multir3", "Flash + Burst if Kill? (Not Working) ")).SetValue(false);
+            mMenu.AddItem(new MenuItem("multir3", "Flash + Burst if Kill?")).SetValue(false);
             mMenu.AddItem(new MenuItem("engage", "Engage Mode"))
                 .SetValue(new StringList(new[] { "Normal", "Tiamat First" }));
             Settings.AddSubMenu(mMenu);
