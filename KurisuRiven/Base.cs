@@ -83,7 +83,7 @@ namespace KurisuRiven
             Q.SetSkillshot(0.25f, 100f, 1400f, false, SkillshotType.SkillshotCircle);
             R.SetSkillshot(0.25f, 300, 2200f, false, SkillshotType.SkillshotCone);
 
-            Game.PrintChat("<b><font color=\"#FF9900\">KurisuRiven</font></b> - Have fun! :^)");
+            Game.PrintChat("<b><font color=\"#FF9900\">KurisuRiven:</font></b> Loaded!");
         }
 
         // riven spell queue
@@ -235,12 +235,9 @@ namespace KurisuRiven
                             if (Me.Spellbook.CanUseSpell(flashslot) == SpellState.Ready &&
                                 Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
                             {
-                                if (Combo.Target.Distance(Me.ServerPosition) < 400 + E.Range + Me.AttackRange + W.Range &&
-                                    Combo.Target.Distance(Me.ServerPosition) > E.Range + Me.AttackRange + 75)
+                                if (Combo.Target.Distance(Me.ServerPosition) > E.Range + TrueRange + 50 &&
+                                    Combo.Target.Distance(Me.ServerPosition) <= E.Range + TrueRange + 500)
                                 {
-                                    if (!UltOn)
-                                        R.Cast();
-
                                     Me.Spellbook.CastSpell(flashslot, Combo.Target.ServerPosition);
                                 }
                             }
@@ -359,7 +356,7 @@ namespace KurisuRiven
             mMenu.AddItem(new MenuItem("ultwhen", "Use R When Killable")).SetValue(new StringList(new[] { "Hard", "Extreme" }));
             mMenu.AddItem(new MenuItem("wsmode", "Smart R Mode"))
                 .SetValue(new StringList(new[] { "Only Kill", "Kill or Max Damage" }, 1));
-            mMenu.AddItem(new MenuItem("multir3", "Flash + Burst if Kill? ")).SetValue(false);
+            mMenu.AddItem(new MenuItem("multir3", "Flash + Burst if Kill? (Not Working) ")).SetValue(false);
             mMenu.AddItem(new MenuItem("engage", "Engage Mode"))
                 .SetValue(new StringList(new[] { "Normal", "Tiamat First" }));
             Settings.AddSubMenu(mMenu);
@@ -397,11 +394,12 @@ namespace KurisuRiven
             Settings.AddSubMenu(sMenu);
 
             var oMenu = new Menu("Other", "otherstuff");
-            oMenu.AddItem(new MenuItem("autow", "Use AutoW")).SetValue(true);
-            oMenu.AddItem(new MenuItem("wmin", "AutoW Min Count")).SetValue(new Slider(2, 1, 5));
+            oMenu.AddItem(new MenuItem("forceaa", "Laneclear Force AA")).SetValue(false);
             oMenu.AddItem(new MenuItem("useitems", "Use Botrk/Youmus")).SetValue(true);
             oMenu.AddItem(new MenuItem("keepq", "Keep Q Alive")).SetValue(true);
             oMenu.AddItem(new MenuItem("delay", "AA -> Q Delay")).SetValue(new Slider(0, 0, 200));
+            oMenu.AddItem(new MenuItem("autow", "Use AutoW")).SetValue(true);
+            oMenu.AddItem(new MenuItem("wmin", "AutoW Min Count")).SetValue(new Slider(2, 1, 5));
             oMenu.AddItem(new MenuItem("debugtrue", "Debug True Range")).SetValue(false);
             oMenu.AddItem(new MenuItem("debugdmg", "Debug Combo Damage")).SetValue(false);
             Settings.AddSubMenu(oMenu);
