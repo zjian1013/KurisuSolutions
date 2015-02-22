@@ -36,6 +36,7 @@ namespace KurisuRiven
         public static Menu Settings;
         public static Spell Q, W, E, R;
         public static Orbwalking.Orbwalker Orbwalker;
+        public static Obj_AI_Base LastTarget;
         public static readonly Obj_AI_Hero Me = ObjectManager.Player;
 
         public static bool UltOn;
@@ -68,7 +69,7 @@ namespace KurisuRiven
 
             // build 
             OnMenuUpdate();
-            OnSpellUpdate();
+            RivenEvents();
 
             Game.OnGameUpdate += OnGameUpdate;
             Drawing.OnDraw += Drawings.OnDraw;
@@ -117,6 +118,7 @@ namespace KurisuRiven
             Combo.OnGameUpdate();
             Combo.LaneFarm();
             Combo.Flee();
+            Combo.SemiHarass();
 
             Helpers.OnBuffUpdate();
             Helpers.Windslash();
@@ -183,8 +185,34 @@ namespace KurisuRiven
             }
         }
 
-        internal static void OnSpellUpdate()
+        internal static void RivenEvents()
         {
+            // anti gapclose
+            AntiGapcloser.OnEnemyGapcloser += gapcloser =>
+            {
+                if (GetBool("antigap") && W.IsReady())
+                {
+                    if (gapcloser.Sender.IsValidTarget(W.Range))
+                        W.Cast();
+                }
+            };
+
+            // interrupter 2
+            Interrupter2.OnInterruptableTarget += (sender, args) =>
+            {
+                if (GetBool("wint") && W.IsReady())
+                {
+                    if (sender.IsValidTarget(W.Range))
+                        W.Cast();
+                }
+
+                if (GetBool("qint") && Q.IsReady() && CleaveCount >= 2)
+                {
+                    if (sender.IsValidTarget(Q.Range))
+                        Q.Cast(sender.ServerPosition);
+                }
+            };
+
             // on animation
             Obj_AI_Base.OnPlayAnimation += (sender, args) =>
             {
@@ -194,7 +222,6 @@ namespace KurisuRiven
                     Orbwalking.LastAATick = Environment.TickCount + Game.Ping/2;
                     CanAA = true;
                 }
-
             };
 
             // on cast
@@ -313,6 +340,7 @@ namespace KurisuRiven
                     CanE = false;
                     CanWS = false;
                     LastAA = Environment.TickCount;
+                    LastTarget = (Obj_AI_Base) args.Target;
                 }
             };
         }
@@ -394,6 +422,7 @@ namespace KurisuRiven
             Settings.AddSubMenu(sMenu);
 
             var oMenu = new Menu("Other", "otherstuff");
+            oMenu.AddItem(new MenuItem("semiq", "Use Semi-Q Harass/Clear")).SetValue(true);
             oMenu.AddItem(new MenuItem("forceaa", "Laneclear Force AA")).SetValue(false);
             oMenu.AddItem(new MenuItem("useitems", "Use Botrk/Youmus")).SetValue(true);
             oMenu.AddItem(new MenuItem("keepq", "Keep Q Alive")).SetValue(true);
@@ -403,6 +432,7 @@ namespace KurisuRiven
             oMenu.AddItem(new MenuItem("debugtrue", "Debug True Range")).SetValue(false);
             oMenu.AddItem(new MenuItem("debugdmg", "Debug Combo Damage")).SetValue(false);
             Settings.AddSubMenu(oMenu);
+
 
             Settings.AddToMainMenu();
         }

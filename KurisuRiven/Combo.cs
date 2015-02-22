@@ -177,13 +177,12 @@ namespace KurisuRiven
             }
 
             // gapclose
-            else if (Target.Distance(Base.Me.ServerPosition, true) > Math.Pow(Base.TrueRange + Base.E.Range + 100, 2) &&
-                     Base.GetBool("qgap"))
+            else if (Target.Distance(Base.Me.ServerPosition, true) > 
+                     Math.Pow(Base.TrueRange + 100, 2) && Base.GetBool("qgap"))
             {
-                if (!Base.E.IsReady() && Environment.TickCount - Base.LastQ >= 1200 && !Base.DidAA)
+                if (!Base.E.IsReady() && Environment.TickCount - Base.LastQ >= 1100 && !Base.DidAA)
                 {
-                    if (Base.GetBool("usecomboq") && Base.Q.IsReady() && 
-                        Environment.TickCount - Base.LastE >= 700)
+                    if (Base.Q.IsReady() && Environment.TickCount - Base.LastE >= 700)
                     {
                         Base.Q.Cast(Target.ServerPosition);
                     }
@@ -207,11 +206,46 @@ namespace KurisuRiven
                     Base.Q.Cast(Game.CursorPos);
                 }
 
+                if (!Base.W.IsReady() && Base.Me.CountEnemiesInRange(Base.W.Range) >= 1)
+                {
+                    Base.W.Cast();
+                }
+
                 if (Base.CanMV)
                 {
                     Base.Me.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPos);
                 }
             }          
+        }
+
+        internal static void SemiHarass()
+        {
+            var minionList = new[]
+            {
+                "SRU_Razorbeak", "SRU_Krug", "Sru_Crab", "SRU_Baron", "SRU_Dragon",
+                "SRU_Blue", "SRU_Red", "SRU_Murkwolf", "SRU_Gromp"
+            };
+
+            if (Base.CanQ && Environment.TickCount - Base.LastAA >= 150 && Base.GetBool("semiq"))
+            {
+                if (Base.Q.IsReady() && Environment.TickCount - Base.LastAA < 1200)
+                {
+
+                    if (Base.LastTarget.IsValidTarget(Base.Q.Range + 100) && Base.LastTarget.IsValid<Obj_AI_Hero>())
+                        Base.Q.Cast(Base.LastTarget.ServerPosition);
+
+                    if (Base.LastTarget.IsValidTarget(Base.Q.Range + 100) && !Base.LastTarget.Name.Contains("Mini") &&
+                        !Base.LastTarget.Name.StartsWith("Minion") && minionList.Any(name => Base.LastTarget.Name.StartsWith(name)))
+                    {
+                        Base.Q.Cast(Base.LastTarget.ServerPosition);
+                    }
+
+                    if (Base.LastTarget.IsValid<Obj_AI_Turret>() && Base.LastTarget.IsValidTarget(Base.Q.Range + 100))
+                    {
+                        Base.Q.Cast(Base.LastTarget.ServerPosition);
+                    }
+                }
+            }
         }
 
         internal static void LaneFarm()
@@ -226,18 +260,18 @@ namespace KurisuRiven
                         "SRU_Blue", "SRU_Red", "SRU_Murkwolf", "SRU_Gromp"
                     };
 
-                    var smallMinion =
+                    var small =
                         ObjectManager.Get<Obj_AI_Minion>()
                             .FirstOrDefault(x => x.Name.Contains("Mini") && !x.Name.StartsWith("Minion") && x.IsValidTarget(700));
 
-                    var bigMinion =
+                    var big =
                         ObjectManager.Get<Obj_AI_Minion>()
                             .FirstOrDefault(
                                 x =>
                                     !x.Name.Contains("Mini") && !x.Name.StartsWith("Minion") &&
                                     minionList.Any(name => x.Name.StartsWith(name)) && x.IsValidTarget(900));
 
-                    var minion = bigMinion ?? smallMinion;
+                    var minion = big ?? small;
                     if (minion != null)
                     {
                         Base.OrbTo(minion);
