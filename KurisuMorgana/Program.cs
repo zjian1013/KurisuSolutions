@@ -8,7 +8,7 @@ namespace KurisuMorgana
     internal class Program
     {
         private static Menu _menu;
-        private static Spell _q, _w, _r;
+        private static Spell _q, _w, _e, _r;
         private static Orbwalking.Orbwalker _orbwalker;
         private static readonly Obj_AI_Hero Me = ObjectManager.Player;
 
@@ -30,6 +30,7 @@ namespace KurisuMorgana
             _w = new Spell(SpellSlot.W, 900f);
             _w.SetSkillshot(0.25f, 175f, 1200f, false, SkillshotType.SkillshotCircle);
 
+            _e = new Spell(SpellSlot.E, 750f);
             _r = new Spell(SpellSlot.R, 600f);
 
             _menu = new Menu("KurisuMorgana", "morgana", true);
@@ -81,10 +82,20 @@ namespace KurisuMorgana
 
             spellmenu.AddItem(new MenuItem("harassmana", "Harass Mana %")).SetValue(new Slider(55, 0, 99));
             _menu.AddSubMenu(spellmenu);
+
+            var menuM = new Menu("Misc", "morgmisc");
+            foreach (var obj in ObjectManager.Get<Obj_AI_Hero>().Where(obj => obj.Team != Me.Team))
+            {
+                menuM.AddItem(new MenuItem("dobind" + obj.ChampionName, obj.ChampionName))
+                    .SetValue(new StringList(new[] { "Dont Bind ", "Normal Bind ", "Auto Bind" }, 1));
+            }
+
+            _menu.AddSubMenu(menuM);
+
             _menu.AddToMainMenu();
 
             Game.PrintChat("<font color=\"#FF9900\"><b>KurisuMorgana:</b></font> Loaded");
-            Game.PrintChat("Oracle# is <b>recommended</b> for advance spell shield support!");
+            Game.PrintChat("<b>Oracle#</b> is <b>recommended</b> for advance spell shield support!");
 
             // events
             Drawing.OnDraw += Drawing_OnDraw;
@@ -101,15 +112,10 @@ namespace KurisuMorgana
 
             CheckDamage(TargetSelector.GetTarget(_q.Range + 10, TargetSelector.DamageType.Magical));
 
-            if (Me.CountEnemiesInRange(_r.Range) >= _menu.Item("useautor").GetValue<Slider>().Value)
-            {
-                if (_r.IsReady())
-                    _r.Cast();
-            }
-       
 
-            Dashing(_menu.Item("useqdash").GetValue<bool>());
-            Immobile(_menu.Item("useqauto").GetValue<bool>(), _menu.Item("usewauto").GetValue<bool>());
+            AutoCast(_menu.Item("useqdash").GetValue<bool>(),
+                     _menu.Item("useqauto").GetValue<bool>(),
+                     _menu.Item("usewauto").GetValue<bool>());
 
             if (_orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
             {
@@ -154,7 +160,7 @@ namespace KurisuMorgana
                         var wts = Drawing.WorldToScreen(target.Position);
                         if (_ma*3 + _mi + _mq + _guise >= target.Health)
                             Drawing.DrawText(wts[0] - 20, wts[1] + 20, System.Drawing.Color.LimeGreen, "Q Kill!");
-                        else if (_ma*3 + _mi + _mw*3 + _guise >= target.Health)
+                        else if (_ma*3 + _mi + _mw * ticks + _guise >= target.Health)
                             Drawing.DrawText(wts[0] - 20, wts[1] + 20, System.Drawing.Color.LimeGreen, "W Kill!");
                         else if (_mq + _mw * ticks + _ma * 3 + _mi + _guise >= target.Health)
                             Drawing.DrawText(wts[0] - 20, wts[1] + 20, System.Drawing.Color.LimeGreen, "Q + W Kill!");
@@ -197,8 +203,11 @@ namespace KurisuMorgana
                     var poutput = _w.GetPrediction(wtarget);
                     if (poutput.Hitchance >= (HitChance)_menu.Item("hitchancew").GetValue<Slider>().Value + 2)
                     {
-                        if (!_menu.Item("waitfor").GetValue<bool>())
+                        if (!_menu.Item("waitfor").GetValue<bool>() ||
+                            _mw*_menu.Item("calcw").GetValue<Slider>().Value >= wtarget.Health)
+                        {
                             _w.Cast(poutput.CastPosition);
+                        }
                     }                  
                 }
             }
@@ -209,14 +218,21 @@ namespace KurisuMorgana
                 var rtarget = TargetSelector.GetTarget(_r.Range, TargetSelector.DamageType.Magical);
                 if (rtarget.IsValidTarget(_r.Range))
                 {
-                    if (_mr + _mq + _mw + _ma * ticks + _mi + _guise >= rtarget.Health)
+                    if (_mr + _mq + _mw * ticks + _ma * 3 + _mi + _guise >= rtarget.Health)
                     {
                         if (_menu.Item("rkill").GetValue<bool>())
+                        {
+                            if (_e.IsReady())
+                                _e.CastOnUnit(Me);
                             _r.Cast();
+                        }
                     }
 
                     if (Me.CountEnemiesInRange(_r.Range) >= _menu.Item("rcount").GetValue<Slider>().Value)
                     {
+                        if (_e.IsReady())
+                            _e.CastOnUnit(Me);
+
                         _r.Cast();
                     }
                 }
@@ -254,52 +270,45 @@ namespace KurisuMorgana
             }
         }
 
-        private static void Dashing(bool useq)
+        private static void AutoCast(bool dashing, bool immobile, bool soil)
         {
-            if (useq && _q.IsReady())
+            if (_q.IsReady())
             {
-                var itarget = ObjectManager.Get<Obj_AI_Hero>()
-                        .FirstOrDefault(h => h.Distance(Me.ServerPosition, true) <= _q.RangeSqr && h.IsEnemy);
+                var itarget =
+                    ObjectManager.Get<Obj_AI_Hero>()
+                        .FirstOrDefault(h => h.IsEnemy && h.Distance(Me.ServerPosition, true) <= _q.RangeSqr);
 
-                if (itarget.IsValidTarget())
+                if (itarget.IsValidTarget(_q.Range) &&
+                    itarget.Distance(Me.ServerPosition, true) > _menu.Item("dnd").GetValue<Slider>().Value)
                 {
-                    var poutput = _q.GetPrediction(itarget);
-                    if (poutput.Hitchance == HitChance.Dashing)
-                        _q.Cast(poutput.CastPosition);
+                    if (dashing && _menu.Item("dobind" + itarget.ChampionName).GetValue<StringList>().SelectedIndex == 2)
+                        _q.CastIfHitchanceEquals(itarget, HitChance.Dashing);
 
-                }
-            }
-        }
-
-        private static void Immobile(bool useq, bool usew)
-        {
-            if (usew && _w.IsReady())
-            {
-                var itarget = ObjectManager.Get<Obj_AI_Hero>()
-                    .FirstOrDefault(h => h.Distance(Me.ServerPosition, true) <= _w.RangeSqr && h.IsEnemy);
-
-                if (itarget.IsValidTarget())
-                {
-                    var poutput = _w.GetPrediction(itarget);                  
-                    if (poutput.Hitchance == HitChance.Immobile)
-                        _w.Cast(poutput.CastPosition);
+                    if (immobile && _menu.Item("dobind" + itarget.ChampionName).GetValue<StringList>().SelectedIndex == 2)
+                        _q.CastIfHitchanceEquals(itarget, HitChance.Immobile);
                 }
             }
 
-            if (useq && _q.IsReady())
+            if (_w.IsReady() && soil)
             {
-                var itarget = ObjectManager.Get<Obj_AI_Hero>()
-                        .FirstOrDefault(h => h.Distance(Me.ServerPosition, true) <= _q.RangeSqr && h.IsEnemy);
+                var itarget =
+                    ObjectManager.Get<Obj_AI_Hero>()
+                        .FirstOrDefault(h => h.IsEnemy && h.Distance(Me.ServerPosition, true) <= _w.RangeSqr);
 
-                if (itarget.IsValidTarget())
-                {
-                    var poutput = _q.GetPrediction(itarget);
-                    if (poutput.Hitchance == HitChance.Immobile)
-                        _q.Cast(poutput.CastPosition);
-
-                }
+                if (itarget.IsValidTarget(_w.Range))
+                    _w.CastIfHitchanceEquals(itarget, HitChance.Immobile);          
             }
-        }
+
+            if (_r.IsReady())
+            {
+                if (Me.CountEnemiesInRange(_r.Range) >= _menu.Item("useautor").GetValue<Slider>().Value)
+                {
+                    if (_e.IsReady())
+                        _e.CastOnUnit(Me);
+                    _r.Cast();
+                }           
+            }
+        }  
 
         private static void AntiGapcloser_OnEnemyGapcloser(ActiveGapcloser gapcloser)
         {
@@ -339,8 +348,6 @@ namespace KurisuMorgana
             _guise = (float) (Items.HasItem(3151)
                 ? Me.GetItemDamage(target, Damage.DamageItems.LiandrysTorment)
                 : 0);
-
-
         }
     }
 }
