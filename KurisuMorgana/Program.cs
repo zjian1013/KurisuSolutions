@@ -39,11 +39,11 @@ namespace KurisuMorgana
             _orbwalker = new Orbwalking.Orbwalker(orbmenu);
             _menu.AddSubMenu(orbmenu);
 
-            var tsmenu = new Menu("Selector", "selector");
+            var tsmenu = new Menu("Morgana: Selector", "selector");
             TargetSelector.AddToMenu(tsmenu);
             _menu.AddSubMenu(tsmenu);
 
-            var drmenu = new Menu("Drawings", "drawings");
+            var drmenu = new Menu("Morgana: Drawings", "drawings");
             drmenu.AddItem(new MenuItem("drawq", "Draw Q")).SetValue(true);
             drmenu.AddItem(new MenuItem("draww", "Draw W")).SetValue(true);
             drmenu.AddItem(new MenuItem("drawe", "Draw E")).SetValue(true);
@@ -53,7 +53,7 @@ namespace KurisuMorgana
             drmenu.AddItem(new MenuItem("debugdmg", "Debug combo damage")).SetValue(false);
             _menu.AddSubMenu(drmenu);
 
-            var spellmenu = new Menu("Spells", "spells");
+            var spellmenu = new Menu("Morgana: Spells", "spells");
 
             var menuQ = new Menu("Q Menu", "qmenu");
             menuQ.AddItem(new MenuItem("hitchanceq", "Binding Hitchance ")).SetValue(new Slider(3, 1, 4));
@@ -83,7 +83,7 @@ namespace KurisuMorgana
             spellmenu.AddItem(new MenuItem("harassmana", "Harass Mana %")).SetValue(new Slider(55, 0, 99));
             _menu.AddSubMenu(spellmenu);
 
-            var menuM = new Menu("Misc", "morgmisc");
+            var menuM = new Menu("Morgana: Misc", "morgmisc");
             foreach (var obj in ObjectManager.Get<Obj_AI_Hero>().Where(obj => obj.Team != Me.Team))
             {
                 menuM.AddItem(new MenuItem("dobind" + obj.ChampionName, obj.ChampionName))
