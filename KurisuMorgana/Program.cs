@@ -35,7 +35,7 @@ namespace KurisuMorgana
 
             _menu = new Menu("KurisuMorgana", "morgana", true);
 
-            var orbmenu = new Menu("Orbwalker", "orbwalker");
+            var orbmenu = new Menu("Morgana: Orbwalker", "orbwalker");
             _orbwalker = new Orbwalking.Orbwalker(orbmenu);
             _menu.AddSubMenu(orbmenu);
 
