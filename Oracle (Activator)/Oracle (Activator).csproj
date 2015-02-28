@@ -61,7 +61,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Core\Helpers\Cache.cs" />
     <Compile Include="Core\Helpers\Collision.cs" />
     <Compile Include="Core\Helpers\Geometry.cs" />
     <Compile Include="Core\Helpers\Utils.cs" />
