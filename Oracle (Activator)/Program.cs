@@ -4,7 +4,6 @@ using System.Linq;
 using System.Net;
 using LeagueSharp;
 using LeagueSharp.Common;
-using Oracle.Core.Helpers;
 using Oracle.Extensions;
 using Oracle.Core.Skillshots;
 using Oracle.Core.Targeted;
@@ -50,7 +49,7 @@ namespace Oracle
         public static string FileName;
         public static bool CanManamune;
         public static string ChampionName;
-        public const string Revision = "224";
+        public const string Revision = "225";
 
         private static void OnGameLoad(EventArgs args)
         {
@@ -828,14 +827,15 @@ namespace Oracle
                         heroSender.SkinName + " hit (AA) " + AggroTarget.SkinName + " for: " + IncomeDamage);
                 }
 
-                if (heroSender.ChampionName == "Jinx" && args.SData.Name.Contains("JinxQAttack") && args.Target.Type == Me.Type)
+                if (heroSender.ChampionName == "Jinx" && args.SData.Name.Contains("JinxQAttack") &&
+                    args.Target.Type == Me.Type)
                 {
                     Danger = false;
                     Dangercc = false;
                     DangerUlt = false;
                     AggroTarget = ObjectManager.GetUnitByNetworkId<Obj_AI_Hero>(args.Target.NetworkId);
 
-                    IncomeDamage = (float)heroSender.GetAutoAttackDamage(AggroTarget);
+                    IncomeDamage = (float) heroSender.GetAutoAttackDamage(AggroTarget);
                     Logger(LogType.Damage,
                         heroSender.SkinName + " hit (JinxQ) " + AggroTarget.SkinName + " for: " + IncomeDamage);
                 }
@@ -852,16 +852,17 @@ namespace Oracle
 
                     if (o.Type == SpellType.Self)
                     {
-                        Utility.DelayAction.Add((int)(o.Delay), delegate
+                        Utility.DelayAction.Add((int) (o.Delay), delegate
                         {
                             var vulnerableTarget =
                                 ObjectManager.Get<Obj_AI_Hero>().OrderBy(x => x.Distance(heroSender.ServerPosition))
                                     .FirstOrDefault(x => x.IsAlly);
 
-                            if (vulnerableTarget != null && vulnerableTarget.Distance(heroSender.ServerPosition, true) <= o.Range * o.Range)
+                            if (vulnerableTarget != null &&
+                                vulnerableTarget.Distance(heroSender.ServerPosition, true) <= o.Range*o.Range)
                             {
                                 AggroTarget = vulnerableTarget;
-                                IncomeDamage = (float)heroSender.GetSpellDamage(AggroTarget, (SpellSlot)o.Spellslot);
+                                IncomeDamage = (float) heroSender.GetSpellDamage(AggroTarget, (SpellSlot) o.Spellslot);
 
                                 if (o.Wait)
                                 {
@@ -870,26 +871,30 @@ namespace Oracle
 
                                 Spell = true;
                                 Danger = Origin.Item(o.Name.ToLower() + "ccc").GetValue<bool>();
-                                DangerUlt = Origin.Item(o.Name.ToLower() + "ccc").GetValue<bool>() && o.Spellslot.ToString() == "R";
-                                Dangercc = o.CcType != CcType.No && o.Type != SpellType.AutoAttack && Origin.Item(o.Name.ToLower() + "ccc").GetValue<bool>();
+                                DangerUlt = Origin.Item(o.Name.ToLower() + "ccc").GetValue<bool>() &&
+                                            o.Spellslot.ToString() == "R";
+                                Dangercc = o.CcType != CcType.No && o.Type != SpellType.AutoAttack &&
+                                           Origin.Item(o.Name.ToLower() + "ccc").GetValue<bool>();
 
                                 Logger(LogType.Damage, "Danger (Self: " + o.Spellslot + "): " + Danger);
                                 Logger(LogType.Damage,
-                                    heroSender.SkinName + " hit (Self: " + o.Spellslot + ") " + AggroTarget.SkinName + " for: " + IncomeDamage);
+                                    heroSender.SkinName + " hit (Self: " + o.Spellslot + ") " + AggroTarget.SkinName +
+                                    " for: " + IncomeDamage);
                             }
                         });
                     }
 
                     if (o.Type == SpellType.Targeted && args.Target.Type == Me.Type)
                     {
-                        Utility.DelayAction.Add((int)(o.Delay), delegate
+                        Utility.DelayAction.Add((int) (o.Delay), delegate
                         {
                             AggroTarget = ObjectManager.GetUnitByNetworkId<Obj_AI_Hero>(args.Target.NetworkId);
-                            IncomeDamage = (float)heroSender.GetSpellDamage(AggroTarget, (SpellSlot)o.Spellslot);
+                            IncomeDamage = (float) heroSender.GetSpellDamage(AggroTarget, (SpellSlot) o.Spellslot);
 
                             Logger(LogType.Damage, "Dangerous (Targetd: " + o.Spellslot + "): " + Danger);
                             Logger(LogType.Damage,
-                                heroSender.SkinName + " hit (Targeted: " + o.Spellslot + ") " + AggroTarget.SkinName + " for: " + IncomeDamage);
+                                heroSender.SkinName + " hit (Targeted: " + o.Spellslot + ") " + AggroTarget.SkinName +
+                                " for: " + IncomeDamage);
 
                             if (o.Wait)
                             {
@@ -897,21 +902,25 @@ namespace Oracle
                             }
 
                             Spell = true;
-                            Danger = Origin.Item(o.Name.ToLower() + "ccc").GetValue<bool>();
-                            DangerUlt = Origin.Item(o.Name.ToLower() + "ccc").GetValue<bool>() && o.Spellslot.ToString() == "R";
+                            Danger = o.Dangerous && Origin.Item(o.Name.ToLower() + "ccc").GetValue<bool>();
+                            DangerUlt = o.Dangerous && Origin.Item(o.Name.ToLower() + "ccc").GetValue<bool>() &&
+                                        o.Spellslot.ToString() == "R";
                             Dangercc = o.CcType != CcType.No && o.Type != SpellType.AutoAttack;
                         });
                     }
                 }
 
-                foreach (var o in SkillshotDatabase.Spells.Where(x => x.SpellName == args.SData.Name))
+                foreach (
+                    var o in
+                        SkillshotDatabase.Spells.Where(
+                            x => x.SpellName == args.SData.Name || x.ExtraSpellNames.Contains(args.SData.Name)))
                 {
                     var skillData =
                         new SkillshotData(o.ChampionName, o.SpellName, o.Slot, o.Type, o.Delay, o.Range,
-                                            o.Radius, o.MissileSpeed, o.AddHitbox, o.FixedRange, o.DangerValue);
+                            o.Radius, o.MissileSpeed, o.AddHitbox, o.FixedRange, o.DangerValue);
 
                     var endPosition = args.Start.To2D() +
-                                        o.Range * (args.End.To2D() - heroSender.ServerPosition.To2D()).Normalized();
+                                      o.Range*(args.End.To2D() - heroSender.ServerPosition.To2D()).Normalized();
 
                     var skillShot = new Skillshot(DetectionType.ProcessSpell, skillData, Environment.TickCount,
                         heroSender.ServerPosition.To2D(), endPosition, heroSender);
@@ -924,20 +933,24 @@ namespace Oracle
                         ObjectManager.Get<Obj_AI_Hero>()
                             .FirstOrDefault(x => !skillShot.IsSafe(x.ServerPosition.To2D()) && x.IsAlly);
 
-                    if (vulnerableTarget != null && vulnerableTarget.Distance(heroSender.ServerPosition, true) <= o.Range*o.Range)
+                    if (vulnerableTarget != null &&
+                        vulnerableTarget.Distance(heroSender.ServerPosition, true) <= o.Range*o.Range)
                     {
                         Utility.DelayAction.Add(castTime - 400, delegate
                         {
                             AggroTarget = vulnerableTarget;
-                            IncomeDamage = (float)heroSender.GetSpellDamage(AggroTarget, (SpellSlot)skillShot.SkillshotData.Slot);
+                            IncomeDamage =
+                                (float) heroSender.GetSpellDamage(AggroTarget, (SpellSlot) skillShot.SkillshotData.Slot);
 
                             Spell = true;
-                            Danger = Origin.Item(o.SpellName.ToLower() + "ccc").GetValue<bool>();
-                            DangerUlt = Origin.Item(o.SpellName.ToLower() + "ccc").GetValue<bool>() && o.Slot.ToString() == "R";
+                            Danger = o.IsDangerous && Origin.Item(o.SpellName.ToLower() + "ccc").GetValue<bool>();
+                            DangerUlt = o.IsDangerous && Origin.Item(o.SpellName.ToLower() + "ccc").GetValue<bool>() &&
+                                        o.Slot.ToString() == "R";
 
                             Logger(LogType.Damage, "Dangerous (Skillshot " + o.Slot + "): " + Danger);
                             Logger(LogType.Damage,
-                                heroSender.SkinName + " may hit (SkillShot: " + o.Slot + ") " + AggroTarget.SkinName + " for: " + IncomeDamage);
+                                heroSender.SkinName + " may hit (SkillShot: " + o.Slot + ") " + AggroTarget.SkinName +
+                                " for: " + IncomeDamage);
 
                         });
                     }
