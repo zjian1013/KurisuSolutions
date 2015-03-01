@@ -858,8 +858,7 @@ namespace Oracle
                                 ObjectManager.Get<Obj_AI_Hero>().OrderBy(x => x.Distance(heroSender.ServerPosition))
                                     .FirstOrDefault(x => x.IsAlly);
 
-                            if (vulnerableTarget != null &&
-                                vulnerableTarget.Distance(heroSender.ServerPosition, true) <= o.Range*o.Range)
+                            if (vulnerableTarget != null && vulnerableTarget.Distance(heroSender.ServerPosition, true) <= o.Range*o.Range)
                             {
                                 AggroTarget = vulnerableTarget;
                                 IncomeDamage = (float) heroSender.GetSpellDamage(AggroTarget, (SpellSlot) o.Spellslot);
@@ -933,8 +932,7 @@ namespace Oracle
                         ObjectManager.Get<Obj_AI_Hero>()
                             .FirstOrDefault(x => !skillShot.IsSafe(x.ServerPosition.To2D()) && x.IsAlly);
 
-                    if (vulnerableTarget != null &&
-                        vulnerableTarget.Distance(heroSender.ServerPosition, true) <= o.Range*o.Range)
+                    if (vulnerableTarget != null && vulnerableTarget.Distance(heroSender.ServerPosition, true) <= o.Range*o.Range)
                     {
                         Utility.DelayAction.Add(castTime - 400, delegate
                         {
