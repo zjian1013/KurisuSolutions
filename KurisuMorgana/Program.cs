@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Drawing;
 using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
+using SharpDX;
 
 namespace KurisuMorgana
 {
@@ -48,30 +50,62 @@ namespace KurisuMorgana
             drmenu.AddItem(new MenuItem("draww", "Draw W")).SetValue(true);
             drmenu.AddItem(new MenuItem("drawe", "Draw E")).SetValue(true);
             drmenu.AddItem(new MenuItem("drawr", "Draw R")).SetValue(true);
-            drmenu.AddItem(new MenuItem("drawkill", "Draw killable")).SetValue(true);
-            drmenu.AddItem(new MenuItem("drawtarg", "Draw target circle")).SetValue(true);
-            drmenu.AddItem(new MenuItem("debugdmg", "Debug combo damage")).SetValue(false);
+            drmenu.AddItem(new MenuItem("drawkill", "Draw Killable")).SetValue(true);
+            drmenu.AddItem(new MenuItem("drawtarg", "Draw Target Circle")).SetValue(true);
+            drmenu.AddItem(new MenuItem("debugdmg", "Debug Combo Damage")).SetValue(false);
             _menu.AddSubMenu(drmenu);
 
             var spellmenu = new Menu("Morgana: Spells", "spells");
 
             var menuQ = new Menu("Q Menu", "qmenu");
             menuQ.AddItem(new MenuItem("hitchanceq", "Binding Hitchance ")).SetValue(new Slider(3, 1, 4));
-            menuQ.AddItem(new MenuItem("useqcombo", "Use in combo")).SetValue(true);
-            menuQ.AddItem(new MenuItem("useharassq", "Use in harass")).SetValue(true);
-            menuQ.AddItem(new MenuItem("useqanti", "Use on gapcloser")).SetValue(true);
-            menuQ.AddItem(new MenuItem("useqauto", "Use on immobile")).SetValue(true);
-            menuQ.AddItem(new MenuItem("useqdash", "Use on dashing")).SetValue(true);
+            menuQ.AddItem(new MenuItem("useqcombo", "Use in Combo")).SetValue(true);
+            menuQ.AddItem(new MenuItem("useharassq", "Use in Harass")).SetValue(true);
+            menuQ.AddItem(new MenuItem("useqanti", "Use on Gapcloser")).SetValue(true);
+            menuQ.AddItem(new MenuItem("useqauto", "Use on Immobile")).SetValue(true);
+            menuQ.AddItem(new MenuItem("useqdash", "Use on Dashing")).SetValue(true);
             spellmenu.AddSubMenu(menuQ);
 
             var menuW = new Menu("W Menu", "wmenu");
             menuW.AddItem(new MenuItem("hitchancew", "Tormentsoil Hitchance ")).SetValue(new Slider(2, 1, 4));
-            menuW.AddItem(new MenuItem("usewcombo", "Use in combo")).SetValue(true);
-            menuW.AddItem(new MenuItem("useharassw", "Use in harass")).SetValue(true);       
-            menuW.AddItem(new MenuItem("usewauto", "Use on immobile")).SetValue(true);
-            menuW.AddItem(new MenuItem("waitfor", "Wait for bind or immobile")).SetValue(true);
-            menuW.AddItem(new MenuItem("calcw", "Calculated ticks")).SetValue(new Slider(3, 1, 5));
+            menuW.AddItem(new MenuItem("usewcombo", "Use in Combo")).SetValue(true);
+            menuW.AddItem(new MenuItem("useharassw", "Use in Harass")).SetValue(true);       
+            menuW.AddItem(new MenuItem("usewauto", "Use on Immobile")).SetValue(true);
+            menuW.AddItem(new MenuItem("waitfor", "Wait for Bind or Immobile")).SetValue(true);
+            menuW.AddItem(new MenuItem("calcw", "Calculated Ticks")).SetValue(new Slider(3, 1, 5));
             spellmenu.AddSubMenu(menuW);
+
+            var menuE = new Menu("E Menu", "emenu");
+            menuE.AddItem(new MenuItem("eco", "Check Minion Collision")).SetValue(false);
+            menuE.AddItem(new MenuItem("eco2", "Check Hero Collision")).SetValue(false);
+
+            // create menu per ally
+            var allyMenu = new Menu("Use for", "useonwho");
+            foreach (var frn in ObjectManager.Get<Obj_AI_Hero>().Where(x => x.Team == Me.Team))
+                allyMenu.AddItem(new MenuItem("useon" + frn.ChampionName, frn.ChampionName)).SetValue(true);              
+
+            menuE.AddSubMenu(allyMenu);
+   
+            foreach (var ene in ObjectManager.Get<Obj_AI_Hero>().Where(x => x.Team != Me.Team))
+            {
+                // create menu per enemy
+                var champMenu = new Menu(ene.ChampionName, "cm" + ene.NetworkId);
+
+                // check if spell is supported in lib
+                foreach (var lib in KurisuLib.CCList.Where(x => x.HeroName == ene.ChampionName))
+                {
+                    var skillMenu = new Menu(lib.Slot + " - " + lib.SpellMenuName, "sm" + lib.SDataName);
+                    skillMenu.AddItem(new MenuItem(lib.SDataName + "on", "Enable")).SetValue(true);
+                    skillMenu.AddItem(new MenuItem(lib.SDataName + "wait", "Wait Till Impact (Disabled)")).SetValue(false);
+                    skillMenu.AddItem(new MenuItem(lib.SDataName + "pr", "Priority"))
+                        .SetValue(new Slider(lib.DangerLevel, 1, 5));
+                    champMenu.AddSubMenu(skillMenu);
+                }
+
+                menuE.AddSubMenu(champMenu);
+            }
+
+            spellmenu.AddSubMenu(menuE);
 
             var menuR = new Menu("R Menu", "rmenu");
             menuR.AddItem(new MenuItem("usercombo", "Enable")).SetValue(true);
@@ -90,17 +124,28 @@ namespace KurisuMorgana
                     .SetValue(new StringList(new[] { "Dont Bind ", "Normal Bind ", "Auto Bind" }, 1));
             }
 
+
             _menu.AddSubMenu(menuM);
 
+            _menu.AddItem(new MenuItem("combokey", "Combo (active)")).SetValue(new KeyBind(32, KeyBindType.Press));
+            _menu.AddItem(new MenuItem("harasskey", "Harass (active)")).SetValue(new KeyBind('C', KeyBindType.Press));
             _menu.AddToMainMenu();
 
             Game.PrintChat("<font color=\"#FF9900\"><b>KurisuMorgana:</b></font> Loaded");
-            Game.PrintChat("<b>Oracle#</b> is <b>recommended</b> for advance spell shield support!");
 
             // events
             Drawing.OnDraw += Drawing_OnDraw;
             Game.OnGameUpdate += Game_OnGameUpdate;
             AntiGapcloser.OnEnemyGapcloser += AntiGapcloser_OnEnemyGapcloser;
+
+            try
+            {
+                Obj_AI_Base.OnProcessSpellCast += Obj_AI_Base_OnProcessSpellCast;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Exception thrown KurisuMorgana: (BlackShield)");
+            }
         }
 
         private static void Game_OnGameUpdate(EventArgs args)
@@ -347,6 +392,43 @@ namespace KurisuMorgana
             _guise = (float) (Items.HasItem(3151)
                 ? Me.GetItemDamage(target, Damage.DamageItems.LiandrysTorment)
                 : 0);
+        }
+
+        internal static void Obj_AI_Base_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
+        {
+            if (sender.Type == Me.Type && _e.IsReady() && sender.IsEnemy)
+            {
+                var attacker = ObjectManager.Get<Obj_AI_Hero>().First(x => x.NetworkId == sender.NetworkId);
+                foreach (var ally in ObjectManager.Get<Obj_AI_Hero>().Where(x => x.IsValidTarget(_e.Range, false)))
+                {
+                    var detectRange = ally.ServerPosition + (args.End - ally.ServerPosition).Normalized() * ally.Distance(args.End);
+                    if (detectRange.Distance(ally.ServerPosition) <= ally.AttackRange - ally.BoundingRadius)
+                    {
+                        // no linq cus i say :p
+                        foreach (var lib in KurisuLib.CCList)
+                        {
+                            if (lib.HeroName == attacker.ChampionName && lib.Slot == attacker.GetSpellSlot(args.SData.Name))
+                            {
+                                var timeTillHit = lib.Delay +
+                                    (int)(1000*attacker.Distance(ally.ServerPosition/args.SData.MissileSpeed));
+
+                                if (_menu.Item(lib.SDataName + "on").GetValue<bool>() && _menu.Item("useon" + ally.ChampionName).GetValue<bool>())
+                                {
+                                    if (_menu.Item(lib.SDataName + "wait").GetValue<bool>())
+                                    {
+                                        Utility.DelayAction.Add(timeTillHit, () => _e.CastOnUnit(ally));
+                                    }
+
+                                    else
+                                    {
+                                        _e.CastOnUnit(ally);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }       
         }
     }
 }
