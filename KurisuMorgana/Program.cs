@@ -124,7 +124,6 @@ namespace KurisuMorgana
                     .SetValue(new StringList(new[] { "Dont Bind ", "Normal Bind ", "Auto Bind" }, 1));
             }
 
-
             _menu.AddSubMenu(menuM);
 
             _menu.AddItem(new MenuItem("combokey", "Combo (active)")).SetValue(new KeyBind(32, KeyBindType.Press));
@@ -162,14 +161,14 @@ namespace KurisuMorgana
                      _menu.Item("useqauto").GetValue<bool>(),
                      _menu.Item("usewauto").GetValue<bool>());
 
-            if (_orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
+            if (_menu.Item("combokey").GetValue<KeyBind>().Active)
             {
                 Combo(_menu.Item("useqcombo").GetValue<bool>(),
                       _menu.Item("usewcombo").GetValue<bool>(), 
                       _menu.Item("usercombo").GetValue<bool>());
             }
 
-            if (_orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Mixed)
+            if (_menu.Item("harasskey").GetValue<KeyBind>().Active)
             {
                 Harass(_menu.Item("useqcombo").GetValue<bool>(),
                        _menu.Item("usewcombo").GetValue<bool>());
