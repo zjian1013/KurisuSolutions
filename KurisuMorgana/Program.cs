@@ -228,7 +228,7 @@ namespace KurisuMorgana
         {
             if (useq && _q.IsReady())
             {
-                var qtarget = TargetSelector.GetTarget(_q.Range + 10, TargetSelector.DamageType.Magical);
+                var qtarget = TargetSelector.GetTargetNoCollision(_q);
                 if (qtarget.IsValidTarget(_q.Range + 10))
                 {
                     var poutput = _q.GetPrediction(qtarget);
@@ -287,7 +287,7 @@ namespace KurisuMorgana
         {
             if (useq && _q.IsReady())
             {
-                var qtarget = TargetSelector.GetTarget(_q.Range - 300, TargetSelector.DamageType.Magical);
+                var qtarget = TargetSelector.GetTargetNoCollision(_q);
                 if (qtarget.IsValidTarget(_q.Range - 300))
                 {
                     var poutput = _q.GetPrediction(qtarget);

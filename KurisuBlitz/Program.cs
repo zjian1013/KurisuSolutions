@@ -198,7 +198,7 @@ namespace KurisuBlitz
         {
             if (useq && _q.IsReady())
             {
-                var qtarget = TargetSelector.GetTarget(950, TargetSelector.DamageType.Physical);
+                var qtarget = TargetSelector.GetTargetNoCollision(_q);
                 if (qtarget.IsValidTarget(_q.Range))
                 {
                     var poutput = _q.GetPrediction(qtarget);
