@@ -126,7 +126,7 @@ namespace Oracle
                 BuffName = "vladimirhemoplague",
                 SpellName = "vladimirhemoplague",
                 Slot = SpellSlot.R,
-                Delay = 4000
+                Delay = 2000
             });
 
             CleanseBuffs.Add(new GameBuff

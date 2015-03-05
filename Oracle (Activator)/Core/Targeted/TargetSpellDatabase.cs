@@ -238,7 +238,7 @@ namespace Oracle.Core.Targeted
                 new TargetSpellData("fizz", "fizzseastonepassive", SpellSlot.W, SpellType.Self, CcType.No, 0, 500, 0),
                 new TargetSpellData("fizz", "fizzjump", SpellSlot.E, SpellType.Self, CcType.No, 400, 500, 1300),
                 new TargetSpellData("fizz", "fizzjumptwo", SpellSlot.E, SpellType.Skillshot, CcType.Slow, 400, 500, 1300),
-                new TargetSpellData("fizz", "fizzmarinerdoom", SpellSlot.R, SpellType.Skillshot, CcType.Knockup, 1275, 500, 1200, true, false, true),
+                new TargetSpellData("fizz", "fizzmarinerdoom", SpellSlot.R, SpellType.Skillshot, CcType.Knockup, 1275, 500, 1200, false, false, true),
 
                 #endregion Fizz
 
