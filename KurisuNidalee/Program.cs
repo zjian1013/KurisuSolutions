@@ -1108,37 +1108,28 @@ namespace KurisuNidalee
 
         public static List<Obj_AI_Base> GetDashObjects(IEnumerable<Obj_AI_Base> predefinedObjectList = null)
         {
-            IEnumerable<Obj_AI_Base> objects;
+            List<Obj_AI_Base> objects;
             if (predefinedObjectList != null)
                 objects = predefinedObjectList.ToList();
             else
-                objects =
-                    ObjectManager.Get<Obj_AI_Base>().Where(o => o.IsValidTarget(Orbwalking.GetRealAutoAttackRange(o)));
+                objects = ObjectManager.Get<Obj_AI_Base>().FindAll(o => o.IsValidTarget(Orbwalking.GetRealAutoAttackRange(o)));
 
-            var apexPoint = Me.ServerPosition.To2D() +
-                            (Me.ServerPosition.To2D() - Game.CursorPos.To2D()).Normalized()*
-                            Orbwalking.GetRealAutoAttackRange(Me);
+            var apexPoint = Me.ServerPosition.To2D() + (Me.ServerPosition.To2D() - Game.CursorPos.To2D()).Normalized() * Orbwalking.GetRealAutoAttackRange(Me);
 
-            return
-                objects.Where(
-                    o => IsLyingInCone(o.ServerPosition.To2D(), apexPoint, Me.ServerPosition.To2D(), Math.PI))
-                    .OrderBy(o => o.Distance(apexPoint, true))
-                    .ToList();
+            return objects.FindAll(o => IsLyingInCone(o.ServerPosition.To2D(), apexPoint, Me.ServerPosition.To2D(), Math.PI)).OrderBy(o => o.Distance(apexPoint, true)).ToList();
         }
-
-        #endregion
-    
+        
         #region actual spear calc
         private static float GetActualSpearDamage(Obj_AI_Hero target)
         {
-            double baseDamage = new double[] { 50, 75, 100, 125, 150 }[Javelin.Level - 1] +
-                                0.4 * Me.FlatMagicDamageMod;
+            double baseDamage = new double[] { 50, 75, 100, 125, 150 }[_javelinToss.Level - 1] +
+                                0.4 * _player.FlatMagicDamageMod;
 
-            float distance = Me.Distance(target.Position);
+            float distance = _player.Distance(target.Position);
 
             if ((distance < 525))
             {
-                return (float) Me.GetSpellDamage(target, SpellSlot.Q);
+                return (float) _player.GetSpellDamage(target, SpellSlot.Q);
             }
 
             if (distance > 1300)
@@ -1153,6 +1144,7 @@ namespace KurisuNidalee
 
             return totalDamgeCalulated;
         }
+        #emdregion
 
         #endregion
     }
