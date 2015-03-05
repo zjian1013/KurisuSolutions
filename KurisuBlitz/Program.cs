@@ -180,8 +180,7 @@ namespace KurisuBlitz
                     ObjectManager.Get<Obj_AI_Hero>()
                         .FirstOrDefault(h => h.IsEnemy && h.Distance(Me.ServerPosition, true) <= _q.RangeSqr);
 
-                if (itarget.IsValidTarget(_q.Range) &&
-                    itarget.Distance(Me.ServerPosition, true) > _menu.Item("dnd").GetValue<Slider>().Value)
+                if (itarget.IsValidTarget(_q.Range))
                 {
                     if (dashing && _menu.Item("dograb" + itarget.ChampionName).GetValue<StringList>().SelectedIndex == 2)
                         if (itarget.Distance(Me.ServerPosition) > _menu.Item("dnd").GetValue<Slider>().Value)
