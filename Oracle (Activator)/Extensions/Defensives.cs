@@ -13,7 +13,7 @@ namespace Oracle.Extensions
 
         public static void Initialize(Menu root)
         {
-            Game.OnGameUpdate += Game_OnGameUpdate;
+            Game.OnUpdate += Game_OnGameUpdate;
 
             _mainMenu = new Menu("Defensives", "dmenu");
             _menuConfig = new Menu("Defensive Config", "dconfig");
@@ -189,7 +189,7 @@ namespace Oracle.Extensions
             {     
                 if (_mainMenu.Item("use" + name + "Ults").GetValue<bool>())
                 {
-                    if (OC.DangerUlt || OC.IncomeDamage >= target.Health || target.Health/target.MaxHealth*100 <= 15)
+                    if (OC.DangerUlt || OC.IncomeDamage >= target.Health || target.Health / target.MaxHealth * 100 <= 15)
                     {
                         if (OC.AggroTarget.NetworkId == target.NetworkId)
                         {

@@ -30,7 +30,6 @@ namespace Oracle
         public static Menu Origin;
         public static Obj_AI_Hero Attacker;
         public static Obj_AI_Hero AggroTarget;
-        public static Obj_AI_Hero CurrentTarget;
         public static float IncomeDamage, MinionDamage;
         private static readonly Obj_AI_Hero Me = ObjectManager.Player;
 
@@ -40,7 +39,6 @@ namespace Oracle
             CustomEvents.Game.OnGameLoad += OnGameLoad;
         }
 
-        public static int LastTick;
         public static bool Spell;
         public static bool Stealth;
         public static bool Danger;
@@ -49,14 +47,14 @@ namespace Oracle
         public static string FileName;
         public static bool CanManamune;
         public static string ChampionName;
-        public const string Revision = "225";
+        public const string Revision = "226";
 
         private static void OnGameLoad(EventArgs args)
         {
             FileName = "Oracle - " + DateTime.Now.ToString("yy.MM.dd") + " " + DateTime.Now.ToString("h.mm.ss") + ".txt";
       
             ChampionName = Me.ChampionName;
-            Game.OnGameUpdate += Game_OnGameUpdate;
+            Game.OnUpdate += Game_OnGameUpdate;
             Game.PrintChat("<font color=\"#1FFF8F\">Oracle# r." + Revision + " -</font><font color=\"#FFFFCC\"> by Kurisu</font>");
 
             if (!Directory.Exists(Config.LeagueSharpDirectory + @"\Logs\Oracle"))
@@ -88,7 +86,7 @@ namespace Oracle
 
             catch (Exception e)
             {
-                Logger(LogType.Error, "Something went wrong with update checker!");
+                Logger(LogType.Error, string.Format("Something went wrong with update checker! {0}", e.Message));
             }
 
             Origin = new Menu("Oracle", "oracle", true);
@@ -203,16 +201,18 @@ namespace Oracle
 
         private static void GameObject_OnCreate(GameObject obj, EventArgs args)
         {
-            //if (obj.Name == "FizzMarinerDoomMissile" && obj.IsEnemy && GetEnemy("Fizz").IsValid)
-            //{
-            //    var dmg = (float)GetEnemy("Fizz").GetSpellDamage(Friendly(), SpellSlot.R);
-            //    _fizzbait = new GameObj(missile.Name, missile, true, dmg, Environment.TickCount);
-            //}
-
             if (Origin.Item("catchobject").GetValue<KeyBind>().Active)
                 Console.WriteLine(obj.Name);
 
-            if (obj.Name.Contains("Acidtrail_buf_red") && GetEnemy("Singed").IsValid)
+            // red troy is always the enemy team no matter what side.
+            if (obj.Name.Contains("Fizz_Ring_Red") && GetEnemy("Fizz").IsValid)
+            {
+                var dmg = (float)GetEnemy("Fizz").GetSpellDamage(Friendly(), SpellSlot.R);
+                _fizzbait = new GameObj(obj.Name, obj, true, dmg, Environment.TickCount);
+                Logger(LogType.Info, obj.Name + " detected/created (Fizz)");
+            }
+
+            else if (obj.Name.Contains("Acidtrail_buf_red") && GetEnemy("Singed").IsValid)
             {
                 var dmg = (float)GetEnemy("Singed").GetSpellDamage(Friendly(), SpellSlot.Q);
                 _acidtrail = new GameObj(obj.Name, obj, true, dmg, Environment.TickCount);
@@ -312,26 +312,10 @@ namespace Oracle
 
         private static void Game_OnGameUpdate(EventArgs args)
         {
-            // delay the update .3
-            if (Environment.TickCount - LastTick < 300)
-            {
-                return;
-            }
-
             // prevent errors before spawning to the rift
             if (!Me.IsValidTarget(300, false))
             {
                 return;
-            }
-
-            // Get current target near mouse cursor.
-            foreach (
-                var targ in
-                    ObjectManager.Get<Obj_AI_Hero>()
-                        .Where(hero => hero.IsValidTarget(2000))
-                        .OrderByDescending(hero => hero.Distance(Game.CursorPos)))
-            {
-                CurrentTarget = targ;
             }
 
             // Get dangerous buff update for zhonya (vladimir R) etc
@@ -457,25 +441,25 @@ namespace Oracle
 
             if (_fizzbait.Included)
             {
-                if (_fizzbait.Obj.IsValid && Friendly().Distance(_fizzbait.Obj.Position, true) <= 300 * 300)
+                if (_fizzbait.Obj.IsValid && Friendly().Distance(_fizzbait.Obj.Position, true) <= 300*300)
                 {
-                    if (Environment.TickCount - _fizzbait.Start >= 2500)
+                    if (GetEnemy("Fizz").IsValid)
                     {
-                        if (GetEnemy("Fizz").IsValid)
-                        {
-                            Attacker = GetEnemy("Fizz");
-                            AggroTarget = Friendly();
-                            IncomeDamage = _fizzbait.Damage;
+                        Attacker = GetEnemy("Fizz");
+                        AggroTarget = Friendly();
+                        IncomeDamage = _fizzbait.Damage;
 
-                            if (Friendly().CountHerosInRange(false) + 1 >= Friendly().CountHerosInRange(true) ||
-                                IncomeDamage >= Friendly().Health)
+                        if (Friendly().CountHerosInRange(false) + 1 >= Friendly().CountHerosInRange(true) ||
+                            IncomeDamage >= Friendly().Health)
+                        {
+                            if (Environment.TickCount - _fizzbait.Start >= 900)
                             {
                                 Danger = true;
                                 DangerUlt = true;
                                 Dangercc = true;
                             }
                         }
-
+                        
                         Logger(LogType.Danger,
                             AggroTarget.SkinName + " is in fizz bait (Ground Object) for: " + IncomeDamage);
                     }
@@ -551,7 +535,6 @@ namespace Oracle
                             {
                                 Danger = true;
                                 DangerUlt = true;
-                                Attacker = GetEnemy("Fiddlesticks");
                             }
                         }
 
@@ -651,7 +634,7 @@ namespace Oracle
                 {
                     if (GetEnemy("Soraka").IsValid)
                     {
-                        Attacker = GetEnemy("Lux");
+                        Attacker = GetEnemy("Soraka");
                         AggroTarget = Friendly();
                         IncomeDamage = _equinox.Damage;
                         Dangercc = true;
@@ -676,8 +659,6 @@ namespace Oracle
                 Utility.DelayAction.Add(Game.Ping + 130, () => DangerUlt = false);
             if (Spell)
                 Utility.DelayAction.Add(Game.Ping + 130, () => Spell = false);
-
-            LastTick = Environment.TickCount;
         }
 
         public static Obj_AI_Hero Friendly()
@@ -805,6 +786,7 @@ namespace Oracle
                 {
                     CanManamune = true;
                 }
+
                 else
                 {
                     Utility.DelayAction.Add(400, () => CanManamune = false);

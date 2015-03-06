@@ -56,7 +56,7 @@ namespace Oracle.Extensions
         public static void Initialize(Menu root)
         {
             Drawing.OnDraw += Drawing_OnDraw;
-            Game.OnGameUpdate += Game_OnGameUpdate;
+            Game.OnUpdate += Game_OnGameUpdate;
 
             _mainMenu = new Menu("Summoners", "summoners");
             _menuConfig = new Menu("Summoner Config", "sconfig");
@@ -247,15 +247,26 @@ namespace Oracle.Extensions
 
             if (_mainMenu.Item("dotMode").GetValue<StringList>().SelectedIndex == 1)
             {
-                if (OC.CurrentTarget.IsValidTarget(600) && 
-                    OC.CurrentTarget.Health <= OC.GetComboDamage(Me, OC.CurrentTarget))
+                Obj_AI_Hero target = null;
+
+                if (OC.Origin.Item("usecombo").GetValue<KeyBind>().Active)
                 {
-                    if (OC.Origin.Item("usecombo").GetValue<KeyBind>().Active)
+                    // Get current target near mouse cursor.
+                    foreach (
+                        var targ in
+                            ObjectManager.Get<Obj_AI_Hero>()
+                                .Where(hero => hero.IsValidTarget(2000))
+                                .OrderByDescending(hero => hero.Distance(Game.CursorPos)))
                     {
-                        Me.Spellbook.CastSpell(ignite, OC.CurrentTarget);
+                        target = targ;
+                    }
+
+                    if (target.IsValidTarget(600) && target.Health <= OC.GetComboDamage(Me, target))
+                    {
+                        Me.Spellbook.CastSpell(ignite, target);
                         OC.Logger(OC.LogType.Action,
-                            "Used ignite (Combo) on " + OC.CurrentTarget.SkinName + " (" +
-                            OC.CurrentTarget.Health/OC.CurrentTarget.MaxHealth*100 + "%)!");
+                            "Used ignite (Combo) on " + target.SkinName + " (" + target.MaxHealth*100 + "%)!");
+
                     }
                 }
             }
@@ -478,14 +489,27 @@ namespace Oracle.Extensions
 
             if (_mainMenu.Item("smitemode").GetValue<StringList>().SelectedIndex == 1 &&
                 _smiteSlot == "s5_summonersmiteplayerganker")
-            {
+            {                   
+                Obj_AI_Hero target = null;
+
                 if (OC.Origin.Item("usecombo").GetValue<KeyBind>().Active &&
                     Me.Spellbook.CanUseSpell(smite) == SpellState.Ready)
                 {
+
+                    // Get current target near mouse cursor.
+                    foreach (
+                        var targ in
+                            ObjectManager.Get<Obj_AI_Hero>()
+                                .Where(hero => hero.IsValidTarget(2000))
+                                .OrderByDescending(hero => hero.Distance(Game.CursorPos)))
+                    {
+                        target = targ;
+                    }
+
                     if (!save && Me.Spellbook.GetSpell(smite).Ammo > 1)
                     {
-                        Me.Spellbook.CastSpell(smite, OC.CurrentTarget);
-                        OC.Logger(OC.LogType.Action, "Used Smite (Combo) on: " + OC.CurrentTarget.SkinName + "!");
+                        Me.Spellbook.CastSpell(smite, target);
+                        OC.Logger(OC.LogType.Action, "Used Smite (Combo) on: " + target.SkinName + "!");
                     }
                 }
             }

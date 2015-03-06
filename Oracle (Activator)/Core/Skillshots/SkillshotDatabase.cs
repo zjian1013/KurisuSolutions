@@ -832,7 +832,7 @@ namespace Oracle.Core.Skillshots
                     FixedRange = false,
                     AddHitbox = true,
                     DangerValue = 5,
-                    IsDangerous = true,
+                    IsDangerous = false,
                     MissileSpellName = "FizzMarinerDoomMissile",
                     CollisionObjects = new[] {CollisionObjectTypes.Champions, CollisionObjectTypes.YasuoWall},
                     CanBeRemoved = true,
@@ -2562,7 +2562,7 @@ namespace Oracle.Core.Skillshots
                 new SkillshotData
                 {
                     ChampionName = "Sona",
-                    SpellName = "SonaCrescendo",
+                    SpellName = "SonaR",
                     Slot = SpellSlot.R,
                     Type = SkillShotType.SkillshotMissileLine,
                     Delay = 250,
@@ -2573,7 +2573,7 @@ namespace Oracle.Core.Skillshots
                     AddHitbox = true,
                     DangerValue = 5,
                     IsDangerous = true,
-                    MissileSpellName = "SonaCrescendo",
+                    MissileSpellName = "SonaR",
                     CollisionObjects = new[] {CollisionObjectTypes.YasuoWall},
                 });
 

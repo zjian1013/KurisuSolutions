@@ -13,7 +13,7 @@ namespace Oracle.Extensions
 
         public static void Initialize(Menu root)
         {
-            Game.OnGameUpdate += Game_OnGameUpdate;
+            Game.OnUpdate += Game_OnGameUpdate;
 
             _mainMenu = new Menu("Auto Spells", "asmenu");
             _menuConfig = new Menu("Auto Spell Config", "asconfig");
