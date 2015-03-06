@@ -134,7 +134,7 @@ namespace KurisuMorgana
 
             // events
             Drawing.OnDraw += Drawing_OnDraw;
-            Game.OnGameUpdate += Game_OnGameUpdate;
+            Game.OnUpdate += Game_OnGameUpdate;
             AntiGapcloser.OnEnemyGapcloser += AntiGapcloser_OnEnemyGapcloser;
 
             try
@@ -143,7 +143,7 @@ namespace KurisuMorgana
             }
             catch (Exception e)
             {
-                Console.WriteLine("Exception thrown KurisuMorgana: (BlackShield)");
+                Console.WriteLine("Exception thrown KurisuMorgana: (BlackShield: {0})", e);
             }
         }
 

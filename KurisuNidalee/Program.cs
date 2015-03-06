@@ -75,7 +75,7 @@ namespace KurisuNidalee
             Pounce.SetSkillshot(0.50f, 400f, 1500f, false, SkillshotType.SkillshotCone);
 
             // GameOnGameUpdate Event
-            Game.OnGameUpdate += NidaleeOnUpdate;
+            Game.OnUpdate += NidaleeOnUpdate;
 
             // DrawingOnDraw Event
             Drawing.OnDraw += NidaleeOnDraw;

@@ -96,7 +96,7 @@ namespace KurisuBlitz
 
             // events
             Drawing.OnDraw += BlitzOnDraw;
-            Game.OnGameUpdate += BlitzOnUpdate;
+            Game.OnUpdate += BlitzOnUpdate;
             Interrupter.OnPossibleToInterrupt += BlitzOnInterruptableSpell;
 
             Game.PrintChat("<font color=\"#FF9900\"><b>KurisuBlitz:</b></font> Loaded");
