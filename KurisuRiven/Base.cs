@@ -300,7 +300,7 @@ namespace KurisuRiven
                         if (GetList("wsmode") == 1 && UltOn && CanWS &&
                             Settings.Item("combokey").GetValue<KeyBind>().Active)
                         {
-                            if (CanBurst)
+                            if (CanBurst && R.GetPrediction(Combo.Target).Hitchance >= HitChance.Low)
                                 Utility.DelayAction.Add(150, () => R.Cast(Combo.Target.ServerPosition));
                         }
 
