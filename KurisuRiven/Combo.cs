@@ -15,7 +15,7 @@ namespace KurisuRiven
                 return;
       
             // combo 
-            if (Base.Orbwalker.ActiveMode != Orbwalking.OrbwalkingMode.Combo)
+            if (!Base.Settings.Item("combokey").GetValue<KeyBind>().Active)
                 return;
 
             var ignote = Base.Me.GetSpellSlot("summonerdot");
@@ -193,7 +193,7 @@ namespace KurisuRiven
 
         internal static void Flee()
         {
-            if (Base.Settings.Item("fleemode").GetValue<KeyBind>().Active)
+            if (Base.Settings.Item("fleekey").GetValue<KeyBind>().Active)
             {
                 if (Base.CanE && Base.E.IsReady())
                 {
@@ -220,6 +220,7 @@ namespace KurisuRiven
 
         internal static void SemiHarass()
         {
+
             var minionList = new[]
             {
                 "SRU_Razorbeak", "SRU_Krug", "Sru_Crab", "SRU_Baron", "SRU_Dragon",
@@ -228,16 +229,25 @@ namespace KurisuRiven
 
             if (Base.CanQ && Environment.TickCount - Base.LastAA >= 150 && Base.GetBool("semiq"))
             {
-                if (Base.Q.IsReady() && Environment.TickCount - Base.LastAA < 1200)
+                if (Base.Q.IsReady() && Environment.TickCount - Base.LastAA < 1200 && Base.LastTarget != null)
                 {
-
                     if (Base.LastTarget.IsValidTarget(Base.Q.Range + 100) && Base.LastTarget.IsValid<Obj_AI_Hero>())
                         Base.Q.Cast(Base.LastTarget.ServerPosition);
+
+                    if (Base.Settings.Item("clearkey").GetValue<KeyBind>().Active)
+                        return;
 
                     if (Base.LastTarget.IsValidTarget(Base.Q.Range + 100) && !Base.LastTarget.Name.Contains("Mini") &&
                         !Base.LastTarget.Name.StartsWith("Minion") && minionList.Any(name => Base.LastTarget.Name.StartsWith(name)))
                     {
                         Base.Q.Cast(Base.LastTarget.ServerPosition);
+                    }
+
+                    if (Base.LastTarget.IsValidTarget(Base.Q.Range + 100) &&
+                        (Base.LastTarget.IsValid<Obj_AI_Minion>() || Base.LastTarget.IsValid<Obj_AI_Turret>()))
+                    {
+                        if (Base.Settings.Item("semiqlane").GetValue<KeyBind>().Active)
+                            Base.Q.Cast(Base.LastTarget.ServerPosition);
                     }
                 }
             }
@@ -247,7 +257,7 @@ namespace KurisuRiven
         {
             try
             {
-                if (Base.Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear)
+                if (Base.Settings.Item("clearkey").GetValue<KeyBind>().Active)
                 {
                     var minionList = new[]
                     {
@@ -325,9 +335,6 @@ namespace KurisuRiven
                                 if (Base.GetBool("uselanew") && Base.W.IsReady() && Base.CanW)
                                         Base.W.Cast();
                             }
-
-                            if (Base.CanAA && Base.GetBool("forceaa"))
-                                Base.Me.IssueOrder(GameObjectOrder.AttackUnit, newminion);
 
                         }
 
