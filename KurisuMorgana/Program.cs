@@ -170,8 +170,8 @@ namespace KurisuMorgana
 
             if (_menu.Item("harasskey").GetValue<KeyBind>().Active)
             {
-                Harass(_menu.Item("useqcombo").GetValue<bool>(),
-                       _menu.Item("usewcombo").GetValue<bool>());
+                Harass(_menu.Item("useharassq").GetValue<bool>(),
+                       _menu.Item("useharassw").GetValue<bool>());
             }
         }
 
