@@ -42,7 +42,7 @@ namespace KurisuRiven
             // valor
             // engage if target is out of aa range
             if (Base.E.IsReady() && Base.CanE && Base.GetBool("usecomboe") &&
-               (Target.Distance(Base.Me.ServerPosition, true) > Math.Pow(Base.TrueRange + 100, 2) ||
+               (Target.Distance(Base.Me.ServerPosition, true) > Math.Pow(Base.TrueRange + 30, 2) ||
                 Base.Me.Health/Base.Me.MaxHealth*100 <= Base.GetSlider("vhealth")))
             {
                 // item handler
@@ -282,7 +282,6 @@ namespace KurisuRiven
                         Base.OrbTo(minion);
                         if (minionList.Any(x => minion.Name.StartsWith(x) && !minion.Name.Contains("Mini")))
                         {
-
                             if (Base.GetBool("usejungleq") && Base.Q.IsReady() && Base.CanQ)
                             {
                                 if (minion.Distance(Base.Me.ServerPosition, true) <= Math.Pow(Base.Q.Range + 30, 2))
@@ -340,8 +339,11 @@ namespace KurisuRiven
 
                         if (Base.GetBool("uselanee"))
                         {
-                            if (Base.E.IsReady() && Base.CanE)
+                            if (Base.E.IsReady() && Base.CanE &&
+                                newminion.Distance(Base.Me.ServerPosition, true) > Math.Pow(Base.TrueRange + 30, 2))
+                            {
                                 Base.E.Cast(Game.CursorPos);
+                            }
                         }
                     }
                 }

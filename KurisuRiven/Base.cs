@@ -121,7 +121,7 @@ namespace KurisuRiven
                 if (GetList("cancelt") == 1 && LastTarget != null)
                     MovePos = Me.ServerPosition + (Me.ServerPosition - LastTarget.ServerPosition).Normalized()*53;
                 else
-                    MovePos = Me.ServerPosition + (Me.ServerPosition - Game.CursorPos).Normalized() * 48;
+                    MovePos = Game.CursorPos;
             }
             catch (Exception e)
             {
@@ -252,14 +252,14 @@ namespace KurisuRiven
                     case "RivenTriCleave":
                         DidQ = true;
                         //CanMV = false;
-                        LastQ = Environment.TickCount;     
+                        LastQ = Environment.TickCount;
+                        CanQ = false;
                         if (LastTarget.IsValidTarget(TrueRange + 100))
                         Utility.DelayAction.Add(100,
                             () => Me.IssueOrder(GameObjectOrder.MoveTo, MovePos));
 
                         if (GetList("engage") == 1 && HasHD)
                             Helpers.CheckR(Combo.Target);
-                        CanQ = false;
                         break;
                     case "RivenMartyr":
                         DidW = true;
@@ -335,7 +335,7 @@ namespace KurisuRiven
 
                     else if (Settings.Item("clearkey").GetValue<KeyBind>().Active)
                     {
-                        if (!GetBool("usejunglew") || !GetBool("usejunglee"))
+                        if (GetBool("usejungleq") && LastTarget.IsValid<Obj_AI_Minion>() && !LastTarget.Name.StartsWith("Minion"))
                         {
                             // delay till after aa
                             Utility.DelayAction.Add(50 + (int)(Me.AttackDelay * 100) + Game.Ping/2 + GetSlider("delay"), delegate
@@ -345,7 +345,6 @@ namespace KurisuRiven
                                 if (Items.CanUseItem(3074))
                                     Items.UseItem(3074);
                             });
-
                         }
                     }
                 }
