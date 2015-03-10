@@ -120,6 +120,8 @@ namespace KurisuRiven
             {
                 if (GetList("cancelt") == 1 && LastTarget != null)
                     MovePos = Me.ServerPosition + (Me.ServerPosition - LastTarget.ServerPosition).Normalized()*53;
+                else if (GetList("cancelt") == 2 && LastTarget != null)
+                    MovePos = Me.ServerPosition.Extend(LastTarget.ServerPosition, 550);
                 else
                     MovePos = Game.CursorPos;
             }
@@ -415,7 +417,7 @@ namespace KurisuRiven
             mMenu.AddItem(new MenuItem("engage", "Engage Mode"))
                 .SetValue(new StringList(new[] { "Normal", "Tiamat First" }));
             mMenu.AddItem(new MenuItem("cancelt", "Cancel To"))
-                .SetValue(new StringList(new[] {"Cursor", "Behind Me"}, 1));
+                .SetValue(new StringList(new[] {"Cursor", "Behind Me", "Target Direction"}, 2));
             Settings.AddSubMenu(mMenu);
 
             var sMenu = new Menu("Riven: Spells", "Spells");
