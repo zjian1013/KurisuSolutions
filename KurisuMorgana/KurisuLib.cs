@@ -25,8 +25,7 @@ namespace KurisuMorgana
         public int DangerLevel { get; set; }
 
         public static List<KurisuLib> GDList = new List<KurisuLib>(); // Generic Dangerous List
-        public static List<KurisuLib> CCList = new List<KurisuLib>(); // Crowd Control List
-        public static List<KurisuLib> SList = new List<KurisuLib>();  // Silence List
+        public static List<KurisuLib> CCList = new List<KurisuLib>(); // Crowd Control / Silence List
 
         static KurisuLib()
         {
@@ -332,6 +331,16 @@ namespace KurisuMorgana
                      DangerLevel = 3,
                      SDataName = "FizzJump",
                  });
+
+            CCList.Add(new KurisuLib
+            {
+                HeroName = "FiddleSticks",
+                SpellMenuName = "Terrify",
+                Slot = SpellSlot.Q,
+                DangerLevel = 5,
+                SDataName = "Terrify"
+            });
+
             CCList.Add(
                 new KurisuLib
                 {
@@ -935,7 +944,7 @@ new KurisuLib
                      SpellMenuName = "Terrify",
                      Slot = SpellSlot.Q,
                      DangerLevel = 3,
-                     SDataName = "Terrify",
+                     SDataName = "Terrify"
                  });
             CCList.Add(
                  new KurisuLib
@@ -1480,16 +1489,17 @@ new KurisuLib
             #endregion
 
             #region SList
-            SList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
-                    HeroName = "Fiddlesticks",
+                    HeroName = "FiddleSticks",
                     SpellMenuName = "Dark Wind",
                     Slot = SpellSlot.E,
                     DangerLevel = 3,
                     SDataName = "FiddlesticksDarkWind",
                 });
-            SList.Add(
+
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Blitzcrank",
@@ -1500,7 +1510,7 @@ new KurisuLib
                     SDataName = "StaticField",
 
                 });
-            SList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Chogath",
@@ -1511,7 +1521,7 @@ new KurisuLib
                     SDataName = "FeralScream",
 
                 });
-            SList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Malzahar",
@@ -1521,7 +1531,7 @@ new KurisuLib
                     DangerLevel = 3,
                     SDataName = "AlZaharCalloftheVoid",
                 });
-            SList.Add(
+            CCList.Add(
                 new KurisuLib
                 {
                     HeroName = "Talon",
@@ -1530,7 +1540,7 @@ new KurisuLib
                     DangerLevel = 3,
                     SDataName = "TalonCutthroat",
                 });
-            SList.Add(
+            CCList.Add(
                  new KurisuLib
                  {
                      HeroName = "Garen",
@@ -1539,7 +1549,7 @@ new KurisuLib
                      DangerLevel = 3,
                      SDataName = "GarenQ",
                  });
-            SList.Add(
+            CCList.Add(
                   new KurisuLib
                   {
                       HeroName = "Viktor",
@@ -1548,7 +1558,7 @@ new KurisuLib
                       DangerLevel = 3,
                       SDataName = "ViktorChaosStorm",
                   });
-            SList.Add(
+            CCList.Add(
                    new KurisuLib
                    {
                        HeroName = "Soraka",
