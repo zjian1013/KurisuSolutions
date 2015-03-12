@@ -154,10 +154,11 @@ namespace KurisuNidalee
             nidaHeals.AddItem(new MenuItem("usedemheals", "Enable")).SetValue(true);
             nidaHeals.AddItem(new MenuItem("sezz", "Heal Priority: ")).SetValue(new StringList(new[] { "Low HP", "Highest AD" }));
             nidaHeals.AddItem(new MenuItem("healmanapct", "Minimum Mana %")).SetValue(new Slider(55));
+
             foreach (var hero in ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsAlly))
             {
-                nidaHeals.AddItem(new MenuItem("heal" + hero.SkinName, hero.SkinName)).SetValue(true);
-                nidaHeals.AddItem(new MenuItem("healpct" + hero.SkinName, "Heal " + hero.SkinName + " if under %")).SetValue(new Slider(50));
+                nidaHeals.AddItem(new MenuItem("heal" + hero.ChampionName, hero.ChampionName)).SetValue(true);
+                nidaHeals.AddItem(new MenuItem("healpct" + hero.ChampionName, "Heal " + hero.ChampionName + " if under %")).SetValue(new Slider(50));
             }
 
             _mainMenu.AddSubMenu(nidaHeals);
@@ -175,6 +176,7 @@ namespace KurisuNidalee
             nidaJungle.AddItem(new MenuItem("jgcougarw", "Use Pounce")).SetValue(true);
             nidaJungle.AddItem(new MenuItem("jgcougare", "Use Swipe")).SetValue(true);
             nidaJungle.AddItem(new MenuItem("jgcougarr", "Auto Switch Form")).SetValue(true);
+            nidaJungle.AddItem(new MenuItem("jgheal", "Switch Form to Heal")).SetValue(true);
             nidaJungle.AddItem(new MenuItem("jgpct", "Minimum Mana %")).SetValue(new Slider(35));
             _mainMenu.AddSubMenu(nidaJungle);
 
@@ -679,9 +681,9 @@ namespace KurisuNidalee
                         .OrderByDescending(xe => xe.FlatPhysicalDamageMod).First();
             }
 
-            if (!_cougarForm && _mainMenu.Item("heal" + target.SkinName).GetValue<bool>())
+            if (!_cougarForm && _mainMenu.Item("heal" + target.ChampionName).GetValue<bool>())
             {
-                var needed = _mainMenu.Item("healpct" + target.SkinName).GetValue<Slider>().Value;
+                var needed = _mainMenu.Item("healpct" + target.ChampionName).GetValue<Slider>().Value;
                 var hp = (int)((target.Health / target.MaxHealth) * 100);
 
                 if (actualHeroManaPercent > selfManaPercent && hp <= needed || _hasBlue && hp <= needed)
@@ -818,12 +820,14 @@ namespace KurisuNidalee
                     (CQ != 0 || Me.Spellbook.CanUseSpell(SpellSlot.Q) == SpellState.NotLearned) && 
                     (CE != 0 || Me.Spellbook.CanUseSpell(SpellSlot.E) == SpellState.NotLearned))
                 {
-                    if (HQ != 0)
-                        return;
-
-                    if (Aspectofcougar.IsReady() && _mainMenu.Item("jgcougarr").GetValue<bool>())
+                    if ((HQ == 0 || HE == 0 && Me.Health/Me.MaxHealth*100 <= 
+                        _mainMenu.Item("healpct" + Me.ChampionName).GetValue<Slider>().Value &&
+                        _mainMenu.Item("jgheal").GetValue<bool>()) && Aspectofcougar.IsReady() && 
+                        _mainMenu.Item("jgcougarr").GetValue<bool>())
+                    {
                         if (actualHeroManaPercent > minPercent)
                             Aspectofcougar.Cast();
+                    }
                 }
             }
 
