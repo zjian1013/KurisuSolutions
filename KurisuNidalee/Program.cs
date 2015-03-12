@@ -46,6 +46,11 @@ namespace KurisuNidalee
             return target.HasBuff("nidaleepassivehunted", true);
         }
 
+        private static bool NotLearned(Spell spell)
+        {
+            return Me.Spellbook.CanUseSpell(spell.Slot) == SpellState.NotLearned;
+        }
+
         private static readonly string[] Jungleminions =
         {
             "SRU_Razorbeak", "SRU_Krug", "Sru_Crab",
@@ -258,9 +263,7 @@ namespace KurisuNidalee
 
 
             if (Me.HasBuff("Takedown", true))
-            {
                 Orbwalking.LastAATick = 0;
-            }
 
             if (_mainMenu.Item("imm").GetValue<bool>())
             {
@@ -270,13 +273,11 @@ namespace KurisuNidalee
                     return;
                 }
 
-                foreach (
-                    var targ in
-                        ObjectManager.Get<Obj_AI_Hero>()
-                            .Where(
-                                hero =>
-                                    hero.IsValidTarget() && hero.Distance(Me.ServerPosition, true) <= Bushwack.RangeSqr)
-                    )
+                var targ =
+                    ObjectManager.Get<Obj_AI_Hero>()
+                        .FirstOrDefault(hero => hero.Distance(Me.ServerPosition, true) <= Bushwack.RangeSqr);
+
+                if (targ.IsValidTarget(Bushwack.Range))
                 {
                     var prediction = Bushwack.GetPrediction(targ);
                     if (prediction.Hitchance == HitChance.Immobile)
@@ -284,7 +285,7 @@ namespace KurisuNidalee
                         Bushwack.Cast(prediction.CastPosition);
                     }
                 }
-            }
+            }      
         }
 
         #endregion
@@ -543,7 +544,7 @@ namespace KurisuNidalee
                 {
                     if (target.Distance(Me.ServerPosition, true) <= Swipe.RangeSqr)
                     {
-                        if (!Pounce.IsReady() || Me.Spellbook.CanUseSpell(SpellSlot.W) == SpellState.NotLearned)
+                        if (!Pounce.IsReady() || NotLearned(Pounce))
                             Swipe.Cast(target.ServerPosition);
                     }
                 }
@@ -714,7 +715,7 @@ namespace KurisuNidalee
                     if (m.Distance(Me.ServerPosition, true) <= Swipe.RangeSqr && CE == 0)
                     {
                         if (_mainMenu.Item("lccougare").GetValue<bool>() &&
-                           (!Pounce.IsReady() || Me.Spellbook.CanUseSpell(SpellSlot.W) == SpellState.NotLearned))
+                           (!Pounce.IsReady() || NotLearned(Pounce)))
                         {
                             Swipe.Cast(m.ServerPosition);
                         }
@@ -792,7 +793,7 @@ namespace KurisuNidalee
                 if (m.Distance(Me.ServerPosition, true) <= Swipe.RangeSqr && CE == 0)
                 {
                     if (_mainMenu.Item("jgcougare").GetValue<bool>() &&
-                       (!Pounce.IsReady() || Me.Spellbook.CanUseSpell(SpellSlot.W) == SpellState.NotLearned))
+                       (!Pounce.IsReady() || NotLearned(Pounce)))
                     {
                         Swipe.Cast(m.ServerPosition);
                     }
@@ -816,9 +817,9 @@ namespace KurisuNidalee
                         Takedown.CastOnUnit(Me);
                 }
 
-                if ((CW != 0 || !Pounce.IsReady() || Me.Spellbook.CanUseSpell(SpellSlot.W) == SpellState.NotLearned) &&       
-                    (CQ != 0 || Me.Spellbook.CanUseSpell(SpellSlot.Q) == SpellState.NotLearned) && 
-                    (CE != 0 || Me.Spellbook.CanUseSpell(SpellSlot.E) == SpellState.NotLearned))
+                if ((CW != 0 || !Pounce.IsReady() || NotLearned(Pounce)) &&       
+                    (CQ != 0 || NotLearned(Takedown)) && 
+                    (CE != 0 || NotLearned(Primalsurge)))
                 {
                     if ((HQ == 0 || HE == 0 && Me.Health/Me.MaxHealth*100 <= 
                         _mainMenu.Item("healpct" + Me.ChampionName).GetValue<Slider>().Value &&
@@ -1027,19 +1028,19 @@ namespace KurisuNidalee
 
             if (!_cougarForm) // lets show cooldown timers for the opposite form :)
             {
-                if (Me.Spellbook.CanUseSpell(SpellSlot.Q) == SpellState.NotLearned)
+                if (NotLearned(Javelin))
                     Drawing.DrawText(wts[0] - 80, wts[1], Color.White, "Q: Null");
                 else if (CQ == 0)
                     Drawing.DrawText(wts[0] - 80, wts[1], Color.White, "Q: Ready");
                 else
                     Drawing.DrawText(wts[0] - 80, wts[1], Color.Orange, "Q: " + CQ.ToString("0.0"));
-                if (Me.Spellbook.CanUseSpell(SpellSlot.W) == SpellState.NotLearned)
+                if (NotLearned(Bushwack))
                     Drawing.DrawText(wts[0] - 30, wts[1] + 30, Color.White, "W: Null");
                 else if ((CW == 0 || Pounce.IsReady()))
                     Drawing.DrawText(wts[0] - 30, wts[1] + 30, Color.White, "W: Ready");
                 else
                     Drawing.DrawText(wts[0] - 30, wts[1] + 30, Color.Orange, "W: " + CW.ToString("0.0"));
-                if (Me.Spellbook.CanUseSpell(SpellSlot.E) == SpellState.NotLearned)
+                if (NotLearned(Primalsurge))
                     Drawing.DrawText(wts[0], wts[1], Color.White, "E: Null");
                 else if (CE == 0)
                     Drawing.DrawText(wts[0], wts[1], Color.White, "E: Ready");
@@ -1049,19 +1050,19 @@ namespace KurisuNidalee
             }
             else
             {
-                if (Me.Spellbook.CanUseSpell(SpellSlot.Q) == SpellState.NotLearned)
+                if (NotLearned(Takedown))
                     Drawing.DrawText(wts[0] - 80, wts[1], Color.White, "Q: Null");
                 else if (HQ == 0)
                     Drawing.DrawText(wts[0] - 80, wts[1], Color.White, "Q: Ready");
                 else
                     Drawing.DrawText(wts[0] - 80, wts[1], Color.Orange, "Q: " + HQ.ToString("0.0"));
-                if (Me.Spellbook.CanUseSpell(SpellSlot.W) == SpellState.NotLearned)
+                if (NotLearned(Pounce))
                     Drawing.DrawText(wts[0] - 30, wts[1] + 30, Color.White, "W: Null");
                 else if (HW == 0)
                     Drawing.DrawText(wts[0] - 30, wts[1] + 30, Color.White, "W: Ready");
                 else
                     Drawing.DrawText(wts[0] - 30, wts[1] + 30, Color.Orange, "W: " + HW.ToString("0.0"));
-                if (Me.Spellbook.CanUseSpell(SpellSlot.E) == SpellState.NotLearned)
+                if (NotLearned(Swipe))
                     Drawing.DrawText(wts[0], wts[1], Color.White, "E: Null");
                 else if (HE == 0)
                     Drawing.DrawText(wts[0], wts[1], Color.White, "E: Ready");
