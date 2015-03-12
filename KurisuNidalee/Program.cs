@@ -224,7 +224,7 @@ namespace KurisuNidalee
 
         #endregion
 
-        #region Nidalee: OnTick
+        #region Nidalee: OnUpdate
         private static void NidaleeOnUpdate(EventArgs args)
         {
             _hasBlue = Me.HasBuff("crestoftheancientgolem", true);
@@ -262,8 +262,8 @@ namespace KurisuNidalee
 
             if (_mainMenu.Item("imm").GetValue<bool>())
             {
-                // Human W == 0 -- Bushwack is on CD
-                if (HW != 0 || !Bushwack.IsReady())
+                // Human W != 0 -- Bushwack is on CD
+                if (HW != 0 || !_cougarForm && !Bushwack.IsReady())
                 {
                     return;
                 }
