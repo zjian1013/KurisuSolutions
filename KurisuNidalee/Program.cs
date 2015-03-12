@@ -153,7 +153,7 @@ namespace KurisuNidalee
             var nidaHeals = new Menu("Nidalee: Heal", "hengine");
             nidaHeals.AddItem(new MenuItem("usedemheals", "Enable")).SetValue(true);
             nidaHeals.AddItem(new MenuItem("sezz", "Heal Priority: ")).SetValue(new StringList(new[] { "Low HP", "Highest AD" }));
-            nidaHeals.AddItem(new MenuItem("healmanapct", "Minimum Mana %")).SetValue(new Slider(40));
+            nidaHeals.AddItem(new MenuItem("healmanapct", "Minimum Mana %")).SetValue(new Slider(55));
             foreach (var hero in ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsAlly))
             {
                 nidaHeals.AddItem(new MenuItem("heal" + hero.SkinName, hero.SkinName)).SetValue(true);
@@ -165,7 +165,7 @@ namespace KurisuNidalee
             var nidaHarass = new Menu("Nidalee: Harass", "harass");
             nidaHarass.AddItem(new MenuItem("usehumanq2", "Use Javelin Toss")).SetValue(true);
             nidaHarass.AddItem(new MenuItem("autoq", "Auto-Q Toggle")).SetValue(new KeyBind('Y', KeyBindType.Toggle));
-            nidaHarass.AddItem(new MenuItem("humanqpct", "Minimum Mana %")).SetValue(new Slider(40));
+            nidaHarass.AddItem(new MenuItem("humanqpct", "Minimum Mana %")).SetValue(new Slider(55));
             _mainMenu.AddSubMenu(nidaHarass);
 
             var nidaJungle = new Menu("Nidalee: Jungle", "jungleclear");
@@ -175,7 +175,7 @@ namespace KurisuNidalee
             nidaJungle.AddItem(new MenuItem("jgcougarw", "Use Pounce")).SetValue(true);
             nidaJungle.AddItem(new MenuItem("jgcougare", "Use Swipe")).SetValue(true);
             nidaJungle.AddItem(new MenuItem("jgcougarr", "Auto Switch Form")).SetValue(true);
-            nidaJungle.AddItem(new MenuItem("jgpct", "Minimum Mana %")).SetValue(new Slider(25));
+            nidaJungle.AddItem(new MenuItem("jgpct", "Minimum Mana %")).SetValue(new Slider(35));
             _mainMenu.AddSubMenu(nidaJungle);
 
             var nidalhit = new Menu("Nidalee: Last Hit", "lasthit");
@@ -185,7 +185,7 @@ namespace KurisuNidalee
             nidalhit.AddItem(new MenuItem("lhcougarw", "Use Pounce")).SetValue(true);
             nidalhit.AddItem(new MenuItem("lhcougare", "Use Swipe")).SetValue(true);
             nidalhit.AddItem(new MenuItem("lhcougarr", "Auto Switch Form")).SetValue(false);
-            nidalhit.AddItem(new MenuItem("lhpct", "Minimum Mana %")).SetValue(new Slider(55));
+            nidalhit.AddItem(new MenuItem("lhpct", "Minimum Mana %")).SetValue(new Slider(45));
             _mainMenu.AddSubMenu(nidalhit);
 
             var nidalc = new Menu("Nidalee: Laneclear", "laneclear");
@@ -195,7 +195,7 @@ namespace KurisuNidalee
             nidalc.AddItem(new MenuItem("lccougarw", "Use Pounce")).SetValue(true);
             nidalc.AddItem(new MenuItem("lccougare", "Use Swipe")).SetValue(true);
             nidalc.AddItem(new MenuItem("lccougarr", "Auto Switch Form")).SetValue(false);
-            nidalc.AddItem(new MenuItem("lcpct", "Minimum Mana %")).SetValue(new Slider(55));
+            nidalc.AddItem(new MenuItem("lcpct", "Minimum Mana %")).SetValue(new Slider(35));
             _mainMenu.AddSubMenu(nidalc);
 
             var nidaD = new Menu("Nidalee: Drawings", "drawings");
@@ -707,8 +707,6 @@ namespace KurisuNidalee
                                 m.IsValidTarget(1500) && Jungleminions.Any(name => !m.Name.StartsWith(name)) &&
                                 m.Name.StartsWith("Minion")))
             {
-                var distW = Me.ServerPosition.Extend(m.ServerPosition, Pounce.Range);
-
                 if (_cougarForm)
                 {
                     if (m.Distance(Me.ServerPosition, true) <= Swipe.RangeSqr && CE == 0)
@@ -721,8 +719,11 @@ namespace KurisuNidalee
 
                     if (m.Distance(Me.ServerPosition, true) <= Pounce.RangeSqr && (CW == 0 || Pounce.IsReady()))
                     {
-                        if (_mainMenu.Item("lccougarw").GetValue<bool>() && !distW.UnderTurret(true))
+                        if (_mainMenu.Item("lccougarw").GetValue<bool>() &&
+                            !Me.ServerPosition.Extend(m.ServerPosition, Pounce.Range).UnderTurret(true))
+                        {
                             Pounce.Cast(m.ServerPosition);
+                        }
                     }
 
                     if (m.Distance(Me.ServerPosition) <= Takedown.RangeSqr && CQ == 0)
@@ -732,11 +733,13 @@ namespace KurisuNidalee
                     }
 
                     if ((HQ == 0 && _mainMenu.Item("lchumanq").GetValue<bool>() ||
-                         (CW != 0 || !Pounce.IsReady()) && CQ != 0 && CE != 0) &&
-                        _mainMenu.Item("lccougarr").GetValue<bool>())
+                        (CW != 0 || !Pounce.IsReady()) && CQ != 0 && CE != 0))
                     {
-                        if (Aspectofcougar.IsReady())
+                        if (Aspectofcougar.IsReady() && 
+                            _mainMenu.Item("lccougarr").GetValue<bool>())
+                        {
                             Aspectofcougar.Cast();
+                        }
                     }
                 }
                 else
@@ -754,8 +757,8 @@ namespace KurisuNidalee
                             Bushwack.Cast(m.ServerPosition);
                     }
 
-                    if (_mainMenu.Item("lccougarr").GetValue<bool>() && m.Distance(Me.ServerPosition, true) <= Pounce.RangeSqr &&
-                        actualHeroManaPercent > minPercent && Aspectofcougar.IsReady())
+                    if (_mainMenu.Item("lccougarr").GetValue<bool>() &&
+                        m.Distance(Me.ServerPosition, true) <= Pounce.RangeSqr && Aspectofcougar.IsReady())
                     {
                         Aspectofcougar.Cast();
                     }
@@ -813,7 +816,8 @@ namespace KurisuNidalee
                         return;
 
                     if (Aspectofcougar.IsReady() && _mainMenu.Item("jgcougarr").GetValue<bool>())
-                        Aspectofcougar.Cast();
+                        if (actualHeroManaPercent > minPercent)
+                            Aspectofcougar.Cast();
                 }
             }
 
@@ -842,7 +846,8 @@ namespace KurisuNidalee
                 if (_mainMenu.Item("jgcougarr").GetValue<bool>() && Aspectofcougar.IsReady())
                 {
                     var poutput = Javelin.GetPrediction(m);
-                    if ((HQ != 0 || poutput.Hitchance == HitChance.Collision) || _hasBlue && HQ == 0)
+                    if ((HQ != 0 || poutput.Hitchance == HitChance.Collision) || _hasBlue && HQ == 0 ||
+                        actualHeroManaPercent >= minPercent)
                     {
                         if (CQ == 0 && CE == 0 && (CW == 0 || Pounce.IsReady()))
                         {
@@ -1143,19 +1148,5 @@ namespace KurisuNidalee
 
         #endregion
 
-        #region Nidalee: Combo Damage
-
-        //private static float ComboDamageTarget(Obj_AI_Base target)
-        //{
-        //    float dmg = 0f;
-        //    if (Javelin.IsReady())
-        //        dmg += Me.GetSpellDamage(target, SpellSlot.Q);
-
-        //    if ()
-
-        //}
-
-        #endregion
     }
-
 }
