@@ -541,7 +541,7 @@ namespace KurisuNidalee
                 {
                     if (target.Distance(Me.ServerPosition, true) <= Swipe.RangeSqr)
                     {
-                        if (!Pounce.IsReady())
+                        if (!Pounce.IsReady() || Me.Spellbook.CanUseSpell(SpellSlot.W) == SpellState.NotLearned)
                             Swipe.Cast(target.ServerPosition);
                     }
                 }
@@ -711,7 +711,8 @@ namespace KurisuNidalee
                 {
                     if (m.Distance(Me.ServerPosition, true) <= Swipe.RangeSqr && CE == 0)
                     {
-                        if (_mainMenu.Item("lccougare").GetValue<bool>() && !Pounce.IsReady())
+                        if (_mainMenu.Item("lccougare").GetValue<bool>() &&
+                           (!Pounce.IsReady() || Me.Spellbook.CanUseSpell(SpellSlot.W) == SpellState.NotLearned))
                         {
                             Swipe.Cast(m.ServerPosition);
                         }
@@ -788,8 +789,11 @@ namespace KurisuNidalee
             {
                 if (m.Distance(Me.ServerPosition, true) <= Swipe.RangeSqr && CE == 0)
                 {
-                    if (_mainMenu.Item("jgcougare").GetValue<bool>() && !Pounce.IsReady())
+                    if (_mainMenu.Item("jgcougare").GetValue<bool>() &&
+                       (!Pounce.IsReady() || Me.Spellbook.CanUseSpell(SpellSlot.W) == SpellState.NotLearned))
+                    {
                         Swipe.Cast(m.ServerPosition);
+                    }
                 }
 
                 if (TargetHunted(m) & m.Distance(Me.ServerPosition, true) <= 750*750 && (CW == 0 || Pounce.IsReady()))
@@ -810,7 +814,9 @@ namespace KurisuNidalee
                         Takedown.CastOnUnit(Me);
                 }
 
-                if (CW != 0 && CQ != 0 && CE != 0)
+                if ((CW != 0 || !Pounce.IsReady() || Me.Spellbook.CanUseSpell(SpellSlot.W) == SpellState.NotLearned) &&       
+                    (CQ != 0 || Me.Spellbook.CanUseSpell(SpellSlot.Q) == SpellState.NotLearned) && 
+                    (CE != 0 || Me.Spellbook.CanUseSpell(SpellSlot.E) == SpellState.NotLearned))
                 {
                     if (HQ != 0)
                         return;
