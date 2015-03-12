@@ -275,7 +275,8 @@ namespace KurisuNidalee
 
                 var targ =
                     ObjectManager.Get<Obj_AI_Hero>()
-                        .FirstOrDefault(hero => hero.Distance(Me.ServerPosition, true) <= Bushwack.RangeSqr);
+                        .FirstOrDefault(
+                            hero => hero.Distance(Me.ServerPosition, true) <= Bushwack.RangeSqr && hero.IsEnemy);
 
                 if (targ.IsValidTarget(Bushwack.Range))
                 {
