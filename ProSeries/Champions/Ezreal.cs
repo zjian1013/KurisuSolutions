@@ -83,50 +83,35 @@ namespace ProSeries.Champions
 
         internal static void Game_OnUpdate(EventArgs args)
         { 
-
-            if (ProSeries.EnoughMana(
-                ProSeries.Config.Item("usecombo").GetValue<KeyBind>().Active,
-                ProSeries.Config.Item("combomana").GetValue<Slider>().Value))
+            if (ProSeries.CanCombo())
             {
-                var target = TargetSelector.GetTargetNoCollision(Q);
-                if (target.IsValidTarget() && ProSeries.Config.Item("usecomboq", true).GetValue<bool>())
+                var qtarget = TargetSelector.GetTargetNoCollision(Q);
+                if (qtarget.IsValidTarget() && ProSeries.Config.Item("usecomboq", true).GetValue<bool>())
                 {
-                    Q.Cast(target.ServerPosition);            
+                    Q.Cast(qtarget.ServerPosition);            
                 }
-            }
 
-            if (ProSeries.EnoughMana(
-                ProSeries.Config.Item("useharass").GetValue<KeyBind>().Active,
-                ProSeries.Config.Item("harassmana").GetValue<Slider>().Value))
-            {
-                var target = TargetSelector.GetTargetNoCollision(Q);
-                if (target.IsValidTarget() && ProSeries.Config.Item("useharassq", true).GetValue<bool>())
-                {
-                    Q.Cast(target.ServerPosition);
-                }
-            }
-
-            if (ProSeries.EnoughMana(
-                ProSeries.Config.Item("usecombo").GetValue<KeyBind>().Active,
-                ProSeries.Config.Item("combomana").GetValue<Slider>().Value))
-            {
-                var target = TargetSelector.GetTarget(W.Range, TargetSelector.DamageType.Physical);
-                if (target.IsValidTarget() && W.IsReady())
+                var wtarget = TargetSelector.GetTarget(W.Range, TargetSelector.DamageType.Physical);
+                if (wtarget.IsValidTarget() && W.IsReady())
                 {
                     if (ProSeries.Config.Item("usecombow", true).GetValue<bool>())
-                        W.Cast(target.ServerPosition);
+                        W.Cast(wtarget.ServerPosition);
                 }
             }
 
-            if (ProSeries.EnoughMana(
-                ProSeries.Config.Item("useharass").GetValue<KeyBind>().Active,
-                ProSeries.Config.Item("harassmana").GetValue<Slider>().Value))
+            if (ProSeries.CanHarass())
             {
-                var target = TargetSelector.GetTarget(W.Range, TargetSelector.DamageType.Physical);
-                if (target.IsValidTarget() && W.IsReady())
+                var qtarget = TargetSelector.GetTargetNoCollision(Q);
+                if (qtarget.IsValidTarget() && ProSeries.Config.Item("useharassq", true).GetValue<bool>())
+                {
+                    Q.Cast(qtarget.ServerPosition);
+                }
+
+                var wtarget = TargetSelector.GetTarget(W.Range, TargetSelector.DamageType.Physical);
+                if (wtarget.IsValidTarget() && W.IsReady())
                 {
                     if (ProSeries.Config.Item("useharassw", true).GetValue<bool>())
-                        W.Cast(target.ServerPosition);
+                        W.Cast(wtarget.ServerPosition);
                 }
             }
 
@@ -144,9 +129,7 @@ namespace ProSeries.Champions
 
             if (Q.IsReady())
             {
-                if (ProSeries.EnoughMana(
-                    ProSeries.Config.Item("useclear").GetValue<KeyBind>().Active,
-                    ProSeries.Config.Item("clearmana").GetValue<Slider>().Value))
+                if (ProSeries.CanClear())
                 {
                     foreach (
                         var jmin in
