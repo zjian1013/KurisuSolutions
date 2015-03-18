@@ -129,7 +129,6 @@ namespace KurisuNidalee
 
             var nidaOrb = new Menu("Nidalee: Orbwalker", "orbwalker");
             _orbwalker = new Orbwalking.Orbwalker(nidaOrb);
-
             _mainMenu.AddSubMenu(nidaOrb);
 
             var nidaTS = new Menu("Nidalee: Selector", "target selecter");
