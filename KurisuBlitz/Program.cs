@@ -6,12 +6,12 @@ using Color = System.Drawing.Color;
 
 namespace KurisuBlitz
 {
-    //   _____       _    _____           _ 
-    //  |   __|___ _| |  |  |  |___ ___ _| |
-    //  |  |  | . | . |  |     | .'|   | . |
-    //  |_____|___|___|  |__|__|__,|_|_|___|
+    //  _____ _ _ _                       _   
+    // | __  | |_| |_ ___ ___ ___ ___ ___| |_ 
+    // | __ -| | |  _|- _|  _|  _| .'|   | '_|
+    // |_____|_|_|_| |___|___|_| |__,|_|_|_,_|
     //  Copyright © Kurisu Solutions 2015
-      
+   
     internal class Program
     {
         private static Menu _menu;
@@ -40,21 +40,21 @@ namespace KurisuBlitz
             // Load Menu
             _menu = new Menu("KurisuBlitz", "blitz", true);
 
-            var blitzOrb = new Menu("Blitz: Orbwalker", "orbwalker");
-            _orbwalker = new Orbwalking.Orbwalker(blitzOrb);
-            _menu.AddSubMenu(blitzOrb);
-
-            var blitzTs = new Menu("Blitz: Selector", "tselect");
+            var blitzTs = new Menu("Selector", "tselect");
             TargetSelector.AddToMenu(blitzTs);
             _menu.AddSubMenu(blitzTs);
 
-            var menuD = new Menu("Blitz: Drawings", "drawings");
+            var blitzOrb = new Menu("Orbwalker", "orbwalker");
+            _orbwalker = new Orbwalking.Orbwalker(blitzOrb);
+            _menu.AddSubMenu(blitzOrb);
+
+            var menuD = new Menu("Drawings", "drawings");
             menuD.AddItem(new MenuItem("drawQ", "Draw Q")).SetValue(new Circle(true, Color.FromArgb(150, Color.White)));
             menuD.AddItem(new MenuItem("drawR", "Draw R")).SetValue(new Circle(true, Color.FromArgb(150, Color.White)));
             menuD.AddItem(new MenuItem("drawT", "Draw Target")).SetValue(true);
             _menu.AddSubMenu(menuD);
 
-            var spellmenu = new Menu("Blitz: Spells", "smenu");
+            var spellmenu = new Menu("Spells", "smenu");
 
             var menuQ = new Menu("Q Menu", "qmenu");
             menuQ.AddItem(new MenuItem("usecomboq", "Use in Combo")).SetValue(true);
@@ -71,6 +71,7 @@ namespace KurisuBlitz
             spellmenu.AddSubMenu(menuE);
 
             var menuR = new Menu("R Menu", "rmenu");
+            menuR.AddItem(new MenuItem("usecombor", "Use in Combo")).SetValue(true);
             menuR.AddItem(new MenuItem("interruptr", "Use for Interrupt")).SetValue(true);
             menuR.AddItem(new MenuItem("securer", "Use for Killsteal")).SetValue(false);
             spellmenu.AddSubMenu(menuR);
@@ -78,7 +79,7 @@ namespace KurisuBlitz
 
             _menu.AddSubMenu(spellmenu);
 
-            var menuM = new Menu("Blitz: Misc", "bmisc");
+            var menuM = new Menu("Misc", "bmisc");
             menuM.AddItem(new MenuItem("hitchanceq", "Q Hitchance 1-Low, 4-Very High")).SetValue(new Slider(3, 1, 4));
             menuM.AddItem(new MenuItem("dnd", "Mininum Distance to Q")).SetValue(new Slider(255, 0, (int)_q.Range));
             menuM.AddItem(new MenuItem("dnd2", "Maximum Distance to Q")).SetValue(new Slider((int)_q.Range, 0, (int)_q.Range));
@@ -191,6 +192,19 @@ namespace KurisuBlitz
                          _q.CastIfHitchanceEquals(itarget, HitChance.Immobile);
                 }
             }
+
+            if (_r.IsReady())
+            {
+                var rtarget =
+                    ObjectManager.Get<Obj_AI_Hero>()
+                    .FirstOrDefault(h => h.IsEnemy && h.Distance(Me.ServerPosition, true) <= _r.RangeSqr);
+
+                if (rtarget.IsValidTarget(_r.Range) && _menu.Item("usecombor").GetValue<bool>())
+                {
+                    if (!_e.IsReady() && rtarget.HasBuffOfType(BuffType.Knockup))
+                        _r.Cast();
+                }            
+            }
         }
 
         private static void Combo(bool useq, bool usee)
@@ -225,7 +239,6 @@ namespace KurisuBlitz
 
         private static void Secure(bool useq, bool usee, bool user)
         {
-
             if (user && _r.IsReady())
             {
                 var rtarget = ObjectManager.Get<Obj_AI_Hero>().FirstOrDefault(h => h.IsEnemy);
