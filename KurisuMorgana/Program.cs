@@ -72,7 +72,7 @@ namespace KurisuMorgana
             menuW.AddItem(new MenuItem("useharassw", "Use in Harass")).SetValue(true);       
             menuW.AddItem(new MenuItem("usewauto", "Use on Immobile")).SetValue(true);
             menuW.AddItem(new MenuItem("waitfor", "Wait for Bind or Immobile")).SetValue(true);
-            menuW.AddItem(new MenuItem("calcw", "Calculated Ticks")).SetValue(new Slider(3, 1, 5));
+            menuW.AddItem(new MenuItem("calcw", "Calculated Ticks")).SetValue(new Slider(6, 3, 10));
             spellmenu.AddSubMenu(menuW);
 
             var menuE = new Menu("E Menu", "emenu");
@@ -260,14 +260,14 @@ namespace KurisuMorgana
             {
                 var ticks = _menu.Item("calcw").GetValue<Slider>().Value;
                 var rtarget = TargetSelector.GetTarget(_r.Range, TargetSelector.DamageType.Magical);
-                if (rtarget.IsValidTarget(_r.Range))
+                if (rtarget.IsValidTarget(_r.Range) && _menu.Item("rkill").GetValue<bool>())
                 {
                     if (_mr + _mq + _mw * ticks + _ma * 3 + _mi + _guise >= rtarget.Health)
                     {
-                        if (_menu.Item("rkill").GetValue<bool>())
+                        if (rtarget.Health > _mr + _ma * 3 + _mw * 3 &&
+                           !rtarget.IsZombie)
                         {
-                            if (_e.IsReady())
-                                _e.CastOnUnit(Me);
+                            if (_e.IsReady()) _e.CastOnUnit(Me);
                             _r.Cast();
                         }
                     }
@@ -395,39 +395,39 @@ namespace KurisuMorgana
 
         internal static void Obj_AI_Base_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
         {
-            if (sender.Type == Me.Type && _e.IsReady() && sender.IsEnemy)
+            if (sender.Type != Me.Type || !_e.IsReady() || !sender.IsEnemy) 
+                return;
+
+            var attacker = ObjectManager.Get<Obj_AI_Hero>().First(x => x.NetworkId == sender.NetworkId);
+            foreach (var ally in ObjectManager.Get<Obj_AI_Hero>().Where(x => x.IsValidTarget(_e.Range, false)))
             {
-                var attacker = ObjectManager.Get<Obj_AI_Hero>().First(x => x.NetworkId == sender.NetworkId);
-                foreach (var ally in ObjectManager.Get<Obj_AI_Hero>().Where(x => x.IsValidTarget(_e.Range, false)))
+                var detectRange = ally.ServerPosition + (args.End - ally.ServerPosition).Normalized() * ally.Distance(args.End);
+                if (detectRange.Distance(ally.ServerPosition) > ally.AttackRange - ally.BoundingRadius)
+                    continue;
+
+                // no linq cus i say :p
+                foreach (var lib in KurisuLib.CCList)
                 {
-                    var detectRange = ally.ServerPosition + (args.End - ally.ServerPosition).Normalized() * ally.Distance(args.End);
-                    if (detectRange.Distance(ally.ServerPosition) <= ally.AttackRange - ally.BoundingRadius)
+                    if (lib.HeroName == attacker.ChampionName && lib.Slot == attacker.GetSpellSlot(args.SData.Name))
                     {
-                        // no linq cus i say :p
-                        foreach (var lib in KurisuLib.CCList)
+                        var timeTillHit = lib.Delay +
+                                          (int)(1000*attacker.Distance(ally.ServerPosition/args.SData.MissileSpeed));
+
+                        if (_menu.Item(lib.SDataName + "on").GetValue<bool>() && _menu.Item("useon" + ally.ChampionName).GetValue<bool>())
                         {
-                            if (lib.HeroName == attacker.ChampionName && lib.Slot == attacker.GetSpellSlot(args.SData.Name))
+                            if (_menu.Item(lib.SDataName + "wait").GetValue<bool>())
                             {
-                                var timeTillHit = lib.Delay +
-                                    (int)(1000*attacker.Distance(ally.ServerPosition/args.SData.MissileSpeed));
+                                Utility.DelayAction.Add(timeTillHit, () => _e.CastOnUnit(ally));
+                            }
 
-                                if (_menu.Item(lib.SDataName + "on").GetValue<bool>() && _menu.Item("useon" + ally.ChampionName).GetValue<bool>())
-                                {
-                                    if (_menu.Item(lib.SDataName + "wait").GetValue<bool>())
-                                    {
-                                        Utility.DelayAction.Add(timeTillHit, () => _e.CastOnUnit(ally));
-                                    }
-
-                                    else
-                                    {
-                                        _e.CastOnUnit(ally);
-                                    }
-                                }
+                            else
+                            {
+                                _e.CastOnUnit(ally);
                             }
                         }
                     }
                 }
-            }       
+            }
         }
     }
 }
