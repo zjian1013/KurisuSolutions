@@ -473,6 +473,9 @@ namespace Oracle.Extensions
                                     "(Auto Spell: Shield/Ult) Casting " + spell.Slot + " to game cursor! (Low HP)");
                                 OC.Logger(OC.LogType.Action, "Target HP %: " + aHealthPercent);
                                 break;
+                            case "braumshield":
+                                spell.Cast(OC.Attacker.ServerPosition);
+                                break;
                             case "luxshield":
                                 spell.Cast(target.IsMe ? Game.CursorPos : target.ServerPosition);
                                 break;

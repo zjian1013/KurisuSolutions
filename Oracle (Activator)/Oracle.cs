@@ -47,7 +47,7 @@ namespace Oracle
         public static string FileName;
         public static bool CanManamune;
         public static string ChampionName;
-        public const string Revision = "226";
+        public const string Revision = "227";
 
         private static void OnGameLoad(EventArgs args)
         {
@@ -195,9 +195,9 @@ namespace Oracle
         }
 
 
-        private static GameObj _satchel, _miasma, _minefield, _crowstorm, _fizzbait, _caittrap;
-        private static GameObj _chaosstorm, _glacialstorm, _lightstrike, _equinox, _tormentsoil;
-        private static GameObj _depthcharge, _tremors, _acidtrail, _catalyst;
+        private static OracleObj _satchel, _miasma, _minefield, _crowstorm, _fizzbait, _caittrap;
+        private static OracleObj _chaosstorm, _glacialstorm, _lightstrike, _equinox, _tormentsoil;
+        private static OracleObj _depthcharge, _tremors, _acidtrail, _catalyst;
 
         private static void GameObject_OnCreate(GameObject obj, EventArgs args)
         {
@@ -208,104 +208,104 @@ namespace Oracle
             if (obj.Name.Contains("Fizz_Ring_Red") && GetEnemy("Fizz").IsValid)
             {
                 var dmg = (float)GetEnemy("Fizz").GetSpellDamage(Friendly(), SpellSlot.R);
-                _fizzbait = new GameObj(obj.Name, obj, true, dmg, Environment.TickCount);
+                _fizzbait = new OracleObj(obj.Name, obj, true, dmg, Environment.TickCount);
                 Logger(LogType.Info, obj.Name + " detected/created (Fizz)");
             }
 
             else if (obj.Name.Contains("Acidtrail_buf_red") && GetEnemy("Singed").IsValid)
             {
                 var dmg = (float)GetEnemy("Singed").GetSpellDamage(Friendly(), SpellSlot.Q);
-                _acidtrail = new GameObj(obj.Name, obj, true, dmg, Environment.TickCount);
+                _acidtrail = new OracleObj(obj.Name, obj, true, dmg, Environment.TickCount);
                 Logger(LogType.Info, obj.Name + " detected/created (Poison)");
             }
 
             else if (obj.Name.Contains("Tremors_cas") && obj.IsEnemy && GetEnemy("Rammus").IsValid)
             {
                 var dmg = (float) GetEnemy("Rammus").GetSpellDamage(Friendly(), SpellSlot.R);
-                _tremors = new GameObj(obj.Name, obj, true, dmg, Environment.TickCount);
+                _tremors = new OracleObj(obj.Name, obj, true, dmg, Environment.TickCount);
                 Logger(LogType.Info, obj.Name + " detected/created (Tremors)");
             }
 
             else if (obj.Name.Contains("Crowstorm_red") && GetEnemy("Fiddlesticks").IsValid)
             {
                 var dmg = (float) GetEnemy("Fiddlesticks").GetSpellDamage(Friendly(), SpellSlot.R);
-                _crowstorm = new GameObj(obj.Name, obj, true, dmg, Environment.TickCount);
+                _crowstorm = new OracleObj(obj.Name, obj, true, dmg, Environment.TickCount);
                 Logger(LogType.Info, obj.Name + " detected/created (Crowstorm)");
             }
                 
             else if (obj.Name.Contains("Nautilus_R_sequence_impact") && obj.IsEnemy && GetEnemy("Nautilus").IsValid)
             {              
                 var dmg = (float) GetEnemy("Nautilus").GetSpellDamage(Friendly(), SpellSlot.R, 1);
-                _depthcharge = new GameObj(obj.Name, obj, true, dmg, Environment.TickCount);
+                _depthcharge = new OracleObj(obj.Name, obj, true, dmg, Environment.TickCount);
                 Logger(LogType.Info, obj.Name + " detected/created (Depth Charge)");
             }
 
             else if (obj.Name.Contains("caitlyn_Base_yordleTrap_idle_red") && GetEnemy("Caitlyn").IsValid)
             {
                 var dmg = (float) GetEnemy("Caitlyn").GetSpellDamage(Friendly(), SpellSlot.W);
-                _caittrap = new GameObj(obj.Name, obj, true, dmg, Environment.TickCount);
+                _caittrap = new OracleObj(obj.Name, obj, true, dmg, Environment.TickCount);
                 Logger(LogType.Info, obj.Name + " detected/created (Yordle Trap)");
             }
 
             else if (obj.Name.Contains("LuxLightstrike_tar_red") && GetEnemy("Lux").IsValid)
             {
                 var dmg = (float) GetEnemy("Lux").GetSpellDamage(Friendly(), SpellSlot.E);
-                _lightstrike = new GameObj(obj.Name, obj, true, dmg, Environment.TickCount);
+                _lightstrike = new OracleObj(obj.Name, obj, true, dmg, Environment.TickCount);
                 Logger(LogType.Info, obj.Name + " detected/created (Lightstrike)");
             }
 
             else if (obj.Name.Contains("Viktor_ChaosStorm_red") && GetEnemy("Viktor").IsValid)
             {
                 var dmg = (float) GetEnemy("Viktor").GetSpellDamage(Friendly(), SpellSlot.R);
-                _chaosstorm = new GameObj(obj.Name, obj, true, dmg, Environment.TickCount);
+                _chaosstorm = new OracleObj(obj.Name, obj, true, dmg, Environment.TickCount);
                 Logger(LogType.Info, obj.Name + " detected/created (Chaos Storm)");
             }
 
             else if (obj.Name.Contains("Viktor_Catalyst_red") && GetEnemy("Viktor").IsValid)
             {
-                _catalyst = new GameObj(obj.Name, obj, true, 0, Environment.TickCount);
+                _catalyst = new OracleObj(obj.Name, obj, true, 0, Environment.TickCount);
                 Logger(LogType.Info, obj.Name + " detected/created (Gravity Field)");
             }
 
             else if (obj.Name.Contains("cryo_storm_red") && GetEnemy("Anivia").IsValid)
             {
                 var dmg = (float) GetEnemy("Anivia").GetSpellDamage(Friendly(), SpellSlot.R);
-                _glacialstorm = new GameObj(obj.Name, obj, true, dmg, Environment.TickCount);
+                _glacialstorm = new OracleObj(obj.Name, obj, true, dmg, Environment.TickCount);
                 Logger(LogType.Info, obj.Name + " detected/created (Glacialstorm)");
             }
 
             else if (obj.Name.Contains("ZiggsE_red") && GetEnemy("Ziggs").IsValid)
             {
                 var dmg = (float) GetEnemy("Ziggs").GetSpellDamage(Friendly(), SpellSlot.E);
-                _minefield = new GameObj(obj.Name, obj, true, dmg, Environment.TickCount);
+                _minefield = new OracleObj(obj.Name, obj, true, dmg, Environment.TickCount);
                 Logger(LogType.Info, obj.Name + " detected/created (Minefield)");
             }
 
             else if (obj.Name.Contains("ZiggsWRingRed") && GetEnemy("Ziggs").IsValid)
             {
                 var dmg = (float) GetEnemy("Ziggs").GetSpellDamage(Friendly(), SpellSlot.W);
-                _satchel = new GameObj(obj.Name, obj, true, dmg, Environment.TickCount);
+                _satchel = new OracleObj(obj.Name, obj, true, dmg, Environment.TickCount);
                 Logger(LogType.Info, obj.Name + " detected/created (Satchel)");
             }
 
             else if (obj.Name.Contains("CassMiasma_tar_red") && GetEnemy("Cassiopeia").IsValid)
             {
                 var dmg = (float) GetEnemy("Cassiopeia").GetSpellDamage(Friendly(), SpellSlot.W);
-                _miasma = new GameObj(obj.Name, obj, true, dmg, Environment.TickCount);
+                _miasma = new OracleObj(obj.Name, obj, true, dmg, Environment.TickCount);
                 Logger(LogType.Info, obj.Name + " detected/created (Miasma)");
             }
 
             else if (obj.Name.Contains("Soraka_Base_E_rune_RED") && GetEnemy("Soraka").IsValid)
             {
                 var dmg = (float) GetEnemy("Soraka").GetSpellDamage(Friendly(), SpellSlot.E);
-                _equinox = new GameObj(obj.Name, obj, true, dmg, Environment.TickCount);
+                _equinox = new OracleObj(obj.Name, obj, true, dmg, Environment.TickCount);
                 Logger(LogType.Info, obj.Name + " detected/created (Equinox)");
             }
 
             else if (obj.Name.Contains("Morgana_Base_W_Tar_red") && GetEnemy("Morgana").IsValid)
             {
                 var dmg = (float) GetEnemy("Morgana").GetSpellDamage(Friendly(), SpellSlot.W);
-                _tormentsoil = new GameObj(obj.Name, obj, true, dmg, Environment.TickCount);
+                _tormentsoil = new OracleObj(obj.Name, obj, true, dmg, Environment.TickCount);
                 Logger(LogType.Info, obj.Name + " detected/created (Tormentsoil)");
             }
         }

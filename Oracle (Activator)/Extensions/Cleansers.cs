@@ -39,18 +39,6 @@ namespace Oracle.Extensions
             root.AddSubMenu(_mainMenu);
         }
 
-        private static int GetBuffCount(Obj_AI_Base target)
-        {
-            int count = 0;
-
-            foreach (var x in target.Buffs)
-            {
-                if (x.IsActive && x.Caster.IsEnemy && x.IsPositive) count++;
-            }
-
-            return count;
-        }
-
         public static void Game_OnGameUpdate(EventArgs args)
         {
             if (OC.Origin.Item("usecombo").GetValue<KeyBind>().Active ||
@@ -74,8 +62,7 @@ namespace Oracle.Extensions
             var target = range > 5000 ? Me : OC.Friendly();
             if (_mainMenu.Item("cccon" + target.SkinName).GetValue<bool>())
             {
-                if (target.Distance(Me.ServerPosition, true) <= range * range && target.IsValidState() &&
-                    GetBuffCount(target) >= _mainMenu.Item(name + "Count").GetValue<Slider>().Value)
+                if (target.Distance(Me.ServerPosition, true) <= range * range && target.IsValidState())
                 {
                     var tHealthPercent = target.Health/target.MaxHealth*100;
                     var delay = _mainMenu.Item("cleansedelay").GetValue<Slider>().Value * 10;
@@ -86,7 +73,6 @@ namespace Oracle.Extensions
                         if (buffinst.Any(aura => aura.Name.ToLower() == buff.BuffName ||
                                                  aura.Name.ToLower().Contains(buff.SpellName)))
                         {
-                            OC.Logger(OC.LogType.Info, "Buffcount: " + GetBuffCount(target));
                             if (!OC.Origin.Item("cure" + buff.BuffName).GetValue<bool>())
                             {
                                 return;
@@ -103,104 +89,82 @@ namespace Oracle.Extensions
 
                     foreach (var b in target.Buffs)
                     {
-                        var duration = Math.Ceiling(b.EndTime - b.StartTime);
-                        if (OC.Origin.Item("slow").GetValue<bool>() && b.Type == BuffType.Slow &&
-                            duration >= _mainMenu.Item(name + "Duration").GetValue<Slider>().Value)
+                        if (OC.Origin.Item("slow").GetValue<bool>() && b.Type == BuffType.Slow)
                         {
                             Utility.DelayAction.Add(delay, () => Items.UseItem(itemId, target));
                             OC.Logger(OC.LogType.Action,
                                 "Used  " + name + "  on " + target.SkinName + " (" + tHealthPercent + "%) (slow)");
-                            OC.Logger(OC.LogType.Info, "Buff Durration: " + duration);
                         }
 
-                        if (OC.Origin.Item("stun").GetValue<bool>() && b.Type == BuffType.Stun &&
-                            duration >= _mainMenu.Item(name + "Duration").GetValue<Slider>().Value)
+                        if (OC.Origin.Item("stun").GetValue<bool>() && b.Type == BuffType.Stun)
                         {
+                            
                             Utility.DelayAction.Add(delay, () => Items.UseItem(itemId, target));
                             OC.Logger(OC.LogType.Action,
                                 "Used  " + name + "  on " + target.SkinName + " (" + tHealthPercent + "%) (stun)");
-                            OC.Logger(OC.LogType.Info, "Buff Durration: " + duration);
                         }
 
-                        if (OC.Origin.Item("charm").GetValue<bool>() && b.Type == BuffType.Charm &&
-                            duration >= _mainMenu.Item(name + "Duration").GetValue<Slider>().Value)
+                        if (OC.Origin.Item("charm").GetValue<bool>() && b.Type == BuffType.Charm)
                         {
                             Utility.DelayAction.Add(delay, () => Items.UseItem(itemId, target));
                             OC.Logger(OC.LogType.Action,
                                 "Used  " + name + "  on " + target.SkinName + " (" + tHealthPercent + "%) (charm)");
-                            OC.Logger(OC.LogType.Info, "Buff Durration: " + duration);
                         }
 
-                        if (OC.Origin.Item("taunt").GetValue<bool>() && b.Type == BuffType.Taunt &&
-                            duration >= _mainMenu.Item(name + "Duration").GetValue<Slider>().Value)
+                        if (OC.Origin.Item("taunt").GetValue<bool>() && b.Type == BuffType.Taunt)
                         {
                             Utility.DelayAction.Add(delay, () => Items.UseItem(itemId, target));
                             OC.Logger(OC.LogType.Action,
                                 "Used  " + name + "  on " + target.SkinName + " (" + tHealthPercent + "%) (taunt)");
-                            OC.Logger(OC.LogType.Info, "Buff Durration: " + duration);
                         }
 
-                        if (OC.Origin.Item("fear").GetValue<bool>() && b.Type == BuffType.Fear &&
-                            duration >= _mainMenu.Item(name + "Duration").GetValue<Slider>().Value)
+                        if (OC.Origin.Item("fear").GetValue<bool>() && b.Type == BuffType.Fear)
                         {
                             Utility.DelayAction.Add(delay, () => Items.UseItem(itemId, target));
                             OC.Logger(OC.LogType.Action,
                                 "Used  " + name + "  on " + target.SkinName + " (" + tHealthPercent + "%) (fear)");
-                            OC.Logger(OC.LogType.Info, "Buff Durration: " + duration);
                         }
 
-                        if (OC.Origin.Item("snare").GetValue<bool>() && b.Type == BuffType.Snare &&
-                            duration >= _mainMenu.Item(name + "Duration").GetValue<Slider>().Value)
+                        if (OC.Origin.Item("snare").GetValue<bool>() && b.Type == BuffType.Snare)
                         {
                             Utility.DelayAction.Add(delay, () => Items.UseItem(itemId, target));
                             OC.Logger(OC.LogType.Action,
                                 "Used  " + name + "  on " + target.SkinName + " (" + tHealthPercent + "%) (snare)");
-                            OC.Logger(OC.LogType.Info, "Buff Durration: " + duration);
                         }
 
-                        if (OC.Origin.Item("silence").GetValue<bool>() && b.Type == BuffType.Silence &&
-                            duration >= _mainMenu.Item(name + "Duration").GetValue<Slider>().Value)
+                        if (OC.Origin.Item("silence").GetValue<bool>() && b.Type == BuffType.Silence)
                         {
                             Utility.DelayAction.Add(delay, () => Items.UseItem(itemId, target));
                             OC.Logger(OC.LogType.Action,
                                 "Used  " + name + "  on " + target.SkinName + " (" + tHealthPercent + "%) (silence)");
-                            OC.Logger(OC.LogType.Info, "Buff Durration: " + duration);
                         }
 
-                        if (OC.Origin.Item("suppression").GetValue<bool>() && b.Type == BuffType.Suppression &&
-                            duration >= _mainMenu.Item(name + "Duration").GetValue<Slider>().Value)
+                        if (OC.Origin.Item("suppression").GetValue<bool>() && b.Type == BuffType.Suppression)
                         {
                             Utility.DelayAction.Add(delay, () => Items.UseItem(itemId, target));
                             OC.Logger(OC.LogType.Action,
                                 "Used  " + name + "  on " + target.SkinName + " (" + tHealthPercent + "%) (suppression)");
-                            OC.Logger(OC.LogType.Info, "Buff Durration: " + duration);
                         }
 
-                        if (OC.Origin.Item("polymorph").GetValue<bool>() && b.Type == BuffType.Polymorph &&
-                            duration >= _mainMenu.Item(name + "Duration").GetValue<Slider>().Value)
+                        if (OC.Origin.Item("polymorph").GetValue<bool>() && b.Type == BuffType.Polymorph)
                         {
                             Utility.DelayAction.Add(delay, () => Items.UseItem(itemId, target));
                             OC.Logger(OC.LogType.Action,
                                 "Used  " + name + "  on " + target.SkinName + " (" + tHealthPercent + "%) (polymorph)");
-                            OC.Logger(OC.LogType.Info, "Buff Durration: " + duration);
                         }
 
-                        if (OC.Origin.Item("blind").GetValue<bool>() && b.Type == BuffType.Blind &&
-                            duration >= _mainMenu.Item(name + "Duration").GetValue<Slider>().Value)
+                        if (OC.Origin.Item("blind").GetValue<bool>() && b.Type == BuffType.Blind)
                         {
                             Utility.DelayAction.Add(delay, () => Items.UseItem(itemId, target));
                             OC.Logger(OC.LogType.Action,
                                 "Used  " + name + "  on " + target.SkinName + " (" + tHealthPercent + "%) (blind)");
-                            OC.Logger(OC.LogType.Info, "Buff Durration: " + duration);
                         }
 
-                        if (OC.Origin.Item("poison").GetValue<bool>() && b.Type == BuffType.Poison &&
-                            duration >= _mainMenu.Item(name + "Duration").GetValue<Slider>().Value)
+                        if (OC.Origin.Item("poison").GetValue<bool>() && b.Type == BuffType.Poison)
                         {
                             Utility.DelayAction.Add(delay, () => Items.UseItem(itemId, target));
                             OC.Logger(OC.LogType.Action,
                                 "Used  " + name + "  on " + target.SkinName + " (" + tHealthPercent + "%) (poison)");
-                            OC.Logger(OC.LogType.Info, "Buff Durration: " + duration);
                         }
                     }
                 }
@@ -211,8 +175,8 @@ namespace Oracle.Extensions
         {
             var menuName = new Menu(name, name);
             menuName.AddItem(new MenuItem("use" + name, "Use " + displayname)).SetValue(true);
-            menuName.AddItem(new MenuItem(name + "Count", "Min spells to use")).SetValue(new Slider(ccvalue, 1, 5));
-            menuName.AddItem(new MenuItem(name + "Duration", "Buff duration to use")).SetValue(new Slider(2, 1, 5));
+            menuName.AddItem(new MenuItem(name + "Count", "Min spells to use"));
+            menuName.AddItem(new MenuItem(name + "Duration", "Buff duration to use"));
             _mainMenu.AddSubMenu(menuName);
         }
     }

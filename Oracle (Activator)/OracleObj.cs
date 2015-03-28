@@ -3,7 +3,7 @@ using LeagueSharp;
 
 namespace Oracle
 {
-    public struct GameObj
+    public struct OracleObj
     {
         public float Damage;
         public bool Included;
@@ -11,7 +11,7 @@ namespace Oracle
         public GameObject Obj;
         public int Start;
 
-        public GameObj(string name, GameObject obj, bool included, float incdmg, int start)
+        public OracleObj(string name, GameObject obj, bool included, float incdmg, int start)
         {
             Start = start;
             Name = name;
