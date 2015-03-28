@@ -58,7 +58,6 @@ namespace KurisuMorgana
             var spellmenu = new Menu("Morgana: Spells", "spells");
 
             var menuQ = new Menu("Q Menu", "qmenu");
-            menuQ.AddItem(new MenuItem("hitchanceq", "Binding Hitchance ")).SetValue(new Slider(3, 1, 4));
             menuQ.AddItem(new MenuItem("useqcombo", "Use in Combo")).SetValue(true);
             menuQ.AddItem(new MenuItem("useharassq", "Use in Harass")).SetValue(true);
             menuQ.AddItem(new MenuItem("useqanti", "Use on Gapcloser")).SetValue(true);
@@ -67,7 +66,6 @@ namespace KurisuMorgana
             spellmenu.AddSubMenu(menuQ);
 
             var menuW = new Menu("W Menu", "wmenu");
-            menuW.AddItem(new MenuItem("hitchancew", "Tormentsoil Hitchance ")).SetValue(new Slider(2, 1, 4));
             menuW.AddItem(new MenuItem("usewcombo", "Use in Combo")).SetValue(true);
             menuW.AddItem(new MenuItem("useharassw", "Use in Harass")).SetValue(true);       
             menuW.AddItem(new MenuItem("usewauto", "Use on Immobile")).SetValue(true);
@@ -231,11 +229,7 @@ namespace KurisuMorgana
                 var qtarget = TargetSelector.GetTargetNoCollision(_q);
                 if (qtarget.IsValidTarget(_q.Range + 10))
                 {
-                    var poutput = _q.GetPrediction(qtarget);
-                    if (poutput.Hitchance >= (HitChance) _menu.Item("hitchanceq").GetValue<Slider>().Value + 2)
-                    {
-                        _q.Cast(poutput.CastPosition);
-                    }
+                    _q.Cast(qtarget);
                 }
             }
 
@@ -244,15 +238,7 @@ namespace KurisuMorgana
                 var wtarget = TargetSelector.GetTarget(_w.Range + 10, TargetSelector.DamageType.Magical);            
                 if (wtarget.IsValidTarget(_w.Range))
                 {
-                    var poutput = _w.GetPrediction(wtarget);
-                    if (poutput.Hitchance >= (HitChance)_menu.Item("hitchancew").GetValue<Slider>().Value + 2)
-                    {
-                        if (!_menu.Item("waitfor").GetValue<bool>() ||
-                            _mw*_menu.Item("calcw").GetValue<Slider>().Value >= wtarget.Health)
-                        {
-                            _w.Cast(poutput.CastPosition);
-                        }
-                    }                  
+                    _w.Cast(wtarget);
                 }
             }
 
@@ -288,14 +274,9 @@ namespace KurisuMorgana
             if (useq && _q.IsReady())
             {
                 var qtarget = TargetSelector.GetTargetNoCollision(_q);
-                if (qtarget.IsValidTarget(_q.Range - 300))
+                if (qtarget.IsValidTarget(_q.Range - 200))
                 {
-                    var poutput = _q.GetPrediction(qtarget);
-                    if (poutput.Hitchance >= (HitChance)_menu.Item("hitchanceq").GetValue<Slider>().Value + 2)
-                    {
-                        if ((int)(Me.Mana / Me.MaxMana * 100) >= _menu.Item("harassmana").GetValue<Slider>().Value)
-                            _q.Cast(poutput.CastPosition);
-                    }
+                    _q.Cast(qtarget);
                 }
             }
 
@@ -304,12 +285,7 @@ namespace KurisuMorgana
                 var wtarget = TargetSelector.GetTarget(_w.Range + 10, TargetSelector.DamageType.Magical);
                 if (wtarget.IsValidTarget(_w.Range))
                 {
-                    var poutput = _w.GetPrediction(wtarget);
-                    if (poutput.Hitchance >= (HitChance)_menu.Item("hitchancew").GetValue<Slider>().Value + 2)
-                    {
-                        if ((int)(Me.Mana / Me.MaxMana * 100) >= _menu.Item("harassmana").GetValue<Slider>().Value)
-                            _w.Cast(poutput.CastPosition);
-                    }
+                    _w.Cast(wtarget);
                 }           
             }
         }
