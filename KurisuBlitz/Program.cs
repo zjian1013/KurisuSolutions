@@ -80,6 +80,7 @@ namespace KurisuBlitz
             _menu.AddSubMenu(spellmenu);
 
             var menuM = new Menu("Misc", "bmisc");
+            menuM.AddItem(new MenuItem("hitchanceq", "Q Hitchance 1-Low, 4-Very High")).SetValue(new Slider(3, 1, 4));
             menuM.AddItem(new MenuItem("dnd", "Mininum Distance to Q")).SetValue(new Slider(255, 0, (int)_q.Range));
             menuM.AddItem(new MenuItem("dnd2", "Maximum Distance to Q")).SetValue(new Slider((int)_q.Range, 0, (int)_q.Range));
             menuM.AddItem(new MenuItem("hnd", "Dont grab if below health %")).SetValue(new Slider(0));
@@ -97,22 +98,26 @@ namespace KurisuBlitz
             // events
             Drawing.OnDraw += BlitzOnDraw;
             Game.OnUpdate += BlitzOnUpdate;
-            Interrupter2.OnInterruptableTarget += Interrupter2_OnInterruptableTarget;
+            Interrupter.OnPossibleToInterrupt += BlitzOnInterruptableSpell;
 
             Game.PrintChat("<font color=\"#FF9900\"><b>KurisuBlitz:</b></font> Loaded");
 
         }
 
-        private static void Interrupter2_OnInterruptableTarget(Obj_AI_Hero sender, Interrupter2.InterruptableTargetEventArgs args)
+        private static void BlitzOnInterruptableSpell(Obj_AI_Base unit, InterruptableSpell spell)
         {
             if (_menu.Item("interruptq").GetValue<bool>())
             {
-                _q.Cast(sender);
+                var prediction = _q.GetPrediction(unit);
+                if (prediction.Hitchance >= HitChance.Low)
+                {
+                    _q.Cast(prediction.CastPosition);
+                }
             }
 
             if (_menu.Item("interruptr").GetValue<bool>())
             {
-                if (sender.Distance(Me.ServerPosition, true) <= _r.RangeSqr)
+                if (unit.Distance(Me.ServerPosition, true) <= _r.RangeSqr)
                 {
                     _r.Cast();
                 }
@@ -120,14 +125,13 @@ namespace KurisuBlitz
 
             if (_menu.Item("interrupte").GetValue<bool>())
             {
-                if (sender.Distance(Me.ServerPosition, true) <= _e.RangeSqr)
+                if (unit.Distance(Me.ServerPosition, true) <= _e.RangeSqr)
                 {
                     _e.CastOnUnit(Me);
-                    Me.IssueOrder(GameObjectOrder.AttackUnit, sender);
+                    Me.IssueOrder(GameObjectOrder.AttackUnit, unit);
                 }
             }
         }
-
 
         private static void BlitzOnDraw(EventArgs args)
         {
@@ -210,7 +214,15 @@ namespace KurisuBlitz
                 var qtarget = TargetSelector.GetTargetNoCollision(_q);
                 if (qtarget.IsValidTarget(_q.Range))
                 {
-                    _q.Cast(qtarget);
+                    var poutput = _q.GetPrediction(qtarget);
+                    if (poutput.Hitchance >= (HitChance) _menu.Item("hitchanceq").GetValue<Slider>().Value + 2)
+                    {
+                        if (qtarget.Distance(Me.ServerPosition) > _menu.Item("dnd").GetValue<Slider>().Value)
+                        {
+                            if (_menu.Item("dograb" + qtarget.ChampionName).GetValue<StringList>().SelectedIndex != 0) 
+                                _q.Cast(poutput.CastPosition);
+                        }
+                    }
                 }
             }
 
@@ -254,10 +266,14 @@ namespace KurisuBlitz
                 {
                     if (Me.GetSpellDamage(qtarget, SpellSlot.Q) >= qtarget.Health)
                     {
-                        if (qtarget.Distance(Me.ServerPosition, true) >
-                            Math.Pow(_menu.Item("dnd2").GetValue<Slider>().Value, 2))
+                        var poutput = _q.GetPrediction(qtarget);
+                        if (poutput.Hitchance >= HitChance.Medium)
                         {
-                            _q.Cast(qtarget);
+                            if (qtarget.Distance(Me.ServerPosition, true) >
+                                Math.Pow(_menu.Item("dnd2").GetValue<Slider>().Value, 2))
+                            {
+                                _q.Cast(poutput.CastPosition);
+                            }
                         }
                     }
                 }
