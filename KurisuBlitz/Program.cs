@@ -80,7 +80,6 @@ namespace KurisuBlitz
             _menu.AddSubMenu(spellmenu);
 
             var menuM = new Menu("Misc", "bmisc");
-            menuM.AddItem(new MenuItem("hitchanceq", "Q Hitchance 1-Low, 4-Very High")).SetValue(new Slider(3, 1, 4));
             menuM.AddItem(new MenuItem("dnd", "Mininum Distance to Q")).SetValue(new Slider(255, 0, (int)_q.Range));
             menuM.AddItem(new MenuItem("dnd2", "Maximum Distance to Q")).SetValue(new Slider((int)_q.Range, 0, (int)_q.Range));
             menuM.AddItem(new MenuItem("hnd", "Dont grab if below health %")).SetValue(new Slider(0));
@@ -98,26 +97,22 @@ namespace KurisuBlitz
             // events
             Drawing.OnDraw += BlitzOnDraw;
             Game.OnUpdate += BlitzOnUpdate;
-            Interrupter.OnPossibleToInterrupt += BlitzOnInterruptableSpell;
+            Interrupter2.OnInterruptableTarget += Interrupter2_OnInterruptableTarget;
 
             Game.PrintChat("<font color=\"#FF9900\"><b>KurisuBlitz:</b></font> Loaded");
 
         }
 
-        private static void BlitzOnInterruptableSpell(Obj_AI_Base unit, InterruptableSpell spell)
+        private static void Interrupter2_OnInterruptableTarget(Obj_AI_Hero sender, Interrupter2.InterruptableTargetEventArgs args)
         {
             if (_menu.Item("interruptq").GetValue<bool>())
             {
-                var prediction = _q.GetPrediction(unit);
-                if (prediction.Hitchance >= HitChance.Low)
-                {
-                    _q.Cast(prediction.CastPosition);
-                }
+                _q.Cast(sender);
             }
 
             if (_menu.Item("interruptr").GetValue<bool>())
             {
-                if (unit.Distance(Me.ServerPosition, true) <= _r.RangeSqr)
+                if (sender.Distance(Me.ServerPosition, true) <= _r.RangeSqr)
                 {
                     _r.Cast();
                 }
@@ -125,13 +120,14 @@ namespace KurisuBlitz
 
             if (_menu.Item("interrupte").GetValue<bool>())
             {
-                if (unit.Distance(Me.ServerPosition, true) <= _e.RangeSqr)
+                if (sender.Distance(Me.ServerPosition, true) <= _e.RangeSqr)
                 {
                     _e.CastOnUnit(Me);
-                    Me.IssueOrder(GameObjectOrder.AttackUnit, unit);
+                    Me.IssueOrder(GameObjectOrder.AttackUnit, sender);
                 }
             }
         }
+
 
         private static void BlitzOnDraw(EventArgs args)
         {
@@ -214,15 +210,7 @@ namespace KurisuBlitz
                 var qtarget = TargetSelector.GetTargetNoCollision(_q);
                 if (qtarget.IsValidTarget(_q.Range))
                 {
-                    var poutput = _q.GetPrediction(qtarget);
-                    if (poutput.Hitchance >= (HitChance) _menu.Item("hitchanceq").GetValue<Slider>().Value + 2)
-                    {
-                        if (qtarget.Distance(Me.ServerPosition) > _menu.Item("dnd").GetValue<Slider>().Value)
-                        {
-                            if (_menu.Item("dograb" + qtarget.ChampionName).GetValue<StringList>().SelectedIndex != 0) 
-                                _q.Cast(poutput.CastPosition);
-                        }
-                    }
+                    _q.Cast(qtarget);
                 }
             }
 
@@ -266,14 +254,10 @@ namespace KurisuBlitz
                 {
                     if (Me.GetSpellDamage(qtarget, SpellSlot.Q) >= qtarget.Health)
                     {
-                        var poutput = _q.GetPrediction(qtarget);
-                        if (poutput.Hitchance >= HitChance.Medium)
+                        if (qtarget.Distance(Me.ServerPosition, true) >
+                            Math.Pow(_menu.Item("dnd2").GetValue<Slider>().Value, 2))
                         {
-                            if (qtarget.Distance(Me.ServerPosition, true) >
-                                Math.Pow(_menu.Item("dnd2").GetValue<Slider>().Value, 2))
-                            {
-                                _q.Cast(poutput.CastPosition);
-                            }
+                            _q.Cast(qtarget);
                         }
                     }
                 }
