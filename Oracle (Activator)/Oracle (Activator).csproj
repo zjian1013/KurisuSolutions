@@ -74,7 +74,6 @@
     <Compile Include="Extensions\Cleansers.cs" />
     <Compile Include="Extensions\Defensives.cs" />
     <Compile Include="Extensions\Offensives.cs" />
-    <Compile Include="OracleBuff.cs" />
     <Compile Include="OracleObj.cs" />
     <Compile Include="Oracle.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

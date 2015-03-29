@@ -2,7 +2,6 @@
 using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
-using OC = Oracle.Program;
 
 namespace Oracle.Extensions
 {
@@ -16,7 +15,7 @@ namespace Oracle.Extensions
             Game.OnUpdate += Game_OnGameUpdate;
 
             _mainMenu = new Menu("Offensives", "omenu");
-            _menuConfig = new Menu("Offensive Config", "oconfig");
+            _menuConfig = new Menu("Offensives Config", "oconfig");
 
             foreach (var x in ObjectManager.Get<Obj_AI_Hero>().Where(x => x.IsEnemy))
                 _menuConfig.AddItem(new MenuItem("ouseOn" + x.SkinName, "Use for " + x.SkinName)).SetValue(true);
@@ -45,10 +44,10 @@ namespace Oracle.Extensions
 
             if (_mainMenu.Item("useMuramana").GetValue<bool>())
             {
-                if (OC.CanManamune)
+                if (Oracle.CanManamune)
                 {
                     if (_mainMenu.Item("muraMode").GetValue<StringList>().SelectedIndex != 1 ||
-                        OC.Origin.Item("usecombo").GetValue<KeyBind>().Active)
+                        Oracle.Origin.Item("usecombo").GetValue<KeyBind>().Active)
                     {
                         var manamune = Me.GetSpellSlot("Muramana");
                         if (manamune != SpellSlot.Unknown && !Me.HasBuff("Muramana"))
@@ -56,12 +55,12 @@ namespace Oracle.Extensions
                             if (Me.Mana/Me.MaxMana*100 > _mainMenu.Item("useMuramanaMana").GetValue<Slider>().Value)
                                 Me.Spellbook.CastSpell(manamune);
 
-                            Utility.DelayAction.Add(400, () => OC.CanManamune = false);
+                            Utility.DelayAction.Add(400, () => Oracle.CanManamune = false);
                         }
                     }
                 }
 
-                if (!OC.CanManamune && !OC.Origin.Item("usecombo").GetValue<KeyBind>().Active)
+                if (!Oracle.CanManamune && !Oracle.Origin.Item("usecombo").GetValue<KeyBind>().Active)
                 {
                     var manamune = Me.GetSpellSlot("Muramana");
                     if (manamune != SpellSlot.Unknown && Me.HasBuff("Muramana"))
@@ -71,7 +70,7 @@ namespace Oracle.Extensions
                 }
             }
 
-            if (OC.Origin.Item("usecombo").GetValue<KeyBind>().Active)
+            if (Oracle.Origin.Item("usecombo").GetValue<KeyBind>().Active)
             {
                 UseItem("Entropy", 3184, 450f, true);
                 UseItem("Guardians", 2051, 450f);
@@ -135,7 +134,7 @@ namespace Oracle.Extensions
                         if (po.Hitchance >= HitChance.Medium)
                         {
                             Items.UseItem(itemId, po.CastPosition);
-                            OC.Logger(OC.LogType.Action,
+                            Oracle.Logger(Oracle.LogType.Action,
                                 "Used " + name + " near " + po.CastPosition.CountEnemiesInRange(300) + " enemies!");
                         }
 
@@ -144,13 +143,13 @@ namespace Oracle.Extensions
                     else if (targeted)
                     {
                         Items.UseItem(itemId, target);
-                        OC.Logger(Program.LogType.Action, "Used " + name + " (Targeted Enemy HP) on " + target.SkinName);
+                        Oracle.Logger(Oracle.LogType.Action, "Used " + name + " (Targeted Enemy HP) on " + target.SkinName);
                     }
 
                     else
                     {
                         Items.UseItem(itemId);
-                        OC.Logger(Program.LogType.Action, "Used " + name + " (Self Enemy HP) on " + target.SkinName);
+                        Oracle.Logger(Oracle.LogType.Action, "Used " + name + " (Self Enemy HP) on " + target.SkinName);
                     }
                 }
 
@@ -162,7 +161,7 @@ namespace Oracle.Extensions
                     else
                         Items.UseItem(itemId);
 
-                    OC.Logger(Program.LogType.Action, "Used " + name + " (Low My HP) on " + target.SkinName);
+                    Oracle.Logger(Oracle.LogType.Action, "Used " + name + " (Low My HP) on " + target.SkinName);
                 }
             }
         }
