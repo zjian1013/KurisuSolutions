@@ -145,6 +145,7 @@ namespace KurisuNidalee
             _mainMenu.AddSubMenu(nidaKeys);
 
             var nidaSpells = new Menu("Nidalee: Combo", "spells");
+            nidaSpells.AddItem(new MenuItem("seth", "Javelin Hitchance")).SetValue(new Slider(3,1,4));
             nidaSpells.AddItem(new MenuItem("usehumanq", "Use Javelin Toss")).SetValue(true);
             nidaSpells.AddItem(new MenuItem("usehumanw", "Use Bushwack")).SetValue(true);
             nidaSpells.AddItem(new MenuItem("usecougarq", "Use Takedown")).SetValue(true);
@@ -242,7 +243,7 @@ namespace KurisuNidalee
             Killsteal();
 
             if (_mainMenu.Item("usecombo").GetValue<KeyBind>().Active)
-                UseCombo();
+                UseCombo(_target);
 
             if (_mainMenu.Item("useharass").GetValue<KeyBind>().Active ||
                 _mainMenu.Item("autoq").GetValue<KeyBind>().Active)
@@ -259,20 +260,32 @@ namespace KurisuNidalee
             if (_mainMenu.Item("useflee").GetValue<KeyBind>().Active)
                 UseFlee();
 
+
+            if (Me.HasBuff("Takedown", true))
+                Orbwalking.LastAATick = 0;
+
             if (_mainMenu.Item("imm").GetValue<bool>())
             {
-                if (HW == 0 && (_cougarForm || Bushwack.IsReady()))
+                // Human W != 0 -- Bushwack is on CD
+                if (HW != 0 || !_cougarForm && !Bushwack.IsReady())
                 {
-                    foreach (var ene in
-                        ObjectManager.Get<Obj_AI_Hero>()
-                            .Where(
-                                hero => hero.IsValidTarget(Bushwack.Range)))
+                    return;
+                }
+
+                var targ =
+                    ObjectManager.Get<Obj_AI_Hero>()
+                        .FirstOrDefault(
+                            hero => hero.Distance(Me.ServerPosition, true) <= Bushwack.RangeSqr && hero.IsEnemy);
+
+                if (targ.IsValidTarget(Bushwack.Range))
+                {
+                    var prediction = Bushwack.GetPrediction(targ);
+                    if (prediction.Hitchance == HitChance.Immobile)
                     {
-                        Bushwack.CastIfHitchanceEquals(ene, HitChance.Immobile);
-                        Javelin.CastIfHitchanceEquals(ene, HitChance.Immobile);
+                        Bushwack.Cast(prediction.CastPosition);
                     }
                 }
-            }
+            }      
         }
 
         #endregion
@@ -501,14 +514,13 @@ namespace KurisuNidalee
         #endregion
 
         #region Nidalee: SBTW
-        private static void UseCombo()
+        private static void UseCombo(Obj_AI_Base target)
         {
-            var target = TargetSelector.GetTarget(Javelin.Range, TargetSelector.DamageType.Magical);
-
             // Cougar combo
-            if (_cougarForm)
+            if (_cougarForm && target.IsValidTarget(Javelin.Range))
             {
                 UseInventoryItems(NidaItems, target);
+
                 // Check if takedown is ready (on unit)
                 if (CQ == 0 && _mainMenu.Item("usecougarq").GetValue<bool>()
                     && target.Distance(Me.ServerPosition, true) <= Takedown.RangeSqr * 2)
@@ -579,7 +591,11 @@ namespace KurisuNidalee
                 var qtarget = TargetSelector.GetTargetNoCollision(Javelin);
                 if ((HQ == 0 || Javelin.IsReady()) && _mainMenu.Item("usehumanq").GetValue<bool>())
                 {
-                    Javelin.Cast(qtarget);
+                    var prediction = Javelin.GetPrediction(qtarget);
+                    if (prediction.Hitchance >= (HitChance)_mainMenu.Item("seth").GetValue<Slider>().Value + 2)
+                    {
+                        Javelin.Cast(prediction.CastPosition);
+                    }
                 }
             }
 
@@ -604,7 +620,11 @@ namespace KurisuNidalee
                 if ((HW == 0 || Bushwack.IsReady()) && _mainMenu.Item("usehumanw").GetValue<bool>() &&
                          target.Distance(Me.ServerPosition, true) <= Bushwack.RangeSqr)
                 {
-                    Bushwack.Cast(target);
+                    var prediction = Bushwack.GetPrediction(target);
+                    if (prediction.Hitchance >= HitChance.Medium)
+                    {
+                        Bushwack.Cast(prediction.CastPosition);
+                    }
                 }
             }
         }
@@ -621,7 +641,14 @@ namespace KurisuNidalee
             var minPercent = _mainMenu.Item("humanqpct").GetValue<Slider>().Value;
             if (!_cougarForm && HQ == 0 && _mainMenu.Item("usehumanq2").GetValue<bool>())
             {
-                Javelin.Cast(qtarget);
+                var prediction = Javelin.GetPrediction(qtarget);
+                if (qtarget.Distance(Me.ServerPosition, true) <= Javelin.RangeSqr && actualHeroManaPercent > minPercent)
+                {
+                    if (prediction.Hitchance >= (HitChance) _mainMenu.Item("seth").GetValue<Slider>().Value + 2)
+                    {
+                        Javelin.Cast(prediction.CastPosition);
+                    }
+                }
             }
         }
 
@@ -675,17 +702,13 @@ namespace KurisuNidalee
             var actualHeroManaPercent = (int)((Me.Mana / Me.MaxMana) * 100);
             var minPercent = _mainMenu.Item("lcpct").GetValue<Slider>().Value;
 
-            var minions = ObjectManager.Get<Obj_AI_Minion>()
-                .Where(
-                    m =>
-                        m.IsValidTarget(1000) && Jungleminions.Any(name => !m.Name.StartsWith(name)) &&
-                        m.Name.StartsWith("Minion"));
-
-            var minionList = minions as Obj_AI_Minion[] ?? minions.ToArray();
-            if (!minionList.Any())
-                return;
-
-            foreach (var m in minionList)
+            foreach (
+                var m in
+                    ObjectManager.Get<Obj_AI_Minion>()
+                        .Where(
+                            m =>
+                                m.IsValidTarget(1500) && Jungleminions.Any(name => !m.Name.StartsWith(name)) &&
+                                m.Name.StartsWith("Minion")))
             {
                 if (_cougarForm)
                 {
@@ -694,10 +717,7 @@ namespace KurisuNidalee
                         if (_mainMenu.Item("lccougare").GetValue<bool>() &&
                            (!Pounce.IsReady() || NotLearned(Pounce)))
                         {
-                            var farmPosition =
-                                Swipe.GetCircularFarmLocation(minionList.Select(x => x.ServerPosition.To2D()).ToList());
-                            if (farmPosition.MinionsHit >= 3)
-                                Swipe.Cast(farmPosition.Position);
+                            Swipe.Cast(m.ServerPosition);
                         }
                     }
 
@@ -706,9 +726,7 @@ namespace KurisuNidalee
                         if (_mainMenu.Item("lccougarw").GetValue<bool>() &&
                             !Me.ServerPosition.Extend(m.ServerPosition, Pounce.Range).UnderTurret(true))
                         {
-                            var farmPosition =
-                                Pounce.GetCircularFarmLocation(minionList.Select(x => x.ServerPosition.To2D()).ToList());
-                                Pounce.Cast(farmPosition.Position);
+                            Pounce.Cast(m.ServerPosition);
                         }
                     }
 
