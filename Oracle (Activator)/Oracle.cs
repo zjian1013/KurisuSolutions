@@ -53,7 +53,7 @@ namespace Oracle
         public static string FileName;
         public static bool CanManamune;
         public static string ChampionName;
-        public const string Revision = "228";
+        public const string Revision = "229";
 
         private static void OnGameLoad(EventArgs args)
         {
