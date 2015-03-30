@@ -180,7 +180,6 @@ namespace KurisuMorgana
             if (Me.IsValidTarget(300, false))
             {
                 var ticks = _menu.Item("calcw").GetValue<Slider>().Value;
-                Render.Circle.DrawCircle(Me.Position, Me.BoundingRadius - 50, System.Drawing.Color.White, 3);
 
                 if (_menu.Item("drawq").GetValue<bool>())
                     Render.Circle.DrawCircle(Me.Position, _q.Range + 10, System.Drawing.Color.White, 3);
