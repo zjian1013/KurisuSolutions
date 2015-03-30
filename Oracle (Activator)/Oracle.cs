@@ -120,7 +120,7 @@ namespace Oracle
                         TargetSpellDatabase.Spells.Where(spell => spell.ChampionName == i.ChampionName.ToLower()))
                 {
                     var danger = spell.Spellslot.ToString() == "R" ||
-                                    spell.CcType != CcType.No && (spell.Type == SpellType.Skillshot || spell.Type == SpellType.Targeted);
+                                    spell.CcType != CcType.No && spell.Type != SpellType.AutoAttack;
 
                     menu.AddItem(new MenuItem(spell.Name + "ccc", spell.Name + " - " + spell.Spellslot)).SetValue(danger);
                 }
