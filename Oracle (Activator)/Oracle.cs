@@ -431,7 +431,8 @@ namespace Oracle
                             DangerUlt = o.Dangerous && Origin.Item(o.Name.ToLower() + "ccc").GetValue<bool>() &&
                                         o.Spellslot.ToString() == "R";
 
-                            Dangercc = o.CcType != CcType.No && o.Type != SpellType.AutoAttack;
+                            Dangercc = o.CcType != CcType.No && o.Type != SpellType.AutoAttack &&
+                                           Origin.Item(o.Name.ToLower() + "ccc").GetValue<bool>();
                         });
                     }
                 }
