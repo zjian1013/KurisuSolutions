@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Drawing;
 using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
+using Color = System.Drawing.Color;
 
 namespace Oracle.Extensions
 {
@@ -66,9 +66,10 @@ namespace Oracle.Extensions
                 _mainmenu.AddSubMenu(_menuconfig);
 
                 var Smite = new Menu("Smite", "msmite");
-                Smite.AddItem(new MenuItem("usesmite", "Use Smite")).SetValue(true);
+                Smite.AddItem(new MenuItem("usesmite", "Use Smite")).SetValue(new KeyBind('M', KeyBindType.Toggle));
                 Smite.AddItem(new MenuItem("smitespell", "Use Smite + Spell")).SetValue(true);
-                Smite.AddItem(new MenuItem("drawsmite", "Use Smite Drawings")).SetValue(true);
+                Smite.AddItem(new MenuItem("drawsmite", "Draw Smite Range")).SetValue(true);
+                Smite.AddItem(new MenuItem("drawstatus", "Draw Smite Status")).SetValue(true);
                 Smite.AddItem(new MenuItem("smitesmall", "Smite Small Camps")).SetValue(true);
                 Smite.AddItem(new MenuItem("smitelarge", "Smite Large Camps")).SetValue(true);
                 Smite.AddItem(new MenuItem("smitesuper", "Smite Epic Camps")).SetValue(true);
@@ -79,11 +80,59 @@ namespace Oracle.Extensions
 
                 Drawing.OnDraw += args =>
                 {
+                    if (!_mainmenu.Item("drawstatus").GetValue<bool>())
+                        return;
+
+                    var worldToScreen = Drawing.WorldToScreen(Me.Position);
+
+                    if (_mainmenu.Item("usesmite").GetValue<KeyBind>().Active)
+                        Drawing.DrawText(worldToScreen[0] - 25, worldToScreen[1] + 25, Color.SpringGreen, "Smite: ON");
+                    else
+                        Drawing.DrawText(worldToScreen[0] - 25, worldToScreen[1] + 25, Color.Red, "Smite: OFF");
+
+                    if (!_mainmenu.Item("usesmite").GetValue<KeyBind>().Active || Me.IsDead)
+                        return;
+
                     if (!_mainmenu.Item("drawsmite").GetValue<bool>() || Me.IsDead)
                         return;
 
-                    if (_mainmenu.Item("usesmite").GetValue<bool>() && !Me.IsDead)
-                        Render.Circle.DrawCircle(Me.Position, 500, Color.SpringGreen, 2);
+                    Render.Circle.DrawCircle(Me.Position, 500, Color.SpringGreen, 2);
+
+                    var height = 6;
+                    var width = 150;
+                    var yoffset = 20;
+                    var xoffset = -7;
+
+                    foreach (
+                        var minion in
+                            ObjectManager.Get<Obj_AI_Minion>()
+                                .Where(
+                                    th =>
+                                        (LargeMinions.Any(x => th.Name.StartsWith(x)) ||
+                                         EpicMinions.Any(e => th.Name.StartsWith(e))) && !th.Name.Contains("Mini")))
+                    {
+                        if (!minion.IsValidTarget(1000) || !minion.IsHPBarRendered)
+                        {
+                            continue;
+                        }
+
+                        var barPos = minion.HPBarPosition;
+                        var damage = Me.GetSummonerSpellDamage(minion, Damage.SummonerSpell.Smite);
+                        var pctafter = Math.Max(0, minion.Health - damage) / minion.MaxHealth;
+
+                        var yaxis = barPos.Y + yoffset;
+                        var xaxisdmg = (float)(barPos.X + xoffset + width * pctafter);
+                        var xaxisnow = barPos.X + xoffset + width * minion.Health / minion.MaxHealth;
+
+                        var ana = xaxisnow - xaxisdmg;
+                        var pos = barPos.X + xoffset + 12 + (138 * pctafter);
+
+                        for (var i = 0; i < ana; i++)
+                        {
+                            Drawing.DrawLine((float)pos + i, yaxis, (float)pos + i, yaxis + height, 1, Color.SpringGreen);
+                        }
+                    }
+
                 };
 
                 Game.OnUpdate += args =>
@@ -425,23 +474,24 @@ namespace Oracle.Extensions
 
         private static void ChampionSmite()
         {
-            CheckChampSmite("Vi", "self", 125f, SpellSlot.E);
+            CheckChampSmite("Nunu", "target", 250f, SpellSlot.Q);
+            CheckChampSmite("Vi", "self", 250f, SpellSlot.E);
             CheckChampSmite("JarvanIV", "vector", 770f, SpellSlot.Q);
-            CheckChampSmite("Poppy", "target", 125f, SpellSlot.Q);
-            CheckChampSmite("Riven", "self", 125f, SpellSlot.W);
-            CheckChampSmite("Malphite", "self", 200f, SpellSlot.E);
+            CheckChampSmite("Poppy", "target", 250f, SpellSlot.Q);
+            CheckChampSmite("Riven", "self", 250f, SpellSlot.W);
+            CheckChampSmite("Malphite", "self", 250f, SpellSlot.E);
             CheckChampSmite("LeeSin", "self", 1100f, SpellSlot.Q, 1);
-            CheckChampSmite("Nunu", "target", 125f, SpellSlot.Q);
-            CheckChampSmite("Olaf", "target", 325f, SpellSlot.E);
-            CheckChampSmite("Elise", "target", 425f, SpellSlot.Q);
+            CheckChampSmite("Olaf", "target", 350f, SpellSlot.E);
+            CheckChampSmite("Elise", "target", 450f, SpellSlot.Q);
             CheckChampSmite("Warwick", "target", 400f, SpellSlot.Q);
             CheckChampSmite("MasterYi", "target", 600f, SpellSlot.Q);
             CheckChampSmite("Kayle", "target", 650, SpellSlot.Q);
             CheckChampSmite("Khazix", "target", 325f, SpellSlot.Q);
             CheckChampSmite("MonkeyKing", "target", 300f, SpellSlot.Q);
-            CheckChampSmite("Amumu", "self", 125f, SpellSlot.E);
-            CheckChampSmite("Chogath", "target", 175f, SpellSlot.R);
+            CheckChampSmite("Amumu", "self", 250f, SpellSlot.E);
+            CheckChampSmite("Chogath", "target", 250f, SpellSlot.R);           
         }
+
 
         private static void CheckSmite()
         {
@@ -449,7 +499,7 @@ namespace Oracle.Extensions
             if (smite == SpellSlot.Unknown)
                 return;
 
-            if (!_mainmenu.Item("usesmite").GetValue<bool>())
+            if (!_mainmenu.Item("usesmite").GetValue<KeyBind>().Active)
                 return;
 
             if (Me.Spellbook.CanUseSpell(smite) != SpellState.Ready)
@@ -536,28 +586,27 @@ namespace Oracle.Extensions
             if (Oracle.ChampionName != name)
                 return;
 
-            if (Me.Spellbook.CanUseSpell(slot) == SpellState.Unknown)
-                return;
-
             var spell = new Spell(slot, range);
             if (spell.IsReady() && _mainmenu.Item("smitespell").GetValue<bool>())
             {
                 var inst = Me.Spellbook.GetSpell(slot);
                 foreach (var minion in ObjectManager.Get<Obj_AI_Minion>())
                 {
-                    if (!minion.IsValidTarget(range))
-                        return;
-
-                    var champdamage = (float) Me.GetSpellDamage(minion, slot, stage);
-                    var smitedamage = (float) Me.GetSummonerSpellDamage(minion, Damage.SummonerSpell.Smite);
+                    if (minion.Distance(Me.ServerPosition, true) > 1200*1200)
+                        continue;
 
                     if (EpicMinions.Any(xe => minion.Name.StartsWith(xe) && !minion.Name.Contains("Mini")) &&
                         _mainmenu.Item("smitesuper").GetValue<bool>() ||
+
                         LargeMinions.Any(xe => minion.Name.StartsWith(xe) && !minion.Name.Contains("Mini")) &&
                         _mainmenu.Item("smitelarge").GetValue<bool>())
                     {
+
+                        var champdamage = (float) Me.GetSpellDamage(minion, slot, stage);
+                        var smitedamage = (float) Me.GetSummonerSpellDamage(minion, Damage.SummonerSpell.Smite);
+
                         if (minion.Health <= smitedamage + champdamage)
-                        {
+                        {                
                             if (name == "LeeSin" && inst.Name == "blindmonkqtwo" &&
                                 !minion.HasBuff("BlindMonkSonicWave"))
                             {
@@ -568,12 +617,15 @@ namespace Oracle.Extensions
                             {
                                 case "self":
                                     spell.Cast();
+                                    Oracle.Logger(Oracle.LogType.Action, "Casting (Self) " + inst.Name + " near: " + minion.Name);
                                     break;
                                 case "vector":
                                     spell.Cast(minion.ServerPosition);
+                                    Oracle.Logger(Oracle.LogType.Action, "Casting (Vector) " + inst.Name + " on: " + minion.Name);
                                     break;
                                 case "target":
                                     spell.CastOnUnit(minion);
+                                    Oracle.Logger(Oracle.LogType.Action, "Casting (Target) " + inst.Name + " on: " + minion.Name);
                                     break;
                             }
                         }
