@@ -6,12 +6,12 @@ using LeagueSharp.Common;
 
 namespace Oracle.Extensions
 {
-    internal static class Cleansers
+    internal class Cleansers
     {
         private static Menu _menuConfig, _mainMenu;
         private static readonly Obj_AI_Hero Me = ObjectManager.Player;
 
-        public static void Initialize(Menu root)
+        public void Initialize(Menu root)
         {
             Game.OnUpdate += Game_OnGameUpdate;
 
@@ -38,7 +38,7 @@ namespace Oracle.Extensions
             root.AddSubMenu(_mainMenu);
         }
 
-        public static void Game_OnGameUpdate(EventArgs args)
+        private static void Game_OnGameUpdate(EventArgs args)
         {
             if (Oracle.Origin.Item("usecombo").GetValue<KeyBind>().Active ||
                 _mainMenu.Item("cmode").GetValue<StringList>().SelectedIndex != 1)

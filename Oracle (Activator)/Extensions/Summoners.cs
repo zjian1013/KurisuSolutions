@@ -6,11 +6,11 @@ using Color = System.Drawing.Color;
 
 namespace Oracle.Extensions
 {
-    internal static class Summoners
+    internal class Summoners
     {
         private static bool _isjungling;
         private static string _smiteslot;
-        private static Menu _mainmenu, _menuconfig;
+        private static Menu _menuconfig, _mainmenu;
         private static readonly Obj_AI_Hero Me = ObjectManager.Player;
 
         public static readonly string[] SmallMinions =
@@ -46,20 +46,22 @@ namespace Oracle.Extensions
             3706, 3710, 3709, 3708, 3707,
         };
 
+        private static float ddmg;
         private static readonly int[] SmitePurple = { 3713, 3726, 3725, 3724, 3723 };
         private static readonly int[] SmiteGrey = { 3711, 3722, 3721, 3720, 3719 };
         private static readonly int[] SmiteRed = { 3715, 3718, 3717, 3716, 3714 };
         private static readonly int[] SmiteBlue = { 3706, 3710, 3709, 3708, 3707 };
 
-        public static void Initialize(Menu root)
+        public void Initialize(Menu root)
         {
             _mainmenu = new Menu("Summoners", "summoners");
-            _menuconfig = new Menu("Summoners Config", "sconfig");
             _isjungling = SmiteAll.Any(x => Items.HasItem(x));
 
             var smite = Me.GetSpellSlot("summonersmite");
             if (smite != SpellSlot.Unknown || _isjungling)
             {
+                _menuconfig = new Menu("Smite Config", "sconfig");
+
                 foreach (var x in SmallMinions)
                     _menuconfig.AddItem(new MenuItem("smiteon" + x, "Dont use on " + x)).SetValue(false);
 
@@ -80,23 +82,22 @@ namespace Oracle.Extensions
 
                 Drawing.OnDraw += args =>
                 {
-                    if (!_mainmenu.Item("drawstatus").GetValue<bool>())
-                        return;
+                    if (_mainmenu.Item("drawstatus").GetValue<bool>())
+                    {
+                        var worldToScreen = Drawing.WorldToScreen(Me.Position);
 
-                    var worldToScreen = Drawing.WorldToScreen(Me.Position);
-
-                    if (_mainmenu.Item("usesmite").GetValue<KeyBind>().Active)
-                        Drawing.DrawText(worldToScreen[0] - 25, worldToScreen[1] + 25, Color.SpringGreen, "Smite: ON");
-                    else
-                        Drawing.DrawText(worldToScreen[0] - 25, worldToScreen[1] + 25, Color.Red, "Smite: OFF");
+                        if (_mainmenu.Item("usesmite").GetValue<KeyBind>().Active)
+                            Drawing.DrawText(worldToScreen[0] - 25, worldToScreen[1] + 25, Color.SpringGreen, "Smite: ON");
+                        else
+                            Drawing.DrawText(worldToScreen[0] - 25, worldToScreen[1] + 25, Color.Red, "Smite: OFF");
+                    }
 
                     if (!_mainmenu.Item("usesmite").GetValue<KeyBind>().Active || Me.IsDead)
                         return;
 
-                    if (!_mainmenu.Item("drawsmite").GetValue<bool>() || Me.IsDead)
-                        return;
+                    if (_mainmenu.Item("drawsmite").GetValue<bool>() && !Me.IsDead)
+                        Render.Circle.DrawCircle(Me.Position, 500, Color.SpringGreen, 2);
 
-                    Render.Circle.DrawCircle(Me.Position, 500, Color.SpringGreen, 2);
 
                     var height = 6;
                     var width = 150;
@@ -117,7 +118,7 @@ namespace Oracle.Extensions
                         }
 
                         var barPos = minion.HPBarPosition;
-                        var damage = Me.GetSummonerSpellDamage(minion, Damage.SummonerSpell.Smite);
+                        var damage = Me.GetSummonerSpellDamage(minion, Damage.SummonerSpell.Smite) + ddmg;
                         var pctafter = Math.Max(0, minion.Health - damage) / minion.MaxHealth;
 
                         var yaxis = barPos.Y + yoffset;
@@ -145,6 +146,8 @@ namespace Oracle.Extensions
             var ignite = Me.GetSpellSlot("summonerdot");
             if (ignite != SpellSlot.Unknown)
             {
+                _menuconfig = new Menu("Ignite Config", "iconfig");
+
                 foreach (var x in ObjectManager.Get<Obj_AI_Hero>().Where(x => x.IsEnemy))
                     _menuconfig.AddItem(new MenuItem("igniteon" + x.ChampionName, "Use for " + x.ChampionName))
                         .SetValue(true);
@@ -165,6 +168,8 @@ namespace Oracle.Extensions
             var heal = Me.GetSpellSlot("summonerheal");
             if (heal != SpellSlot.Unknown)
             {
+                 _menuconfig = new Menu("Heal Config", "hconfig");
+
                 foreach (var x in ObjectManager.Get<Obj_AI_Hero>().Where(x => x.IsAlly))
                     _menuconfig.AddItem(new MenuItem("healon" + x.ChampionName, "Use for " + x.ChampionName))
                         .SetValue(true);
@@ -186,6 +191,8 @@ namespace Oracle.Extensions
             var clarity = Me.GetSpellSlot("summonermana");
             if (clarity != SpellSlot.Unknown)
             {
+                _menuconfig = new Menu("Clarity Config", "cconfig");
+
                 foreach (var x in ObjectManager.Get<Obj_AI_Hero>().Where(x => x.IsAlly))
                     _menuconfig.AddItem(new MenuItem("clarityon" + x.ChampionName, "Use for " + x.ChampionName))
                         .SetValue(true);
@@ -206,6 +213,8 @@ namespace Oracle.Extensions
             var barrier = Me.GetSpellSlot("summonerbarrier");
             if (barrier != SpellSlot.Unknown)
             {
+                _menuconfig = new Menu("Barrier Config", "bconfig");
+
                 foreach (var x in ObjectManager.Get<Obj_AI_Hero>().Where(x => x.IsMe))
                     _menuconfig.AddItem(new MenuItem("barrieron" + x.ChampionName, "Use for " + x.ChampionName))
                         .SetValue(true);
@@ -229,6 +238,8 @@ namespace Oracle.Extensions
             var exhaust = Me.GetSpellSlot("summonerexhaust");
             if (exhaust != SpellSlot.Unknown)
             {
+                _menuconfig = new Menu("Exhaust Config", "econfig");
+
                 foreach (var x in ObjectManager.Get<Obj_AI_Hero>().Where(x => x.IsAlly))
                     _menuconfig.AddItem(new MenuItem("exhauston" + x.ChampionName, "Use for " + x.ChampionName))
                         .SetValue(true);
@@ -318,7 +329,7 @@ namespace Oracle.Extensions
             if (!_mainmenu.Item("usebarrier").GetValue<bool>())
                 return;
 
-            if (!_menuconfig.Item("barrieron" + Me.ChampionName).GetValue<bool>())
+            if (!_mainmenu.Item("barrieron" + Me.ChampionName).GetValue<bool>())
                 return;
 
             if (Me.Spellbook.CanUseSpell(barrier) != SpellState.Ready)
@@ -394,7 +405,7 @@ namespace Oracle.Extensions
             {
                 var aHealthPercent = (int) ((target.Health/target.MaxHealth)*100);
                 if (aHealthPercent <= _mainmenu.Item("usehealpct").GetValue<Slider>().Value &&
-                    _menuconfig.Item("healon" + target.ChampionName).GetValue<bool>())
+                    _mainmenu.Item("healon" + target.ChampionName).GetValue<bool>())
                 {
                     if ((iDamagePercent >= 1 || incdmg >= target.Health))
                     {
@@ -408,7 +419,7 @@ namespace Oracle.Extensions
                 }
 
                 else if (iDamagePercent >= _mainmenu.Item("usehealdmg").GetValue<Slider>().Value &&
-                         _menuconfig.Item("healon" + target.ChampionName).GetValue<bool>())
+                         _mainmenu.Item("healon" + target.ChampionName).GetValue<bool>())
                 {
                     if (Oracle.AggroTarget.NetworkId == target.NetworkId)
                     {
@@ -443,7 +454,7 @@ namespace Oracle.Extensions
             if (aManaPercent > _mainmenu.Item("useclaritypct").GetValue<Slider>().Value)
                 return;
 
-            if (!_menuconfig.Item("clarityon" + target.ChampionName).GetValue<bool>())
+            if (!_mainmenu.Item("clarityon" + target.ChampionName).GetValue<bool>())
                 return;
 
             if (!Me.InFountain() && !Me.IsRecalling())
@@ -586,6 +597,7 @@ namespace Oracle.Extensions
             if (Oracle.ChampionName != name)
                 return;
 
+            ddmg = 0f;
             var spell = new Spell(slot, range);
             if (spell.IsReady() && _mainmenu.Item("smitespell").GetValue<bool>())
             {
@@ -605,6 +617,7 @@ namespace Oracle.Extensions
                         var champdamage = (float) Me.GetSpellDamage(minion, slot, stage);
                         var smitedamage = (float) Me.GetSummonerSpellDamage(minion, Damage.SummonerSpell.Smite);
 
+                        ddmg = champdamage;
                         if (minion.Health <= smitedamage + champdamage)
                         {                
                             if (name == "LeeSin" && inst.Name == "blindmonkqtwo" &&

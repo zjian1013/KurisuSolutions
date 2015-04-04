@@ -6,12 +6,12 @@ using Oracle.Core.Helpers;
 
 namespace Oracle.Extensions
 {
-    internal static class AutoSpells
+    internal class AutoSpells
     {
         private static Menu _mainMenu, _menuConfig;
         private static readonly Obj_AI_Hero Me = ObjectManager.Player;
 
-        public static void Initialize(Menu root)
+        public void Initialize(Menu root)
         {
             Game.OnUpdate += Game_OnGameUpdate;
 

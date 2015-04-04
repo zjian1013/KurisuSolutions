@@ -53,7 +53,7 @@ namespace Oracle
         public static string FileName;
         public static bool CanManamune;
         public static string ChampionName;
-        public const string Revision = "231";
+        public const string Revision = "232";
 
         private static void OnGameLoad(EventArgs args)
         {
@@ -78,33 +78,34 @@ namespace Oracle
             #endregion
 
             #region Git Update
-            //try
-            //{
-            //    var wc = new WebClient { Proxy = null };
-            //    var gitrevision =
-            //        wc.DownloadString(
-            //            "https://raw.githubusercontent.com/xKurisu/KurisuSolutions/master/Oracle%20(Activator)/Oracle.txt");
-            //
-            //    if (Revision != gitrevision)
-            //    {
-            //        Game.PrintChat("<font color=\"#FFFFCC\"><b>Oracle is outdated, please Update!</b></font>");
-            //    }
-            //}
-            //
-            //catch (Exception e)
-            //{
-            //    Logger(LogType.Error, string.Format("Something went wrong with update checker! {0}", e.Message));
-            //}
+            try
+            {
+                var wc = new WebClient { Proxy = null };
+                var gitrevision =
+                    wc.DownloadString(
+                        "https://raw.githubusercontent.com/xKurisu/KurisuSolutions/master/Oracle%20(Activator)/Oracle.txt");
+
+                if (Revision != gitrevision)
+                {
+                    Game.PrintChat("<font color=\"#FFFFCC\"><b>Oracle is outdated, please Update!</b></font>");
+                }
+            }
+
+            catch (Exception e)
+            {
+                Logger(LogType.Error, string.Format("Something went wrong with update checker! {0}", e.Message));
+            }
+
             #endregion
 
             Origin = new Menu("Oracle", "oracle", true);
 
-            Cleansers.Initialize(Origin);
-            Defensives.Initialize(Origin);
-            Summoners.Initialize(Origin);
-            Offensives.Initialize(Origin);
-            Consumables.Initialize(Origin);
-            AutoSpells.Initialize(Origin);
+            new Cleansers().Initialize(Origin);
+            new Defensives().Initialize(Origin);
+            new Summoners().Initialize(Origin);
+            new Offensives().Initialize(Origin);
+            new Consumables().Initialize(Origin);
+            new AutoSpells().Initialize(Origin);
 
             #region Oracle Config
             var config = new Menu("Oracle Config", "oracleconfig");
