@@ -78,24 +78,23 @@ namespace Oracle
             #endregion
 
             #region Git Update
-            try
-            {
-                var wc = new WebClient { Proxy = null };
-                var gitrevision =
-                    wc.DownloadString(
-                        "https://raw.githubusercontent.com/xKurisu/KurisuSolutions/master/Oracle%20(Activator)/Oracle.txt");
+            //try
+            //{
+            //    var wc = new WebClient { Proxy = null };
+            //    var gitrevision =
+            //        wc.DownloadString(
+            //            "https://raw.githubusercontent.com/xKurisu/KurisuSolutions/master/Oracle%20(Activator)/Oracle.txt");
 
-                if (Revision != gitrevision)
-                {
-                    Game.PrintChat("<font color=\"#FFFFCC\"><b>Oracle is outdated, please Update!</b></font>");
-                }
-            }
+            //    if (Revision != gitrevision)
+            //    {
+            //        Game.PrintChat("<font color=\"#FFFFCC\"><b>Oracle is outdated, please Update!</b></font>");
+            //    }
+            //}
 
-            catch (Exception e)
-            {
-                Logger(LogType.Error, string.Format("Something went wrong with update checker! {0}", e.Message));
-            }
-
+            //catch (Exception e)
+            //{
+            //    Logger(LogType.Error, string.Format("Something went wrong with update checker! {0}", e.Message));
+            //}
             #endregion
 
             Origin = new Menu("Oracle", "oracle", true);
