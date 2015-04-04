@@ -118,7 +118,11 @@ namespace Oracle.Extensions
                         }
 
                         var barPos = minion.HPBarPosition;
-                        var damage = Me.GetSummonerSpellDamage(minion, Damage.SummonerSpell.Smite) + ddmg;
+                        var snmite = Me.GetSpellSlot(_smiteslot).IsReady()
+                            ? Me.GetSummonerSpellDamage(minion, Damage.SummonerSpell.Smite)
+                            : 0;
+
+                        var damage = snmite + ddmg;
                         var pctafter = Math.Max(0, minion.Health - damage) / minion.MaxHealth;
 
                         var yaxis = barPos.Y + yoffset;
