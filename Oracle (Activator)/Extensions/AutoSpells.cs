@@ -19,7 +19,7 @@ namespace Oracle.Extensions
             _menuConfig = new Menu("Auto Spells Config", "asconfig");
 
             foreach (var x in ObjectManager.Get<Obj_AI_Hero>().Where(x => x.IsAlly))
-                _menuConfig.AddItem(new MenuItem("ason" + x.SkinName, "Use for " + x.SkinName)).SetValue(true);
+                _menuConfig.AddItem(new MenuItem("ason" + x.ChampionName, "Use for " + x.ChampionName)).SetValue(true);
             _mainMenu.AddSubMenu(_menuConfig);
 
             // auto shields
@@ -177,7 +177,7 @@ namespace Oracle.Extensions
                     ObjectManager.Get<Obj_AI_Hero>()
                         .First(huro => huro.IsValidTarget(float.MaxValue, false) && huro.IsAlly);
 
-                if (!_menuConfig.Item("ason" + target.SkinName).GetValue<bool>())
+                if (!_menuConfig.Item("ason" + target.ChampionName).GetValue<bool>())
                 {
                     return;
                 }
@@ -189,7 +189,7 @@ namespace Oracle.Extensions
                     {
                         sorakar.Cast();
                         Oracle.Logger(Oracle.LogType.Action,
-                            "(Auto Spell: Ult) Saving ally target: " + target.SkinName + " (" + aHealthPercent + "%)");
+                            "(Auto Spell: Ult) Saving ally target: " + target.ChampionName + " (" + aHealthPercent + "%)");
                     }
                 }
             }
@@ -217,7 +217,7 @@ namespace Oracle.Extensions
                     .FirstOrDefault(hero => hero.HasBuff("kalistacoopstrikeally", true));
              
             if (cooptarget.IsValidTarget(1200, false) && cooptarget.IsAlly && 
-                _menuConfig.Item("ason" + cooptarget.SkinName).GetValue<bool>())
+                _menuConfig.Item("ason" + cooptarget.ChampionName).GetValue<bool>())
             {
                 var aHealthPercent = (int) ((cooptarget.Health/cooptarget.MaxHealth)*100);
                 if (aHealthPercent <= _mainMenu.Item("usekalistaultPct").GetValue<Slider>().Value)
@@ -226,7 +226,7 @@ namespace Oracle.Extensions
                     {
                         kalistar.Cast();
                         Oracle.Logger(Oracle.LogType.Action,
-                            "Saving soulbound target: " + cooptarget.SkinName + " (" + aHealthPercent + "%)");
+                            "Saving soulbound target: " + cooptarget.ChampionName + " (" + aHealthPercent + "%)");
                     }
                 }
             }
@@ -257,7 +257,7 @@ namespace Oracle.Extensions
             }
 
             var aHealthPercent = target.Health/target.MaxHealth*100;
-            if (!spell.IsReady() || !_menuConfig.Item("ason" + target.SkinName).GetValue<bool>() || Me.IsRecalling() ||
+            if (!spell.IsReady() || !_menuConfig.Item("ason" + target.ChampionName).GetValue<bool>() || Me.IsRecalling() ||
                 !target.IsValidState())
             {
                 return;
@@ -271,7 +271,7 @@ namespace Oracle.Extensions
                     {
                         spell.CastOnUnit(target);
                         Oracle.Logger(Oracle.LogType.Action,
-                            "(SCC) Casting " + spell.Slot + "(Dangerous Ult) on " + target.SkinName + " (" + aHealthPercent + "%)");
+                            "(SCC) Casting " + spell.Slot + "(Dangerous Ult) on " + target.ChampionName + " (" + aHealthPercent + "%)");
                     }
                 }
             }
@@ -284,7 +284,7 @@ namespace Oracle.Extensions
                     {
                         spell.CastOnUnit(target);
                         Oracle.Logger(Oracle.LogType.Action,
-                            "(SCC) Casting " + spell.Slot + " (Dangerous CC) on " + target.SkinName +" (" + aHealthPercent + "%)");
+                            "(SCC) Casting " + spell.Slot + " (Dangerous CC) on " + target.ChampionName +" (" + aHealthPercent + "%)");
                     }
                 }
             }
@@ -297,7 +297,7 @@ namespace Oracle.Extensions
                     {
                         spell.CastOnUnit(target);
                         Oracle.Logger(Oracle.LogType.Action,
-                            "(SCC) Casting " + spell.Slot + "(Dangerous Spell) on " + target.SkinName + " (" + aHealthPercent + "%)");
+                            "(SCC) Casting " + spell.Slot + "(Dangerous Spell) on " + target.ChampionName + " (" + aHealthPercent + "%)");
                     }
                 }               
             }
@@ -310,7 +310,7 @@ namespace Oracle.Extensions
                     {
                         spell.CastOnUnit(target);
                         Oracle.Logger(Oracle.LogType.Action,
-                            "(SCC) Casting " + spell.Slot + "(Any Spell) on " + target.SkinName + " (" + aHealthPercent + "%)");
+                            "(SCC) Casting " + spell.Slot + "(Any Spell) on " + target.ChampionName + " (" + aHealthPercent + "%)");
                     }
                 }
             }
@@ -336,7 +336,7 @@ namespace Oracle.Extensions
                 return;
 
             var aHealthPercent = target.Health / target.MaxHealth * 100;
-            if (!spell.IsReady() || !_menuConfig.Item("ason" + target.SkinName).GetValue<bool>()|| !target.IsValidState())
+            if (!spell.IsReady() || !_menuConfig.Item("ason" + target.ChampionName).GetValue<bool>()|| !target.IsValidState())
             {
                 return;
             }
@@ -350,7 +350,7 @@ namespace Oracle.Extensions
                     {
                         spell.CastOnUnit(target);
                         Oracle.Logger(Oracle.LogType.Action,
-                            "(Evade) Casting " + spell.Slot + "(Dangerous Spell) on " + target.SkinName + " (" + aHealthPercent + "%)");
+                            "(Evade) Casting " + spell.Slot + "(Dangerous Spell) on " + target.ChampionName + " (" + aHealthPercent + "%)");
                     }
                 }
 
@@ -369,7 +369,7 @@ namespace Oracle.Extensions
                                         .OrderByDescending(ene => ene.Health/ene.MaxHealth*100))
                             {
                                 spell.CastOnUnit(ene);
-                                Oracle.Logger(Oracle.LogType.Action, "(Evade) Casting " + spell.Slot + "(DS) on " + ene.SkinName);
+                                Oracle.Logger(Oracle.LogType.Action, "(Evade) Casting " + spell.Slot + "(DS) on " + ene.ChampionName);
                                 Oracle.Logger(Oracle.LogType.Info, "Evade target info: ");
                                 Oracle.Logger(Oracle.LogType.Info, "HP %: " + ene.Health/ene.MaxHealth*100);
                                 Oracle.Logger(Oracle.LogType.Info, "Current HP %: " + ene.Health);
@@ -403,7 +403,7 @@ namespace Oracle.Extensions
                                 }
 
                                 Oracle.Logger(Oracle.LogType.Danger,
-                                    "(" + Oracle.Attacker.SkinName + ") Dangerous buff on " + Oracle.AggroTarget.SkinName + " should evade!");
+                                    "(" + Oracle.Attacker.ChampionName + ") Dangerous buff on " + Oracle.AggroTarget.ChampionName + " should evade!");
                             });
                     }
                 }    
@@ -415,7 +415,7 @@ namespace Oracle.Extensions
                     {
                         spell.CastOnUnit(target);
                         Oracle.Logger(Oracle.LogType.Action,
-                            "(Evade) Casting " + spell.Slot + "(DS) on " + target.SkinName + " (" + aHealthPercent + "%)");
+                            "(Evade) Casting " + spell.Slot + "(DS) on " + target.ChampionName + " (" + aHealthPercent + "%)");
                     }
                 }
 
@@ -433,7 +433,7 @@ namespace Oracle.Extensions
                                         .OrderByDescending(ene => ene.Health/ene.MaxHealth*100))
                             {
                                 spell.CastOnUnit(ene);
-                                Oracle.Logger(Oracle.LogType.Action, "(Evade) Casting " + spell.Slot + "(DS) on " + ene.SkinName);
+                                Oracle.Logger(Oracle.LogType.Action, "(Evade) Casting " + spell.Slot + "(DS) on " + ene.ChampionName);
                                 Oracle.Logger(Oracle.LogType.Info, "Evade target info: ");
                                 Oracle.Logger(Oracle.LogType.Info, "HP %: " + ene.Health / ene.MaxHealth * 100);
                                 Oracle.Logger(Oracle.LogType.Info, "Current HP %: " + ene.Health);
@@ -462,7 +462,7 @@ namespace Oracle.Extensions
             if (target.Distance(Me.ServerPosition, true) > range*range)
                 return;
 
-            if (!spell.IsReady() || !_menuConfig.Item("ason" + target.SkinName).GetValue<bool>() ||
+            if (!spell.IsReady() || !_menuConfig.Item("ason" + target.ChampionName).GetValue<bool>() ||
                 Me.IsRecalling() ||  Me.InFountain() || !target.IsValidState())
             {
                 return;
@@ -512,7 +512,7 @@ namespace Oracle.Extensions
                             default:
                                 spell.CastOnUnit(target);
                                 Oracle.Logger(Oracle.LogType.Action,
-                                    "(Auto Spell: Shield/Ult) Casting " + spell.Slot + " on " + target.SkinName + " (Low HP)");
+                                    "(Auto Spell: Shield/Ult) Casting " + spell.Slot + " on " + target.ChampionName + " (Low HP)");
                                 Oracle.Logger(Oracle.LogType.Action, "Target HP %: " + aHealthPercent);
                                 break;
                         }
@@ -539,7 +539,7 @@ namespace Oracle.Extensions
                 else
                 {
                     spell.Cast(target);
-                    Oracle.Logger(Oracle.LogType.Action, "(Auto Spell: Heal) Casting " + spell.Slot + " on " + target.SkinName + " (Low HP)");
+                    Oracle.Logger(Oracle.LogType.Action, "(Auto Spell: Heal) Casting " + spell.Slot + " on " + target.ChampionName + " (Low HP)");
                     Oracle.Logger(Oracle.LogType.Action, "Target HP %: " + aHealthPercent);
                 }
             }
@@ -549,7 +549,7 @@ namespace Oracle.Extensions
                 if (iDamagePercent >= _mainMenu.Item("use" + menuvar + "Dmg").GetValue<Slider>().Value)
                 {
                     spell.Cast(target);
-                    Oracle.Logger(Oracle.LogType.Action, "(SS) Casting " + spell.Slot + " on " + target.SkinName + " (Damage Chunk)");
+                    Oracle.Logger(Oracle.LogType.Action, "(SS) Casting " + spell.Slot + " on " + target.ChampionName + " (Damage Chunk)");
                     Oracle.Logger(Oracle.LogType.Action, "Target HP %: " + aHealthPercent);
                 }
             }
