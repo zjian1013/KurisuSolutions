@@ -304,11 +304,6 @@ namespace Oracle
         {
             if (sender.IsMe && (Items.HasItem(3042) || Items.HasItem(3043)))
             {
-                //Console.WriteLine(args.SData.DelayCastOffsetPercent);
-                //Console.WriteLine(args.SData.TargettingType);
-                //Console.WriteLine(args.SData.HaveHitEffect);
-                //Console.WriteLine(args.SData.MissileSpeed);
-
                 foreach (var o in SkillshotDatabase.Spells.Where(x => x.SpellName == args.SData.Name))
                 {
                     foreach (var i in Damage.Spells.Where(d => d.Key == o.ChampionName)
@@ -342,6 +337,7 @@ namespace Oracle
             }
 
             Attacker = null;
+
             if (sender.Type == GameObjectType.obj_AI_Hero && sender.IsEnemy)
             {
                 var heroSender = ObjectManager.Get<Obj_AI_Hero>().First(x => x.NetworkId == sender.NetworkId);

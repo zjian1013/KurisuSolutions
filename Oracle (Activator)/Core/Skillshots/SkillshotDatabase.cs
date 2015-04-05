@@ -376,14 +376,14 @@ namespace Oracle.Core.Skillshots
                     SpellName = "StaticField",
                     Slot = SpellSlot.R,
                     Type = SkillShotType.SkillshotCircle,
-                    Delay = 250,
+                    Delay = 150,
                     Range = 0,
                     Radius = 600,
                     MissileSpeed = int.MaxValue,
                     FixedRange = true,
                     AddHitbox = false,
                     DangerValue = 2,
-                    IsDangerous = false,
+                    IsDangerous = true,
                     MissileSpellName = "",
                 });
 
