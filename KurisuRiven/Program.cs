@@ -7,8 +7,7 @@ namespace KurisuRiven
     {
         private static void Main(string[] args)
         {
-            //Console.WriteLine("KurisuRiven injected..");
-            CustomEvents.Game.OnGameLoad += Base.Initialize;
+            new KurisuRiven();
         }
     }
 }
