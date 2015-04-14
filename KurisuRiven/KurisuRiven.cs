@@ -1100,7 +1100,7 @@ namespace KurisuRiven
             {
                 if (!(didq || didw|| dide || didws || didhd))
                 {
-                    if (Environment.TickCount - lastaa >= (int)(player.AttackDelay * 100) + Game.Ping / 2 + menuslide("aaq"))
+                    if (Environment.TickCount - lastaa >= 900)
                     {
                         canaa = true;
                     }
@@ -1111,7 +1111,7 @@ namespace KurisuRiven
             {
                 if (!(didq || didw || dide || didws || didhd))
                 {
-                    if (Environment.TickCount - lastaa >= 100 + (int)(player.AttackDelay * 100) + Game.Ping / 2 + menuslide("aaq"))
+                    if (Environment.TickCount - lastaa >= 1000)
                     {
                         canmv = true;
                     }
