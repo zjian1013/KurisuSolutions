@@ -608,6 +608,11 @@ namespace KurisuRiven
 
             foreach (var unit in minions)
             {
+                if (player.GetAutoAttackDamage(unit) >= unit.Health)
+                {
+                    OrbTo(unit);
+                }
+
                 if (q.IsReady() && unit.Distance(player.ServerPosition) <= q.Range + 100)
                 {
                     if (canq && menubool("uselaneq"))
