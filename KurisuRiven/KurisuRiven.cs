@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Runtime.InteropServices;
 using LeagueSharp;
 using LeagueSharp.Common;
 using Color = System.Drawing.Color;
@@ -1101,7 +1100,7 @@ namespace KurisuRiven
             {
                 if (!(didq || didw|| dide || didws || didhd))
                 {
-                    if (Environment.TickCount - lastaa >= 1000)
+                    if (Environment.TickCount - lastaa >= (int)(player.AttackDelay * 100) + Game.Ping / 2 + menuslide("aaq"))
                     {
                         canaa = true;
                     }
@@ -1112,7 +1111,7 @@ namespace KurisuRiven
             {
                 if (!(didq || didw || dide || didws || didhd))
                 {
-                    if (Environment.TickCount - lastaa >= 1100)
+                    if (Environment.TickCount - lastaa >= 100 + (int)(player.AttackDelay * 100) + Game.Ping / 2 + menuslide("aaq"))
                     {
                         canmv = true;
                     }
@@ -1140,7 +1139,7 @@ namespace KurisuRiven
 
             var rw = Wdmg(target);
             var rq = Qdmg(target);
-            var rr = r.GetDamage(target);
+            var rr = r.IsReady() ? r.GetDamage(target) : 0;
 
             var ii = (ignote != SpellSlot.Unknown && player.GetSpell(ignote).State == SpellState.Ready && r.IsReady()
                 ? player.GetSummonerSpellDamage(target, Damage.SummonerSpell.Ignite)
