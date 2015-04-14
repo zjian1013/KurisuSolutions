@@ -344,8 +344,7 @@ namespace KurisuRiven
                 {          
                     if (menulist("emode") == 1)
                     {
-                        if (canhd && hashd && 
-                            target.Distance(player.ServerPosition) <= 800)
+                        if (canhd && hashd && !canburst)
                         {
                             Items.UseItem(3077);
                             Items.UseItem(3074);
@@ -365,12 +364,8 @@ namespace KurisuRiven
             }
 
             else if (w.IsReady() && canw && menubool("usecombow") && 
-                target.Distance(player.ServerPosition) <= w.Range)
+                target.Distance(player.ServerPosition) <= w.Range + 25)
             {
-
-                UseInventoryItems(target);
-                CheckR();
-
                 if (menulist("emode") == 0)
                 {
                     if (menubool("usecombow"))
@@ -400,6 +395,9 @@ namespace KurisuRiven
                             w.Cast();
                     }
                 }
+
+                UseInventoryItems(target);
+                CheckR();
             }
 
             else if (q.IsReady() && target.Distance(player.ServerPosition) <= q.Range + 30)
@@ -417,7 +415,7 @@ namespace KurisuRiven
                     q.Cast(target.ServerPosition);
             }
 
-            else if (target.Distance(player.ServerPosition) > myhitbox + 100)
+            else if (target.Distance(player.ServerPosition) > myhitbox + w.Range + 25)
             {
                 if (menubool("usegap"))
                 {
@@ -547,7 +545,7 @@ namespace KurisuRiven
                 }
 
                 // kill or maxdamage ->
-                if (menulist("wsmode") == 1)
+                if (menulist("wsmode") == 1 && rtarg.IsValidTarget(r.Range))
                 {
                     r.CastIfWillHit(rtarg, menuslide("rmulti"));
 
@@ -610,7 +608,6 @@ namespace KurisuRiven
 
             foreach (var unit in minions)
             {
-                OrbTo(unit);
                 if (q.IsReady() && unit.Distance(player.ServerPosition) <= q.Range + 100)
                 {
                     if (canq && menubool("uselaneq"))
