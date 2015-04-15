@@ -78,6 +78,17 @@ namespace KurisuRiven
             return menu.Item(item).GetValue<StringList>().SelectedIndex;
         }
 
+        private static float xtra(float dmg)
+        {
+            var damage = 0d;
+            if (r.IsReady())
+            {
+                damage = (float) (dmg + (dmg*0.2));
+            }
+
+            return (float) damage;
+        }
+
         private static void UseInventoryItems(Obj_AI_Base target)
         {
             if (Items.HasItem(3142) && Items.CanUseItem(3142))
@@ -151,11 +162,11 @@ namespace KurisuRiven
                 movepos = player.ServerPosition + (player.ServerPosition - qtarg.ServerPosition).Normalized()*53;
             if (menulist("cancelt") == 2 && qtarg != player)
                 movepos = player.ServerPosition.Extend(qtarg.ServerPosition, 550);
-            if (menulist("cancelt") == 0 || qtarg == player)
+            if (qtarg == player)
                 movepos = Game.CursorPos;
-   
+
             orbwalker.SetAttack(canmv);
-            orbwalker.SetMovement(canmv); 
+            orbwalker.SetMovement(canmv);
 
             // reqs ->
             SemiQ();
@@ -228,6 +239,7 @@ namespace KurisuRiven
 
             var drMenu = new Menu("Riven: Draw", "drawings");
             drMenu.AddItem(new MenuItem("drawengage", "Draw Engage Range")).SetValue(true);
+            drMenu.AddItem(new MenuItem("drawdmg", "Draw Combo Damage")).SetValue(true);
             menu.AddSubMenu(drMenu);
 
             var combo = new Menu("Riven: Combo", "combo");
@@ -240,7 +252,7 @@ namespace KurisuRiven
                 .SetValue(
                     new StringList(
                         new[]
-                        { "Move (Cursor)", "Move (Behind Me)", "Move (Target)", "Dance", "Laugh" }, 1));
+                        {"Move (Behind Me)", "Move (Target)", "Dance", "Laugh" }, 1));
 
             qmenu.AddItem(new MenuItem("sepp", "Increase delay until AA's don't cancel:"));
             qmenu.AddItem(new MenuItem("aaq", "Auto-Attack -> CanQ Delay (ms)")).SetValue(new Slider(15));
@@ -255,7 +267,7 @@ namespace KurisuRiven
             var emenu = new Menu("E  Settings", "rivene");
             emenu.AddItem(new MenuItem("usecomboe", "Use E in Combo")).SetValue(true);
             emenu.AddItem(new MenuItem("emode", "Use E Mode"))
-                .SetValue(new StringList(new[] { "E -> W/R -> Tiamat -> Q", "E -> Tiamat -> W/R -> Q" }, 1));
+                .SetValue(new StringList(new[] { "E -> W/R -> Tiamat -> Q", "E -> Tiamat -> W/R -> Q" } ));
             emenu.AddItem(new MenuItem("erange", "E Only if Target > AARange or Engage")).SetValue(true);
             emenu.AddItem(new MenuItem("vhealth", "Or Use E if HP% <=")).SetValue(new Slider(40));
             combo.AddSubMenu(emenu);
@@ -282,7 +294,7 @@ namespace KurisuRiven
             harass.AddItem(new MenuItem("gaptimeh", "Gapclose Q Delay (ms)")).SetValue(new Slider(110, 50, 200));
             harass.AddItem(new MenuItem("maxgap", "Maximum Gapclose Q's")).SetValue(new Slider(2, 1, 3));
             harass.AddItem(new MenuItem("useharasse", "Use E in Harass")).SetValue(true);
-            harass.AddItem(new MenuItem("etoo", "Use E to")).SetValue(new StringList(new [] {"Safe Position", "Cursor"}));
+            harass.AddItem(new MenuItem("etoo", "Use E to")).SetValue(new StringList(new [] {"Away from Target", "Ally Turret", "Cursor"}, 1));
             harass.AddItem(new MenuItem("useharassw", "Use W in Harass")).SetValue(true);
             menu.AddSubMenu(harass);
 
@@ -320,9 +332,10 @@ namespace KurisuRiven
             {
                 if (rtarg.Distance(player.ServerPosition) <= 600 * 600)
                 {
-                    if (cleavecount <= 2 && q.IsReady())
+                    if (cleavecount <= menuslide("userq") && q.IsReady() && menubool("useignote"))
                     {
-                        if (menubool("useignote") && ComboDamage(target) >= target.Health)
+                        if (ComboDamage(target) >= target.Health &&
+                            target.Health > ComboDamage(target)/2.5)
                         {
                             if (r.IsReady() && ulton)
                             {
@@ -415,7 +428,7 @@ namespace KurisuRiven
                     q.Cast(target.ServerPosition);
             }
 
-            else if (target.Distance(player.ServerPosition) > myhitbox + w.Range + 25)
+            else if (target.Distance(player.ServerPosition) > myhitbox + 100)
             {
                 if (menubool("usegap"))
                 {
@@ -438,9 +451,22 @@ namespace KurisuRiven
         {
             OrbTo(target);
 
-            var epos = menulist("etoo") == 0
-                ? player.ServerPosition + (player.ServerPosition - target.ServerPosition).Normalized()*45
-                : Game.CursorPos;
+            Vector3 epos;
+            switch (menulist("etoo"))
+            {
+                case 0:
+                    epos = player.ServerPosition + 
+                        (player.ServerPosition - target.ServerPosition).Normalized()*45;
+                    break;
+                case 1:
+                    epos = ObjectManager.Get<Obj_AI_Turret>()
+                        .Where(t => (t.IsAlly)).OrderBy(t => t.Distance(player.Position)).First().Position;
+                    break;
+                default:
+                    epos = Game.CursorPos;
+                    break;
+            }
+
 
             if (target.Distance(player.ServerPosition) <= w.Range + 10)
             {
@@ -539,7 +565,7 @@ namespace KurisuRiven
                     // only kill or killsteal etc ->
                     if (r.GetDamage(target) >= rtarg.Health && canw)
                     {
-                        if (r.GetPrediction(target, true).Hitchance >= HitChance.Medium)
+                        if (r.GetPrediction(target, true).Hitchance >= HitChance.Low)
                             r.Cast(r.GetPrediction(target, true).CastPosition);
                     }
                 }
@@ -552,15 +578,16 @@ namespace KurisuRiven
                     var po = r.GetPrediction(rtarg, true);
                     if ((r.GetDamage(rtarg) / rtarg.MaxHealth * 100) >= rtarg.Health / rtarg.MaxHealth * 100)
                     {
-                        if (po.Hitchance >= HitChance.Medium && canws)
+                        if (po.Hitchance >= HitChance.Low && canws)
                             r.Cast(po.CastPosition);
                     }
 
-                    if (rtarg.Health <= r.GetDamage(rtarg) + player.GetAutoAttackDamage(rtarg) + Qdmg(rtarg) * 2)
+                    if (rtarg.Health <= xtra((float) 
+                       (r.GetDamage(rtarg) + player.GetAutoAttackDamage(rtarg)*2 + Qdmg(rtarg)* 2)))
                     {
                         if (rtarg.Distance(player.ServerPosition) <= myhitbox + 100)
                         {
-                            if (po.Hitchance >= HitChance.Medium && canws)
+                            if (po.Hitchance >= HitChance.Low && canws)
                                 r.Cast(po.CastPosition);
                         }
                     }
@@ -811,7 +838,8 @@ namespace KurisuRiven
                         {
                             if (ulton && r.IsReady() && cleavecount == 2 && q.IsReady())
                             {
-                                r.Cast(Game.CursorPos);
+                                if (rtarg == null || rtarg.Distance(player.ServerPosition) > r.Range)
+                                    r.Cast(Game.CursorPos);
                             }
                         }
 
@@ -1167,7 +1195,7 @@ namespace KurisuRiven
 
             var damage = (rq * 3 + ra * 3 + rw + rr + ii + items);
 
-            return (float) (r.IsReady() ? damage + (damage*0.2) : damage);
+            return xtra((float) damage);
         }
 
 
@@ -1220,6 +1248,9 @@ namespace KurisuRiven
 
             Drawing.OnEndScene += args =>
             {
+                if (!menubool("drawdmg"))
+                    return;
+
                 foreach (
                     Obj_AI_Hero enemy in
                         ObjectManager.Get<Obj_AI_Hero>()
