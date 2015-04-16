@@ -86,6 +86,11 @@ namespace KurisuRiven
                 damage = (float) (dmg + (dmg*0.2));
             }
 
+            else
+            {
+                damage = dmg;
+            }
+
             return (float) damage;
         }
 
