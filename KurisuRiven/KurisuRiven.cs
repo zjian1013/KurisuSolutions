@@ -80,18 +80,7 @@ namespace KurisuRiven
 
         private static float xtra(float dmg)
         {
-            var damage = 0d;
-            if (r.IsReady())
-            {
-                damage = (float) (dmg + (dmg*0.2));
-            }
-
-            else
-            {
-                damage = dmg;
-            }
-
-            return (float) damage;
+           return r.IsReady() ? (float) (dmg + (dmg*0.2)) : dmg;
         }
 
         private static void UseInventoryItems(Obj_AI_Base target)
