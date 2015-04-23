@@ -171,7 +171,7 @@ namespace KurisuRiven
                 
             ulton = player.GetSpell(SpellSlot.R).Name != "RivenFengShuiEngine";
 
-            canburst = rtarg != null && r.IsReady() && (ComboDamage(rtarg)/1.6) >= rtarg.Health;
+            canburst = rtarg != null && r.IsReady() && q.IsReady() && (ComboDamage(rtarg)/1.6) >= rtarg.Health;
     
             if (menulist("cancelt") == 1 && qtarg != player)
                 movepos = player.ServerPosition + (player.ServerPosition - qtarg.ServerPosition).Normalized()*53;
@@ -277,7 +277,7 @@ namespace KurisuRiven
                         {"Move (Behind Me)", "Move (Target)", "Dance", "Laugh" }, 1));
 
             qmenu.AddItem(new MenuItem("sepp", "Increase delay until AA's don't cancel:"));
-            qmenu.AddItem(new MenuItem("aaq", "Auto-Attack -> CanQ Delay (ms)")).SetValue(new Slider(15));
+            qmenu.AddItem(new MenuItem("aaq", "Auto-Attack -> CanQ Delay (ms)")).SetValue(new Slider(15, 0, 300));
             combo.AddSubMenu(qmenu);
 
             var wmenu = new Menu("W Settings", "rivenw");
@@ -303,8 +303,8 @@ namespace KurisuRiven
             rmenu.AddItem(new MenuItem("userq", "Use R Only if Q Count <=")).SetValue(new Slider(1, 1, 3));
             rmenu.AddItem(new MenuItem("ultwhen", "Use R When"))
                 .SetValue(new StringList(new[] {"Normal", "Hard", "Always"}, 1));
-            rmenu.AddItem(new MenuItem("usews", "Use Windslash in Combo")).SetValue(true);
-            rmenu.AddItem(new MenuItem("wsmode", "Windslash for"))
+            rmenu.AddItem(new MenuItem("usews", "Use Windslash (R2) in Combo")).SetValue(true);
+            rmenu.AddItem(new MenuItem("wsmode", "Windslash (R2) for"))
                 .SetValue(new StringList(new[] {"Kill Only", "Kill Or MaxDamage"}, 1));
             rmenu.AddItem(new MenuItem("rmulti", "Windslash if enemies hit >=")).SetValue(new Slider(3, 2, 5));
             combo.AddSubMenu(rmenu);
@@ -350,8 +350,8 @@ namespace KurisuRiven
             // use r at appropriate distance
             // on spell cast takes over
 
-            if (!menu.Item("combokey").GetValue<KeyBind>().Active || 
-                !target.IsValid<Obj_AI_Hero>() || ulton)
+            if (!menu.Item("combokey").GetValue<KeyBind>().Active ||
+                !target.IsValid<Obj_AI_Hero>() || ulton || !menubool("user"))
             {
                 return;
             }
@@ -892,7 +892,7 @@ namespace KurisuRiven
                         // cancel q animation
                         if (qtarg.IsValidTarget(myhitbox + 100))
                         {
-                            Utility.DelayAction.Add(100,
+                            Utility.DelayAction.Add(100 + Game.Ping/2,
                                 delegate
                                 {
                                     switch (menulist("cancelt"))
@@ -1258,7 +1258,7 @@ namespace KurisuRiven
             var ra = ad +
                         (float)
                             ((+player.FlatPhysicalDamageMod + player.BaseAttackDamage) *
-                            runicpassive[player.Level >= 18 ? 6 : player.Level / 3]);
+                            runicpassive[player.Level / 3]);
 
             var rw = Wdmg(target);
             var rq = Qdmg(target);
