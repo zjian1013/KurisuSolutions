@@ -350,6 +350,9 @@ namespace KurisuRiven
             // use r at appropriate distance
             // on spell cast takes over
 
+            if (!menubool("multib"))
+                return;
+
             if (!menu.Item("combokey").GetValue<KeyBind>().Active ||
                 !target.IsValid<Obj_AI_Hero>() || ulton || !menubool("user"))
             {
@@ -943,7 +946,7 @@ namespace KurisuRiven
                         break;
                     case "RivenFengShuiEngine":
                         ssfl = true;
-                        if (rtarg != null && canburst)
+                        if (rtarg != null && canburst && menubool("multib"))
                         {
                             if (!flash.IsReady())
                                 return;
