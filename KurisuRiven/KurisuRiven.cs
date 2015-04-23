@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Collections.Generic;
 using LeagueSharp;
 using LeagueSharp.Common;
 using Color = System.Drawing.Color;
@@ -32,11 +33,14 @@ namespace KurisuRiven
         private static bool didws;
         private static bool didaa;
         private static bool didhd;
+        private static bool ssfl;
 
         private static Menu menu;
+        private static int build = 23;
         private static Spell q, w, e, r;
         private static Orbwalking.Orbwalker orbwalker;
         private static Obj_AI_Hero player = ObjectManager.Player;
+        private static HpBarIndicator hpi = new HpBarIndicator();
 
         private static Obj_AI_Base qtarg; // semi q target
         private static Obj_AI_Hero rtarg; // riven target
@@ -46,16 +50,19 @@ namespace KurisuRiven
 
         private static int cleavecount;
         private static int passivecount;
-
-        private static HpBarIndicator hpi = new HpBarIndicator();
+        private static SpellSlot flash;
 
         private static float myhitbox;
         private static Vector3 movepos;
 
-        private static string[] minionlist =
+        private static readonly string[] minionlist =
         {
+            // summoners rift
             "SRU_Razorbeak", "SRU_Krug", "Sru_Crab", "SRU_Baron", "SRU_Dragon",
-            "SRU_Blue", "SRU_Red", "SRU_Murkwolf", "SRU_Gromp", "TT_NGolem5", "TT_NGolem2", "TT_NWolf6", "TT_NWolf3",
+            "SRU_Blue", "SRU_Red", "SRU_Murkwolf", "SRU_Gromp", 
+            
+            // twisted treeline
+            "TT_NGolem5", "TT_NGolem2", "TT_NWolf6", "TT_NWolf3",
             "TT_NWraith1", "TT_Spider"
         };
 
@@ -115,9 +122,10 @@ namespace KurisuRiven
                         q.SetSkillshot(0.25f, 100f, 2200f, false, SkillshotType.SkillshotCircle);
 
                         r = new Spell(SpellSlot.R, 1100f);
-                        r.SetSkillshot(0.25f, 300, 2200f, false, SkillshotType.SkillshotCone);
+                        r.SetSkillshot(0.25f, 225f, 2200f, false, SkillshotType.SkillshotCone);
+                        flash = player.GetSpellSlot("summonerflash");
 
-                        LoadMenu();
+                        Menu();
                         Interrupter();
                         OnGapcloser();
                         OnPlayAnimation();
@@ -125,7 +133,20 @@ namespace KurisuRiven
                         Drawings();
 
                         Game.OnUpdate += Game_OnUpdate;
-                        Game.PrintChat("<b><font color=\"#FF9900\">KurisuRiven:</font></b> Loaded!");
+                        Game.PrintChat("<b><font color=\"#FF9900\">KurisuRiven:</font></b> " +
+                                       "Build <b><font color=\"#FF9900\">" + build + "</font></b> Loaded!");
+
+                        if (menu.Item("Farm").GetValue<KeyBind>().Key == menu.Item("semiq").GetValue<KeyBind>().Key ||
+                            menu.Item("Orbwalk").GetValue<KeyBind>().Key == menu.Item("semiq").GetValue<KeyBind>().Key ||
+                            menu.Item("LaneClear").GetValue<KeyBind>().Key == menu.Item("semiq").GetValue<KeyBind>().Key ||
+                            menu.Item("LastHit").GetValue<KeyBind>().Key == menu.Item("semiq").GetValue<KeyBind>().Key)
+                        {
+                            Game.PrintChat(
+                                "<b><font color=\"#FF9900\">" +
+                                "WARNING: Semi-Q Keybind Should not be the same key as any of " +
+                                "the other orbwalking modes or it will not Work!</font></b>");
+                        }
+
                     }
                 }
                 catch (Exception e)
@@ -150,7 +171,7 @@ namespace KurisuRiven
                 
             ulton = player.GetSpell(SpellSlot.R).Name != "RivenFengShuiEngine";
 
-            canburst = rtarg != null && r.IsReady() && (ComboDamage(rtarg)/2) >= rtarg.Health;
+            canburst = rtarg != null && r.IsReady() && (ComboDamage(rtarg)/1.6) >= rtarg.Health;
     
             if (menulist("cancelt") == 1 && qtarg != player)
                 movepos = player.ServerPosition + (player.ServerPosition - qtarg.ServerPosition).Normalized()*53;
@@ -166,12 +187,14 @@ namespace KurisuRiven
             SemiQ();
             AuraUpdate();
             CombatCore();
+
             Windslash();
 
             if (rtarg.IsValidTarget() && 
                 menu.Item("combokey").GetValue<KeyBind>().Active)
             {
                 ComboTarget(rtarg);
+                TryFlashInitiate(rtarg);
             }
 
             if (rtarg.IsValidTarget() && 
@@ -197,7 +220,7 @@ namespace KurisuRiven
         #endregion
 
         #region Riven: Menu
-        private static void LoadMenu()
+        private static void Menu()
         {
             menu = new Menu("Kurisu's Riven", "kurisuriven", true);
 
@@ -218,11 +241,14 @@ namespace KurisuRiven
             var mitem = new MenuItem("semiqlane", "Use Semi-Q Laneclear");
             mitem.ValueChanged += (sender, args) =>
             {
-                if (args.GetOldValue<KeyBind>().Key != args.GetNewValue<KeyBind>().Key)
+                if (menu.Item("Farm").GetValue<KeyBind>().Key == args.GetNewValue<KeyBind>().Key ||
+                    menu.Item("Orbwalk").GetValue<KeyBind>().Key == args.GetNewValue<KeyBind>().Key ||
+                    menu.Item("LaneClear").GetValue<KeyBind>().Key == args.GetNewValue<KeyBind>().Key ||
+                    menu.Item("LastHit").GetValue<KeyBind>().Key == args.GetNewValue<KeyBind>().Key)
                 {
                     Game.PrintChat(
                         "<b><font color=\"#FF9900\">" +
-                        "Semi-Q Keybind Should not be the same key as any of " +
+                        "WARNING: Semi-Q Keybind Should not be the same key as any of " +
                         "the other orbwalking modes or it will not Work!</font></b>");
                 }
             };
@@ -233,7 +259,9 @@ namespace KurisuRiven
 
             var drMenu = new Menu("Riven: Draw", "drawings");
             drMenu.AddItem(new MenuItem("drawengage", "Draw Engage Range")).SetValue(true);
-            drMenu.AddItem(new MenuItem("drawdmg", "Draw Combo Damage")).SetValue(true);
+            drMenu.AddItem(new MenuItem("drawdmg", "Draw Damage Bar")).SetValue(true);
+            drMenu.AddItem(new MenuItem("drawburst", "Draw Burst Range")).SetValue(true);
+            drMenu.AddItem(new MenuItem("drawtarg", "Debug Current Target")).SetValue(false);
             menu.AddSubMenu(drMenu);
 
             var combo = new Menu("Riven: Combo", "combo");
@@ -268,18 +296,19 @@ namespace KurisuRiven
 
             var rmenu = new Menu("R  Settings", "rivenr");
             rmenu.AddItem(new MenuItem("user", "Use R in Combo")).SetValue(true);
-            rmenu.AddItem(new MenuItem("overk", "Check R Overkill")).SetValue(false);
+            rmenu.AddItem(new MenuItem("useignote", "Use R + Ignite")).SetValue(true);
+            rmenu.AddItem(new MenuItem("mutlib", "Flash R/W if Can Burst Target")).SetValue(true);
+            rmenu.AddItem(new MenuItem("multic", "Flash R/W if Hit >=")).SetValue(new Slider(3, 2, 5));
+            rmenu.AddItem(new MenuItem("overk", "Dont R if Target HP % <=")).SetValue(new Slider(25, 1, 99));
             rmenu.AddItem(new MenuItem("userq", "Use R Only if Q Count <=")).SetValue(new Slider(1, 1, 3));
             rmenu.AddItem(new MenuItem("ultwhen", "Use R When"))
-                .SetValue(new StringList(new[] {"Normal", "Hard", "Very Hard"}, 1));
+                .SetValue(new StringList(new[] {"Normal", "Hard", "Always"}, 1));
             rmenu.AddItem(new MenuItem("usews", "Use Windslash in Combo")).SetValue(true);
             rmenu.AddItem(new MenuItem("wsmode", "Windslash for"))
                 .SetValue(new StringList(new[] {"Kill Only", "Kill Or MaxDamage"}, 1));
             rmenu.AddItem(new MenuItem("rmulti", "Windslash if enemies hit >=")).SetValue(new Slider(3, 2, 5));
             combo.AddSubMenu(rmenu);
 
-            combo.AddItem(new MenuItem("useignote", "Use Smart Ignite")).SetValue(true);
-            //combo.AddItem(new MenuItem("flash", "Use Flash + Burst")).SetValue(true);
 
             menu.AddSubMenu(combo);
 
@@ -288,10 +317,11 @@ namespace KurisuRiven
             harass.AddItem(new MenuItem("gaptimeh", "Gapclose Q Delay (ms)")).SetValue(new Slider(110, 50, 200));
             harass.AddItem(new MenuItem("maxgap", "Maximum Gapclose Q's")).SetValue(new Slider(2, 1, 3));
             harass.AddItem(new MenuItem("useharasse", "Use E in Harass")).SetValue(true);
-            harass.AddItem(new MenuItem("etoo", "Use E to")).SetValue(new StringList(new [] {"Away from Target", "Ally Turret", "Cursor"}, 1));
+            harass.AddItem(new MenuItem("etoo", "Use E to"))
+                .SetValue(new StringList(new[] { "Away from Target", "Ally Turret", "Cursor" }, 1));
+
             harass.AddItem(new MenuItem("useharassw", "Use W in Harass")).SetValue(true);
             menu.AddSubMenu(harass);
-
 
             var farming = new Menu("Riven: Laneclear", "laneclear");
             farming.AddItem(new MenuItem("uselaneq", "Use Q  in Laneclear")).SetValue(false);
@@ -313,6 +343,50 @@ namespace KurisuRiven
 
         #endregion
 
+        #region Riven : Flash Initiate
+
+        private static void TryFlashInitiate(Obj_AI_Hero target)
+        {
+            // use r at appropriate distance
+            // on spell cast takes over
+
+            if (!menu.Item("combokey").GetValue<KeyBind>().Active || 
+                !target.IsValid<Obj_AI_Hero>() || ulton)
+            {
+                return;
+            }
+
+            if (rtarg == null || !canburst || ulton ||
+                rtarg != null && rtarg.CountEnemiesInRange(w.Range) < menuslide("multic"))
+            {
+                return;
+            }
+
+            if (!flash.IsReady())
+            {
+                return;
+            }
+
+            if (e.IsReady() && target.Distance(player.ServerPosition) <= e.Range + w.Range + 350)
+            {
+                if (target.Distance(player.ServerPosition) > e.Range + myhitbox)
+                {
+                    e.Cast(target.ServerPosition);
+                    r.Cast();
+                }
+            }
+
+            if (!e.IsReady() && target.Distance(player.ServerPosition) <= w.Range + 350)
+            {
+                if (target.Distance(player.ServerPosition) > myhitbox + 35)
+                {
+                    r.Cast();
+                }
+            }
+        }
+
+        #endregion
+
         #region Riven: Combo
 
         private static void ComboTarget(Obj_AI_Base target)
@@ -329,7 +403,7 @@ namespace KurisuRiven
                     if (cleavecount <= menuslide("userq") && q.IsReady() && menubool("useignote"))
                     {
                         if (ComboDamage(target) >= target.Health &&
-                            target.Health > ComboDamage(target)/2.5)
+                            target.Health/target.MaxHealth*100 > menuslide("overk"))
                         {
                             if (r.IsReady() && ulton)
                             {
@@ -341,7 +415,7 @@ namespace KurisuRiven
             }
 
             if (e.IsReady() && cane && menubool("usecomboe") &&
-                (player.Health/player.MaxHealth*100 <= menuslide("vhealth") ||
+               (player.Health/player.MaxHealth*100 <= menuslide("vhealth") ||
                  target.Distance(player.ServerPosition) > myhitbox + 25))
             {
                 if (menubool("usecomboe"))
@@ -666,24 +740,41 @@ namespace KurisuRiven
 
         private static void Flee()
         {
-            if (cane && e.IsReady())
-            {
-                if (cleavecount >= 2 || !q.IsReady() && !player.HasBuff("RivenTriCleave", true))
-                {
-                    e.Cast(Game.CursorPos);
-                }
-            }
-
-            if (Environment.TickCount - lastq >= (canws? 600 : 150))
-            {
-                q.Cast(Game.CursorPos);
-            }
-
             if (canmv)
             {
                 player.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPos);
             }
+
+            if (ssfl)
+            {
+                if (Environment.TickCount - lastq >= 600)
+                {
+                    q.Cast(Game.CursorPos);
+                }
+
+                if (cane && e.IsReady())
+                {
+                    if (cleavecount >= 2 || !q.IsReady() && !player.HasBuff("RivenTriCleave", true))
+                    {
+                        e.Cast(Game.CursorPos);
+                    }
+                }
+            }
+
+            else
+            {
+                if (q.IsReady())
+                {
+                    q.Cast(Game.CursorPos);
+                }
+
+                if (e.IsReady() && Environment.TickCount - lastq >= 250)
+                {
+                    e.Cast(Game.CursorPos);
+                }
+            }
         }
+
         #endregion
 
         #region Riven: SemiQ 
@@ -715,7 +806,13 @@ namespace KurisuRiven
                         {
                             if (qtarg.IsValid<Obj_AI_Minion>() || qtarg.IsValid<Obj_AI_Turret>())
                             {
-                                if (menu.Item("semiqlane").GetValue<KeyBind>().Active || ulton)
+                                if (menu.Item("semiqlane").GetValue<KeyBind>().Active)
+                                    q.Cast(qtarg.ServerPosition);
+                            }
+
+                            if (qtarg.IsValid<Obj_AI_Hero>() || qtarg.IsValid<Obj_AI_Turret>())
+                            {
+                                if (ulton)
                                     q.Cast(qtarg.ServerPosition);
                             }
                         }
@@ -732,18 +829,21 @@ namespace KurisuRiven
             if (!r.IsReady() || ulton || !menubool("user"))
                 return;
 
+            if (menulist("ultwhen") == 2)
+                r.Cast();
+
             var enemies = HeroManager.Enemies.Where(ene => ene.IsValidTarget(r.Range + 250));
-            foreach (var target in enemies)
+            var targets = enemies as IList<Obj_AI_Hero> ?? enemies.ToList();
+            foreach (var target in targets)
             {
                 if (cleavecount <= menuslide("userq") && (q.IsReady() || Environment.TickCount - lastq < 1000))
                 {
-                    if (enemies.Count(ene => ene.Distance(player.ServerPosition) <= 650) >= 2)
+                    if (targets.Count(ene => ene.Distance(player.ServerPosition) <= 650) >= 2)
                     {
                         r.Cast();
                     }
 
-                    if (enemies.Count() < 2 && 
-                        target.Health <= (ComboDamage(target)/3) && menubool("overk"))
+                    if (targets.Count() < 2 && target.Health/target.MaxHealth*100 <= menuslide("overk"))
                     {
                         return;
                     }
@@ -760,15 +860,6 @@ namespace KurisuRiven
                     if (menulist("ultwhen") == 1)
                     {
                         if (ComboDamage(target) >= target.Health)
-                        {
-                            r.Cast();
-                        }
-                    }
-
-                    // very hard kill ->
-                    if (menulist("ultwhen") == 2)
-                    {
-                        if ((ComboDamage(target)*1.5) >= target.Health)
                         {
                             r.Cast();
                         }
@@ -794,6 +885,9 @@ namespace KurisuRiven
                         didq = true;
                         lastq = Environment.TickCount;
                         canq = false;
+
+                        if (!ulton)
+                            ssfl = false;
 
                         // cancel q animation
                         if (qtarg.IsValidTarget(myhitbox + 100))
@@ -848,24 +942,27 @@ namespace KurisuRiven
 
                         break;
                     case "RivenFengShuiEngine":
-                        //if (menubool("flash") && canburst)
-                        //{
-                        //    var flashslot = player.GetSpellSlot("summonerflash");
-                        //    if (player.Spellbook.CanUseSpell(flashslot) == SpellState.Ready)
-                        //    {
-                        //        if (menu.Item("combokey").GetValue<KeyBind>().Active)
-                        //        {
-                        //            if (rtarg.Distance(player.ServerPosition) > e.Range + myhitbox + 50 &&
-                        //                rtarg.Distance(player.ServerPosition) <= e.Range + myhitbox + 450)
-                        //            {
-                        //                player.Spellbook.CastSpell(flashslot, rtarg.ServerPosition);
-                        //            }
-                        //        }
-                        //    }
-                        //}
+                        ssfl = true;
+                        if (rtarg != null && canburst)
+                        {
+                            if (!flash.IsReady())
+                                return;
+
+                            var ww = w.IsReady() ? w.Range + 20 : myhitbox;
+   
+                            if (menu.Item("combokey").GetValue<KeyBind>().Active)
+                            {
+                                if (rtarg.Distance(player.ServerPosition) > e.Range + ww &&
+                                    rtarg.Distance(player.ServerPosition) <= e.Range + ww + 350)
+                                {
+                                    player.Spellbook.CastSpell(flash, rtarg.ServerPosition);
+                                }
+                            }                          
+                        }
 
                         break;
                     case "rivenizunablade":
+                        ssfl = false;
                         didws = true;
                         canws = false;
 
@@ -1003,6 +1100,8 @@ namespace KurisuRiven
                         canaa = true;
                     }
                 }
+
+
             };
         }
 
@@ -1114,7 +1213,7 @@ namespace KurisuRiven
 
             if (!canws && r.IsReady())
             {
-                if (!didaa && ulton)
+                if (!(didaa || didw) && ulton)
                 {
                     canws = true;
                 }
@@ -1231,12 +1330,22 @@ namespace KurisuRiven
                     {
                         Render.Circle.DrawCircle(player.Position,
                             player.AttackRange + e.Range + 10, Color.White, 2);
-
-                        //if (canburst)
-                        //{
-                        //    Render.Circle.DrawCircle(player.Position, e.Range + player.AttackRange + 450, Color.Orange, 2);
-                        //}
                     }
+
+                    if (menubool("drawburst") && canburst && flash.IsReady())
+                    {
+                        var ee = e.IsReady() ? e.Range : 0f;
+                        var ww = w.IsReady() ? w.Range + 20 : myhitbox;
+                        Render.Circle.DrawCircle(player.Position,
+                            ee + ww + 350, Color.GreenYellow, 1);
+                    }
+
+                    if (menubool("drawtarg") && rtarg != null)
+                    {
+                        Render.Circle.DrawCircle(rtarg.Position, rtarg.BoundingRadius + 10, Color.Red);
+                    }
+
+
                 }
             };
 
@@ -1246,12 +1355,17 @@ namespace KurisuRiven
                     return;
 
                 foreach (
-                    Obj_AI_Hero enemy in
+                    var enemy in
                         ObjectManager.Get<Obj_AI_Hero>()
-                            .Where(ene => ene.IsValidTarget()))
+                            .Where(ene => ene.IsValidTarget() && !ene.IsZombie))
                 {
+                    var color = enemy.Health <= ComboDamage(enemy)/1.6 ||
+                                enemy.CountEnemiesInRange(w.Range) >= menuslide("multic")
+                        ? new ColorBGRA(0, 255, 0, 90)
+                        : new ColorBGRA(255, 255, 0, 90);
+
                     hpi.unit = enemy;
-                    hpi.drawDmg(ComboDamage(enemy));
+                    hpi.drawDmg(ComboDamage(enemy), color);
                 }
 
             };

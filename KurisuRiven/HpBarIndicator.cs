@@ -74,35 +74,31 @@ namespace KurisuRiven
             return new Vector2(startPosition.X + w, startPosition.Y);
         }
 
-        public void drawDmg(float dmg)
+        public void drawDmg(float dmg, ColorBGRA color)
         {
             Vector2 hpPosNow = getHpPosAfterDmg(0);
             Vector2 hpPosAfter = getHpPosAfterDmg(dmg);
 
-            fillHPBar(hpPosNow, hpPosAfter);
+            fillHPBar(hpPosNow, hpPosAfter, color);
             //fillHPBar((int)(hpPosNow.X - startPosition.X), (int)(hpPosAfter.X- startPosition.X), color);
         }
 
         private void fillHPBar(int to, int from, Color color)
         {
-            Vector2 sPos = startPosition;
-
-            for (int i = from; i < to; i++)
+            var sPos = startPosition;
+            for (var i = from; i < to; i++)
             {
                 Drawing.DrawLine(sPos.X + i, sPos.Y, sPos.X + i, sPos.Y + 9, 1, color);
             }
         }
 
-        private void fillHPBar(Vector2 from, Vector2 to)
+        private void fillHPBar(Vector2 from, Vector2 to, ColorBGRA color)
         {
             dxLine.Begin();
 
             dxLine.Draw(new[] {
                 new Vector2((int) from.X, (int) from.Y + 4f),
-                new Vector2((int) to.X, (int) to.Y + 4f)
-            }, new ColorBGRA(255, 255, 00, 90));
-            // Vector2 sPos = startPosition;
-            //Drawing.DrawLine((int)from.X, (int)from.Y + 9f, (int)to.X, (int)to.Y + 9f, 9f, color);
+                new Vector2((int) to.X, (int) to.Y + 4f) }, color);
 
             dxLine.End();
         }
