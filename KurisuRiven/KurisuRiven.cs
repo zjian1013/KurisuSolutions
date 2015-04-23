@@ -36,7 +36,7 @@ namespace KurisuRiven
         private static bool ssfl;
 
         private static Menu menu;
-        private static int build = 23;
+        private static int build = 24;
         private static Spell q, w, e, r;
         private static Orbwalking.Orbwalker orbwalker;
         private static Obj_AI_Hero player = ObjectManager.Player;
@@ -171,11 +171,12 @@ namespace KurisuRiven
                 
             ulton = player.GetSpell(SpellSlot.R).Name != "RivenFengShuiEngine";
 
-            canburst = rtarg != null && r.IsReady() && q.IsReady() && (ComboDamage(rtarg)/1.6) >= rtarg.Health;
+            canburst = rtarg != null && r.IsReady() && q.IsReady() && ((ComboDamage(rtarg)/1.6) >= rtarg.Health ||
+                       rtarg.CountEnemiesInRange(w.Range) >= menuslide("multic"));
     
-            if (menulist("cancelt") == 1 && qtarg != player)
+            if (menulist("cancelt") == 0 && qtarg != player)
                 movepos = player.ServerPosition + (player.ServerPosition - qtarg.ServerPosition).Normalized()*53;
-            if (menulist("cancelt") == 2 && qtarg != player)
+            if (menulist("cancelt") == 1 && qtarg != player)
                 movepos = player.ServerPosition.Extend(qtarg.ServerPosition, 550);
             if (qtarg == player)
                 movepos = Game.CursorPos;
@@ -193,8 +194,8 @@ namespace KurisuRiven
             if (rtarg.IsValidTarget() && 
                 menu.Item("combokey").GetValue<KeyBind>().Active)
             {
-                ComboTarget(rtarg);
                 TryFlashInitiate(rtarg);
+                ComboTarget(rtarg);
             }
 
             if (rtarg.IsValidTarget() && 
@@ -359,8 +360,7 @@ namespace KurisuRiven
                 return;
             }
 
-            if (rtarg == null || !canburst || ulton ||
-                rtarg != null && rtarg.CountEnemiesInRange(w.Range) < menuslide("multic"))
+            if (rtarg == null || !canburst || ulton)
             {
                 return;
             }
@@ -900,16 +900,15 @@ namespace KurisuRiven
                                 {
                                     switch (menulist("cancelt"))
                                     {
-                                        case 3:
+                                        case 2:
                                             Game.Say("/d");
                                             break;
-                                        case 4:
+                                        case 3:
                                             Game.Say("/l");
                                             break;
                                         default:
                                             player.IssueOrder(GameObjectOrder.MoveTo, movepos);
                                             break;
-
                                     }
                                 });
                         }
@@ -946,7 +945,7 @@ namespace KurisuRiven
                         break;
                     case "RivenFengShuiEngine":
                         ssfl = true;
-                        if (rtarg != null && (canburst || rtarg.CountEnemiesInRange(w.Range) >= menuslide("multic")))
+                        if (rtarg != null && canburst)
                         {
                             if (!flash.IsReady() || !menubool("multib"))
                                 return;
