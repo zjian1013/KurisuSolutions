@@ -946,13 +946,13 @@ namespace KurisuRiven
                         break;
                     case "RivenFengShuiEngine":
                         ssfl = true;
-                        if (rtarg != null && canburst && menubool("multib"))
+                        if (rtarg != null && (canburst || rtarg.CountEnemiesInRange(w.Range) >= menuslide("multic")))
                         {
-                            if (!flash.IsReady())
+                            if (!flash.IsReady() || !menubool("multib"))
                                 return;
 
                             var ww = w.IsReady() ? w.Range + 20 : myhitbox;
-   
+
                             if (menu.Item("combokey").GetValue<KeyBind>().Active)
                             {
                                 if (rtarg.Distance(player.ServerPosition) > e.Range + ww &&
@@ -960,7 +960,7 @@ namespace KurisuRiven
                                 {
                                     player.Spellbook.CastSpell(flash, rtarg.ServerPosition);
                                 }
-                            }                          
+                            }
                         }
 
                         break;
