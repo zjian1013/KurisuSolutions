@@ -296,7 +296,7 @@ namespace KurisuRiven
 
             var rmenu = new Menu("R  Settings", "rivenr");
             rmenu.AddItem(new MenuItem("user", "Use R in Combo")).SetValue(true);
-            rmenu.AddItem(new MenuItem("useignote", "Use R + Ignite")).SetValue(true);
+            rmenu.AddItem(new MenuItem("useignote", "Use R + Smart Ignite")).SetValue(true);
             rmenu.AddItem(new MenuItem("multib", "Flash R/W if Can Burst Target")).SetValue(true);
             rmenu.AddItem(new MenuItem("multic", "Flash R/W if Hit >=")).SetValue(new Slider(3, 2, 5));
             rmenu.AddItem(new MenuItem("overk", "Dont R if Target HP % <=")).SetValue(new Slider(25, 1, 99));
