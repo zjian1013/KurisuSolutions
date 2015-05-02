@@ -11,7 +11,6 @@ namespace RivenOnAPrayer
     internal class RivenOnAPrayer
     {
         #region Riven: Main Vars
-
         private static int lastq;
         private static int lastw;
         private static int laste;
@@ -175,15 +174,15 @@ namespace RivenOnAPrayer
 
                     if (menu.Item("combokey").GetValue<KeyBind>().Active)
                     {
-                        if (!atarg.IsValid<Obj_AI_Hero>())
-                            return;
-
-                        if (canburst || !menubool("usecombow") || !menubool("usecomboe"))
+                        if (atarg.IsValid<Obj_AI_Hero>())
                         {
-                            if (Items.CanUseItem(3077))
-                                Items.UseItem(3077);
-                            if (Items.CanUseItem(3074))
-                                Items.UseItem(3074);
+                            if (canburst || !menubool("usecombow") || !menubool("usecomboe"))
+                            {
+                                if (Items.CanUseItem(3077))
+                                    Items.UseItem(3077);
+                                if (Items.CanUseItem(3074))
+                                    Items.UseItem(3074);
+                            }
                         }
                     }
 
@@ -516,7 +515,7 @@ namespace RivenOnAPrayer
                 CheckR();
             }
 
-            else if (q.IsReady() && target.Distance(player.ServerPosition) <= q.Range + 150)
+            else if (q.IsReady() && target.Distance(player.ServerPosition) <= q.Range + 30)
             {
                 UseInventoryItems(target);
                 CheckR();
@@ -531,7 +530,7 @@ namespace RivenOnAPrayer
                     q.Cast(target.ServerPosition);
             }
 
-            else if (target.Distance(player.ServerPosition) > q.Range + 150)
+            else if (target.Distance(player.ServerPosition) > q.Range + 30)
             {
                 if (menubool("usegap"))
                 {
@@ -1066,14 +1065,16 @@ namespace RivenOnAPrayer
                         {
                             canq = false;
                             didaa = false;
-                            canaa = true;
+                            didhit = false;
+                            canmv = true;
                         }
 
-                        if (didaa && args.Animation.Contains("Run"))
+                        if (args.Animation.Contains("Run"))
                         {
                             canq = false;
                             didaa = false;
-                            canaa = true;
+                            didhit = false;
+                            canmv = true;
                         }
                     }
                 }
