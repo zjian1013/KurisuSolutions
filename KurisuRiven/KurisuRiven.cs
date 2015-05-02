@@ -932,6 +932,8 @@ namespace KurisuRiven
                                     }
                                 });
                         }
+                        else
+                            canmv = true;
                         break;
                     case "RivenMartyr":
                         didw = true;
