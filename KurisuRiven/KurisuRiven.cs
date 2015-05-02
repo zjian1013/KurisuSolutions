@@ -161,10 +161,12 @@ namespace KurisuRiven
             if (args.SourceNetworkId == player.NetworkId)
             {
                 var atarg = ObjectManager.GetUnitByNetworkId<Obj_AI_Base>(args.TargetNetworkId);
+                var difference = args.Damage - player.GetAutoAttackDamage(atarg, true);
+                var expectedamount = player.GetAutoAttackDamage(atarg, true) + difference;
 
-                if (!didhd && !didhit)
+                if (!didhd && !didhit && didaa)
                 {
-                    if (didaa && args.Damage > 0)
+                    if (Math.Ceiling(args.Damage) == Math.Ceiling(expectedamount))
                     {
                         if (atarg.IsValid<Obj_AI_Minion>() && !qtarg.Name.StartsWith("Minion"))
                         {
@@ -903,14 +905,13 @@ namespace KurisuRiven
                 switch (args.SData.Name)
                 {
                     case "RivenTriCleave":
-                        didq = true;
                         canmv = false;
+                        didq = true;
                         lastq = Environment.TickCount;
                         canq = false;
  
                         if (!ulton)
                             ssfl = false;
-
                         // cancel q animation
                         if (qtarg.IsValidTarget(myhitbox + 100))
                         {
@@ -1163,6 +1164,7 @@ namespace KurisuRiven
                 cane = true;
                 canw = true;
                 canws = true;
+                canmv = true;
             }
 
             if (didw)
