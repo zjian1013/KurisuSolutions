@@ -930,6 +930,7 @@ namespace KurisuRiven
                         }
                         else
                             canmv = true;
+                        
                         break;
                     case "RivenMartyr":
                         didw = true;
@@ -985,10 +986,9 @@ namespace KurisuRiven
                         ssfl = false;
                         didws = true;
                         canws = false;
-                        canmv = true;
 
-                        if (q.IsReady() && rtarg.IsValidTarget(1200))
-                            q.Cast(rtarg.ServerPosition);
+                        if (q.IsReady() && qtarg != null)
+                            q.Cast(qtarg.ServerPosition);
                         break;
                     case "ItemTiamatCleave":
                         lasthd = Environment.TickCount;
@@ -1128,9 +1128,10 @@ namespace KurisuRiven
                 {
                     if (menu.Item("magnet").GetValue<bool>())
                         canmv = false;
+
                     canq = false;
-                    player.IssueOrder(GameObjectOrder.AttackUnit, target);         
-                }        
+                    player.IssueOrder(GameObjectOrder.AttackUnit, target);
+                }
             }
         }
 
@@ -1220,7 +1221,7 @@ namespace KurisuRiven
 
             if (!canmv)
             {
-                if (!(didq || didw || dide || didws || didhd))
+                if (!didq && !didw && !dide && !didws)
                 {
                     if (Environment.TickCount - lastaa >= 1100)
                     {
