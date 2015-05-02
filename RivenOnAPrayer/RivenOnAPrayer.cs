@@ -1066,7 +1066,6 @@ namespace RivenOnAPrayer
                             canq = false;
                             didaa = false;
                             didhit = false;
-                            canmv = true;
                         }
 
                         if (args.Animation.Contains("Run"))
@@ -1074,7 +1073,6 @@ namespace RivenOnAPrayer
                             canq = false;
                             didaa = false;
                             didhit = false;
-                            canmv = true;
                         }
                     }
                 }
