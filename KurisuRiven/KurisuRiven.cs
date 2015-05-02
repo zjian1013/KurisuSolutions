@@ -164,34 +164,31 @@ namespace KurisuRiven
                 var difference = args.Damage - player.GetAutoAttackDamage(atarg, true);
                 var expectedamount = player.GetAutoAttackDamage(atarg, true) + difference;
 
-                if (!didhd && !didhit && didaa)
+                if (!didhd && didaa)
                 {
-                    if (Math.Ceiling(args.Damage) == Math.Ceiling(expectedamount))
+                    if (atarg.IsValid<Obj_AI_Minion>() && !qtarg.Name.StartsWith("Minion"))
                     {
-                        if (atarg.IsValid<Obj_AI_Minion>() && !qtarg.Name.StartsWith("Minion"))
+                        if (Items.CanUseItem(3077))
+                            Items.UseItem(3077);
+                        if (Items.CanUseItem(3074))
+                            Items.UseItem(3074);
+                    }
+
+                    if (menu.Item("combokey").GetValue<KeyBind>().Active)
+                    {
+                        if (!atarg.IsValid<Obj_AI_Hero>())
+                            return;
+
+                        if (canburst || !menubool("usecombow") || !menubool("usecomboe"))
                         {
                             if (Items.CanUseItem(3077))
                                 Items.UseItem(3077);
                             if (Items.CanUseItem(3074))
                                 Items.UseItem(3074);
                         }
-
-                        if (menu.Item("combokey").GetValue<KeyBind>().Active)
-                        {
-                            if (!atarg.IsValid<Obj_AI_Hero>())
-                                return;
-
-                            if (canburst || !menubool("usecombow") || !menubool("usecomboe"))
-                            {
-                                if (Items.CanUseItem(3077))
-                                    Items.UseItem(3077);
-                                if (Items.CanUseItem(3074))
-                                    Items.UseItem(3074);
-                            }
-                        }
-
-                        didhit = true;
                     }
+
+                    didhit = true;
                 }
             }
         }
@@ -521,7 +518,7 @@ namespace KurisuRiven
                 CheckR();
             }
 
-            else if (q.IsReady() && target.Distance(player.ServerPosition) <= q.Range + 30)
+            else if (q.IsReady() && target.Distance(player.ServerPosition) <= q.Range + 200)
             {
                 UseInventoryItems(target);
                 CheckR();
@@ -536,7 +533,7 @@ namespace KurisuRiven
                     q.Cast(target.ServerPosition);
             }
 
-            else if (target.Distance(player.ServerPosition) > myhitbox + 100)
+            else if (target.Distance(player.ServerPosition) > q.Range + 200)
             {
                 if (menubool("usegap"))
                 {
@@ -905,6 +902,7 @@ namespace KurisuRiven
                 switch (args.SData.Name)
                 {
                     case "RivenTriCleave":
+                        didhit = false;
                         canmv = false;
                         didq = true;
                         lastq = Environment.TickCount;
@@ -913,7 +911,7 @@ namespace KurisuRiven
                         if (!ulton)
                             ssfl = false;
                         // cancel q animation
-                        if (qtarg.IsValidTarget(myhitbox + 100))
+                        if (qtarg.IsValidTarget(myhitbox + 400))
                         {
                             Utility.DelayAction.Add(100 + Game.Ping/2,
                                 delegate
@@ -1140,7 +1138,7 @@ namespace KurisuRiven
 
         private static void CombatCore()
         {
-            if (didhd && Environment.TickCount - lasthd >= 500)
+            if (didhd && Environment.TickCount - lasthd >= 150 + Game.Ping/2)
             {
                 didhd = false;
                 canaa = true;
