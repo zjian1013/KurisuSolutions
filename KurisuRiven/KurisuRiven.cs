@@ -1171,7 +1171,6 @@ namespace KurisuRiven
                 {
                     didw = false;
                     canmv = true;
-                    canaa = true;
                 }
             }
 
@@ -1181,7 +1180,6 @@ namespace KurisuRiven
                 {
                     dide = false;
                     canmv = true;
-                    canaa = true;
                 }             
             }
 
