@@ -161,8 +161,6 @@ namespace KurisuRiven
             if (args.SourceNetworkId == player.NetworkId)
             {
                 var atarg = ObjectManager.GetUnitByNetworkId<Obj_AI_Base>(args.TargetNetworkId);
-                var difference = args.Damage - player.GetAutoAttackDamage(atarg, true);
-                var expectedamount = player.GetAutoAttackDamage(atarg, true) + difference;
 
                 if (!didhd && didaa)
                 {
@@ -987,10 +985,10 @@ namespace KurisuRiven
                         ssfl = false;
                         didws = true;
                         canws = false;
+                        canmv = true;
 
                         if (q.IsReady() && rtarg.IsValidTarget(1200))
                             q.Cast(rtarg.ServerPosition);
-          
                         break;
                     case "ItemTiamatCleave":
                         lasthd = Environment.TickCount;
@@ -1141,8 +1139,8 @@ namespace KurisuRiven
             if (didhd && Environment.TickCount - lasthd >= 150 + Game.Ping/2)
             {
                 didhd = false;
-                canaa = true;
                 canmv = true;
+                canaa = true;
             }
 
             if (didq)
