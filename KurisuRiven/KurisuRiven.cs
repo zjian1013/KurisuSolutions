@@ -1096,13 +1096,21 @@ namespace KurisuRiven
             {
                 if (!(didq || didw || didws || dide) && !player.IsDead)
                 {
-                    if (sender.IsMe && args.Animation.Contains("Idle"))
+                    if (sender.IsMe)
                     {
-                        Orbwalking.LastAATick = Environment.TickCount + Game.Ping / 2;
-                        canaa = true;
+                        if (args.Animation.Contains("Idle"))
+                        {
+                            canq = false;
+                            canaa = true;
+                        }
+
+                        if (args.Animation.Contains("Run"))
+                        {
+                            canq = false;
+                            canaa = true;
+                        }
                     }
                 }
-
 
             };
         }
@@ -1167,7 +1175,7 @@ namespace KurisuRiven
 
             if (didw)
             {
-                if (Environment.TickCount - lastw >= 0.266)
+                if (Environment.TickCount - lastw >= 266)
                 {
                     didw = false;
                     canmv = true;
@@ -1177,7 +1185,7 @@ namespace KurisuRiven
 
             if (dide)
             {
-                if (Environment.TickCount - laste >= 0.101)
+                if (Environment.TickCount - laste >= 300)
                 {
                     dide = false;
                     canmv = true;
@@ -1189,11 +1197,12 @@ namespace KurisuRiven
                 if (Environment.TickCount - lastaa >= (int)(player.AttackDelay * 100) + Game.Ping / 2 + menuslide("aaq"))
                 {
                     didaa = false;
-                    canmv = true;
+                    if (!didq)
+                        canmv = true;
                     canq = true;
                     cane = true;
                     canw = true;
-                   canws = true;
+                    canws = true;
                 }
             }
 
