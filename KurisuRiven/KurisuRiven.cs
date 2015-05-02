@@ -518,7 +518,7 @@ namespace KurisuRiven
                 CheckR();
             }
 
-            else if (q.IsReady() && target.Distance(player.ServerPosition) <= q.Range + 200)
+            else if (q.IsReady() && target.Distance(player.ServerPosition) <= q.Range + 150)
             {
                 UseInventoryItems(target);
                 CheckR();
@@ -533,7 +533,7 @@ namespace KurisuRiven
                     q.Cast(target.ServerPosition);
             }
 
-            else if (target.Distance(player.ServerPosition) > q.Range + 200)
+            else if (target.Distance(player.ServerPosition) > q.Range + 150)
             {
                 if (menubool("usegap"))
                 {
@@ -695,7 +695,7 @@ namespace KurisuRiven
             foreach (var unit in minions)
             {
                 OrbTo(unit);
-                if (q.IsReady() && unit.Distance(player.ServerPosition) <= q.Range + 100)
+                if (q.IsReady() && unit.Distance(player.ServerPosition) <= q.Range + 10)
                 {
                     if (canq && menubool("usejungleq"))
                         q.Cast(unit.ServerPosition);
@@ -707,7 +707,7 @@ namespace KurisuRiven
                         w.Cast();
                 }
 
-                if (e.IsReady() && (unit.Distance(player.ServerPosition) > myhitbox + 30 ||
+                if (e.IsReady() && (unit.Distance(player.ServerPosition) > myhitbox + 1 ||
                     player.Health/player.MaxHealth*100 <= 70))
                 {
                     if (cane && menubool("usejunglee"))
@@ -903,7 +903,6 @@ namespace KurisuRiven
                 {
                     case "RivenTriCleave":
                         didhit = false;
-                        canmv = false;
                         didq = true;
                         lastq = Environment.TickCount;
                         canq = false;
@@ -913,6 +912,7 @@ namespace KurisuRiven
                         // cancel q animation
                         if (qtarg.IsValidTarget(myhitbox + 400))
                         {
+                            canmv = false;
                             Utility.DelayAction.Add(100 + Game.Ping/2,
                                 delegate
                                 {
