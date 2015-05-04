@@ -163,7 +163,7 @@ namespace KurisuNidalee
             foreach (var hero in ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsAlly))
             {
                 nidaHeals.AddItem(new MenuItem("heal" + hero.ChampionName, hero.ChampionName)).SetValue(true);
-                nidaHeals.AddItem(new MenuItem("healpct" + hero.ChampionName, "Heal " + hero.ChampionName + " if under %")).SetValue(new Slider(50));
+                nidaHeals.AddItem(new MenuItem("healpct" + hero.ChampionName, "Heal " + hero.ChampionName + " if under %")).SetValue(new Slider(75));
             }
 
             _mainMenu.AddSubMenu(nidaHeals);
@@ -748,11 +748,14 @@ namespace KurisuNidalee
         #region Nidalee: Heal
         private static void PrimalSurge()
         {
-            if ((HE != 0 || !Primalsurge.IsReady()) || !_mainMenu.Item("usedemheals").GetValue<bool>() ||
-                Me.IsRecalling() || Me.InFountain())
-            {
+            if (HE != 0 || !_cougarForm && !Primalsurge.IsReady())
                 return;
-            }
+
+            if (!_mainMenu.Item("usedemheals").GetValue<bool>())
+                return;
+
+            if (Me.IsRecalling() || Me.InFountain())
+                return;
 
             var actualHeroManaPercent = (int) ((Me.Mana/Me.MaxMana)*100);
             var selfManaPercent = _mainMenu.Item("healmanapct").GetValue<Slider>().Value;
@@ -773,15 +776,30 @@ namespace KurisuNidalee
                         .OrderByDescending(xe => xe.FlatPhysicalDamageMod).First();
             }
 
-            if (!_cougarForm && _mainMenu.Item("heal" + target.ChampionName).GetValue<bool>())
+            if (_mainMenu.Item("heal" + target.ChampionName).GetValue<bool>())
             {
                 var needed = _mainMenu.Item("healpct" + target.ChampionName).GetValue<Slider>().Value;
                 var hp = (int)((target.Health / target.MaxHealth) * 100);
 
-                if (actualHeroManaPercent > selfManaPercent && hp <= needed || _hasBlue && hp <= needed)
-                    Primalsurge.CastOnUnit(target);
-            }
-        }
+                if (actualHeroManaPercent > selfManaPercent && hp <= needed)
+                {
+                    if (!_cougarForm)
+                    {
+                        Primalsurge.CastOnUnit(target);
+                    }
+
+                    else
+                    {
+                        if (_mainMenu.Item("usecougarr").GetValue<bool>() &&
+                           !_mainMenu.Item("usecombo").GetValue<KeyBind>().Active)
+                        {
+                            if (Aspectofcougar.IsReady() && HE == 0)
+                                Aspectofcougar.Cast();
+                        }
+                    }
+                }
+            }        
+       }
 
 
 
