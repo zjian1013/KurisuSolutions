@@ -65,7 +65,7 @@ namespace Activator
                     // skillshot detection completerino
                     if ((args.SData.TargettingType == SpellDataTargetType.Cone ||
                          args.SData.TargettingType.ToString().Contains("Location")) &&
-                        hero.Player.Distance(sender.ServerPosition) <= args.SData.CastRange)
+                        hero.Player.Distance(sender.ServerPosition) <= args.SData.CastRangeDisplayOverride)
                     {
                         // important spelldata shit (hope sdata is accurate)
                         var delay = (int) (1000*(args.SData.CastFrame/30));
@@ -74,8 +74,8 @@ namespace Activator
                         var endtime = delay - 100 + Game.Ping/2 + distance - (Environment.TickCount - start);
 
                         // get the real end position normalized
-                        var direction = (args.End.To2D() - hero.Player.ServerPosition.To2D()).Normalized();
-                        var endpos = hero.Player.ServerPosition.To2D() + direction*args.SData.CastRange;
+                        var direction = (args.End.To2D() - sender.ServerPosition.To2D()).Normalized();
+                        var endpos = sender.ServerPosition.To2D() + direction*args.SData.CastRangeDisplayOverride;
 
                         // setup projection
                         var proj = hero.Player.ServerPosition.To2D().ProjectOn(sender.ServerPosition.To2D(), endpos);
@@ -84,15 +84,13 @@ namespace Activator
                         // get the evade time 
                         var evadetime =
                             (int)
-                                (1000*(args.SData.CastRadius - projdist + hero.Player.BoundingRadius)/
+                                (1000*(args.SData.LineWidth - projdist + hero.Player.BoundingRadius)/
                                  hero.Player.MoveSpeed);
 
-                        if (args.SData.CastRadius + hero.Player.AttackRange +
-                            hero.Player.Distance(hero.Player.BBox.Minimum) + 1 >
-                            proj.SegmentPoint.Distance(hero.Player.ServerPosition.To2D()))
+                        if (args.SData.LineWidth + hero.Player.BoundingRadius > projdist)
                         {
                             // ignore if can evade and using an evade assembly
-                            if (hero.Player.IsMoving && endtime > evadetime)
+                            if (hero.Player.IsMoving && evadetime < endtime)
                             {
                                 if (Activator.Origin.Item("evadeon").GetValue<bool>())
                                 {
@@ -150,18 +148,17 @@ namespace Activator
                         if (hero.Player.NetworkId == args.Target.NetworkId)
                         {
                             // auto attack dectection
-                            if (args.SData.IsAutoAttack() &&
-                                sender.Distance(hero.Player.ServerPosition) <= sender.AttackRange + 10 &&
-                                args.Target.Type == GameObjectType.obj_AI_Hero)
+                            if (args.SData.IsAutoAttack())
                             {
-                                // get windup/distance/etc in time
                                 var woop = (int) Activator.Player.Distance(sender.ServerPosition)/
-                                           (int) sender.BasicAttack.MissileSpeed;
+                                            (int) sender.BasicAttack.MissileSpeed;
+
                                 var endtime = (int) (sender.AttackCastDelay*1000) - 100 + Game.Ping/2 +
-                                              1000*woop;
+                                                1000*woop;
 
                                 // subscribe our auto-spell (if any on list) to the onupdate vent
-                                spelldata.mypells.FindAll(x => x.Spell.IsReady()).ForEach(x => Game.OnUpdate += x.OnTick);
+                                spelldata.mypells.FindAll(x => x.Spell.IsReady())
+                                    .ForEach(x => Game.OnUpdate += x.OnTick);
 
                                 // delay a little bit before missile endtime
                                 Utility.DelayAction.Add((int) (endtime*0.2), delegate
@@ -178,10 +175,11 @@ namespace Activator
                                         hero.HitTypes.Clear();
                                     });
                                 });
+
                             }
 
                             // target spell dectection
-                            if (hero.Player.Distance(sender.ServerPosition) <= args.SData.CastRange)
+                            if (hero.Player.Distance(sender.ServerPosition) <= args.SData.CastRangeDisplayOverride)
                             {
                                 if (args.SData.IsAutoAttack())
                                     continue;
@@ -190,8 +188,7 @@ namespace Activator
                                 var delay = (int) (1000*(args.SData.CastFrame/30));
                                 var speed = args.SData.MissileSpeed < 100 ? 2200 : args.SData.MissileSpeed;
                                 var distance = (int) (1000*(sender.Distance(hero.Player.ServerPosition)/speed));
-                                var endtime = delay - 100 + Game.Ping/2 + distance -
-                                              (Environment.TickCount - start);
+                                var endtime = delay - 100 + Game.Ping/2 + distance - (Environment.TickCount - start);
 
                                 // subscribe our auto-spell (if any on list) to the onupdate vent
                                 spelldata.mypells.FindAll(x => x.Spell.IsReady()).ForEach(x => Game.OnUpdate += x.OnTick);
