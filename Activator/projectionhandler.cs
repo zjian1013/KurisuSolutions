@@ -68,7 +68,7 @@ namespace Activator
                                 }
 
                                 // lazy safe reset
-                                Utility.DelayAction.Add((endtime*2), delegate
+                                Utility.DelayAction.Add((delay*2), delegate
                                 {
                                     hero.Attacker = null;
                                     hero.IncomeDamage = 0;
