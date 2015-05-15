@@ -12,7 +12,6 @@ namespace Activator
         public bool Wait { get; set; }
         public int WaitDelay { get; set; }
         public int DangerLevel { get; set; }
-        public float ExtraRange { get; set; }
         public HitType[] HitType { get; set; }
 
         public static List<item> items = new List<item>(); 
@@ -1977,27 +1976,314 @@ namespace Activator
                 HitType = new[] { global::Activator.HitType.CrowdControl, global::Activator.HitType.Danger  }
             });
 
+            spells.Add(new spelldata
+            {
+                SDataName = "veigarbalefulstrike",
+                MenuName = "",
+                Wait = false,
+                WaitDelay = 0,
+                DangerLevel = 3,
+                HitType = new[] { global::Activator.HitType.Danger }
+            });
+
+            spells.Add(new spelldata
+            {
+                SDataName = "veigarprimordialburst",
+                MenuName = "",
+                Wait = false,
+                WaitDelay = 0,
+                DangerLevel = 5,
+                HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate  }
+            });
 
 
+            spells.Add(new spelldata
+            {
+                SDataName = "velkozq",
+                MenuName = "",
+                Wait = false,
+                WaitDelay = 0,
+                DangerLevel = 3,
+                HitType = new[] { global::Activator.HitType.CrowdControl }
+            });
+
+            spells.Add(new spelldata
+            {
+                SDataName = "velkozqmissile",
+                MenuName = "",
+                Wait = false,
+                WaitDelay = 0,
+                DangerLevel = 3,
+                HitType = new[] { global::Activator.HitType.CrowdControl }
+            });
+
+            spells.Add(new spelldata
+            {
+                SDataName = "velkozqplitactive",
+                MenuName = "",
+                Wait = false,
+                WaitDelay = 0,
+                DangerLevel = 3,
+                HitType = new[] { global::Activator.HitType.CrowdControl }
+            });
+
+            spells.Add(new spelldata
+            {
+                SDataName = "viq",
+                MenuName = "",
+                Wait = false,
+                WaitDelay = 0,
+                DangerLevel = 3,
+                HitType = new[] { global::Activator.HitType.CrowdControl, global::Activator.HitType.Danger }
+            });
+
+            spells.Add(new spelldata
+            {
+                SDataName = "vir",
+                MenuName = "",
+                Wait = false,
+                WaitDelay = 0,
+                DangerLevel = 2,
+                HitType = new[] { global::Activator.HitType.CrowdControl, global::Activator.HitType.Danger }
+            });
+
+            spells.Add(new spelldata
+            {
+                SDataName = "velkozqplitactive",
+                MenuName = "",
+                Wait = false,
+                WaitDelay = 0,
+                DangerLevel = 3,
+                HitType = new[] { global::Activator.HitType.CrowdControl }
+            });
 
 
+            spells.Add(new spelldata
+            {
+                SDataName = "viktorchaosstorm",
+                MenuName = "",
+                Wait = false,
+                WaitDelay = 0,
+                DangerLevel = 5,
+                HitType = new[] { global::Activator.HitType.CrowdControl, global::Activator.HitType.Danger, global::Activator.HitType.Ultimate }
+            });
 
 
+            spells.Add(new spelldata
+            {
+                SDataName = "vladimirhemoplague",
+                MenuName = "",
+                Wait = false,
+                WaitDelay = 0,
+                DangerLevel = 3,
+                HitType = new[] { global::Activator.HitType.CrowdControl, global::Activator.HitType.Danger }
+            });
+
+            spells.Add(new spelldata
+            {
+                SDataName = "volibearw",
+                MenuName = "",
+                Wait = false,
+                WaitDelay = 0,
+                DangerLevel = 3,
+                HitType = new[] { global::Activator.HitType.Danger }
+            });
+
+            spells.Add(new spelldata
+            {
+                SDataName = "volibeare",
+                MenuName = "",
+                Wait = false,
+                WaitDelay = 0,
+                DangerLevel = 3,
+                HitType = new[] { global::Activator.HitType.CrowdControl }
+            });
+
+            spells.Add(new spelldata
+            {
+                SDataName = "infiniteduress",
+                MenuName = "",
+                Wait = false,
+                WaitDelay = 0,
+                DangerLevel = 5,
+                HitType = new[] { global::Activator.HitType.CrowdControl, global::Activator.HitType.Danger }
+            });
+
+            spells.Add(new spelldata
+            {
+                SDataName = "xerathmagespear",
+                MenuName = "",
+                Wait = false,
+                WaitDelay = 0,
+                DangerLevel = 3,
+                HitType = new[] { global::Activator.HitType.CrowdControl }
+            });
 
 
+            spells.Add(new spelldata
+            {
+                SDataName = "xeratharcanebarrage2",
+                MenuName = "",
+                Wait = false,
+                WaitDelay = 0,
+                DangerLevel = 2,
+                HitType = new[] { global::Activator.HitType.CrowdControl }
+            });
 
+            spells.Add(new spelldata
+            {
+                SDataName = "xenzhaosweep",
+                MenuName = "",
+                Wait = false,
+                WaitDelay = 0,
+                DangerLevel = 3,
+                HitType = new[] { global::Activator.HitType.CrowdControl }
+            });
 
+            spells.Add(new spelldata
+            {
+                SDataName = "xenzhaoparry",
+                MenuName = "",
+                Wait = false,
+                WaitDelay = 0,
+                DangerLevel = 4,
+                HitType = new[] { global::Activator.HitType.CrowdControl }
+            });
 
+            spells.Add(new spelldata
+            {
+                SDataName = "yasuoq3w",
+                MenuName = "",
+                Wait = false,
+                WaitDelay = 0,
+                DangerLevel = 4,
+                HitType = new[] { global::Activator.HitType.CrowdControl, global::Activator.HitType.Danger }
+            });
 
+            spells.Add(new spelldata
+            {
+                SDataName = "yasuoqw",
+                MenuName = "",
+                Wait = false,
+                WaitDelay = 0,
+                DangerLevel = 2,
+                HitType = new[] { global::Activator.HitType.Danger }
+            });
 
+            spells.Add(new spelldata
+            {
+                SDataName = "yasuoqw2",
+                MenuName = "",
+                Wait = false,
+                WaitDelay = 0,
+                DangerLevel = 2,
+                HitType = new[] { global::Activator.HitType.Danger }
+            });
 
+            spells.Add(new spelldata
+            {
+                SDataName = "yasuorknockupcombow",
+                MenuName = "",
+                Wait = false,
+                WaitDelay = 0,
+                DangerLevel = 5,
+                HitType =
+                    new[]
+                    {
+                        global::Activator.HitType.Danger, global::Activator.HitType.Ultimate,
+                        global::Activator.HitType.CrowdControl,
+                    }
+            });
 
+            spells.Add(new spelldata
+            {
+                SDataName = "yorickdecayed",
+                MenuName = "",
+                Wait = false,
+                WaitDelay = 0,
+                DangerLevel = 2,
+                HitType = new[] { global::Activator.HitType.CrowdControl }
+            });
 
+            spells.Add(new spelldata
+            {
+                SDataName = "zacr",
+                MenuName = "",
+                Wait = false,
+                WaitDelay = 0,
+                DangerLevel = 5,
+                HitType =
+                    new[]
+                    {
+                        global::Activator.HitType.CrowdControl, global::Activator.HitType.Danger,
+                        global::Activator.HitType.Ultimate
+                    }
+            });
 
+            spells.Add(new spelldata
+            {
+                SDataName = "zedshuriken",
+                MenuName = "",
+                Wait = false,
+                WaitDelay = 0,
+                DangerLevel = 2,
+                HitType = new[] { global::Activator.HitType.CrowdControl, global::Activator.HitType.Danger }
+            });
 
+            spells.Add(new spelldata
+            {
+                SDataName = "zedpbaoedummy",
+                MenuName = "",
+                Wait = false,
+                WaitDelay = 0,
+                DangerLevel = 2,
+                HitType = new[] { global::Activator.HitType.CrowdControl }
+            });
 
+            spells.Add(new spelldata
+            {
+                SDataName = "zedult",
+                MenuName = "",
+                Wait = true,
+                WaitDelay = 700,
+                DangerLevel = 5,
+                HitType = new[] { global::Activator.HitType.CrowdControl, global::Activator.HitType.Danger }
+            });
 
+            spells.Add(new spelldata
+            {
+                SDataName = "ziggsr",
+                MenuName = "",
+                Wait = false,
+                WaitDelay = 0,
+                DangerLevel = 5,
+                HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate }
+            });
+
+            spells.Add(new spelldata
+            {
+                SDataName = "zyragraspingroots",
+                MenuName = "",
+                Wait = false,
+                WaitDelay = 0,
+                DangerLevel = 2,
+                HitType = new[] { global::Activator.HitType.CrowdControl }
+            });
+
+            spells.Add(new spelldata
+            {
+                SDataName = "zyrabramblezone",
+                MenuName = "",
+                Wait = true,
+                WaitDelay = 1000,
+                DangerLevel = 5,
+                HitType =
+                    new[]
+                    {
+                        global::Activator.HitType.CrowdControl, global::Activator.HitType.Ultimate,
+                        global::Activator.HitType.Danger
+                    }
+            });
         }
-
     }
 }

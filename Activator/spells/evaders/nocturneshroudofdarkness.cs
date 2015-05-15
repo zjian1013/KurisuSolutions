@@ -22,7 +22,7 @@ namespace Activator.Spells.Evaders
 
         internal override MenuType[] Category
         {
-            get { return new[] { MenuType.SelfMuchHP, MenuType.SpellShield,  MenuType.Zhonyas }; }
+            get { return new[] { MenuType.SpellShield,  MenuType.Zhonyas }; }
         }
 
         internal override int DefaultHP
@@ -79,13 +79,6 @@ namespace Activator.Spells.Evaders
                         UseSpell();
                         RemoveSpell();
                     }
-                }
-
-                if (hero.IncomeDamage/hero.Player.MaxHealth*100 >=
-                    Menu.Item("SelfMuchHP" + Name + "Pct").GetValue<Slider>().Value)
-                {
-                    UseSpell();
-                    RemoveSpell();         
                 }
             }
         }

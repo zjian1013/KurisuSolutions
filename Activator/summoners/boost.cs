@@ -40,7 +40,7 @@ namespace Activator.Summoners
 
                     if (hero.ForceQSS)
                     {
-                        UseSpell(Menu.Item("mode" + Name).GetValue<StringList>().SelectedIndex == 1);
+                        UseSpell();
                         RemoveSpell();
                     }
 

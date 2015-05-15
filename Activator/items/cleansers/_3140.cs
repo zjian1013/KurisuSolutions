@@ -57,7 +57,7 @@ namespace Activator.Items.Cleansers
                 {
                     if (hero.ForceQSS)
                     {
-                        UseItem(Menu.Item("mode" + Name).GetValue<StringList>().SelectedIndex == 1);
+                        UseItem();
                         RemoveItem(true);
                     }
 
