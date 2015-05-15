@@ -149,11 +149,14 @@ namespace Activator
                             if (args.SData.LineWidth + hero.Player.BoundingRadius > projdist)
                             {
                                 // ignore if can evade and using an evade assembly
-                                if (hero.Player.IsMoving && evadetime < endtime)
+                                if (hero.Player.NetworkId == Activator.Player.NetworkId)
                                 {
-                                    if (Activator.Origin.Item("evadeon").GetValue<bool>())
+                                    if (hero.Player.IsMoving && evadetime < endtime)
                                     {
-                                        return;
+                                        if (Activator.Origin.Item("evadeon").GetValue<bool>())
+                                        {
+                                            return;
+                                        }
                                     }
                                 }
 
