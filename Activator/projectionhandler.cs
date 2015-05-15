@@ -248,7 +248,7 @@ namespace Activator
 
                                 // important spelldata shit (hope sdata is accurate)
                                 var delay = (int) (1000*(args.SData.CastFrame/30));
-                                var speed = args.SData.MissileSpeed < 100 ? 2200 : args.SData.MissileSpeed;
+                                var speed = args.SData.MissileSpeed < 100 ? 10000 : args.SData.MissileSpeed;
                                 var distance = (int) (1000*(sender.Distance(hero.Player.ServerPosition)/speed));
                                 var endtime = delay - 100 + Game.Ping/2 + distance - (Environment.TickCount - start);
 

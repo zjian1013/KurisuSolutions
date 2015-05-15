@@ -7,7 +7,7 @@ namespace Activator.Items.Defensives
     {
         internal override int Id
         {
-            get { return 3143; }
+            get { return 3048; }
         }
 
         internal override string Name
