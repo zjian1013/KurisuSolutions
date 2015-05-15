@@ -34,7 +34,7 @@ namespace Activator
             GetHeroesInGame();
 
             // new menu
-            Origin = new Menu("Activator © Kurisu", "activator", true);
+            Origin = new Menu("Activator", "activator", true);
             var cmenu = new Menu("Cleansers", "cleansers");
             GetItemGroup("Items.Cleansers").ForEach(t => NewItem((item) NewInstance(t), cmenu));
 
