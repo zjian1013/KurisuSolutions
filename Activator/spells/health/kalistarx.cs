@@ -48,19 +48,25 @@ namespace Activator.Spells.Health
 
             foreach (var hero in champion.Heroes)
             {
-                if (hero.Player.NetworkId == cooptarget.NetworkId &&
-                    hero.Player.Distance(Player.ServerPosition) <= Range)
-                {
-                    if (Player.HasBuffOfType(BuffType.Invulnerability))
-                        return;
+                if (cooptarget == null)
+                    return;
 
-                    if (hero.Player.Health/hero.Player.MaxHealth <=
-                        Menu.Item("SelfLowHP" + Name + "Pct").GetValue<Slider>().Value)
-                    {
-                        if (hero.IncomeDamage > 0)
+                if (hero.Player.NetworkId != Player.NetworkId)
+                    return;
+
+                if (hero.Player.NetworkId == cooptarget.NetworkId)
+                {
+                    if (hero.Player.Distance(cooptarget.ServerPosition) <= Range &&
+                        !cooptarget.HasBuffOfType(BuffType.Invulnerability))
+                    
+                        if (hero.Player.Health/hero.Player.MaxHealth <=
+                            Menu.Item("SelfLowHP" + Name + "Pct").GetValue<Slider>().Value)
                         {
-                            UseSpell();
-                            RemoveSpell();
+                            if (hero.IncomeDamage > 0)
+                            {
+                                UseSpell();
+                                RemoveSpell();
+                            }
                         }
                     }
                 }
