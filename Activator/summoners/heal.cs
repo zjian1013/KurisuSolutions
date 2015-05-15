@@ -35,6 +35,10 @@ namespace Activator.Summoners
 
             foreach (var hero in champion.Heroes)
             {
+
+                if (hero.Player.Distance(Player.ServerPosition) > Range)
+                    return;
+
                 if (hero.Player.Health/hero.Player.MaxHealth*100 <=
                     Menu.Item("SelfLowHP" + Name + "Pct").GetValue<Slider>().Value)
                 {
