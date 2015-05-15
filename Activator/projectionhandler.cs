@@ -31,6 +31,54 @@ namespace Activator
                 var start = Environment.TickCount;
                 foreach (var hero in champion.Heroes)
                 {
+                    if (args.SData.TargettingType == SpellDataTargetType.Self ||
+                        args.SData.TargettingType == SpellDataTargetType.SelfAoe)
+                    {
+                        if (hero.Player.Distance(sender.ServerPosition) <= args.SData.CastRangeDisplayOverride)
+                        {
+                            var endtime = (int)(args.SData.CastFrame/30);
+
+                            // delay the spell a bit before missile endtime
+                            Utility.DelayAction.Add((int)(endtime * 0.2), delegate
+                            {
+                                hero.Attacker = sender;
+                                hero.HitTypes.Add(HitType.Spell);
+                                hero.IncomeDamage += (float)sender.GetSpellDamage(hero.Player, args.SData.Name);
+
+                                if (args.SData.HaveHitEffect)
+                                    hero.HitTypes.Add(HitType.AutoAttack);
+
+                                // detect danger/cc/ultimates from our db
+                                foreach (var item in spelldata.spells)
+                                {
+                                    if (item.SDataName != args.SData.Name.ToLower())
+                                        continue;
+
+                                    // spell is important or lethal!
+                                    if (item.HitType.Any(x => x == HitType.Ultimate))
+                                        hero.HitTypes.Add(HitType.Ultimate);
+
+                                    // spell is important but not as fatal
+                                    if (item.HitType.Any(x => x == HitType.Danger))
+                                        hero.HitTypes.Add(HitType.Danger);
+
+                                    // spell has a crowd control effect
+                                    if (item.HitType.Any(x => x == HitType.CrowdControl))
+                                        hero.HitTypes.Add(HitType.CrowdControl);
+                                }
+
+                                // lazy safe reset
+                                Utility.DelayAction.Add((endtime * 2), delegate
+                                {
+                                    hero.Attacker = null;
+                                    hero.IncomeDamage = 0;
+                                    hero.HitTypes.Clear();
+                                });
+                            });
+                        }
+                    }
+
+
                     if (args.SData.TargettingType == SpellDataTargetType.Unit)
                     {
                         if (hero.Player.NetworkId == args.Target.NetworkId && args.SData.IsAutoAttack())
