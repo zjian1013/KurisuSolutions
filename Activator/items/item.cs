@@ -2,6 +2,7 @@
 using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
+using SharpDX;
 
 namespace Activator.Items
 {
@@ -57,6 +58,14 @@ namespace Activator.Items
             if (!combo || Activator.Origin.Item("usecombo").GetValue<KeyBind>().Active)
             {
                 LeagueSharp.Common.Items.UseItem(Id, target);
+            }
+        }
+
+        public void UseItem(Vector3 pos, bool combo = false)
+        {
+            if (!combo || Activator.Origin.Item("usecombo").GetValue<KeyBind>().Active)
+            {
+                LeagueSharp.Common.Items.UseItem(Id, pos);
             }
         }
 

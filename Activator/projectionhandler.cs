@@ -151,7 +151,7 @@ namespace Activator
                                 // ignore if can evade and using an evade assembly
                                 if (hero.Player.NetworkId == Activator.Player.NetworkId)
                                 {
-                                    if (hero.Player.IsMoving && evadetime < endtime)
+                                    if (hero.Player.CanMove && evadetime < endtime)
                                     {
                                         if (Activator.Origin.Item("evadeon").GetValue<bool>())
                                         {

@@ -57,6 +57,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="champion.cs" />
+    <Compile Include="items\offensives\_3092.cs" />
     <Compile Include="projectionhandler.cs" />
     <Compile Include="enumerator.cs" />
     <Compile Include="gametroy.cs" />
