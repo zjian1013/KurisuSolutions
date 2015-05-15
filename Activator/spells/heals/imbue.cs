@@ -45,7 +45,7 @@ namespace Activator.Spells.Heals
                 if (hero.Player.Distance(Player.ServerPosition) > Range)
                     return;
 
-                if (Player.Mana/Player.MaxMana*100 > Menu.Item("SelfLowMP" + Name + "Pct").GetValue<Slider>().Value)
+                if (Player.Mana/Player.MaxMana*100 > Menu.Item("SelfMinMP" + Name + "Pct").GetValue<Slider>().Value)
                 {
                     if (hero.Player.Health/hero.Player.MaxHealth*100 <=
                         Menu.Item("SelfLowHP" + Name + "Pct").GetValue<Slider>().Value)
