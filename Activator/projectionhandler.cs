@@ -33,12 +33,11 @@ namespace Activator
                 {
                     if (args.SData.TargettingType == SpellDataTargetType.Unit)
                     {
-                        if (hero.Player.NetworkId == args.Target.NetworkId &&
-                            args.SData.IsAutoAttack() && args.Target.Type == GameObjectType.obj_AI_Hero)
+                        if (hero.Player.NetworkId == args.Target.NetworkId && args.SData.IsAutoAttack())
                         {
                             // get windup/distance/etc in time
-                            var woop = (int) Activator.Player.Distance(sender.ServerPosition)/
-                                       (int) sender.BasicAttack.MissileSpeed;
+                            var woop = (int)(Activator.Player.Distance(sender.ServerPosition)/
+                                        sender.BasicAttack.MissileSpeed);
 
                             var endtime = (int) (sender.AttackCastDelay*1000) - 100 + Game.Ping/2 + 1000*woop;
 
@@ -88,7 +87,8 @@ namespace Activator
                                 (1000*(args.SData.CastRadius - projdist + hero.Player.BoundingRadius)/
                                  hero.Player.MoveSpeed);
 
-                        if (args.SData.CastRadius + hero.Player.BoundingRadius >
+                        if (args.SData.CastRadius + hero.Player.AttackRange +
+                            hero.Player.Distance(hero.Player.BBox.Minimum) + 1 >
                             proj.SegmentPoint.Distance(hero.Player.ServerPosition.To2D()))
                         {
                             // ignore if can evade and using an evade assembly
@@ -143,7 +143,7 @@ namespace Activator
                         }
                     }
 
-                    // targeted detection
+                    // unit type detection
                     if (args.SData.TargettingType == SpellDataTargetType.Unit)
                     {
                         // check if is targeteting the hero on our table
@@ -163,7 +163,7 @@ namespace Activator
                                 // subscribe our auto-spell (if any on list) to the onupdate vent
                                 spelldata.mypells.FindAll(x => x.Spell.IsReady()).ForEach(x => Game.OnUpdate += x.OnTick);
 
-                                // delay the aa little bit before missile endtime
+                                // delay a little bit before missile endtime
                                 Utility.DelayAction.Add((int) (endtime*0.2), delegate
                                 {
                                     hero.Attacker = sender;
@@ -223,7 +223,6 @@ namespace Activator
                                             // spell has a crowd control effect
                                             if (item.HitType.Any(x => x == HitType.CrowdControl))
                                                 hero.HitTypes.Add(HitType.CrowdControl);
-
                                         });
 
                                         // lazy reset
