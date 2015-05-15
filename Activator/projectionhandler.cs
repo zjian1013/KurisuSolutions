@@ -35,7 +35,6 @@ namespace Activator
                     if (args.SData.TargettingType == SpellDataTargetType.Self ||
                         args.SData.TargettingType == SpellDataTargetType.SelfAoe)
                     {
-
                         if (hero.Player.Distance(sender.ServerPosition) <= args.SData.CastRange)
                         {
                             if (Activator.Player.Distance(hero.Player.ServerPosition) <= 1000)
@@ -46,7 +45,7 @@ namespace Activator
                                 spelldata.mypells.FindAll(x => x.Spell.IsReady()).ForEach(x => Game.OnUpdate += x.OnTick);
 
                                 // delay the spell a bit before missile endtime
-                                Utility.DelayAction.Add((int) (endtime - (endtime*0.2)), delegate
+                                Utility.DelayAction.Add((int) (endtime - (endtime*0.5)), delegate
                                 {
                                     hero.Attacker = sender;
                                     hero.HitTypes.Add(HitType.Spell);
@@ -93,7 +92,7 @@ namespace Activator
                         {
                             // get windup/distance/etc in time
                             var woop = (int) (Activator.Player.Distance(sender.ServerPosition)/
-                                              sender.BasicAttack.MissileSpeed);
+                                sender.BasicAttack.MissileSpeed < 100 ? 10000 : sender.BasicAttack.MissileSpeed);
 
                             var endtime = (int) (sender.AttackCastDelay*1000) - 100 + Game.Ping/2 + 1000*woop;
 
@@ -101,7 +100,7 @@ namespace Activator
                             spelldata.mypells.FindAll(x => x.Spell.IsReady()).ForEach(x => Game.OnUpdate += x.OnTick);
 
                             // delay the aa little bit before missile endtime
-                            Utility.DelayAction.Add((int) (endtime - (endtime*0.2)), delegate
+                            Utility.DelayAction.Add((int) (endtime - (endtime*0.5)), delegate
                             {
                                 hero.Attacker = sender;
                                 hero.HitTypes.Add(HitType.AutoAttack);
@@ -126,7 +125,7 @@ namespace Activator
                         {
                             // important spelldata shit (hope sdata is accurate)
                             var delay = (int) (1000*(args.SData.CastFrame/30));
-                            var speed = args.SData.MissileSpeed < 100 ? 2200 : args.SData.MissileSpeed;
+                            var speed = args.SData.MissileSpeed < 100 ? 10000 : args.SData.MissileSpeed;
                             var distance = (int) (1000*(sender.Distance(hero.Player.ServerPosition)/speed));
                             var endtime = delay - 100 + Game.Ping/2 + distance - (Environment.TickCount - start);
 
@@ -144,6 +143,9 @@ namespace Activator
                                     (1000*(args.SData.LineWidth - projdist + hero.Player.BoundingRadius)/
                                      hero.Player.MoveSpeed);
 
+                            if (args.SData.Name.ToLower() == "infernalguardianguide")
+                                return;
+
                             if (args.SData.LineWidth + hero.Player.BoundingRadius > projdist)
                             {
                                 // ignore if can evade and using an evade assembly
@@ -159,7 +161,7 @@ namespace Activator
                                 spelldata.mypells.FindAll(x => x.Spell.IsReady()).ForEach(x => Game.OnUpdate += x.OnTick);
 
                                 // delay the action a little bit before endtime
-                                Utility.DelayAction.Add((int) (endtime - (endtime*0.2)), delegate
+                                Utility.DelayAction.Add((int) (endtime - (endtime*0.5)), delegate
                                 {
                                     hero.Attacker = sender;
                                     hero.HitTypes.Add(HitType.Spell);
@@ -218,7 +220,7 @@ namespace Activator
                                 spelldata.mypells.FindAll(x => x.Spell.IsReady()).ForEach(x => Game.OnUpdate += x.OnTick);
 
                                 // delay a little bit before missile endtime
-                                Utility.DelayAction.Add((int) (endtime - (endtime*0.2)), delegate
+                                Utility.DelayAction.Add((int) (endtime - (endtime*0.5)), delegate
                                 {
                                     hero.Attacker = sender;
                                     hero.HitTypes.Add(HitType.AutoAttack);
@@ -251,7 +253,7 @@ namespace Activator
                                 spelldata.mypells.FindAll(x => x.Spell.IsReady())
                                     .ForEach(x => Game.OnUpdate += x.OnTick);
 
-                                Utility.DelayAction.Add((int) (endtime - (endtime*0.2)), delegate
+                                Utility.DelayAction.Add((int) (endtime - (endtime*0.5)), delegate
                                 {
                                     hero.Attacker = sender;
                                     hero.HitTypes.Add(HitType.Spell);

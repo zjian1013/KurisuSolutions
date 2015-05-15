@@ -38,11 +38,6 @@ namespace Activator
             var cmenu = new Menu("Cleansers", "cleansers");
             GetItemGroup("Items.Cleansers").ForEach(t => NewItem((item) NewInstance(t), cmenu));
 
-            var lmenu = new Menu("Hero Debuffs", "ldeb");
-            foreach (var buff in spelldebuff.debuffs.FindAll(b => b.Cleanse && !b.Evade))
-                lmenu.AddItem(new MenuItem(buff.Name + "bb", buff.Name + " | " + buff.Slot)).SetValue(true);
-            cmenu.AddSubMenu(lmenu);
-
             var ccmenu = new Menu("Cleanse Debuffs", "cdeb");
             ccmenu.AddItem(new MenuItem("cexhaust", "Exhaust")).SetValue(true);
             ccmenu.AddItem(new MenuItem("cstun", "Stuns")).SetValue(true);
