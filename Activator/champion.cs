@@ -8,9 +8,14 @@ namespace Activator
         public float IncomeDamage;
         public Obj_AI_Hero Player;
         public Obj_AI_Base Attacker;
+
+        public bool ForceQSS;
+        public bool UsingManaPot;
+        public bool UsingHealthPot;
+        public bool UsingMixedPot;
+
         public int QSSBuffCount;
         public int QSSHighestBuffTime;
-        public bool ForceQSS;
 
         public List<HitType> HitTypes = new List<HitType>();
 

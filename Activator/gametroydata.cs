@@ -64,7 +64,12 @@ namespace Activator
                 Name = "ViktorChaosStorm",
                 ChampionName = "Viktor",
                 Slot = SpellSlot.R,
-                HitType = new []{ global::Activator.HitType.Danger, global::Activator.HitType.Ultimate, global::Activator.HitType.CrowdControl}
+                HitType =
+                    new[]
+                    {
+                        global::Activator.HitType.Danger, global::Activator.HitType.Ultimate,
+                        global::Activator.HitType.CrowdControl
+                    }
             });
 
             spelldata.troydata.Add(new gametroydata

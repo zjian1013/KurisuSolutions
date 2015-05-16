@@ -55,11 +55,6 @@ namespace Activator.Items.Defensives
 
             foreach (var hero in champion.Heroes)
             {
-                if (hero.Player.HasBuffOfType(BuffType.SpellImmunity) ||
-                    hero.Player.HasBuffOfType(BuffType.SpellShield) ||
-                    hero.Player.HasBuffOfType(BuffType.Invulnerability))
-                    return;
-
                 if (hero.Player.NetworkId == Player.NetworkId)
                 {
                     if (Menu.Item("use" + Name + "Norm").GetValue<bool>())

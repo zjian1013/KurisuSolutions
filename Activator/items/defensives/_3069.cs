@@ -54,6 +54,7 @@ namespace Activator.Items.Defensives
 
             foreach (var hero in champion.Heroes)
             {
+
                 if (Menu.Item("use" + Name + "Norm").GetValue<bool>())
                 {
                     if (hero.IncomeDamage > 0 && hero.HitTypes.Contains(HitType.Danger))

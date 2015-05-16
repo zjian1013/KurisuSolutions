@@ -7,13 +7,6 @@ namespace Activator
     public class spelldebuffhandler
     {
 
-        public static bool UsingZhonyas;
-        public static bool UsingSeraphs;
-
-        public static bool UsingManaPot;
-        public static bool UsingHealthPot;
-        public static bool UsingMixedPot;
-
         public static void Load()
         {
             Obj_AI_Base.OnBuffAdd += Obj_AI_Base_OnBuffAdd;
@@ -27,29 +20,19 @@ namespace Activator
                 if (hero.Player.NetworkId != sender.NetworkId)
                     return;
 
-                if (sender.NetworkId == Activator.Player.NetworkId)
+                if (args.Buff.Name == "RegenerationPotion")
+                    hero.UsingHealthPot = true;
+
+                if (args.Buff.Name == "FlaskOfCrystalWater")
+                    hero.UsingManaPot = true;
+
+
+                if (args.Buff.Name == "ItemCrystalFlask" ||
+                    args.Buff.Name == "ItemMiniRegenPotion")
                 {
-                    if (args.Buff.Name == "ItemSeraphsEmbrace")
-                        UsingSeraphs = true;
-
-                    if (args.Buff.Name == "zhonyasringshield" ||
-                        args.Buff.Name == "woogletwitchcap")
-                    {
-                        UsingZhonyas = true;
-                    }
-
-                    if (args.Buff.Name == "RegenerationPotion")
-                        UsingHealthPot = true;
-
-                    if (args.Buff.Name == "FlaskOfCrystalWater")
-                        UsingManaPot = true;
-
-                    if (args.Buff.Name == "ItemCrystalFlask" ||
-                        args.Buff.Name == "ItemMiniRegenPotion")
-                    {
-                        UsingMixedPot = true;
-                    }
+                    hero.UsingMixedPot = true;
                 }
+                
 
                 foreach (var buff in spelldebuff.debuffs)
                 {
@@ -105,25 +88,16 @@ namespace Activator
                 {
                     if (sender.NetworkId == Activator.Player.NetworkId)
                     {
-                        if (args.Buff.Name == "ItemSeraphsEmbrace")
-                            UsingSeraphs = false;
-
-                        if (args.Buff.Name == "zhonyasringshield" ||
-                            args.Buff.Name == "woogletwitchcap")
-                        {
-                            UsingZhonyas = false;
-                        }
-
                         if (args.Buff.Name == "RegenerationPotion")
-                            UsingHealthPot = false;
+                            hero.UsingHealthPot = false;
 
                         if (args.Buff.Name == "FlaskOfCrystalWater")
-                            UsingManaPot = false;
+                            hero.UsingManaPot = false;
 
                         if (args.Buff.Name == "ItemCrystalFlask" ||
                             args.Buff.Name == "ItemMiniRegenPotion")
                         {
-                            UsingMixedPot = false;
+                            hero.UsingMixedPot = false;
                         }
                     }
 

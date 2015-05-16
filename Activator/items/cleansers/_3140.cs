@@ -55,7 +55,7 @@ namespace Activator.Items.Cleansers
 
                 if (hero.Player.NetworkId == Player.NetworkId && hero.Player.Distance(Player.ServerPosition) <= Range)
                 {
-                    if (hero.ForceQSS && !gametroyhandler.UsingCleanse)
+                    if (hero.ForceQSS)
                     {
                         UseItem();
                         RemoveItem(true);
@@ -64,7 +64,7 @@ namespace Activator.Items.Cleansers
                     if (hero.QSSBuffCount >= Menu.Item("use" + Name + "Number").GetValue<Slider>().Value &&
                         hero.QSSHighestBuffTime >= Menu.Item("use" + Name + "Time").GetValue<Slider>().Value)
                     {
-                        if (!Menu.Item("use" + Name + "Od").GetValue<bool>() && !gametroyhandler.UsingCleanse)
+                        if (!Menu.Item("use" + Name + "Od").GetValue<bool>())
                         {
                             Utility.DelayAction.Add(Game.Ping + 80, delegate
                             {

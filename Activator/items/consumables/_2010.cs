@@ -43,7 +43,7 @@ namespace Activator.Items.Consumables
                     if (!Menu.Item("use" + Name).GetValue<bool>())
                         return;
 
-                    if (hero.Player.HasBuff("ItemMiniRegenPotion"))
+                    if (hero.UsingMixedPot)
                         return;
 
                     if (hero.Player.IsRecalling() || Player.InFountain())

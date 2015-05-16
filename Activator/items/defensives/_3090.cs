@@ -57,11 +57,6 @@ namespace Activator.Items.Defensives
             {
                 if (hero.Player.NetworkId == Player.NetworkId)
                 {
-                    if (hero.Player.HasBuffOfType(BuffType.SpellImmunity) ||
-                        hero.Player.HasBuffOfType(BuffType.SpellShield) ||
-                        hero.Player.HasBuffOfType(BuffType.Invulnerability))
-                        return;
-
                     if (Menu.Item("use" + Name + "Norm").GetValue<bool>())
                     {
                         if (hero.IncomeDamage > 0 && hero.HitTypes.Contains(HitType.Danger))

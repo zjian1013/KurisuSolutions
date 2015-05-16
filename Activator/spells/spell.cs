@@ -81,9 +81,6 @@ namespace Activator.Spells
                 Menu.AddItem(new MenuItem("use" + Name + "Ulti", "Use On Dangerous (Ultimates Only)")).SetValue(true);
             }
 
-            //if (Category.Any(t => t == MenuType.TurretHP))
-            //   Menu.AddItem(new MenuItem("use" + Name + "t", "Use on Tower Damage")).SetValue(false);
-
             if (Category.Any(t => t == MenuType.ActiveCheck))
                 Menu.AddItem(new MenuItem("List" + Name, "Mode: "))
                     .SetValue(new StringList(new[] { "Always", "Combo" }));
@@ -112,30 +109,24 @@ namespace Activator.Spells
 
         public void UseSpell(bool combo = false)
         {
-            if (!spelldebuffhandler.UsingSeraphs && !spelldebuffhandler.UsingZhonyas)
+            if (!combo || Menu.Item("usecombo").GetValue<KeyBind>().Active)
             {
-                if (!combo || Menu.Item("usecombo").GetValue<KeyBind>().Active)
+                if (Spell.IsReady())
                 {
-                    if (Spell.IsReady())
-                    {
-                        Spell.Cast();
-                    }
+                    Spell.Cast();
                 }
             }
         }
 
         public void UseSpellTowards(Vector3 targetpos, bool combo = false)
         {
-            if (!spelldebuffhandler.UsingSeraphs && !spelldebuffhandler.UsingZhonyas)
+            if (!combo || Menu.Item("usecombo").GetValue<KeyBind>().Active)
             {
-                if (!combo || Menu.Item("usecombo").GetValue<KeyBind>().Active)
+                if (Spell.IsReady())
                 {
                     if (Spell.IsReady())
                     {
-                        if (Spell.IsReady())
-                        {
-                            Spell.Cast(targetpos);
-                        }
+                        Spell.Cast(targetpos);
                     }
                 }
             }
@@ -143,16 +134,13 @@ namespace Activator.Spells
 
         public void UseSpellOn(Obj_AI_Base target, bool combo = false)
         {
-            if (!spelldebuffhandler.UsingSeraphs && !spelldebuffhandler.UsingZhonyas)
+            if (!combo || Menu.Item("usecombo").GetValue<KeyBind>().Active)
             {
-                if (!combo || Menu.Item("usecombo").GetValue<KeyBind>().Active)
+                if (Spell.IsReady())
                 {
                     if (Spell.IsReady())
                     {
-                        if (Spell.IsReady())
-                        {
-                            Spell.CastOnUnit(target);
-                        }
+                        Spell.CastOnUnit(target);
                     }
                 }
             }

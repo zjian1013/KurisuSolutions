@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Activator.Items;
 using LeagueSharp.Common;
 
-namespace Activator.items.offensives
+namespace Activator.Items.Offensives
 {
     class _3092 : item
     {

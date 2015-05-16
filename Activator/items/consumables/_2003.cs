@@ -45,7 +45,7 @@ namespace Activator.Items.Consumables
                     if (!Menu.Item("use" + Name).GetValue<bool>())
                         return;
 
-                    if (spelldebuffhandler.UsingHealthPot)
+                    if (hero.UsingHealthPot)
                         return;
 
                     if (hero.Player.IsRecalling() || hero.Player.InFountain())

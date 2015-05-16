@@ -44,7 +44,7 @@ namespace Activator.Items.Consumables
                     if (!Menu.Item("use" + Name).GetValue<bool>())
                         return;
 
-                    if (spelldebuffhandler.UsingMixedPot)
+                    if (hero.UsingMixedPot)
                         return;
 
                     if (hero.Player.IsRecalling() || Player.InFountain())

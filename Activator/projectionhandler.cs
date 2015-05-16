@@ -26,7 +26,7 @@ namespace Activator
 
         private static void Obj_AI_Base_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
         {
-            if (sender.IsEnemy && sender.Type == GameObjectType.obj_AI_Hero)
+            if (sender.IsMe && sender.Type == GameObjectType.obj_AI_Hero)
             {
                 var start = Environment.TickCount;
                 foreach (var hero in champion.Heroes)
@@ -71,6 +71,7 @@ namespace Activator
                                         // spell has a crowd control effect
                                         if (item.HitType.Any(x => x == HitType.CrowdControl))
                                             hero.HitTypes.Add(HitType.CrowdControl);
+
                                     }
 
                                     // lazy safe reset
@@ -190,6 +191,7 @@ namespace Activator
                                         // spell has a crowd control effect
                                         if (item.HitType.Any(x => x == HitType.CrowdControl))
                                             hero.HitTypes.Add(HitType.CrowdControl);
+
                                     }
 
                                     // lazy safe reset
@@ -279,10 +281,10 @@ namespace Activator
                                             if (item.HitType.Any(x => x == HitType.Danger))
                                                 hero.HitTypes.Add(HitType.Danger);
 
-
                                             // spell has a crowd control effect
                                             if (item.HitType.Any(x => x == HitType.CrowdControl))
                                                 hero.HitTypes.Add(HitType.CrowdControl);
+
                                         });
 
                                         // lazy reset

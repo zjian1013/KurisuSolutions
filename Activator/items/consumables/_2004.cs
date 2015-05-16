@@ -3,7 +3,7 @@ using LeagueSharp.Common;
 
 namespace Activator.Items.Consumables
 {
-    class _2004 : item
+    internal class _2004 : item
     {
         internal override int Id
         {
@@ -40,19 +40,25 @@ namespace Activator.Items.Consumables
             if (!Menu.Item("use" + Name).GetValue<bool>())
                 return;
 
-            if (Player.MaxMana <= 100)
-                return;
-
-            if (spelldebuffhandler.UsingManaPot)
-                return;
-
-            if (Player.IsRecalling() || Player.InFountain())
-                return;
-
-            if (Player.Mana / Player.MaxMana * 100 <= Menu.Item("SelfLowMP" + Name + "Pct").GetValue<Slider>().Value)
+            foreach (var hero in champion.Heroes)
             {
-                UseItem();
-                RemoveItem();
+                if (hero.Player.NetworkId == Player.NetworkId)
+                {
+                    if (hero.Player.MaxMana <= 100)
+                        return;
+
+                    if (hero.UsingManaPot)
+                        return;
+
+                    if (Player.IsRecalling() || Player.InFountain())
+                        return;
+
+                    if (Player.Mana/Player.MaxMana*100 <= Menu.Item("SelfLowMP" + Name + "Pct").GetValue<Slider>().Value)
+                    {
+                        UseItem();
+                        RemoveItem();
+                    }
+                }
             }
         }
     }
