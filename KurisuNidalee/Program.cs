@@ -157,6 +157,7 @@ namespace KurisuNidalee
 
             var nidaHeals = new Menu("Nidalee: Heal", "hengine");
             nidaHeals.AddItem(new MenuItem("usedemheals", "Enable")).SetValue(true);
+            nidaHeals.AddItem(new MenuItem("autorheal", "Auto Switch Forms")).SetValue(true);
             nidaHeals.AddItem(new MenuItem("sezz", "Heal Priority: ")).SetValue(new StringList(new[] { "Low HP", "Highest AD" }));
             nidaHeals.AddItem(new MenuItem("healmanapct", "Minimum Mana %")).SetValue(new Slider(55));
 
@@ -790,8 +791,9 @@ namespace KurisuNidalee
 
                     else
                     {
-                        if (_mainMenu.Item("usecougarr").GetValue<bool>() &&
-                           !_mainMenu.Item("usecombo").GetValue<KeyBind>().Active)
+                        if (_mainMenu.Item("autorheal").GetValue<bool>() &&
+                           !_mainMenu.Item("usecombo").GetValue<KeyBind>().Active &&
+                           !_mainMenu.Item("useflee").GetValue<KeyBind>().Active)
                         {
                             if (Aspectofcougar.IsReady() && HE == 0)
                                 Aspectofcougar.Cast();
