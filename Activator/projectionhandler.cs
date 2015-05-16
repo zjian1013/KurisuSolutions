@@ -26,7 +26,7 @@ namespace Activator
 
         private static void Obj_AI_Base_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
         {
-            if (sender.IsMe && sender.Type == GameObjectType.obj_AI_Hero)
+            if (sender.IsEnemy && sender.Type == GameObjectType.obj_AI_Hero)
             {
                 var start = Environment.TickCount;
                 foreach (var hero in champion.Heroes)
