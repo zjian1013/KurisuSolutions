@@ -112,24 +112,30 @@ namespace Activator.Spells
 
         public void UseSpell(bool combo = false)
         {
-            if (!combo || Menu.Item("usecombo").GetValue<KeyBind>().Active)
+            if (!spelldebuffhandler.UsingSeraphs && !spelldebuffhandler.UsingZhonyas)
             {
-                if (Spell.IsReady())
+                if (!combo || Menu.Item("usecombo").GetValue<KeyBind>().Active)
                 {
-                    Spell.Cast();
+                    if (Spell.IsReady())
+                    {
+                        Spell.Cast();
+                    }
                 }
             }
         }
 
         public void UseSpellTowards(Vector3 targetpos, bool combo = false)
         {
-            if (!combo || Menu.Item("usecombo").GetValue<KeyBind>().Active)
+            if (!spelldebuffhandler.UsingSeraphs && !spelldebuffhandler.UsingZhonyas)
             {
-                if (Spell.IsReady())
+                if (!combo || Menu.Item("usecombo").GetValue<KeyBind>().Active)
                 {
                     if (Spell.IsReady())
                     {
-                        Spell.Cast(targetpos);
+                        if (Spell.IsReady())
+                        {
+                            Spell.Cast(targetpos);
+                        }
                     }
                 }
             }
@@ -137,13 +143,16 @@ namespace Activator.Spells
 
         public void UseSpellOn(Obj_AI_Base target, bool combo = false)
         {
-            if (!combo || Menu.Item("usecombo").GetValue<KeyBind>().Active)
+            if (!spelldebuffhandler.UsingSeraphs && !spelldebuffhandler.UsingZhonyas)
             {
-                if (Spell.IsReady())
+                if (!combo || Menu.Item("usecombo").GetValue<KeyBind>().Active)
                 {
                     if (Spell.IsReady())
                     {
-                        Spell.CastOnUnit(target);
+                        if (Spell.IsReady())
+                        {
+                            Spell.CastOnUnit(target);
+                        }
                     }
                 }
             }

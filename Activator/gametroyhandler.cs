@@ -7,6 +7,7 @@ namespace Activator
 {
     public class gametroyhandler
     {
+        public static bool UsingCleanse;
         public static void Load()
         {
             GameObject.OnCreate += GameObject_OnCreate;
@@ -15,6 +16,14 @@ namespace Activator
 
         private static void GameObject_OnCreate(GameObject obj, EventArgs args)
         {
+            if (obj.Name == "Summoner_Boost.troy")
+            {
+                if (obj.Position.Distance(Activator.Player.ServerPosition) < Activator.Player.BoundingRadius)
+                {
+                    UsingCleanse = true;
+                }
+            }
+
             if (!Activator.TroysInGame)
                 return;
 
@@ -35,6 +44,11 @@ namespace Activator
 
         private static void GameObject_OnDelete(GameObject obj, EventArgs args)
         {
+            if (obj.Name == "Summoner_Boost.troy")
+            {
+                UsingCleanse = false;
+            }
+
             foreach (var hero in champion.Heroes)
             {
                 if (!Activator.TroysInGame)

@@ -47,25 +47,34 @@ namespace Activator.Items
 
         public void UseItem(bool combo = false)
         {
-            if (!combo || Activator.Origin.Item("usecombo").GetValue<KeyBind>().Active)
+            if (!spelldebuffhandler.UsingSeraphs && !spelldebuffhandler.UsingZhonyas)
             {
-                LeagueSharp.Common.Items.UseItem(Id);
+                if (!combo || Activator.Origin.Item("usecombo").GetValue<KeyBind>().Active)
+                {
+                    LeagueSharp.Common.Items.UseItem(Id);
+                }
             }
         }
 
         public void UseItem(Obj_AI_Base target, bool combo = false)
         {
-            if (!combo || Activator.Origin.Item("usecombo").GetValue<KeyBind>().Active)
+            if (!spelldebuffhandler.UsingSeraphs && !spelldebuffhandler.UsingZhonyas)
             {
-                LeagueSharp.Common.Items.UseItem(Id, target);
+                if (!combo || Activator.Origin.Item("usecombo").GetValue<KeyBind>().Active)
+                {
+                    LeagueSharp.Common.Items.UseItem(Id, target);
+                }
             }
         }
 
         public void UseItem(Vector3 pos, bool combo = false)
         {
-            if (!combo || Activator.Origin.Item("usecombo").GetValue<KeyBind>().Active)
+            if (!spelldebuffhandler.UsingSeraphs && !spelldebuffhandler.UsingZhonyas)
             {
-                LeagueSharp.Common.Items.UseItem(Id, pos);
+                if (!combo || Activator.Origin.Item("usecombo").GetValue<KeyBind>().Active)
+                {
+                    LeagueSharp.Common.Items.UseItem(Id, pos);
+                }
             }
         }
 

@@ -38,7 +38,7 @@ namespace Activator.Summoners
                     if (hero.Player.Distance(Player.ServerPosition) > Range)
                         return;
 
-                    if (hero.ForceQSS)
+                    if (hero.ForceQSS && !gametroyhandler.UsingCleanse)
                     {
                         UseSpell();
                         RemoveSpell();
@@ -47,8 +47,7 @@ namespace Activator.Summoners
                     if (hero.QSSBuffCount >= Menu.Item("use" + Name + "Number").GetValue<Slider>().Value &&
                         hero.QSSHighestBuffTime >= Menu.Item("use" + Name + "Time").GetValue<Slider>().Value)
                     {
-                        Console.WriteLine("cleanse");
-                        if (!Menu.Item("use" + Name + "Od").GetValue<bool>())
+                        if (!Menu.Item("use" + Name + "Od").GetValue<bool>() && !gametroyhandler.UsingCleanse)
                         {
                             Utility.DelayAction.Add(Game.Ping + 80, delegate
                             {
