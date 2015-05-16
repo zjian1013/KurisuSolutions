@@ -29,7 +29,7 @@ namespace Activator.Summoners
 
         public override void OnTick(EventArgs args)
         {
-            if (!Menu.Item("use" + Name).GetValue<bool>() || !Slot.IsReady())
+            if (!Menu.Item("use" + Name).GetValue<bool>())
                 return;
 
             foreach (
@@ -39,10 +39,36 @@ namespace Activator.Summoners
                         .Where(target => !target.HasBuff("summonerdot", true)))
             {
 
-                if (target.Health <= Player.GetSummonerSpellDamage(target, Damage.SummonerSpell.Ignite))
+                var ignotedmg = Player.GetSummonerSpellDamage(target, Damage.SummonerSpell.Ignite);
+
+                // killsteal ignite
+                if (Menu.Item("mode" + Name).GetValue<StringList>().SelectedIndex == 0)
                 {
-                    UseSpellOn(target, Menu.Item("mode" + Name).GetValue<StringList>().SelectedIndex == 1);
-                    RemoveSpell();
+                    if (target.Health <= ignotedmg)
+                    {
+                        UseSpellOn(target);
+                        RemoveSpell();
+                    }
+                }
+
+                // combo ignite
+                if (Menu.Item("mode" + Name).GetValue<StringList>().SelectedIndex == 1)
+                {
+                    var fulldmg = 0d;
+
+                    foreach (var entry in spelldata.combodelagate)
+                    {
+                        var spellLevel = Player.GetSpell(entry.Value).Level;
+                        fulldmg += Player.GetSpell(entry.Value).State == SpellState.Ready
+                            ? entry.Key(Player, target, spellLevel - 1)
+                            : 0;
+                    }
+
+                    if ((float)(fulldmg + ignotedmg) >= target.Health)
+                    {
+                        UseSpellOn(target, true);
+                        RemoveSpell();
+                    }
                 }
             }
         }

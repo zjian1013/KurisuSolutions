@@ -21,7 +21,7 @@ namespace Activator.Summoners
 
         public void UseSpell(bool combo = false)
         {
-            if (!combo || Menu.Item("usecombo").GetValue<KeyBind>().Active)
+            if (!combo || Activator.Origin.Item("usecombo").GetValue<KeyBind>().Active)
             {
                 if (Player.GetSpell(Slot).State == SpellState.Ready)
                 {
@@ -90,7 +90,7 @@ namespace Activator.Summoners
 
             if (Name == "summonerdot")
                 Menu.AddItem(new MenuItem("mode" + Name, "Mode: "))
-                    .SetValue(new StringList(new[] { "Killsteal", "Killsteal" }, 1));
+                    .SetValue(new StringList(new[] { "Killsteal", "Combo" }, 1));
 
             if (Name == "summonermana")
                 Menu.AddItem(new MenuItem("SelfLowMP" + Name + "Pct", "Minimum Mana % <=")).SetValue(new Slider(40));

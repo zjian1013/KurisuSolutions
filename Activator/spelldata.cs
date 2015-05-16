@@ -2,6 +2,8 @@
 using Activator.Items;
 using Activator.Spells;
 using Activator.Summoners;
+using LeagueSharp;
+using LeagueSharp.Common;
 
 namespace Activator
 {
@@ -19,6 +21,7 @@ namespace Activator
         public static List<summoner> summoners = new List<summoner>();
         public static List<spelldata> spells = new List<spelldata>();
         public static List<gametroydata> troydata = new List<gametroydata>(); 
+        public static Dictionary<SpellDamageDelegate, SpellSlot> combodelagate = new Dictionary<SpellDamageDelegate, SpellSlot>();
 
         static spelldata()
         {

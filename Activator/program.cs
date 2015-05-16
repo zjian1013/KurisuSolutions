@@ -28,10 +28,10 @@ namespace Activator
 
         private static void Game_OnGameLoad(EventArgs args)
         {
-
             GetSmiteSlot();
             GetTroysInGame();
             GetHeroesInGame();
+            GetSlotDelegates();
 
             // new menu
             Origin = new Menu("Activator", "activator", true);
@@ -112,7 +112,6 @@ namespace Activator
             // instantiate item on load if we have (incase f5/f8)
             spelldata.items.FindAll(item => LeagueSharp.Common.Items.HasItem(item.Id))
                 .ForEach(item => Game.OnUpdate += item.OnTick);
-
         }
 
         private static void NewItem(item item, Menu parent)
@@ -143,6 +142,24 @@ namespace Activator
                     .FindAll(t => t.IsClass && t.Namespace == "Activator." + nspace &&
                                   t.Name != "item" && t.Name != "spell" && t.Name != "summoner" &&
                                  !t.Name.Contains("c__")); // wtf
+        }
+
+        public static void GetSlotDelegates()
+        {
+            // grab data from common
+            foreach (var entry in Damage.Spells)
+            {
+                if (entry.Key == Player.ChampionName)
+                {
+                    foreach (var spell in entry.Value)
+                    {
+                        // spell.Damage (the damage algorithm)
+                        // get and save the damage delegate for later use
+                        spelldata.combodelagate.Add(spell.Damage, spell.Slot);
+                        Console.WriteLine(Player.ChampionName + ": " + spell.Slot + " - wrapper added!");
+                    }
+                }
+            }
         }
 
         public static void GetHeroesInGame()
@@ -184,6 +201,8 @@ namespace Activator
                 }
             }
         }
+
+
         private static void Obj_AI_Base_OnPlaceItemInSlot(Obj_AI_Base sender, Obj_AI_BasePlaceItemInSlotEventArgs args)
         {
             if (sender.IsMe)

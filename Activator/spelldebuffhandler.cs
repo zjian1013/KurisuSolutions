@@ -86,21 +86,18 @@ namespace Activator
             {
                 if (hero.Player.NetworkId == sender.NetworkId)
                 {
-                    if (sender.NetworkId == Activator.Player.NetworkId)
+                    if (args.Buff.Name == "RegenerationPotion")
+                        hero.UsingHealthPot = false;
+
+                    if (args.Buff.Name == "FlaskOfCrystalWater")
+                        hero.UsingManaPot = false;
+
+                    if (args.Buff.Name == "ItemCrystalFlask" ||
+                        args.Buff.Name == "ItemMiniRegenPotion")
                     {
-                        if (args.Buff.Name == "RegenerationPotion")
-                            hero.UsingHealthPot = false;
-
-                        if (args.Buff.Name == "FlaskOfCrystalWater")
-                            hero.UsingManaPot = false;
-
-                        if (args.Buff.Name == "ItemCrystalFlask" ||
-                            args.Buff.Name == "ItemMiniRegenPotion")
-                        {
-                            hero.UsingMixedPot = false;
-                        }
+                        hero.UsingMixedPot = false;
                     }
-
+ 
                     if (hero.QSSBuffCount == 0)
                         hero.QSSHighestBuffTime = 0;
 

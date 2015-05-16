@@ -109,7 +109,7 @@ namespace Activator.Spells
 
         public void UseSpell(bool combo = false)
         {
-            if (!combo || Menu.Item("usecombo").GetValue<KeyBind>().Active)
+            if (!combo || Activator.Origin.Item("usecombo").GetValue<KeyBind>().Active)
             {
                 if (Spell.IsReady())
                 {
@@ -120,7 +120,7 @@ namespace Activator.Spells
 
         public void UseSpellTowards(Vector3 targetpos, bool combo = false)
         {
-            if (!combo || Menu.Item("usecombo").GetValue<KeyBind>().Active)
+            if (!combo || Activator.Origin.Item("usecombo").GetValue<KeyBind>().Active)
             {
                 if (Spell.IsReady())
                 {
@@ -134,7 +134,7 @@ namespace Activator.Spells
 
         public void UseSpellOn(Obj_AI_Base target, bool combo = false)
         {
-            if (!combo || Menu.Item("usecombo").GetValue<KeyBind>().Active)
+            if (!combo || Activator.Origin.Item("usecombo").GetValue<KeyBind>().Active)
             {
                 if (Spell.IsReady())
                 {

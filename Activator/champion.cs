@@ -27,5 +27,4 @@ namespace Activator
             IncomeDamage = incdmg;
         }
     }
-
 }

@@ -182,10 +182,6 @@ namespace Activator
                 CleanseTimer = 0,
                 Slot = SpellSlot.E
             });
-
-
-
-
         }
     }
 }
