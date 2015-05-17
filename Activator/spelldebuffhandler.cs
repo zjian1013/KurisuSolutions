@@ -41,7 +41,6 @@ namespace Activator
 
                     if (buff.Evade)
                     {
-                        spelldata.mypells.ForEach(x => Game.OnUpdate += x.OnTick);
                         Utility.DelayAction.Add(buff.EvadeTimer, delegate
                         {
                             hero.IncomeDamage = 1;

@@ -1,4 +1,5 @@
 ﻿using System;
+using LeagueSharp;
 using LeagueSharp.Common;
 
 namespace Activator.Spells.Heals
@@ -22,7 +23,7 @@ namespace Activator.Spells.Heals
 
         internal override MenuType[] Category
         {
-            get { return new[] { MenuType.SelfLowHP, MenuType.Cleanse, MenuType.SelfMinMP, MenuType.SelfMuchHP,  }; }
+            get { return new[] { MenuType.SelfLowHP, MenuType.SelfMinMP, MenuType.SelfMuchHP,  }; }
         }
 
         internal override int DefaultHP
@@ -37,7 +38,8 @@ namespace Activator.Spells.Heals
 
         public override void OnTick(EventArgs args)
         {
-            if (!Menu.Item("use" + Name).GetValue<bool>())
+            if (!Menu.Item("use" + Name).GetValue<bool>() ||
+                Player.GetSpell(Slot).State != SpellState.Ready)
                 return;
 
             foreach (var hero in champion.Heroes)

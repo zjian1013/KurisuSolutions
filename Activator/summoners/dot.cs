@@ -54,7 +54,7 @@ namespace Activator.Summoners
                 // combo ignite
                 if (Menu.Item("mode" + Name).GetValue<StringList>().SelectedIndex == 1)
                 {
-                    var fulldmg = 0d;
+                    var totaldmg = 0d;
 
                     foreach (var entry in spelldata.combodelagate)
                     {
@@ -65,6 +65,7 @@ namespace Activator.Summoners
                     }
 
                     if ((float)(fulldmg + ignotedmg) >= target.Health)
+                    if ((float)(totaldmg + ignotedmg) >= target.Health)
                     {
                         UseSpellOn(target, true);
                         RemoveSpell();

@@ -23,7 +23,8 @@ namespace Activator.Spells.Slows
 
         public override void OnTick(EventArgs args)
         {
-            if (Menu.Item("use" + Name).GetValue<bool>())
+            if (!Menu.Item("use" + Name).GetValue<bool>() ||
+                Player.GetSpell(Slot).State != SpellState.Ready)
                 return;
 
             if (Player.HasBuffOfType(BuffType.Slow) && Menu.Item("use" + Name + "SSR").GetValue<bool>())

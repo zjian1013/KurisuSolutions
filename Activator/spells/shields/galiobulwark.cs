@@ -1,4 +1,5 @@
 ﻿using System;
+using LeagueSharp;
 using LeagueSharp.Common;
 
 namespace Activator.Spells.Shields
@@ -36,7 +37,8 @@ namespace Activator.Spells.Shields
         }
         public override void OnTick(EventArgs args)
         {
-            if (!Menu.Item("use" + Name).GetValue<bool>())
+            if (!Menu.Item("use" + Name).GetValue<bool>() ||
+                Player.GetSpell(Slot).State != SpellState.Ready)
                 return;
 
             foreach (var hero in champion.Heroes)

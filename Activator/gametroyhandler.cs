@@ -78,9 +78,6 @@ namespace Activator
 
                     if (troy.Obj.IsValid && hero.Player.Distance(troy.Obj.Position) <= troy.Obj.BoundingRadius)
                     {
-                        // if ally is inside the troy start ticking the spell.
-                        spelldata.mypells.FindAll(x => x.Spell.IsReady()).ForEach(x => Game.OnUpdate += x.OnTick);
-
                         hero.Attacker = troy.Owner;
                         hero.IncomeDamage = (float) troy.Owner.GetSpellDamage(hero.Player, troy.Slot);
 

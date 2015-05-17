@@ -130,17 +130,6 @@ namespace Activator
 
             debuffs.Add(new spelldebuff
             {
-                Name = "nasusw",
-                Evade = false,
-                Damage = false,
-                EvadeTimer = 0,
-                Cleanse = true,
-                CleanseTimer = 0,
-                Slot = SpellSlot.W
-            });
-
-            debuffs.Add(new spelldebuff
-            {
                 Name = "blindmonkqonechaos",
                 Evade = false,
                 Damage = false,

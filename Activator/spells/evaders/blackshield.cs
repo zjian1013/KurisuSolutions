@@ -1,4 +1,5 @@
 ﻿using System;
+using LeagueSharp;
 using LeagueSharp.Common;
 
 namespace Activator.Spells.Evaders
@@ -37,13 +38,15 @@ namespace Activator.Spells.Evaders
 
         public override void OnTick(EventArgs args)
         {
-            if (!Menu.Item("use" + Name).GetValue<bool>())
+            if (!Menu.Item("use" + Name).GetValue<bool>() ||
+                Player.GetSpell(Slot).State != SpellState.Ready)
                 return;
 
             foreach (var hero in champion.Heroes)
             {
                 if (hero.Player.Distance(Player.ServerPosition) > Range)
                     return;
+
 
                 if (Menu.Item("ss" + Name + "All").GetValue<bool>())
                 {

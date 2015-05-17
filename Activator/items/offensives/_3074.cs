@@ -27,7 +27,7 @@ namespace Activator.Items.Offensives
 
         internal override float Range
         {
-            get { return 400f; }
+            get { return 350f; }
         }
 
         internal override MenuType[] Category

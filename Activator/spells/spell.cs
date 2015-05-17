@@ -16,6 +16,7 @@ namespace Activator.Spells
         internal virtual int DefaultHP { get; set; }
 
         public Menu Menu { get; private set; }
+        public SpellSlot Slot { get { return Player.GetSpellSlot(Name); } }
         public Spell Spell { get { return new Spell(Player.GetSpellSlot(Name)); } }
         public Obj_AI_Hero Player { get { return ObjectManager.Player; } }
 
@@ -148,11 +149,11 @@ namespace Activator.Spells
 
         public void RemoveSpell()
         {
-            if (!Spell.IsReady())
-            {
-                Game.OnUpdate -= OnTick;
-                Console.WriteLine("STOPPED");
-            }
+            //if (!Spell.IsReady())
+            //{
+            //    //Game.OnUpdate -= OnTick;
+            //    //Console.WriteLine("STOPPED");
+            //}
         }
 
 

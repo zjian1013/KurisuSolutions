@@ -33,6 +33,8 @@ namespace Activator
             GetHeroesInGame();
             GetSlotDelegates();
 
+            new drawings();
+
             // new menu
             Origin = new Menu("Activator", "activator", true);
             var cmenu = new Menu("Cleansers", "cleansers");
@@ -53,6 +55,8 @@ namespace Activator
             ccmenu.AddItem(new MenuItem("cslow", "Slows")).SetValue(true);
             ccmenu.AddItem(new MenuItem("cpoison", "Poisons")).SetValue(true);
             cmenu.AddSubMenu(ccmenu);
+            cmenu.AddItem(new MenuItem("qssdebug", "Debug")).SetValue(false);   
+
 
             Origin.AddSubMenu(cmenu);
 
@@ -89,7 +93,7 @@ namespace Activator
             zmenu.AddSubMenu(ddmenu);
 
             zmenu.AddItem(new MenuItem("evadeon", "Evade Integration")).SetValue(false);
-            zmenu.AddItem(new MenuItem("usecombo", "Combo Key")).SetValue(new KeyBind(32, KeyBindType.Press));
+            zmenu.AddItem(new MenuItem("usecombo", "Combo Key")).SetValue(new KeyBind(32, KeyBindType.Press, true));
             Origin.AddSubMenu(zmenu);       
 
             Origin.AddToMainMenu();
@@ -108,6 +112,9 @@ namespace Activator
 
             // temporary summoners instantiator
             spelldata.summoners.ForEach(item => Game.OnUpdate += item.OnTick);
+
+            // temporary autospells instantiator
+            spelldata.mypells.ForEach(x => Game.OnUpdate += x.OnTick);
 
             // instantiate item on load if we have (incase f5/f8)
             spelldata.items.FindAll(item => LeagueSharp.Common.Items.HasItem(item.Id))

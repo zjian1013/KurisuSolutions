@@ -41,9 +41,6 @@ namespace Activator
                             {
                                 var endtime = (int)(1000 * (args.SData.CastFrame / 30));
 
-                                // subscribe our auto-spell (if any on list) to the onupdate vent
-                                spelldata.mypells.FindAll(x => x.Spell.IsReady()).ForEach(x => Game.OnUpdate += x.OnTick);
-
                                 // delay the spell a bit before missile endtime
                                 Utility.DelayAction.Add((int) (endtime - (endtime*0.5)), delegate
                                 {
@@ -96,9 +93,6 @@ namespace Activator
                                 sender.BasicAttack.MissileSpeed < 100 ? 10000 : sender.BasicAttack.MissileSpeed);
 
                             var endtime = (int) (sender.AttackCastDelay*1000) - 100 + Game.Ping/2 + 1000*woop;
-
-                            // subscribe our auto-spell (if any on list) to the onupdate vent
-                            spelldata.mypells.FindAll(x => x.Spell.IsReady()).ForEach(x => Game.OnUpdate += x.OnTick);
 
                             // delay the aa little bit before missile endtime
                             Utility.DelayAction.Add((int) (endtime - (endtime*0.5)), delegate
@@ -161,9 +155,6 @@ namespace Activator
                                     }
                                 }
 
-                                // subscribe our auto-spell (if any on list) to the onupdate vent
-                                spelldata.mypells.FindAll(x => x.Spell.IsReady()).ForEach(x => Game.OnUpdate += x.OnTick);
-
                                 // delay the action a little bit before endtime
                                 Utility.DelayAction.Add((int) (endtime - (endtime*0.5)), delegate
                                 {
@@ -221,9 +212,6 @@ namespace Activator
                                 var endtime = (int) (sender.AttackCastDelay*1000) - 100 + Game.Ping/2 +
                                               1000*woop;
 
-                                // subscribe our auto-spell (if any on list) to the onupdate vent
-                                spelldata.mypells.FindAll(x => x.Spell.IsReady()).ForEach(x => Game.OnUpdate += x.OnTick);
-
                                 // delay a little bit before missile endtime
                                 Utility.DelayAction.Add((int) (endtime - (endtime*0.5)), delegate
                                 {
@@ -253,10 +241,6 @@ namespace Activator
                                 var speed = args.SData.MissileSpeed < 100 ? 10000 : args.SData.MissileSpeed;
                                 var distance = (int) (1000*(sender.Distance(hero.Player.ServerPosition)/speed));
                                 var endtime = delay - 100 + Game.Ping/2 + distance - (Environment.TickCount - start);
-
-                                // subscribe our auto-spell (if any on list) to the onupdate vent
-                                spelldata.mypells.FindAll(x => x.Spell.IsReady())
-                                    .ForEach(x => Game.OnUpdate += x.OnTick);
 
                                 Utility.DelayAction.Add((int) (endtime - (endtime*0.5)), delegate
                                 {
