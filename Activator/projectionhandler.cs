@@ -42,11 +42,11 @@ namespace Activator
                                 var endtime = (int)(1000 * (args.SData.CastFrame / 30));
 
                                 // delay the spell a bit before missile endtime
-                                Utility.DelayAction.Add((int) (endtime - (endtime*0.5)), delegate
+                                Utility.DelayAction.Add((int)(endtime - (endtime * 0.5)), delegate
                                 {
                                     hero.Attacker = sender;
                                     hero.HitTypes.Add(HitType.Spell);
-                                    hero.IncomeDamage += (float) sender.GetSpellDamage(hero.Player, args.SData.Name);
+                                    hero.IncomeDamage += (float)sender.GetSpellDamage(hero.Player, args.SData.Name);
 
                                     if (args.SData.HaveHitEffect)
                                         hero.HitTypes.Add(HitType.AutoAttack);
@@ -72,7 +72,7 @@ namespace Activator
                                     }
 
                                     // lazy safe reset
-                                    Utility.DelayAction.Add((endtime*2), delegate
+                                    Utility.DelayAction.Add((endtime * 2), delegate
                                     {
                                         hero.Attacker = null;
                                         hero.IncomeDamage = 0;
@@ -83,35 +83,6 @@ namespace Activator
                         }
                     }
 
-
-                    if (args.SData.TargettingType == SpellDataTargetType.Unit)
-                    {
-                        if (hero.Player.NetworkId == args.Target.NetworkId && args.SData.IsAutoAttack())
-                        {
-                            // get windup/distance/etc in time
-                            var woop = (int) (Activator.Player.Distance(sender.ServerPosition)/
-                                sender.BasicAttack.MissileSpeed < 100 ? 10000 : sender.BasicAttack.MissileSpeed);
-
-                            var endtime = (int) (sender.AttackCastDelay*1000) - 100 + Game.Ping/2 + 1000*woop;
-
-                            // delay the aa little bit before missile endtime
-                            Utility.DelayAction.Add((int) (endtime - (endtime*0.5)), delegate
-                            {
-                                hero.Attacker = sender;
-                                hero.HitTypes.Add(HitType.AutoAttack);
-                                hero.IncomeDamage += (float) sender.GetAutoAttackDamage(hero.Player, true);
-
-                                // lazy reset
-                                Utility.DelayAction.Add((endtime*2), delegate
-                                {
-                                    hero.Attacker = null;
-                                    hero.IncomeDamage = 0;
-                                    hero.HitTypes.Clear();
-                                });
-                            });
-                        }
-                    }
-
                     // skillshot detection completerino
                     if (args.SData.TargettingType == SpellDataTargetType.Cone ||
                         args.SData.TargettingType.ToString().Contains("Location"))
@@ -119,14 +90,14 @@ namespace Activator
                         if (hero.Player.Distance(sender.ServerPosition) <= args.SData.CastRange)
                         {
                             // important spelldata shit (hope sdata is accurate)
-                            var delay = (int) (1000*(args.SData.CastFrame/30));
+                            var delay = (int)(1000 * (args.SData.CastFrame < 1 ? 1 : args.SData.CastFrame / 30));
                             var speed = args.SData.MissileSpeed < 100 ? 10000 : args.SData.MissileSpeed;
-                            var distance = (int) (1000*(sender.Distance(hero.Player.ServerPosition)/speed));
-                            var endtime = delay - 100 + Game.Ping/2 + distance - (Environment.TickCount - start);
+                            var distance = (int)(1000 * (sender.Distance(hero.Player.ServerPosition) / speed));
+                            var endtime = delay - 100 + Game.Ping / 2 + distance - (Environment.TickCount - start);
 
                             // get the real end position normalized
                             var direction = (args.End.To2D() - sender.ServerPosition.To2D()).Normalized();
-                            var endpos = sender.ServerPosition.To2D() + direction*args.SData.CastRange;
+                            var endpos = sender.ServerPosition.To2D() + direction * args.SData.CastRange;
 
                             // setup projection
                             var proj = hero.Player.ServerPosition.To2D().ProjectOn(sender.ServerPosition.To2D(), endpos);
@@ -135,7 +106,7 @@ namespace Activator
                             // get the evade time 
                             var evadetime =
                                 (int)
-                                    (1000*(args.SData.LineWidth - projdist + hero.Player.BoundingRadius)/
+                                    (1000 * (args.SData.LineWidth - projdist + hero.Player.BoundingRadius) /
                                      hero.Player.MoveSpeed);
 
                             if (args.SData.Name.ToLower() == "infernalguardianguide")
@@ -156,11 +127,11 @@ namespace Activator
                                 }
 
                                 // delay the action a little bit before endtime
-                                Utility.DelayAction.Add((int) (endtime - (endtime*0.5)), delegate
+                                Utility.DelayAction.Add((int)(endtime - (endtime * 0.5)), delegate
                                 {
                                     hero.Attacker = sender;
                                     hero.HitTypes.Add(HitType.Spell);
-                                    hero.IncomeDamage += (float) sender.GetSpellDamage(hero.Player, args.SData.Name);
+                                    hero.IncomeDamage += (float)sender.GetSpellDamage(hero.Player, args.SData.Name);
 
                                     if (args.SData.HaveHitEffect)
                                         hero.HitTypes.Add(HitType.AutoAttack);
@@ -186,7 +157,7 @@ namespace Activator
                                     }
 
                                     // lazy safe reset
-                                    Utility.DelayAction.Add((endtime*2), delegate
+                                    Utility.DelayAction.Add((endtime * 2), delegate
                                     {
                                         hero.Attacker = null;
                                         hero.IncomeDamage = 0;
@@ -206,21 +177,21 @@ namespace Activator
                             // auto attack dectection
                             if (args.SData.IsAutoAttack())
                             {
-                                var woop = (int) Activator.Player.Distance(sender.ServerPosition)/
-                                           (int) sender.BasicAttack.MissileSpeed;
+                                var woop = (int)(hero.Player.Distance(sender.ServerPosition) /
+                                           sender.BasicAttack.MissileSpeed);
 
-                                var endtime = (int) (sender.AttackCastDelay*1000) - 100 + Game.Ping/2 +
-                                              1000*woop;
+                                var endtime = (int)(sender.AttackCastDelay * 1000) - 100 + Game.Ping / 2 +
+                                              1000 * woop;
 
                                 // delay a little bit before missile endtime
-                                Utility.DelayAction.Add((int) (endtime - (endtime*0.5)), delegate
+                                Utility.DelayAction.Add((int)(endtime - (endtime * 0.5)), delegate
                                 {
                                     hero.Attacker = sender;
                                     hero.HitTypes.Add(HitType.AutoAttack);
-                                    hero.IncomeDamage += (float) sender.GetAutoAttackDamage(hero.Player, true);
+                                    hero.IncomeDamage += (float)sender.GetAutoAttackDamage(hero.Player, true);
 
                                     // lazy reset
-                                    Utility.DelayAction.Add((endtime*2), delegate
+                                    Utility.DelayAction.Add((endtime * 2), delegate
                                     {
                                         hero.Attacker = null;
                                         hero.IncomeDamage = 0;
@@ -237,17 +208,17 @@ namespace Activator
                                     continue;
 
                                 // important spelldata shit (hope sdata is accurate)
-                                var delay = (int) (1000*(args.SData.CastFrame/30));
+                                var delay = (int)(1000 * (args.SData.CastFrame / 30));
                                 var speed = args.SData.MissileSpeed < 100 ? 10000 : args.SData.MissileSpeed;
-                                var distance = (int) (1000*(sender.Distance(hero.Player.ServerPosition)/speed));
-                                var endtime = delay - 100 + Game.Ping/2 + distance - (Environment.TickCount - start);
+                                var distance = (int)(1000 * (sender.Distance(hero.Player.ServerPosition) / speed));
+                                var endtime = delay - 100 + Game.Ping / 2 + distance - (Environment.TickCount - start);
 
-                                Utility.DelayAction.Add((int) (endtime - (endtime*0.5)), delegate
+                                Utility.DelayAction.Add((int)(endtime - (endtime * 0.5)), delegate
                                 {
                                     hero.Attacker = sender;
                                     hero.HitTypes.Add(HitType.Spell);
                                     hero.IncomeDamage +=
-                                        (float) sender.GetSpellDamage(hero.Player, args.SData.Name);
+                                        (float)sender.GetSpellDamage(hero.Player, args.SData.Name);
 
                                     // detect danger/cc/ultimates from our db
                                     foreach (var item in spelldata.spells)
@@ -272,7 +243,7 @@ namespace Activator
                                         });
 
                                         // lazy reset
-                                        Utility.DelayAction.Add((endtime*2), delegate
+                                        Utility.DelayAction.Add((endtime * 2), delegate
                                         {
                                             hero.Attacker = null;
                                             hero.IncomeDamage = 0;
@@ -296,14 +267,11 @@ namespace Activator
                         if (sender.Distance(hero.Player.ServerPosition) <= 900 &&
                             Activator.Player.Distance(hero.Player.ServerPosition) <= 1000)
                         {
-                            // subscribe our auto-spell (if any on list) to the onupdate vent
-                            spelldata.mypells.FindAll(x => x.Spell.IsReady()).ForEach(x => Game.OnUpdate += x.OnTick);
-
                             Utility.DelayAction.Add(500, delegate
                             {
                                 hero.HitTypes.Add(HitType.TurretAttack);
                                 hero.IncomeDamage =
-                                    (float) sender.CalcDamage(hero.Player, Damage.DamageType.Physical,
+                                    (float)sender.CalcDamage(hero.Player, Damage.DamageType.Physical,
                                         sender.BaseAttackDamage + sender.FlatPhysicalDamageMod);
 
                                 // lazy reset

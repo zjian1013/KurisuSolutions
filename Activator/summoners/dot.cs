@@ -55,16 +55,19 @@ namespace Activator.Summoners
                 if (Menu.Item("mode" + Name).GetValue<StringList>().SelectedIndex == 1)
                 {
                     var totaldmg = 0d;
+                    totaldmg += Player.GetAutoAttackDamage(target, true) * 5;
 
                     foreach (var entry in spelldata.combodelagate)
                     {
                         var spellLevel = Player.GetSpell(entry.Value).Level;
-                        fulldmg += Player.GetSpell(entry.Value).State == SpellState.Ready
+
+                        totaldmg += Player.GetSpell(entry.Value).State == SpellState.Ready
                             ? entry.Key(Player, target, spellLevel - 1)
                             : 0;
+
                     }
 
-                    if ((float)(fulldmg + ignotedmg) >= target.Health)
+                    // todo: item damage
                     if ((float)(totaldmg + ignotedmg) >= target.Health)
                     {
                         UseSpellOn(target, true);
