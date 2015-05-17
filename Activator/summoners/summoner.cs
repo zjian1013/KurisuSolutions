@@ -99,8 +99,8 @@ namespace Activator.Summoners
             {
                 Menu.AddItem(new MenuItem("SelfLowHP" + Name + "Pct", "Use on Hero HP % <=")).SetValue(new Slider(20));
                 Menu.AddItem(new MenuItem("SelfMuchHP" + Name + "Pct", "Use on Hero Dmg Dealt % >=")).SetValue(new Slider(45));
-                Menu.AddItem(new MenuItem("use" + Name + "Ulti", "Use On Dangerous (Ultimates Only)")).SetValue(true);
-                Menu.AddItem(new MenuItem("use" + Name + "Dot", "Use Barrier On Ignite")).SetValue(true);
+                Menu.AddItem(new MenuItem("use" + Name + "Ulti", "Use on Dangerous (Ultimates Only)")).SetValue(true);
+                Menu.AddItem(new MenuItem("use" + Name + "Dot", "Use on Ignite")).SetValue(true);
             }
 
             if (Name == "summonerexhaust")

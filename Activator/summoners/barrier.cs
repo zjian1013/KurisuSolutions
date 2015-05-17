@@ -35,6 +35,9 @@ namespace Activator.Summoners
 
             foreach (var hero in champion.Heroes)
             {
+                if (hero.Player.NetworkId != Player.NetworkId)
+                    return;
+
                 if (hero.Player.Health / hero.Player.MaxHealth * 100 <=
                     Menu.Item("SelfLowHP" + Name + "Pct").GetValue<Slider>().Value)
                 {
