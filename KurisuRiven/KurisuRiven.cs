@@ -885,6 +885,7 @@ namespace KurisuRiven
                 switch (args.SData.Name)
                 {
                     case "RivenTriCleave":
+                        canmv = false;
                         didq = true;
                         lastq = Environment.TickCount;
                         canq = false;
