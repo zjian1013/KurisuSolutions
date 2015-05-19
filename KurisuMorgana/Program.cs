@@ -26,7 +26,7 @@ namespace KurisuMorgana
                 return;
 
             // set spells
-            _q = new Spell(SpellSlot.Q, 1175f);
+            _q = new Spell(SpellSlot.Q, 1300f);
             _q.SetSkillshot(250f, 80f, 1200f, true, SkillshotType.SkillshotLine);
 
             _w = new Spell(SpellSlot.W, 900f);
@@ -76,7 +76,7 @@ namespace KurisuMorgana
             menuW.AddItem(new MenuItem("usewcombo", "Use in Combo")).SetValue(true);
             menuW.AddItem(new MenuItem("useharassw", "Use in Harass")).SetValue(true);       
             menuW.AddItem(new MenuItem("usewauto", "Use on Immobile")).SetValue(true);
-            menuW.AddItem(new MenuItem("waitfor", "Wait for Bind or Immobile")).SetValue(true);
+            menuW.AddItem(new MenuItem("waitfor", "Cast only on CC State")).SetValue(true);
             menuW.AddItem(new MenuItem("calcw", "Calculated Ticks")).SetValue(new Slider(6, 3, 10));
             spellmenu.AddSubMenu(menuW);
 
@@ -193,7 +193,7 @@ namespace KurisuMorgana
                     Render.Circle.DrawCircle(Me.Position, _r.Range + 10, System.Drawing.Color.White, 3);
 
                 var target = TargetSelector.GetTarget(_q.Range + 10, TargetSelector.DamageType.Magical);
-                if (target.IsValidTarget(_q.Range + 10))
+                if (target.IsValidTarget())
                 {
                     if (_menu.Item("drawtarg").GetValue<bool>())
                     {
@@ -230,7 +230,7 @@ namespace KurisuMorgana
             if (useq && _q.IsReady())
             {
                 var qtarget = TargetSelector.GetTargetNoCollision(_q);
-                if (qtarget.IsValidTarget(_q.Range + 10))
+                if (qtarget.IsValidTarget())
                 {
                     var poutput = _q.GetPrediction(qtarget);
                     if (poutput.Hitchance >= (HitChance) _menu.Item("hitchanceq").GetValue<Slider>().Value + 2)
@@ -243,7 +243,7 @@ namespace KurisuMorgana
             if (usew && _w.IsReady())
             {             
                 var wtarget = TargetSelector.GetTarget(_w.Range + 10, TargetSelector.DamageType.Magical);            
-                if (wtarget.IsValidTarget(_w.Range))
+                if (wtarget.IsValidTarget())
                 {
                     var poutput = _w.GetPrediction(wtarget);
                     if (poutput.Hitchance >= (HitChance)_menu.Item("hitchancew").GetValue<Slider>().Value + 2)
@@ -261,7 +261,7 @@ namespace KurisuMorgana
             {
                 var ticks = _menu.Item("calcw").GetValue<Slider>().Value;
                 var rtarget = TargetSelector.GetTarget(_r.Range, TargetSelector.DamageType.Magical);
-                if (rtarget.IsValidTarget(_r.Range) && _menu.Item("rkill").GetValue<bool>())
+                if (rtarget.IsValidTarget() && _menu.Item("rkill").GetValue<bool>())
                 {
                     if (_mr + _mq + _mw * ticks + _ma * 3 + _mi + _guise >= rtarget.Health)
                     {
@@ -288,7 +288,7 @@ namespace KurisuMorgana
             if (useq && _q.IsReady())
             {
                 var qtarget = TargetSelector.GetTargetNoCollision(_q);
-                if (qtarget.IsValidTarget(_q.Range - 300))
+                if (qtarget.IsValidTarget())
                 {
                     var poutput = _q.GetPrediction(qtarget);
                     if (poutput.Hitchance >= (HitChance)_menu.Item("hitchanceq").GetValue<Slider>().Value + 2)
@@ -301,8 +301,8 @@ namespace KurisuMorgana
 
             if (usew && _w.IsReady())
             {
-                var wtarget = TargetSelector.GetTarget(_w.Range + 10, TargetSelector.DamageType.Magical);
-                if (wtarget.IsValidTarget(_w.Range))
+                var wtarget = TargetSelector.GetTarget(_w.Range + 200, TargetSelector.DamageType.Magical);
+                if (wtarget.IsValidTarget())
                 {
                     var poutput = _w.GetPrediction(wtarget);
                     if (poutput.Hitchance >= (HitChance)_menu.Item("hitchancew").GetValue<Slider>().Value + 2)
@@ -322,7 +322,7 @@ namespace KurisuMorgana
                     ObjectManager.Get<Obj_AI_Hero>()
                         .FirstOrDefault(h => h.IsEnemy && h.Distance(Me.ServerPosition, true) <= _q.RangeSqr);
 
-                if (itarget.IsValidTarget(_q.Range))
+                if (itarget.IsValidTarget())
                 {
                     if (dashing && _menu.Item("dobind" + itarget.ChampionName).GetValue<StringList>().SelectedIndex == 2)
                         _q.CastIfHitchanceEquals(itarget, HitChance.Dashing);
@@ -336,9 +336,9 @@ namespace KurisuMorgana
             {
                 var itarget =
                     ObjectManager.Get<Obj_AI_Hero>()
-                        .FirstOrDefault(h => h.IsEnemy && h.Distance(Me.ServerPosition, true) <= _w.RangeSqr);
+                        .FirstOrDefault(h => h.IsEnemy && h.Distance(Me.ServerPosition, true) <= _w.RangeSqr + 400*400);
 
-                if (itarget.IsValidTarget(_w.Range))
+                if (itarget.IsValidTarget())
                     _w.CastIfHitchanceEquals(itarget, HitChance.Immobile);          
             }
 
@@ -414,7 +414,6 @@ namespace KurisuMorgana
                         var speed = args.SData.MissileSpeed < 100 ? 10000 : args.SData.MissileSpeed;
                         var distance = (int)(1000 * (sender.Distance(ally.ServerPosition) / speed));
                         var endtime = delay - 100 + Game.Ping / 2 + distance;
-
 
                         if (_menu.Item(lib.SDataName + "on").GetValue<bool>() && _menu.Item("useon" + ally.ChampionName).GetValue<bool>())
                         {
