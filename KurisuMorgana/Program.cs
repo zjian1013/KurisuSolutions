@@ -27,10 +27,10 @@ namespace KurisuMorgana
 
             // set spells
             _q = new Spell(SpellSlot.Q, 1175f);
-            _q.SetSkillshot(0.25f, 72f, 1400f, true, SkillshotType.SkillshotLine);
+            _q.SetSkillshot(250f, 80f, 1200f, true, SkillshotType.SkillshotLine);
 
             _w = new Spell(SpellSlot.W, 900f);
-            _w.SetSkillshot(0.25f, 175f, 1200f, false, SkillshotType.SkillshotCircle);
+            _w.SetSkillshot(250f, 175f, 2200f, false, SkillshotType.SkillshotCircle);
 
             _e = new Spell(SpellSlot.E, 750f);
             _r = new Spell(SpellSlot.R, 600f);
@@ -96,7 +96,7 @@ namespace KurisuMorgana
                 {
                     var skillMenu = new Menu(lib.Slot + " - " + lib.SpellMenuName, "sm" + lib.SDataName);
                     skillMenu.AddItem(new MenuItem(lib.SDataName + "on", "Enable")).SetValue(true);
-                    skillMenu.AddItem(new MenuItem(lib.SDataName + "wait", "Wait Till Impact (Disabled)")).SetValue(false);
+                    skillMenu.AddItem(new MenuItem(lib.SDataName + "waitz", "Humanize")).SetValue(true);
                     skillMenu.AddItem(new MenuItem(lib.SDataName + "pr", "Priority"))
                         .SetValue(new Slider(lib.DangerLevel, 1, 5));
                     champMenu.AddSubMenu(skillMenu);
@@ -409,14 +409,17 @@ namespace KurisuMorgana
                 {
                     if (lib.HeroName == attacker.ChampionName && lib.Slot == attacker.GetSpellSlot(args.SData.Name))
                     {
-                        var timeTillHit = lib.Delay +
-                                          (int)(1000*attacker.Distance(ally.ServerPosition/args.SData.MissileSpeed));
+                        var delay = (int)(1000 * (args.SData.CastFrame < 1 ? 1 : args.SData.CastFrame / 30));
+                        var speed = args.SData.MissileSpeed < 100 ? 10000 : args.SData.MissileSpeed;
+                        var distance = (int)(1000 * (sender.Distance(ally.ServerPosition) / speed));
+                        var endtime = delay - 100 + Game.Ping / 2 + distance;
+
 
                         if (_menu.Item(lib.SDataName + "on").GetValue<bool>() && _menu.Item("useon" + ally.ChampionName).GetValue<bool>())
                         {
-                            if (_menu.Item(lib.SDataName + "wait").GetValue<bool>())
+                            if (_menu.Item(lib.SDataName + "waitz").GetValue<bool>())
                             {
-                                Utility.DelayAction.Add(timeTillHit, () => _e.CastOnUnit(ally));
+                                Utility.DelayAction.Add((int) (endtime - (endtime * 0.4)), () => _e.CastOnUnit(ally));
                             }
 
                             else
