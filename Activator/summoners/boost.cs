@@ -33,28 +33,28 @@ namespace Activator.Summoners
                 if (!Menu.Item("use" + Name).GetValue<bool>())
                     return;
 
-                if (hero.Player.NetworkId == Player.NetworkId)
+                if (hero.Player.NetworkId != Player.NetworkId) 
+                    continue;
+
+                if (hero.Player.Distance(Player.ServerPosition) > Range)
+                    return;
+
+                if (hero.ForceQSS)
                 {
-                    if (hero.Player.Distance(Player.ServerPosition) > Range)
-                        return;
+                    UseSpell();
+                    RemoveSpell();
+                }
 
-                    if (hero.ForceQSS)
+                if (hero.QSSBuffCount >= Menu.Item("use" + Name + "Number").GetValue<Slider>().Value &&
+                    hero.QSSHighestBuffTime >= Menu.Item("use" + Name + "Time").GetValue<Slider>().Value)
+                {
+                    if (!Menu.Item("use" + Name + "Od").GetValue<bool>())
                     {
-                        UseSpell();
-                        RemoveSpell();
-                    }
-
-                    if (hero.QSSBuffCount >= Menu.Item("use" + Name + "Number").GetValue<Slider>().Value &&
-                        hero.QSSHighestBuffTime >= Menu.Item("use" + Name + "Time").GetValue<Slider>().Value)
-                    {
-                        if (!Menu.Item("use" + Name + "Od").GetValue<bool>())
+                        Utility.DelayAction.Add(Game.Ping + 80, delegate
                         {
-                            Utility.DelayAction.Add(Game.Ping + 80, delegate
-                            {
-                                UseSpell(Menu.Item("mode" + Name).GetValue<StringList>().SelectedIndex == 1);
-                                RemoveSpell();
-                            });
-                        }
+                            UseSpell(Menu.Item("mode" + Name).GetValue<StringList>().SelectedIndex == 1);
+                            RemoveSpell();
+                        });
                     }
                 }
             }

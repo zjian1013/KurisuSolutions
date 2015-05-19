@@ -42,41 +42,39 @@ namespace Activator.Summoners
 
             foreach (var hero in champion.Heroes)
             {
-                if (hero.Attacker != null)
+                if (hero.Attacker == null) 
+                    continue;
+
+                if (hero.Attacker.Distance(hero.Player.ServerPosition) > Range) 
+                    continue;
+
+                if (Menu.Item("use" + Name + "Ulti").GetValue<bool>())
                 {
-                    if (hero.Attacker.Distance(hero.Player.ServerPosition) <= Range)
+                    if (hero.IncomeDamage > 0 && hero.HitTypes.Contains(HitType.Ultimate))
                     {
-                        if (Menu.Item("use" + Name + "Ulti").GetValue<bool>())
-                        {
-                            if (hero.IncomeDamage > 0 && hero.HitTypes.Contains(HitType.Ultimate))
-                            {
-                                UseSpellOn(hero.Attacker);
-                                RemoveSpell();
-                            }
-                        }
+                        UseSpellOn(hero.Attacker);
+                        RemoveSpell();
                     }
+                }
 
-                    if (hero.Attacker.Distance(Player.ServerPosition) <= Range)
+                if (hero.Player.Health/hero.Player.MaxHealth*100 <=
+                    Menu.Item("a" + Name + "Pct").GetValue<Slider>().Value)
+                {
+                    if (hero.Attacker.IsFacing(hero.Player) &&
+                        hero.Attacker.NetworkId == highestadinrange.NetworkId)
                     {
-                        if (hero.Player.Health/hero.Player.MaxHealth*100 <=
-                            Menu.Item("a" + Name + "Pct").GetValue<Slider>().Value)
-                        {
-                            if (hero.Attacker.IsFacing(hero.Player) && hero.Attacker.NetworkId == highestadinrange.NetworkId)
-                            {
-                                UseSpellOn(hero.Attacker);
-                                RemoveSpell();
-                            }
-                        }
+                        UseSpellOn(hero.Attacker);
+                        RemoveSpell();
                     }
+                }
 
-                    else if (hero.Attacker.Health/hero.Attacker.MaxHealth*100 <=
-                             Menu.Item("e" + Name + "Pct").GetValue<Slider>().Value)
+                if (hero.Attacker.Health / hero.Attacker.MaxHealth * 100 <=
+                         Menu.Item("e" + Name + "Pct").GetValue<Slider>().Value)
+                {
+                    if (!hero.Attacker.IsFacing(hero.Player))
                     {
-                        if (!hero.Attacker.IsFacing(hero.Player))
-                        {
-                            UseSpellOn(hero.Attacker);
-                            RemoveSpell();
-                        }
+                        UseSpellOn(hero.Attacker);
+                        RemoveSpell();
                     }
                 }
             }

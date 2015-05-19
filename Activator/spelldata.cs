@@ -1050,26 +1050,16 @@ namespace Activator
                 HitType = new[] { global::Activator.HitType.Danger }
             });
 
-            spells.Add(new spelldata
-            {
-                SDataName = "luxmalicecannon",
-                MenuName = "Final Spark | R",
-                Wait = false,
-                WaitDelay = 0,
-                DangerLevel = 5,
-                HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate }
-            });
-
-            spells.Add(new spelldata
-            {
-                SDataName = "luxmalicecannonmis",
-                MenuName = "Final Spark | R",
-                Wait = false,
-                WaitDelay = 0,
-                DangerLevel = 5,
-                HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate }
-            });
-
+            //spells.Add(new spelldata
+            //{
+            //    SDataName = "luxmalicecannon",
+            //    MenuName = "Final Spark | R",
+            //    Wait = false,
+            //    Speed = int.MaxValue,
+            //    WaitDelay = 0,
+            //    DangerLevel = 5,
+            //    HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate }
+            //});
 
             spells.Add(new spelldata
             {
