@@ -32,7 +32,7 @@ namespace KurisuBlitz
            
             // Set spells      
             _q = new Spell(SpellSlot.Q, 1000f);
-            _q.SetSkillshot(0.25f, 70f, 1800f, true, SkillshotType.SkillshotLine);
+            _q.SetSkillshot(250f, 75f, 1800f, true, SkillshotType.SkillshotLine);
 
             _e = new Spell(SpellSlot.E, 150f);
             _r = new Spell(SpellSlot.R, 550f);
@@ -54,7 +54,11 @@ namespace KurisuBlitz
             menuD.AddItem(new MenuItem("drawT", "Draw Target")).SetValue(true);
             _menu.AddSubMenu(menuD);
 
-            var spellmenu = new Menu("Spells", "smenu");
+            var kkmenu = new Menu("Keybinds", "keybinds");
+            kkmenu.AddItem(new MenuItem("combokey", "Combo (active)")).SetValue(new KeyBind(32, KeyBindType.Press));
+            _menu.AddSubMenu(kkmenu);
+
+            var spellmenu = new Menu("SpellMenu", "smenu");
 
             var menuQ = new Menu("Q Menu", "qmenu");
             menuQ.AddItem(new MenuItem("usecomboq", "Use in Combo")).SetValue(true);
@@ -62,6 +66,10 @@ namespace KurisuBlitz
             menuQ.AddItem(new MenuItem("qimmobile", "Q on Immobile Enemies")).SetValue(true);
             menuQ.AddItem(new MenuItem("interruptq", "Use for Interrupt")).SetValue(true);
             menuQ.AddItem(new MenuItem("secureq", "Use for Killsteal")).SetValue(false);
+            menuQ.AddItem(new MenuItem("hitchanceq", "Q Hitchance 1-Low, 4-Very High")).SetValue(new Slider(3, 1, 4));
+            menuQ.AddItem(new MenuItem("dnd", "Mininum Distance to Q")).SetValue(new Slider(255, 0, (int)_q.Range));
+            menuQ.AddItem(new MenuItem("dnd2", "Maximum Distance to Q")).SetValue(new Slider((int)_q.Range, 0, (int)_q.Range));
+            menuQ.AddItem(new MenuItem("hnd", "Dont grab if below health %")).SetValue(new Slider(0));
             spellmenu.AddSubMenu(menuQ);
 
             var menuE = new Menu("E Menu", "emenu");
@@ -79,11 +87,7 @@ namespace KurisuBlitz
 
             _menu.AddSubMenu(spellmenu);
 
-            var menuM = new Menu("Misc", "bmisc");
-            menuM.AddItem(new MenuItem("hitchanceq", "Q Hitchance 1-Low, 4-Very High")).SetValue(new Slider(3, 1, 4));
-            menuM.AddItem(new MenuItem("dnd", "Mininum Distance to Q")).SetValue(new Slider(255, 0, (int)_q.Range));
-            menuM.AddItem(new MenuItem("dnd2", "Maximum Distance to Q")).SetValue(new Slider((int)_q.Range, 0, (int)_q.Range));
-            menuM.AddItem(new MenuItem("hnd", "Dont grab if below health %")).SetValue(new Slider(0));
+            var menuM = new Menu("Auto-Q", "bmisc");
             foreach (var obj in ObjectManager.Get<Obj_AI_Hero>().Where(obj => obj.Team != Me.Team))
             {
                 menuM.AddItem(new MenuItem("dograb" + obj.ChampionName, obj.ChampionName))
@@ -91,7 +95,6 @@ namespace KurisuBlitz
             }
 
             _menu.AddSubMenu(menuM);
-            _menu.AddItem(new MenuItem("combokey", "Combo (active)")).SetValue(new KeyBind(32, KeyBindType.Press));
 
             _menu.AddToMainMenu();
 
