@@ -354,7 +354,7 @@ namespace KurisuMorgana
 
         private static void AntiGapcloser_OnEnemyGapcloser(ActiveGapcloser gapcloser)
         {
-            if (gapcloser.Sender.IsValidTarget(_q.Range + 10))
+            if (gapcloser.Sender.IsValidTarget(300))
             {
                 if (_menu.Item("useqanti").GetValue<bool>())
                 {
