@@ -223,7 +223,7 @@ namespace KurisuMorgana
                 {
                     HeroName = "Caitlyn",
                     SpellMenuName = "90 Caliber Net",
-                    Slot = SpellSlot.Q,
+                    Slot = SpellSlot.E,
                     Type = Skilltype.Line,
                     SDataName = "CaitlynEntrapment",
                     DangerLevel = 3

@@ -37,27 +37,32 @@ namespace KurisuMorgana
 
             _menu = new Menu("KurisuMorgana", "morgana", true);
 
-            var orbmenu = new Menu("Morgana: Orbwalker", "orbwalker");
+            var orbmenu = new Menu("Orbwalker", "orbwalker");
             _orbwalker = new Orbwalking.Orbwalker(orbmenu);
             _menu.AddSubMenu(orbmenu);
 
-            var tsmenu = new Menu("Morgana: Selector", "selector");
+            var tsmenu = new Menu("Selector", "selector");
             TargetSelector.AddToMenu(tsmenu);
             _menu.AddSubMenu(tsmenu);
 
-            var drmenu = new Menu("Morgana: Drawings", "drawings");
+            var kkmenu = new Menu("Keybinds", "keybinds");
+            kkmenu.AddItem(new MenuItem("combokey", "Combo (active)")).SetValue(new KeyBind(32, KeyBindType.Press));
+            kkmenu.AddItem(new MenuItem("harasskey", "Harass (active)")).SetValue(new KeyBind('C', KeyBindType.Press));
+            _menu.AddSubMenu(kkmenu);
+
+            var drmenu = new Menu("Drawings", "drawings");
             drmenu.AddItem(new MenuItem("drawq", "Draw Q")).SetValue(true);
-            drmenu.AddItem(new MenuItem("draww", "Draw W")).SetValue(true);
+            drmenu.AddItem(new MenuItem("draww", "Draw W")).SetValue(false);
             drmenu.AddItem(new MenuItem("drawe", "Draw E")).SetValue(true);
-            drmenu.AddItem(new MenuItem("drawr", "Draw R")).SetValue(true);
+            drmenu.AddItem(new MenuItem("drawr", "Draw R")).SetValue(false);
             drmenu.AddItem(new MenuItem("drawkill", "Draw Killable")).SetValue(true);
             drmenu.AddItem(new MenuItem("drawtarg", "Draw Target Circle")).SetValue(true);
             drmenu.AddItem(new MenuItem("debugdmg", "Debug Combo Damage")).SetValue(false);
             _menu.AddSubMenu(drmenu);
 
-            var spellmenu = new Menu("Morgana: Spells", "spells");
+            var spellmenu = new Menu("SpellMenu", "spells");
 
-            var menuQ = new Menu("Q Menu", "qmenu");
+            var menuQ = new Menu("Dark Binding (Q)", "qmenu");
             menuQ.AddItem(new MenuItem("hitchanceq", "Binding Hitchance ")).SetValue(new Slider(3, 1, 4));
             menuQ.AddItem(new MenuItem("useqcombo", "Use in Combo")).SetValue(true);
             menuQ.AddItem(new MenuItem("useharassq", "Use in Harass")).SetValue(true);
@@ -66,7 +71,7 @@ namespace KurisuMorgana
             menuQ.AddItem(new MenuItem("useqdash", "Use on Dashing")).SetValue(true);
             spellmenu.AddSubMenu(menuQ);
 
-            var menuW = new Menu("W Menu", "wmenu");
+            var menuW = new Menu("Tormented Soil (W)", "wmenu");
             menuW.AddItem(new MenuItem("hitchancew", "Tormentsoil Hitchance ")).SetValue(new Slider(2, 1, 4));
             menuW.AddItem(new MenuItem("usewcombo", "Use in Combo")).SetValue(true);
             menuW.AddItem(new MenuItem("useharassw", "Use in Harass")).SetValue(true);       
@@ -75,7 +80,7 @@ namespace KurisuMorgana
             menuW.AddItem(new MenuItem("calcw", "Calculated Ticks")).SetValue(new Slider(6, 3, 10));
             spellmenu.AddSubMenu(menuW);
 
-            var menuE = new Menu("E Menu", "emenu");
+            var menuE = new Menu("BlackShield (E)", "emenu");
             menuE.AddItem(new MenuItem("eco", "Check Minion Collision")).SetValue(false);
             menuE.AddItem(new MenuItem("eco2", "Check Hero Collision")).SetValue(false);
 
@@ -107,7 +112,7 @@ namespace KurisuMorgana
 
             spellmenu.AddSubMenu(menuE);
 
-            var menuR = new Menu("R Menu", "rmenu");
+            var menuR = new Menu("Soul Shackles (R)", "rmenu");
             menuR.AddItem(new MenuItem("usercombo", "Enable")).SetValue(true);
             menuR.AddItem(new MenuItem("rkill", "Use in combo if killable")).SetValue(true);
             menuR.AddItem(new MenuItem("rcount", "Use in combo if enemies >= ")).SetValue(new Slider(3, 1, 5));
@@ -117,7 +122,7 @@ namespace KurisuMorgana
             spellmenu.AddItem(new MenuItem("harassmana", "Harass Mana %")).SetValue(new Slider(55, 0, 99));
             _menu.AddSubMenu(spellmenu);
 
-            var menuM = new Menu("Morgana: Misc", "morgmisc");
+            var menuM = new Menu("Auto-Q", "morgmisc");
             foreach (var obj in ObjectManager.Get<Obj_AI_Hero>().Where(obj => obj.Team != Me.Team))
             {
                 menuM.AddItem(new MenuItem("dobind" + obj.ChampionName, obj.ChampionName))
@@ -125,9 +130,6 @@ namespace KurisuMorgana
             }
 
             _menu.AddSubMenu(menuM);
-
-            _menu.AddItem(new MenuItem("combokey", "Combo (active)")).SetValue(new KeyBind(32, KeyBindType.Press));
-            _menu.AddItem(new MenuItem("harasskey", "Harass (active)")).SetValue(new KeyBind('C', KeyBindType.Press));
             _menu.AddToMainMenu();
 
             Game.PrintChat("<font color=\"#FF9900\"><b>KurisuMorgana:</b></font> Loaded");
@@ -263,8 +265,7 @@ namespace KurisuMorgana
                 {
                     if (_mr + _mq + _mw * ticks + _ma * 3 + _mi + _guise >= rtarget.Health)
                     {
-                        if (rtarget.Health > _mr + _ma * 3 + _mw * 3 &&
-                           !rtarget.IsZombie)
+                        if (rtarget.Health > _mr + _ma * 2 + _mw * 2 && !rtarget.IsZombie)
                         {
                             if (_e.IsReady()) _e.CastOnUnit(Me);
                             _r.Cast();
@@ -354,7 +355,7 @@ namespace KurisuMorgana
 
         private static void AntiGapcloser_OnEnemyGapcloser(ActiveGapcloser gapcloser)
         {
-            if (gapcloser.Sender.IsValidTarget(300))
+            if (gapcloser.Sender.IsValidTarget(200))
             {
                 if (_menu.Item("useqanti").GetValue<bool>())
                 {
