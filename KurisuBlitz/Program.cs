@@ -64,12 +64,12 @@ namespace KurisuBlitz
             menuQ.AddItem(new MenuItem("usecomboq", "Use in Combo")).SetValue(true);
             menuQ.AddItem(new MenuItem("qdashing", "Q on Dashing Enemies")).SetValue(true);
             menuQ.AddItem(new MenuItem("qimmobile", "Q on Immobile Enemies")).SetValue(true);
-            menuQ.AddItem(new MenuItem("interruptq", "Use for Interrupt")).SetValue(true);
-            menuQ.AddItem(new MenuItem("secureq", "Use for Killsteal")).SetValue(false);
             menuQ.AddItem(new MenuItem("hitchanceq", "Q Hitchance 1-Low, 4-Very High")).SetValue(new Slider(3, 1, 4));
-            menuQ.AddItem(new MenuItem("dnd", "Mininum Distance to Q")).SetValue(new Slider(255, 0, (int)_q.Range));
+            menuQ.AddItem(new MenuItem("dnd", "Mininum Distance to Q")).SetValue(new Slider((int) _r.Range, 0, (int)_q.Range));
             menuQ.AddItem(new MenuItem("dnd2", "Maximum Distance to Q")).SetValue(new Slider((int)_q.Range, 0, (int)_q.Range));
             menuQ.AddItem(new MenuItem("hnd", "Dont grab if below health %")).SetValue(new Slider(0));
+            menuQ.AddItem(new MenuItem("interruptq", "Use for Interrupt")).SetValue(true);
+            menuQ.AddItem(new MenuItem("secureq", "Use for Killsteal")).SetValue(false);
             spellmenu.AddSubMenu(menuQ);
 
             var menuE = new Menu("E Menu", "emenu");
@@ -180,11 +180,7 @@ namespace KurisuBlitz
         {
             if (_q.IsReady())
             {
-                var itarget =
-                    ObjectManager.Get<Obj_AI_Hero>()
-                        .FirstOrDefault(h => h.IsEnemy && h.Distance(Me.ServerPosition, true) <= _q.RangeSqr);
-
-                if (itarget.IsValidTarget(_q.Range))
+                foreach (var itarget in ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsValidTarget(_q.Range)))
                 {
                     if (dashing && _menu.Item("dograb" + itarget.ChampionName).GetValue<StringList>().SelectedIndex == 2)
                         if (itarget.Distance(Me.ServerPosition) > _menu.Item("dnd").GetValue<Slider>().Value)
@@ -198,15 +194,14 @@ namespace KurisuBlitz
 
             if (_r.IsReady())
             {
-                var rtarget =
-                    ObjectManager.Get<Obj_AI_Hero>()
-                    .FirstOrDefault(h => h.IsEnemy && h.Distance(Me.ServerPosition, true) <= _r.RangeSqr);
-
-                if (rtarget.IsValidTarget(_r.Range) && _menu.Item("usecombor").GetValue<bool>())
+                foreach (var rtarget in ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsValidTarget(_r.Range)))
                 {
-                    if (!_e.IsReady() && rtarget.HasBuffOfType(BuffType.Knockup))
-                        _r.Cast();
-                }            
+                    if (rtarget.IsValidTarget(_r.Range) && _menu.Item("usecombor").GetValue<bool>())
+                    {
+                        if (!_e.IsReady() && rtarget.HasBuffOfType(BuffType.Knockup))
+                            _r.Cast();
+                    }
+                }
             }
         }
 
