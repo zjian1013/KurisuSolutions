@@ -21,7 +21,7 @@ namespace Activator.Items.Consumables
         }
         internal override MenuType[] Category
         {
-            get { return new[] { MenuType.SelfLowHP, MenuType.SelfMuchHP }; }
+            get { return new[] { MenuType.SelfLowHP, MenuType.SelfLowMP, MenuType.SelfMuchHP }; }
         }
 
         internal override int DefaultHP
