@@ -80,7 +80,7 @@ namespace Activator
                         {
                             // important spelldata shit (hope sdata is accurate)
                             var delay = (int) (1000*(args.SData.CastFrame < 1 ? 1 : args.SData.CastFrame/30));
-                            var speed = args.SData.MissileSpeed < 1000 ? args.SData.MissileSpeed * 100 : args.SData.MissileSpeed;
+                            var speed = args.SData.MissileSpeed < 100 ? 90000 : args.SData.MissileSpeed;
                             var distance = (int) (1000*(sender.Distance(hero.Player.ServerPosition)/speed));
                             var endtime = delay - 100 + Game.Ping/2 + distance - (Environment.TickCount - start);
 
@@ -200,7 +200,7 @@ namespace Activator
 
                                 // important spelldata shit (hope sdata is accurate)
                                 var delay = (int)(1000 * (args.SData.CastFrame / 30));
-                                var speed = args.SData.MissileSpeed < 100 ? 10000 : args.SData.MissileSpeed;
+                                var speed = args.SData.MissileSpeed < 100 ? 90000 : args.SData.MissileSpeed;
                                 var distance = (int)(1000 * (sender.Distance(hero.Player.ServerPosition) / speed));
                                 var endtime = delay - 100 + Game.Ping / 2 + distance - (Environment.TickCount - start);
 
