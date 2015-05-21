@@ -35,7 +35,6 @@ namespace Activator.Summoners
 
             foreach (var hero in champion.Heroes)
             {
-
                 if (hero.Player.Distance(Player.ServerPosition) > Range)
                     return;
 

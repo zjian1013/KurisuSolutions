@@ -131,19 +131,19 @@ namespace Activator.Items
             if (Category.Any(t => t == MenuType.Zhonyas))
             {
                 Menu.AddItem(new MenuItem("use" + Name + "Norm", "Use on Dangerous (Spells)")).SetValue(false);
-                Menu.AddItem(new MenuItem("use" + Name + "Ulti", "Use On Dangerous (Ultimates Only)")).SetValue(true);
+                Menu.AddItem(new MenuItem("use" + Name + "Ulti", "Use on Dangerous (Ultimates Only)")).SetValue(true);
             }
 
             if (Category.Any(t => t == MenuType.Cleanse))
             {
                 Menu.AddItem(new MenuItem("use" + Name + "Number", "Minimum Spells to Use")).SetValue(new Slider(DefaultHP/5, 1, 5));
                 Menu.AddItem(new MenuItem("use" + Name + "Time", "Minumum Durration to Use")).SetValue(new Slider(2, 1, 5)); ;
-                Menu.AddItem(new MenuItem("use" + Name + "Od", "Use Only on Hero Debuffs")).SetValue(false);
+                Menu.AddItem(new MenuItem("use" + Name + "Od", "Use only on Dangerous")).SetValue(false);
             }
 
             if (Category.Any(t => t == MenuType.ActiveCheck))
                 Menu.AddItem(new MenuItem("mode" + Name, "Mode: "))
-                    .SetValue(new StringList(new[] { "Always", "Combo" }));
+                    .SetValue(new StringList(new[] { "Always", "Combo" }, Id == 3222 ? 0 : 1));
 
             root.AddSubMenu(Menu);
             return this;

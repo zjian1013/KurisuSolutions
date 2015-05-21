@@ -17,64 +17,67 @@ namespace Activator
         {
             foreach (var hero in champion.Heroes)
             {
-                if (hero.Player.NetworkId != sender.NetworkId)
+                if (hero.Player.NetworkId == sender.NetworkId)
+                {
+                    if (args.Buff.Name == "RegenerationPotion")
+                        hero.UsingHealthPot = true;
+
+                    if (args.Buff.Name == "FlaskOfCrystalWater")
+                        hero.UsingManaPot = true;
+
+
+                    if (args.Buff.Name == "ItemCrystalFlask" ||
+                        args.Buff.Name == "ItemMiniRegenPotion")
+                    {
+                        hero.UsingMixedPot = true;
+                    }
+
+                    foreach (var buff in spelldebuff.debuffs)
+                    {
+                        if (buff.Name != args.Buff.Name.ToLower())
+                            continue;
+
+                        if (buff.Evade)
+                        {
+                            Utility.DelayAction.Add(buff.EvadeTimer, delegate
+                            {
+                                hero.IncomeDamage = 1;
+                                hero.HitTypes.Add(HitType.Ultimate);
+                            });
+                        }
+
+                        if (buff.Cleanse)
+                        {
+                            Utility.DelayAction.Add(buff.CleanseTimer, delegate
+                            {
+                                hero.IncomeDamage = 1;
+                                hero.ForceQSS = true;
+                            });
+                        }
+                    }
+
+                    if (args.Buff.Type == BuffType.Snare && Activator.Origin.Item("csnare").GetValue<bool>() ||
+                        args.Buff.Type == BuffType.Charm && Activator.Origin.Item("ccharm").GetValue<bool>() ||
+                        args.Buff.Type == BuffType.Taunt && Activator.Origin.Item("ctaunt").GetValue<bool>() ||
+                        args.Buff.Type == BuffType.Stun && Activator.Origin.Item("cstun").GetValue<bool>() ||
+                        args.Buff.Type == BuffType.Fear && Activator.Origin.Item("cfear").GetValue<bool>() ||
+                        args.Buff.Type == BuffType.Flee && Activator.Origin.Item("cflee").GetValue<bool>() ||
+                        args.Buff.Type == BuffType.Polymorph && Activator.Origin.Item("cpolymorph").GetValue<bool>() ||
+                        args.Buff.Type == BuffType.Blind && Activator.Origin.Item("cblind").GetValue<bool>() ||
+                        args.Buff.Type == BuffType.Suppression && Activator.Origin.Item("csupp").GetValue<bool>() ||
+                        args.Buff.Type == BuffType.Poison && Activator.Origin.Item("cpoison").GetValue<bool>() ||
+                        args.Buff.Type == BuffType.Slow && Activator.Origin.Item("cslow").GetValue<bool>() ||
+                        args.Buff.Name == "summonerexhaust" && Activator.Origin.Item("cexhaust").GetValue<bool>())
+                    {
+                        hero.QSSBuffCount = hero.QSSBuffCount + 1;
+
+                        if (args.Buff.EndTime - args.Buff.StartTime > hero.QSSHighestBuffTime)
+                            hero.QSSHighestBuffTime = (int) (Math.Ceiling(args.Buff.EndTime - args.Buff.StartTime));
+                    }
+                }
+                else
+                {
                     return;
-
-                if (args.Buff.Name == "RegenerationPotion")
-                    hero.UsingHealthPot = true;
-
-                if (args.Buff.Name == "FlaskOfCrystalWater")
-                    hero.UsingManaPot = true;
-
-
-                if (args.Buff.Name == "ItemCrystalFlask" ||
-                    args.Buff.Name == "ItemMiniRegenPotion")
-                {
-                    hero.UsingMixedPot = true;
-                }
-                
-
-                foreach (var buff in spelldebuff.debuffs)
-                {
-                    if (buff.Name != args.Buff.Name.ToLower()) 
-                        continue;
-
-                    if (buff.Evade)
-                    {
-                        Utility.DelayAction.Add(buff.EvadeTimer, delegate
-                        {
-                            hero.IncomeDamage = 1;
-                            hero.HitTypes.Add(HitType.Ultimate);
-                        });
-                    }
-
-                    if (buff.Cleanse)
-                    {
-                        Utility.DelayAction.Add(buff.CleanseTimer, delegate
-                        {
-                            hero.IncomeDamage = 1;
-                            hero.ForceQSS = true;
-                        });
-                    }
-                }
-
-                if (args.Buff.Type == BuffType.Snare && Activator.Origin.Item("csnare").GetValue<bool>() ||
-                    args.Buff.Type == BuffType.Charm && Activator.Origin.Item("ccharm").GetValue<bool>() ||
-                    args.Buff.Type == BuffType.Taunt && Activator.Origin.Item("ctaunt").GetValue<bool>() ||
-                    args.Buff.Type == BuffType.Stun && Activator.Origin.Item("cstun").GetValue<bool>() ||
-                    args.Buff.Type == BuffType.Fear && Activator.Origin.Item("cfear").GetValue<bool>() ||
-                    args.Buff.Type == BuffType.Flee && Activator.Origin.Item("cflee").GetValue<bool>() ||
-                    args.Buff.Type == BuffType.Polymorph && Activator.Origin.Item("cpolymorph").GetValue<bool>() ||
-                    args.Buff.Type == BuffType.Blind && Activator.Origin.Item("cblind").GetValue<bool>() ||
-                    args.Buff.Type == BuffType.Suppression && Activator.Origin.Item("csupp").GetValue<bool>() ||
-                    args.Buff.Type == BuffType.Poison && Activator.Origin.Item("cpoison").GetValue<bool>() ||
-                    args.Buff.Type == BuffType.Slow && Activator.Origin.Item("cslow").GetValue<bool>() ||
-                    args.Buff.Name == "summonerexhaust" && Activator.Origin.Item("cexhaust").GetValue<bool>())
-                {
-                    hero.QSSBuffCount = hero.QSSBuffCount + 1;
-
-                    if (args.Buff.EndTime - args.Buff.StartTime > hero.QSSHighestBuffTime)
-                        hero.QSSHighestBuffTime = (int)(Math.Ceiling(args.Buff.EndTime - args.Buff.StartTime));
                 }
             }
         }
@@ -97,7 +100,7 @@ namespace Activator
                         hero.UsingMixedPot = false;
                     }
  
-                    if (hero.QSSBuffCount == 0)
+                    if (hero.QSSBuffCount <= 1)
                         hero.QSSHighestBuffTime = 0;
 
                     foreach (var buff in spelldebuff.debuffs)

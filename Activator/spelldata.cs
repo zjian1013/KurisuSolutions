@@ -21,10 +21,15 @@ namespace Activator
         public static List<summoner> summoners = new List<summoner>();
         public static List<spelldata> spells = new List<spelldata>();
         public static List<gametroydata> troydata = new List<gametroydata>(); 
-        public static Dictionary<SpellDamageDelegate, SpellSlot> combodelagate = new Dictionary<SpellDamageDelegate, SpellSlot>();
+        public static Dictionary<SpellDamageDelegate, SpellSlot> combod = new Dictionary<SpellDamageDelegate, SpellSlot>();
+
+
+
 
         static spelldata()
         {
+            #region Aatrox
+
             spells.Add(new spelldata
             {
                 SDataName = "aatroxq",
@@ -32,7 +37,7 @@ namespace Activator
                 Wait = false,
                 WaitDelay = 0,
                 DangerLevel = 3,
-                HitType = new []{ global::Activator.HitType.CrowdControl, global::Activator.HitType.Danger }
+                HitType = new[] {global::Activator.HitType.CrowdControl, global::Activator.HitType.Danger}
             });
 
             spells.Add(new spelldata
@@ -42,7 +47,21 @@ namespace Activator
                 Wait = false,
                 WaitDelay = 0,
                 DangerLevel = 2,
-                HitType = new[] { global::Activator.HitType.CrowdControl, global::Activator.HitType.Danger }
+                HitType = new[] {global::Activator.HitType.CrowdControl, global::Activator.HitType.Danger}
+            });
+
+            #endregion
+
+            #region Ahri
+
+            spells.Add(new spelldata
+            {
+                SDataName = "ahriorbofdeception",
+                MenuName = "",
+                Wait = false,
+                WaitDelay = 0,
+                DangerLevel = 3,
+                HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.CrowdControl }
             });
 
             spells.Add(new spelldata
@@ -52,8 +71,10 @@ namespace Activator
                 Wait = false,
                 WaitDelay = 0,
                 DangerLevel = 4,
-                HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.CrowdControl }
+                HitType = new[] {global::Activator.HitType.Danger, global::Activator.HitType.CrowdControl}
             });
+
+            #endregion
 
             spells.Add(new spelldata
             {

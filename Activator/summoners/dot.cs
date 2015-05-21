@@ -57,7 +57,7 @@ namespace Activator.Summoners
                     var totaldmg = 0d;
                     totaldmg += Player.GetAutoAttackDamage(target, true) * 5;
 
-                    foreach (var entry in spelldata.combodelagate)
+                    foreach (var entry in spelldata.combod)
                     {
                         var spellLevel = Player.GetSpell(entry.Value).Level;
 

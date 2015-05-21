@@ -38,7 +38,7 @@ namespace Activator
         private static void GameObject_OnDelete(GameObject obj, EventArgs args)
         {
             foreach (var hero in champion.Heroes)
-            {   
+            {
                 // if no troys dont itterate
                 if (!Activator.TroysInGame)
                     return;
@@ -65,7 +65,7 @@ namespace Activator
         private static void Game_OnUpdate(EventArgs args)
         {
             foreach (var hero in champion.Heroes)
-            {  
+            {
                 // if no troys dont tick
                 if (!Activator.TroysInGame)
                     return;
@@ -84,20 +84,20 @@ namespace Activator
                         // detect danger/cc/ultimates from our db
                         foreach (var item in spelldata.troydata)
                         {
-                            if (troy.Name == item.Name)
-                            {                                      
-                                // spell is important or lethal!
-                                if (item.HitType.Any(x => x == HitType.Ultimate))
-                                    hero.HitTypes.Add(HitType.Ultimate);
+                            if (troy.Name != item.Name)
+                                continue;
 
-                                // spell is important but not as fatal
-                                if (item.HitType.Any(x => x == HitType.Danger))
-                                    hero.HitTypes.Add(HitType.Danger);
+                            // spell is important or lethal!
+                            if (item.HitType.Contains(HitType.Ultimate))
+                                hero.HitTypes.Add(HitType.Ultimate);
 
-                                // spell has a crowd control effect
-                                if (item.HitType.Any(x => x == HitType.CrowdControl))
-                                    hero.HitTypes.Add(HitType.CrowdControl);
-                            }
+                            // spell is important but not as fatal
+                            if (item.HitType.Contains(HitType.Danger))
+                                hero.HitTypes.Add(HitType.Danger);
+
+                            // spell has a crowd control effect
+                            if (item.HitType.Contains(HitType.CrowdControl))
+                                hero.HitTypes.Add(HitType.CrowdControl);
                         }
                     }
                 }

@@ -77,20 +77,22 @@ namespace Activator
             Origin.AddSubMenu(imenu);
 
             var amenu = new Menu("Auto Spells", "amenu");
-            GetItemGroup("Spells.Heals").ForEach(t => NewSpell((spell)NewInstance(t), amenu));
             GetItemGroup("Spells.Evaders").ForEach(t => NewSpell((spell)NewInstance(t), amenu));
-            GetItemGroup("Spells.Health").ForEach(t => NewSpell((spell)NewInstance(t), amenu));
             GetItemGroup("Spells.Shields").ForEach(t => NewSpell((spell)NewInstance(t), amenu));
+            GetItemGroup("Spells.Health").ForEach(t => NewSpell((spell)NewInstance(t), amenu));
             GetItemGroup("Spells.Slows").ForEach(t => NewSpell((spell)NewInstance(t), amenu));
+            GetItemGroup("Spells.Heals").ForEach(t => NewSpell((spell)NewInstance(t), amenu));
             Origin.AddSubMenu(amenu);
 
             var zmenu = new Menu("Misc/Settings", "settings");
 
-            var ddmenu = new Menu("Drawings", "drawings");
-            //ddmenu.AddItem(new MenuItem("drawfill", "Draw Smite Fill (Soon)")).SetValue(true);
-            //ddmenu.AddItem(new MenuItem("drawsmite", "Draw Smite Range (Soon)")).SetValue(true);
-            //ddmenu.AddItem(new MenuItem("drawtext", "Draw Smite Status (Soon)")).SetValue(true);
-            zmenu.AddSubMenu(ddmenu);
+            if (SmiteInGame)
+            {
+                var ddmenu = new Menu("Drawings", "drawings");
+                ddmenu.AddItem(new MenuItem("drawfill", "Draw Smite Fill")).SetValue(true);
+                ddmenu.AddItem(new MenuItem("drawsmite", "Draw Smite Range")).SetValue(true);
+                zmenu.AddSubMenu(ddmenu);
+            }
 
             zmenu.AddItem(new MenuItem("evadeon", "Evade Integration")).SetValue(false);
             zmenu.AddItem(new MenuItem("usecombo", "Combo Key")).SetValue(new KeyBind(32, KeyBindType.Press, true));
@@ -162,8 +164,8 @@ namespace Activator
                     {
                         // spell.Damage (the damage algorithm)
                         // get and save the damage delegate for later use
-                        spelldata.combodelagate.Add(spell.Damage, spell.Slot);
-                        Console.WriteLine(Player.ChampionName + ": " + spell.Slot + " - wrapper added!");
+                        spelldata.combod.Add(spell.Damage, spell.Slot);
+                        Console.WriteLine(Player.ChampionName + ": " + spell.Slot + " " + spell.Stage + " - dmg added!");
                     }
                 }
             }
