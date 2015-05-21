@@ -46,7 +46,7 @@ namespace Activator.Items.Consumables
                     if (hero.UsingMixedPot)
                         return;
 
-                    if (hero.Player.IsRecalling() || Player.InFountain())
+                    if (hero.Player.IsRecalling() || hero.Player.InFountain())
                         return;
 
                     if (hero.Player.Health / hero.Player.MaxHealth*100 <= Menu.Item("SelfLowHP" + Name + "Pct").GetValue<Slider>().Value)
@@ -57,16 +57,16 @@ namespace Activator.Items.Consumables
                             RemoveItem();
                         }
                     }
+
+                    if (hero.Player.MaxMana <= 100)
+                        return;
+
+                    if (hero.Player.Mana / hero.Player.MaxMana * 100 <= Menu.Item("SelfLowMP" + Name + "Pct").GetValue<Slider>().Value)
+                    {
+                        UseItem();
+                        RemoveItem();
+                    }
                 }
-            }
-
-            if (Player.MaxMana <= 100)
-                return;
-
-            if (Player.Mana / Player.MaxMana * 100 <= Menu.Item("SelfLowMP" + Name + "Pct").GetValue<Slider>().Value)
-            {
-                UseItem();
-                RemoveItem();
             }
         }
     }

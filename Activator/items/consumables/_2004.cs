@@ -50,10 +50,10 @@ namespace Activator.Items.Consumables
                     if (hero.UsingManaPot)
                         return;
 
-                    if (Player.IsRecalling() || Player.InFountain())
+                    if (hero.Player.IsRecalling() || hero.Player.InFountain())
                         return;
 
-                    if (Player.Mana/Player.MaxMana*100 <= Menu.Item("SelfLowMP" + Name + "Pct").GetValue<Slider>().Value)
+                    if (hero.Player.Mana/hero.Player.MaxMana*100 <= Menu.Item("SelfLowMP" + Name + "Pct").GetValue<Slider>().Value)
                     {
                         UseItem();
                         RemoveItem();
