@@ -59,6 +59,7 @@ namespace Activator.Items.Cleansers
                     {
                         UseItem();
                         RemoveItem(true);
+                        hero.IncomeDamage = 0;
                     }
 
                     if (hero.QSSBuffCount >= Menu.Item("use" + Name + "Number").GetValue<Slider>().Value &&
@@ -74,6 +75,7 @@ namespace Activator.Items.Cleansers
                                     hero.QSSBuffCount = 0;
                                     hero.QSSHighestBuffTime = 0;
                                     RemoveItem(true);
+                                    hero.IncomeDamage = 0;
                                 }
                             });
                         }
