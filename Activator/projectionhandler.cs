@@ -49,11 +49,8 @@ namespace Activator
                         });
                     }
 
-                    foreach (var data in spelldata.spells)
+                    foreach (var data in spelldata.spells.Where(x => x.SDataName == args.SData.Name.ToLower()))
                     {
-                        if (data.SDataName != args.SData.Name.ToLower())
-                            return;
-
                         // self/selfaoe spell detection
                         if (args.SData.TargettingType == SpellDataTargetType.Self ||
                             args.SData.TargettingType == SpellDataTargetType.SelfAoe)
