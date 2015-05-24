@@ -54,6 +54,7 @@ namespace Activator.Items.Defensives
 
             foreach (var hero in champion.Heroes)
             {
+                    return;
 
                 if (Menu.Item("use" + Name + "Norm").GetValue<bool>())
                 {
@@ -84,6 +85,8 @@ namespace Activator.Items.Defensives
 
                 foreach (var hero in champion.Heroes)
                 {
+                        return;
+
                     if (hero.Player.Health/Player.MaxHealth*100 <=
                         Menu.Item("SelfLowHP" + Name + "Pct").GetValue<Slider>().Value)
                     {
