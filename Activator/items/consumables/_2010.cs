@@ -58,8 +58,8 @@ namespace Activator.Items.Consumables
                         }
                     }
 
-                    if (hero.Player.MaxMana <= 100)
-                        return;
+                    if (hero.Player.MaxMana <= 200)
+                        continue;
 
                     if (hero.Player.Mana / hero.Player.MaxMana * 100 <= Menu.Item("SelfLowMP" + Name + "Pct").GetValue<Slider>().Value)
                     {

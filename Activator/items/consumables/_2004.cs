@@ -44,8 +44,8 @@ namespace Activator.Items.Consumables
             {
                 if (hero.Player.NetworkId == Player.NetworkId)
                 {
-                    if (hero.Player.MaxMana <= 100)
-                        return;
+                    if (hero.Player.MaxMana <= 200)
+                        continue;
 
                     if (hero.UsingManaPot)
                         return;
