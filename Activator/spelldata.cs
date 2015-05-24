@@ -4164,8 +4164,8 @@ namespace Activator
                 SDataName = "sivirq",
                 ChampionName = "sivir",
                 Slot = SpellSlot.Q,
-                CastRange = 1165f,
-                Delay = 500f,
+                CastRange = 1250f,
+                Delay = 250f,
                 MissileSpeed = 1350
             });
 
