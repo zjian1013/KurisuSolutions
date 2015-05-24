@@ -54,6 +54,7 @@ namespace Activator.Items.Defensives
 
             foreach (var hero in champion.Heroes)
             {
+                if (hero.Player.Distance(Player.ServerPosition) > Range)
                     return;
 
                 if (Menu.Item("use" + Name + "Norm").GetValue<bool>())
@@ -85,6 +86,7 @@ namespace Activator.Items.Defensives
 
                 foreach (var hero in champion.Heroes)
                 {
+                    if (hero.Player.Distance(Player.ServerPosition) > Range)
                         return;
 
                     if (hero.Player.Health/Player.MaxHealth*100 <=

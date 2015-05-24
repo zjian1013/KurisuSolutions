@@ -25,22 +25,22 @@ namespace Activator
                     // auto attack dectection
                     if (args.SData.IsAutoAttack())
                     {
-                        var woop = (int)(hero.Player.Distance(sender.ServerPosition) /
+                        var woop = (int) (hero.Player.Distance(sender.ServerPosition)/
                                           sender.BasicAttack.MissileSpeed);
 
-                        var endtime = (int)(sender.AttackCastDelay * 1000) - 100 + Game.Ping / 2 +
-                                      1000 * woop;
+                        var endtime = (int) (sender.AttackCastDelay*1000) - 100 + Game.Ping/2 +
+                                      1000*woop;
 
                         // delay a little bit before missile endtime
-                        Utility.DelayAction.Add((int)(endtime - (endtime * 0.5)), delegate
+                        Utility.DelayAction.Add((int) (endtime - (endtime*0.5)), delegate
                         {
                             hero.Attacker = sender;
                             hero.HitTypes.Add(HitType.AutoAttack);
                             hero.IncomeDamage +=
-                                (float)Math.Abs(sender.GetAutoAttackDamage(hero.Player, true));
+                                (float) Math.Abs(sender.GetAutoAttackDamage(hero.Player, true));
 
                             // lazy reset
-                            Utility.DelayAction.Add((endtime * 2), delegate
+                            Utility.DelayAction.Add((endtime*2), delegate
                             {
                                 hero.Attacker = null;
                                 hero.IncomeDamage = 0;
@@ -91,7 +91,7 @@ namespace Activator
                                     }
 
                                     // lazy safe reset
-                                    Utility.DelayAction.Add((int)(data.Delay*2), delegate
+                                    Utility.DelayAction.Add((int) (data.Delay*2), delegate
                                     {
                                         hero.Attacker = null;
                                         hero.IncomeDamage = 0;
@@ -109,15 +109,18 @@ namespace Activator
                             if (hero.Player.Distance(sender.ServerPosition) <= data.CastRange)
                             {
                                 // important spelldata shit (hope sdata is accurate)
-                                var distance = (int) (1000*(sender.Distance(hero.Player.ServerPosition)/data.MissileSpeed));
-                                var endtime = data.Delay - 100 + Game.Ping/2 + distance - (Environment.TickCount - start);
+                                var distance =
+                                    (int) (1000*(sender.Distance(hero.Player.ServerPosition)/data.MissileSpeed));
+                                var endtime = data.Delay - 100 + Game.Ping/2 + distance -
+                                              (Environment.TickCount - start);
 
                                 // get the real end position normalized
                                 var direction = (args.End.To2D() - sender.ServerPosition.To2D()).Normalized();
                                 var endpos = sender.ServerPosition.To2D() + direction*data.CastRange;
 
                                 // setup projection
-                                var proj = hero.Player.ServerPosition.To2D().ProjectOn(sender.ServerPosition.To2D(), endpos);
+                                var proj = hero.Player.ServerPosition.To2D()
+                                    .ProjectOn(sender.ServerPosition.To2D(), endpos);
                                 var projdist = hero.Player.ServerPosition.To2D().Distance(proj.SegmentPoint);
 
                                 // get the evade time 
@@ -172,7 +175,7 @@ namespace Activator
                                         }
 
                                         // lazy safe reset
-                                        Utility.DelayAction.Add((int)(endtime*2), delegate
+                                        Utility.DelayAction.Add((int) (endtime*2), delegate
                                         {
                                             hero.Attacker = null;
                                             hero.IncomeDamage = 0;
@@ -188,13 +191,15 @@ namespace Activator
                         {
                             // check if is targeteting the hero on our table
                             if (hero.Player.NetworkId == args.Target.NetworkId)
-                            {                              
+                            {
                                 // target spell dectection
                                 if (hero.Player.Distance(sender.ServerPosition) <= data.CastRange)
                                 {
                                     // important spelldata shit (hope sdata is accurate)
-                                    var distance = (int) (1000*(sender.Distance(hero.Player.ServerPosition)/data.MissileSpeed));
-                                    var endtime = data.Delay - 100 + Game.Ping/2 + distance - (Environment.TickCount - start);
+                                    var distance =
+                                        (int) (1000*(sender.Distance(hero.Player.ServerPosition)/data.MissileSpeed));
+                                    var endtime = data.Delay - 100 + Game.Ping/2 + distance -
+                                                  (Environment.TickCount - start);
 
                                     Utility.DelayAction.Add((int) (endtime - (endtime*0.5)), delegate
                                     {
@@ -226,7 +231,7 @@ namespace Activator
                                             });
 
                                             // lazy reset
-                                            Utility.DelayAction.Add((int)(endtime*2), delegate
+                                            Utility.DelayAction.Add((int) (endtime*2), delegate
                                             {
                                                 hero.Attacker = null;
                                                 hero.IncomeDamage = 0;
@@ -239,51 +244,23 @@ namespace Activator
                         }
                     }
                 }
+            }
 
-                if (sender.IsEnemy && sender.Type == GameObjectType.obj_AI_Turret)
+            if (sender.IsEnemy && sender.Type == GameObjectType.obj_AI_Turret)
+            {
+                foreach (var hero in champion.Heroes)
                 {
-                    foreach (var hero in champion.Heroes)
+                    if (args.Target.NetworkId == hero.Player.NetworkId)
                     {
-                        if (args.Target.NetworkId == hero.Player.NetworkId)
+                        if (sender.Distance(hero.Player.ServerPosition) <= 900 &&
+                            Activator.Player.Distance(hero.Player.ServerPosition) <= 1000)
                         {
-                            if (sender.Distance(hero.Player.ServerPosition) <= 900 &&
-                                Activator.Player.Distance(hero.Player.ServerPosition) <= 1000)
+                            Utility.DelayAction.Add(500, delegate
                             {
-                                Utility.DelayAction.Add(500, delegate
-                                {
-                                    hero.HitTypes.Add(HitType.TurretAttack);
-                                    hero.IncomeDamage =
-                                        (float) sender.CalcDamage(hero.Player, Damage.DamageType.Physical,
-                                            sender.BaseAttackDamage + sender.FlatPhysicalDamageMod);
-
-                                    // lazy reset
-                                    Utility.DelayAction.Add(1000, delegate
-                                    {
-                                        hero.Attacker = null;
-                                        hero.IncomeDamage = 0;
-                                        hero.HitTypes.Clear();
-                                    });
-                                });
-                            }
-                        }
-                    }
-                }
-
-                if (sender.IsEnemy && sender.Type == GameObjectType.obj_AI_Minion)
-                {
-                    foreach (var hero in champion.Heroes)
-                    {
-                        if (hero.Player.NetworkId == args.Target.NetworkId)
-                        {
-                            if (hero.Player.Distance(sender.ServerPosition) <= 750 &&
-                                Activator.Player.Distance(hero.Player.ServerPosition) <= 1000)
-                            {
-                                hero.Attacker = sender;
-                                hero.HitTypes.Add(HitType.MinionAttack);
+                                hero.HitTypes.Add(HitType.TurretAttack);
                                 hero.IncomeDamage =
-                                    (float)
-                                        sender.CalcDamage(hero.Player, Damage.DamageType.Physical,
-                                            sender.BaseAttackDamage + sender.FlatPhysicalDamageMod);
+                                    (float) Math.Abs(sender.CalcDamage(hero.Player, Damage.DamageType.Physical,
+                                        sender.BaseAttackDamage + sender.FlatPhysicalDamageMod));
 
                                 // lazy reset
                                 Utility.DelayAction.Add(1000, delegate
@@ -292,7 +269,35 @@ namespace Activator
                                     hero.IncomeDamage = 0;
                                     hero.HitTypes.Clear();
                                 });
-                            }
+                            });
+                        }
+                    }
+                }
+            }
+
+            if (sender.IsEnemy && sender.Type == GameObjectType.obj_AI_Minion)
+            {
+                foreach (var hero in champion.Heroes)
+                {
+                    if (hero.Player.NetworkId == args.Target.NetworkId)
+                    {
+                        if (hero.Player.Distance(sender.ServerPosition) <= 750 &&
+                            Activator.Player.Distance(hero.Player.ServerPosition) <= 1000)
+                        {
+                            hero.Attacker = sender;
+                            hero.HitTypes.Add(HitType.MinionAttack);
+                            hero.IncomeDamage =
+                                (float)
+                                    Math.Abs(sender.CalcDamage(hero.Player, Damage.DamageType.Physical,
+                                        sender.BaseAttackDamage + sender.FlatPhysicalDamageMod));
+
+                            // lazy reset
+                            Utility.DelayAction.Add(1000, delegate
+                            {
+                                hero.Attacker = null;
+                                hero.IncomeDamage = 0;
+                                hero.HitTypes.Clear();
+                            });
                         }
                     }
                 }
