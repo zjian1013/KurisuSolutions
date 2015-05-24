@@ -36,6 +36,9 @@ namespace Activator.Summoners
                 if (hero.Player.IsRecalling() || hero.Player.InFountain())
                     return;
 
+                if (hero.Player.MaxMana <= 200)
+                    return;
+
                 if (hero.Player.Distance(Player.ServerPosition) <= Range)
                 {
                     if (hero.Player.Mana/hero.Player.MaxMana*100 <= Menu.Item("SelfLowMP" + Name + "Pct").GetValue<Slider>().Value)
