@@ -1988,9 +1988,10 @@ namespace Activator
                 ChampionName = "jinx",
                 Slot = SpellSlot.R,
                 CastRange = 25000f,
-                Delay = 0f,
-                HitType = new HitType[] { },
+                Delay = 500f,
                 MissileName = "jinxr",
+                ExtraMissileNames = new [] {"jinxrwrapper"},
+                HitType = new [] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate },
                 MissileSpeed = int.MaxValue
             });
 
@@ -2000,7 +2001,7 @@ namespace Activator
                 ChampionName = "jinx",
                 Slot = SpellSlot.R,
                 CastRange = 25000f,
-                Delay = 0f,
+                Delay = 600f,
                 HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate },
                 MissileSpeed = int.MaxValue
             });
