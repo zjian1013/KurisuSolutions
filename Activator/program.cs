@@ -95,7 +95,7 @@ namespace Activator
             }
 
             zmenu.AddItem(new MenuItem("evadeon", "Evade Integration")).SetValue(false);
-            zmenu.AddItem(new MenuItem("evadefow", "Evade FoW Integration")).SetValue(false);
+            zmenu.AddItem(new MenuItem("evadefow", "Evade Integration (FoW)")).SetValue(false);
             zmenu.AddItem(new MenuItem("usecombo", "Combo Key")).SetValue(new KeyBind(32, KeyBindType.Press, true));
             Origin.AddSubMenu(zmenu);       
 

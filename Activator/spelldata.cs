@@ -1124,7 +1124,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 1200f,
                 Delay = 250f,
-                HitType = new HitType[] { },
+                HitType = new HitType[] { global::Activator.HitType.CrowdControl },
                 MissileName = "ezrealmysticshotmissile",
                 MissileSpeed = 2000
             });
@@ -1165,12 +1165,13 @@ namespace Activator
 
             spells.Add(new spelldata
             {
-                SDataName = "ezrealtruehotbarrage",
+                SDataName = "ezrealtrueshotbarrage",
                 ChampionName = "ezreal",
                 Slot = SpellSlot.R,
                 CastRange = 20000f,
                 Delay = 1000f,
                 HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate },
+                MissileName = "ezrealtrueshotbarrage",
                 MissileSpeed = 2000
             });
 
