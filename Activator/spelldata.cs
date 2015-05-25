@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
-using Activator.Items;
+﻿using Activator.Items;
 using Activator.Spells;
 using Activator.Summoners;
 using LeagueSharp;
 using LeagueSharp.Common;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Activator
 {
@@ -14,6 +15,8 @@ namespace Activator
         public SpellSlot Slot { get; set; }
         public float CastRange { get; set; }
         public float Delay { get; set; }
+        public string MissileName { get; set; }
+        public string[] ExtraMissileNames { get; set; }
         public int MissileSpeed { get; set; }
         public HitType[] HitType { get; set; }
 
@@ -34,6 +37,7 @@ namespace Activator
                 CastRange = 650f,
                 Delay = 500f,
                 HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.CrowdControl },
+                MissileName = "",
                 MissileSpeed = 2000
             });
 
@@ -44,6 +48,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 0f,
                 Delay = 0f,
+                HitType = new HitType[] { },
                 MissileSpeed = 0
             });
 
@@ -54,6 +59,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 0f,
                 Delay = 0f,
+                HitType = new HitType[] { },
                 MissileSpeed = 0
             });
 
@@ -65,6 +71,7 @@ namespace Activator
                 CastRange = 1075f,
                 Delay = 250f,
                 HitType = new[] { global::Activator.HitType.CrowdControl },
+                MissileName = "aatroxeconemissile",
                 MissileSpeed = 1250
             });
 
@@ -75,6 +82,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 550f,
                 Delay = 0f,
+                HitType = new HitType[] { },
                 MissileSpeed = 0
             });
 
@@ -85,6 +93,8 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 100f,
                 Delay = 250f,
+                HitType = new HitType[] { },
+                MissileName = "ahriorbmissile",
                 MissileSpeed = 1450
             });
 
@@ -95,6 +105,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 800f,
                 Delay = 0f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1800
             });
 
@@ -106,6 +117,7 @@ namespace Activator
                 CastRange = 1000f,
                 Delay = 250f,
                 HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.CrowdControl },
+                MissileName = "ahriseducemissile",
                 MissileSpeed = 1550
             });
 
@@ -116,6 +128,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 450f,
                 Delay = 250f,
+                HitType = new HitType[] { },
                 MissileSpeed = 2200
             });
 
@@ -148,6 +161,7 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 325f,
                 Delay = 0f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -158,6 +172,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 800f,
                 Delay = 250f,
+                HitType = new HitType[] { },
                 MissileSpeed = 2200
             });
 
@@ -190,6 +205,7 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 575f,
                 Delay = 0f,
+                HitType = new HitType[] { },
                 MissileSpeed = 0
             });
 
@@ -200,6 +216,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 0f,
                 Delay = 0f,
+                HitType = new HitType[] { },
                 MissileSpeed = 828
             });
 
@@ -211,6 +228,7 @@ namespace Activator
                 CastRange = 1100f,
                 Delay = 250f,
                 HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.CrowdControl },
+                MissileName = "sadmummybandagetoss",
                 MissileSpeed = 2000
             });
 
@@ -221,6 +239,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 300f,
                 Delay = 470f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -231,6 +250,7 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 350f,
                 Delay = 150f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -242,6 +262,7 @@ namespace Activator
                 CastRange = 550f,
                 Delay = 150f,
                 HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate, global::Activator.HitType.CrowdControl },
+                MissileName = "",
                 MissileSpeed = int.MaxValue
             });
 
@@ -253,6 +274,7 @@ namespace Activator
                 CastRange = 1200f,
                 Delay = 500f,
                 HitType = new[] { global::Activator.HitType.CrowdControl },
+                MissileName = "flashfrostspell",
                 MissileSpeed = 850
             });
 
@@ -263,6 +285,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 1000f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1600
             });
 
@@ -273,6 +296,7 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 650f,
                 Delay = 250f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1450
             });
 
@@ -283,6 +307,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 675f,
                 Delay = 300f,
+                HitType = new HitType[] { },
                 MissileSpeed = 250
             });
 
@@ -293,6 +318,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 623f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1400
             });
 
@@ -303,6 +329,8 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 825f,
                 Delay = 250f,
+                HitType = new HitType[] { },
+                MissileName = "",
                 MissileSpeed = int.MaxValue
             });
 
@@ -313,6 +341,7 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 100f,
                 Delay = 0f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -324,6 +353,7 @@ namespace Activator
                 CastRange = 600f,
                 Delay = 150f,
                 HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate },
+                MissileName = "",
                 MissileSpeed = int.MaxValue
             });
 
@@ -334,6 +364,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 0f,
                 Delay = 0f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -356,6 +387,7 @@ namespace Activator
                 CastRange = 1200f,
                 Delay = 250f,
                 HitType = new[] { global::Activator.HitType.CrowdControl },
+                MissileName = "volleyattack",
                 MissileSpeed = 1500
             });
 
@@ -366,6 +398,7 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 2500f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1400
             });
 
@@ -377,6 +410,7 @@ namespace Activator
                 CastRange = 20000f,
                 Delay = 250f,
                 HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate, global::Activator.HitType.CrowdControl },
+                MissileName = "enchantedcrystalarrow",
                 MissileSpeed = 1600
             });
 
@@ -388,6 +422,7 @@ namespace Activator
                 CastRange = 950f,
                 Delay = 250f,
                 HitType = new[] { global::Activator.HitType.CrowdControl },
+                MissileName = "bardqmissile",
                 MissileSpeed = 1600
             });
 
@@ -398,6 +433,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 1000f,
                 Delay = 250f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1450
             });
 
@@ -408,6 +444,7 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 900f,
                 Delay = 350f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1600
             });
 
@@ -418,6 +455,8 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 3400f,
                 Delay = 300f,
+                HitType = new HitType[] { },
+                MissileName = "bardr",
                 MissileSpeed = 2100
             });
 
@@ -439,6 +478,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 0f,
                 Delay = 0f,
+                HitType = new HitType[] { },
                 MissileSpeed = 0
             });
 
@@ -461,6 +501,7 @@ namespace Activator
                 CastRange = 600f,
                 Delay = 150f,
                 HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate, global::Activator.HitType.CrowdControl },
+                MissileName = "",
                 MissileSpeed = int.MaxValue
             });
 
@@ -472,6 +513,7 @@ namespace Activator
                 CastRange = 1150f,
                 Delay = 500f,
                 HitType = new[] { global::Activator.HitType.Danger },
+                MissileName = "brandblazemissile",
                 MissileSpeed = 1200
             });
 
@@ -483,6 +525,7 @@ namespace Activator
                 CastRange = 240f,
                 Delay = 550f,
                 HitType = new[] { global::Activator.HitType.Danger },
+                MissileName = "",
                 MissileSpeed = 20
             });
 
@@ -493,6 +536,7 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 625f,
                 Delay = 0f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1800
             });
 
@@ -515,6 +559,7 @@ namespace Activator
                 CastRange = 1100f,
                 Delay = 500f,
                 HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.CrowdControl },
+                MissileName = "braumqmissile",
                 MissileSpeed = 1200
             });
 
@@ -536,6 +581,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 650f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1500
             });
 
@@ -546,6 +592,7 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 250f,
                 Delay = 0f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -557,6 +604,7 @@ namespace Activator
                 CastRange = 1250f,
                 Delay = 0f,
                 HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate, global::Activator.HitType.CrowdControl },
+                MissileName = "braumrmissile",
                 MissileSpeed = 1200
             });
 
@@ -567,6 +615,8 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 2000f,
                 Delay = 250f,
+                HitType = new HitType[] { },
+                MissileName = "caitlynpiltoverpeacemaker",
                 MissileSpeed = 2200
             });
 
@@ -589,6 +639,7 @@ namespace Activator
                 CastRange = 950f,
                 Delay = 250f,
                 HitType = new[] { global::Activator.HitType.CrowdControl },
+                MissileName = "caitlynentrapmentmissile",
                 MissileSpeed = 2000
             });
 
@@ -599,6 +650,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 2500f,
                 Delay = 0f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1500
             });
 
@@ -609,6 +661,8 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 925f,
                 Delay = 250f,
+                HitType = new HitType[] { },
+                MissileName = "cassiopeianoxiousblast",
                 MissileSpeed = int.MaxValue
             });
 
@@ -630,6 +684,7 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 700f,
                 Delay = 0f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1900
             });
 
@@ -641,6 +696,7 @@ namespace Activator
                 CastRange = 875f,
                 Delay = 250f,
                 HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate, global::Activator.HitType.CrowdControl },
+                MissileName = "cassiopeiapetrifyinggaze",
                 MissileSpeed = int.MaxValue
             });
 
@@ -652,6 +708,7 @@ namespace Activator
                 CastRange = 950f,
                 Delay = 1000f,
                 HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.CrowdControl },
+                MissileName = "rupture",
                 MissileSpeed = int.MaxValue
             });
 
@@ -673,6 +730,7 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 0f,
                 Delay = 0f,
+                HitType = new HitType[] { },
                 MissileSpeed = 347
             });
 
@@ -695,6 +753,7 @@ namespace Activator
                 CastRange = 875f,
                 Delay = 500f,
                 HitType = new[] { global::Activator.HitType.Danger },
+                MissileName = "phosphorusbombmissile",
                 MissileSpeed = 1000
             });
 
@@ -705,6 +764,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 875f,
                 Delay = 0f,
+                HitType = new HitType[] { },
                 MissileSpeed = 700
             });
 
@@ -715,6 +775,7 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 750f,
                 Delay = 250f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -725,6 +786,8 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 1225f,
                 Delay = 250f,
+                HitType = new HitType[] { },
+                MissileName = "missilebarragemissile",
                 MissileSpeed = 828
             });
 
@@ -735,6 +798,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 425f,
                 Delay = 0f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -757,6 +821,7 @@ namespace Activator
                 CastRange = 550f,
                 Delay = 150f,
                 HitType = new[] { global::Activator.HitType.CrowdControl },
+                MissileName = "dariusaxegrabcone",
                 MissileSpeed = int.MaxValue
             });
 
@@ -778,6 +843,8 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 900f,
                 Delay = 300f,
+                HitType = new HitType[] { },
+                MissileName = "dianaarc",
                 MissileSpeed = 1500
             });
 
@@ -788,6 +855,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 0f,
                 Delay = 0f,
+                HitType = new HitType[] { },
                 MissileSpeed = 0
             });
 
@@ -820,6 +888,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 0f,
                 Delay = 2147483647f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -830,6 +899,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 0f,
                 Delay = 2147483647f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -841,6 +911,7 @@ namespace Activator
                 CastRange = 1050f,
                 Delay = 500f,
                 HitType = new[] { global::Activator.HitType.CrowdControl },
+                MissileName = "dravendoubleshotmissile",
                 MissileSpeed = 1600
             });
 
@@ -852,6 +923,7 @@ namespace Activator
                 CastRange = 20000f,
                 Delay = 500f,
                 HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate },
+                MissileName = "dravenr",
                 MissileSpeed = 2000
             });
 
@@ -863,6 +935,7 @@ namespace Activator
                 CastRange = 1000f,
                 Delay = 500f,
                 HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.CrowdControl },
+                MissileName = "infectedcleavermissile",
                 MissileSpeed = 1500
             });
 
@@ -873,6 +946,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 225f,
                 Delay = 2147483647f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -883,6 +957,7 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 0f,
                 Delay = 2147483647f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -893,6 +968,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 0f,
                 Delay = 2147483647f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -903,6 +979,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 625f,
                 Delay = 550f,
+                HitType = new HitType[] { },
                 MissileSpeed = 2200
             });
 
@@ -913,6 +990,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 375f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -923,6 +1001,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 950f,
                 Delay = 750f,
+                HitType = new HitType[] { },
                 MissileSpeed = 5000
             });
 
@@ -933,6 +1012,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 0f,
                 Delay = 2147483647f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -944,6 +1024,7 @@ namespace Activator
                 CastRange = 1075f,
                 Delay = 500f,
                 HitType = new[] { global::Activator.HitType.CrowdControl },
+                MissileName = "elisehumane",
                 MissileSpeed = 1600
             });
 
@@ -954,6 +1035,7 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 975f,
                 Delay = 2147483647f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -964,6 +1046,7 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 975f,
                 Delay = 2147483647f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -974,6 +1057,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 0f,
                 Delay = 2147483647f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -984,6 +1068,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 0f,
                 Delay = 2147483647f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -994,6 +1079,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 500f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -1004,6 +1090,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 0f,
                 Delay = 2147483647f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -1014,6 +1101,7 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 290f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 900
             });
 
@@ -1025,6 +1113,7 @@ namespace Activator
                 CastRange = 650f,
                 Delay = 0f,
                 HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate, global::Activator.HitType.CrowdControl },
+                MissileName = "evelynnr",
                 MissileSpeed = 1300
             });
 
@@ -1035,6 +1124,8 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 1200f,
                 Delay = 250f,
+                HitType = new HitType[] { },
+                MissileName = "ezrealmysticshotmissile",
                 MissileSpeed = 2000
             });
 
@@ -1045,6 +1136,8 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 1050f,
                 Delay = 250f,
+                HitType = new HitType[] { },
+                MissileName = "ezrealessencefluxmissile",
                 MissileSpeed = 1600
             });
 
@@ -1055,6 +1148,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 1050f,
                 Delay = 250f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1600
             });
 
@@ -1065,6 +1159,7 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 475f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -1097,6 +1192,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 575f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -1118,6 +1214,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 800f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -1128,6 +1225,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 300f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 2200
             });
 
@@ -1138,6 +1236,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 100f,
                 Delay = 0f,
+                HitType = new HitType[] { },
                 MissileSpeed = 0
             });
 
@@ -1148,6 +1247,7 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 210f,
                 Delay = 0f,
+                HitType = new HitType[] { },
                 MissileSpeed = 0
             });
 
@@ -1169,6 +1269,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 550f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -1179,6 +1280,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 0f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 0
             });
 
@@ -1189,6 +1291,7 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 400f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1300
             });
 
@@ -1210,6 +1313,8 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 1275f,
                 Delay = 500f,
+                HitType = new HitType[] { },
+                MissileName = "fizzmarinerdoommissile",
                 MissileSpeed = 1200
             });
 
@@ -1221,6 +1326,7 @@ namespace Activator
                 CastRange = 940f,
                 Delay = 500f,
                 HitType = new[] { global::Activator.HitType.CrowdControl },
+                MissileName = "galioresolutesmite",
                 MissileSpeed = 1300
             });
 
@@ -1231,6 +1337,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 800f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -1241,6 +1348,8 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 1180f,
                 Delay = 500f,
+                HitType = new HitType[] { },
+                MissileName = "galiorighteousgust",
                 MissileSpeed = 1200
             });
 
@@ -1252,6 +1361,7 @@ namespace Activator
                 CastRange = 560f,
                 Delay = 150f,
                 HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate, global::Activator.HitType.CrowdControl },
+                MissileName = "",
                 MissileSpeed = int.MaxValue
             });
 
@@ -1262,6 +1372,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 625f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 2000
             });
 
@@ -1272,6 +1383,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 0f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -1282,6 +1394,7 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 1300f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -1292,6 +1405,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 20000f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 500
             });
 
@@ -1302,6 +1416,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 0f,
                 Delay = 200f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -1312,6 +1427,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 0f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -1322,6 +1438,7 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 325f,
                 Delay = 0f,
+                HitType = new HitType[] { },
                 MissileSpeed = 700
             });
 
@@ -1332,6 +1449,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 400f,
                 Delay = 120f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -1343,6 +1461,7 @@ namespace Activator
                 CastRange = 1100f,
                 Delay = 250f,
                 HitType = new[] { global::Activator.HitType.CrowdControl },
+                MissileName = "gragasqmissile",
                 MissileSpeed = 1300
             });
 
@@ -1353,6 +1472,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 1100f,
                 Delay = 300f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1000
             });
 
@@ -1363,6 +1483,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 0f,
                 Delay = 0f,
+                HitType = new HitType[] { },
                 MissileSpeed = 0
             });
 
@@ -1374,6 +1495,7 @@ namespace Activator
                 CastRange = 1100f,
                 Delay = 300f,
                 HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.CrowdControl },
+                MissileName = "gragase",
                 MissileSpeed = 1000
             });
 
@@ -1385,6 +1507,7 @@ namespace Activator
                 CastRange = 1100f,
                 Delay = 300f,
                 HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate, global::Activator.HitType.CrowdControl },
+                MissileName = "gragasrboom",
                 MissileSpeed = 1000
             });
 
@@ -1395,6 +1518,8 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 1100f,
                 Delay = 300f,
+                HitType = new HitType[] { },
+                MissileName = "gravesclustershotattack",
                 MissileSpeed = 902
             });
 
@@ -1427,6 +1552,7 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 425f,
                 Delay = 300f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1000
             });
 
@@ -1438,6 +1564,7 @@ namespace Activator
                 CastRange = 1100f,
                 Delay = 250f,
                 HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate },
+                MissileName = "graveschargeshotshot",
                 MissileSpeed = 2100
             });
 
@@ -1448,6 +1575,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 350f,
                 Delay = 300f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1450
             });
 
@@ -1458,6 +1586,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 525f,
                 Delay = 120f,
+                HitType = new HitType[] { },
                 MissileSpeed = 828
             });
 
@@ -1468,6 +1597,7 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 0f,
                 Delay = 2147483647f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -1489,6 +1619,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 350f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -1499,6 +1630,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 1525f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 902
             });
 
@@ -1510,6 +1642,7 @@ namespace Activator
                 CastRange = 970f,
                 Delay = 500f,
                 HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.CrowdControl },
+                MissileName = "heimerdingerespell",
                 MissileSpeed = 2500
             });
 
@@ -1520,6 +1653,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 0f,
                 Delay = 230f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -1541,6 +1675,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 650f,
                 Delay = 150f,
+                HitType = new HitType[] { },
                 MissileSpeed = 2200
             });
 
@@ -1551,6 +1686,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 0f,
                 Delay = 230f,
+                HitType = new HitType[] { },
                 MissileSpeed = 347
             });
 
@@ -1572,6 +1708,8 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 1200f,
                 Delay = 500f,
+                HitType = new HitType[] { },
+                MissileName = "ireliatranscendentblades",
                 MissileSpeed = 779
             });
 
@@ -1604,6 +1742,7 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 800f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -1625,6 +1764,8 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 700f,
                 Delay = 500f,
+                HitType = new HitType[] { },
+                MissileName = "",
                 MissileSpeed = int.MaxValue
             });
 
@@ -1646,6 +1787,8 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 830f,
                 Delay = 500f,
+                HitType = new HitType[] { },
+                MissileName = "jarvanivdemacianstandard",
                 MissileSpeed = int.MaxValue
             });
 
@@ -1667,6 +1810,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 210f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 0
             });
 
@@ -1677,6 +1821,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 0f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 0
             });
 
@@ -1698,6 +1843,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 0f,
                 Delay = 0f,
+                HitType = new HitType[] { },
                 MissileSpeed = 0
             });
 
@@ -1719,6 +1865,8 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 1050f,
                 Delay = 500f,
+                HitType = new HitType[] { },
+                MissileName = "jayceshockblastmis",
                 MissileSpeed = 1200
             });
 
@@ -1729,6 +1877,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 285f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1500
             });
 
@@ -1739,6 +1888,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 0f,
                 Delay = 750f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -1760,6 +1910,7 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 685f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1600
             });
 
@@ -1770,6 +1921,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 0f,
                 Delay = 750f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -1780,6 +1932,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 0f,
                 Delay = 750f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -1790,6 +1943,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 0f,
                 Delay = 0f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -1801,6 +1955,7 @@ namespace Activator
                 CastRange = 1550f,
                 Delay = 500f,
                 HitType = new[] { global::Activator.HitType.CrowdControl },
+                MissileName = "jinxwmissile",
                 MissileSpeed = 1200
             });
 
@@ -1833,6 +1988,8 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 25000f,
                 Delay = 0f,
+                HitType = new HitType[] { },
+                MissileName = "jinxr",
                 MissileSpeed = int.MaxValue
             });
 
@@ -1854,6 +2011,8 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 950f,
                 Delay = 500f,
+                HitType = new HitType[] { },
+                MissileName = "karmaqmissile",
                 MissileSpeed = 902
             });
 
@@ -1875,6 +2034,7 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 800f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -1885,6 +2045,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 0f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1300
             });
 
@@ -1895,6 +2056,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 875f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -1916,6 +2078,7 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 550f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1000
             });
 
@@ -1926,6 +2089,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 2.147484E+09f,
                 Delay = 2800f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -1947,6 +2111,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 0f,
                 Delay = 0f,
+                HitType = new HitType[] { },
                 MissileSpeed = 0
             });
 
@@ -1968,6 +2133,8 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 675f,
                 Delay = 500f,
+                HitType = new HitType[] { },
+                MissileName = "riftwalk",
                 MissileSpeed = int.MaxValue
             });
 
@@ -1978,6 +2145,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 675f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1800
             });
 
@@ -1988,6 +2156,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 400f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1800
             });
 
@@ -1998,6 +2167,7 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 700f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 0
             });
 
@@ -2030,6 +2200,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 900f,
                 Delay = 220f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -2040,6 +2211,7 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 0f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 779
             });
 
@@ -2050,6 +2222,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 900f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -2060,6 +2233,8 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 1000f,
                 Delay = 690f,
+                HitType = new HitType[] { },
+                MissileName = "kennenshurikenhurlmissile1",
                 MissileSpeed = 1700
             });
 
@@ -2070,6 +2245,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 900f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -2080,6 +2256,7 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 0f,
                 Delay = 0f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -2101,6 +2278,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 325f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -2111,6 +2289,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 375f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -2122,6 +2301,7 @@ namespace Activator
                 CastRange = 1000f,
                 Delay = 500f,
                 HitType = new[] { global::Activator.HitType.CrowdControl },
+                MissileName = "khazixwmissile",
                 MissileSpeed = 828
             });
 
@@ -2143,6 +2323,8 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 600f,
                 Delay = 500f,
+                HitType = new HitType[] { },
+                MissileName = "khazixe",
                 MissileSpeed = int.MaxValue
             });
 
@@ -2153,6 +2335,7 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 900f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -2163,6 +2346,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 0f,
                 Delay = 0f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -2173,6 +2357,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 0f,
                 Delay = 0f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -2183,6 +2368,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 625f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -2193,6 +2379,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 130f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 2000
             });
 
@@ -2204,6 +2391,7 @@ namespace Activator
                 CastRange = 1000f,
                 Delay = 500f,
                 HitType = new[] { global::Activator.HitType.CrowdControl },
+                MissileName = "kogmawvoidoozemissile",
                 MissileSpeed = 1200
             });
 
@@ -2214,6 +2402,8 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 1400f,
                 Delay = 600f,
+                HitType = new HitType[] { },
+                MissileName = "kogmawlivingartillery",
                 MissileSpeed = 2000
             });
 
@@ -2224,6 +2414,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 700f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 2000
             });
 
@@ -2234,6 +2425,8 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 600f,
                 Delay = 500f,
+                HitType = new HitType[] { },
+                MissileName = "leblancslide",
                 MissileSpeed = int.MaxValue
             });
 
@@ -2244,6 +2437,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 0f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -2255,6 +2449,7 @@ namespace Activator
                 CastRange = 925f,
                 Delay = 500f,
                 HitType = new[] { global::Activator.HitType.CrowdControl },
+                MissileName = "leblancsoulshackle",
                 MissileSpeed = 1600
             });
 
@@ -2277,6 +2472,7 @@ namespace Activator
                 CastRange = 600f,
                 Delay = 500f,
                 HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate },
+                MissileName = "leblancslidem",
                 MissileSpeed = int.MaxValue
             });
 
@@ -2287,6 +2483,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 0f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -2297,6 +2494,8 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 925f,
                 Delay = 500f,
+                HitType = new HitType[] { },
+                MissileName = "leblancsoulshacklem",
                 MissileSpeed = 1600
             });
 
@@ -2308,6 +2507,7 @@ namespace Activator
                 CastRange = 1000f,
                 Delay = 500f,
                 HitType = new[] { global::Activator.HitType.Danger },
+                MissileName = "blindmonkqone",
                 MissileSpeed = 1800
             });
 
@@ -2318,6 +2518,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 0f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -2328,6 +2529,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 700f,
                 Delay = 0f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1500
             });
 
@@ -2338,6 +2540,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 700f,
                 Delay = 0f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -2348,6 +2551,7 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 425f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -2391,6 +2595,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 500f,
                 Delay = 3000f,
+                HitType = new HitType[] { },
                 MissileSpeed = 0
             });
 
@@ -2402,6 +2607,7 @@ namespace Activator
                 CastRange = 900f,
                 Delay = 0f,
                 HitType = new[] { global::Activator.HitType.CrowdControl },
+                MissileName = "leonazenithblademissile",
                 MissileSpeed = 2000
             });
 
@@ -2424,6 +2630,7 @@ namespace Activator
                 CastRange = 1200f,
                 Delay = 450f,
                 HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate, global::Activator.HitType.CrowdControl },
+                MissileName = "leonasolarflare",
                 MissileSpeed = int.MaxValue
             });
 
@@ -2435,6 +2642,7 @@ namespace Activator
                 CastRange = 725f,
                 Delay = 500f,
                 HitType = new[] { global::Activator.HitType.CrowdControl },
+                MissileName = "lissandraqmissile",
                 MissileSpeed = 1200
             });
 
@@ -2456,6 +2664,8 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 1050f,
                 Delay = 500f,
+                HitType = new HitType[] { },
+                MissileName = "lissandraemissile",
                 MissileSpeed = 850
             });
 
@@ -2477,6 +2687,8 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 550f,
                 Delay = 500f,
+                HitType = new HitType[] { },
+                MissileName = "lucianq",
                 MissileSpeed = 500
             });
 
@@ -2487,6 +2699,8 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 1000f,
                 Delay = 500f,
+                HitType = new HitType[] { },
+                MissileName = "lucianwmissile",
                 MissileSpeed = 500
             });
 
@@ -2497,6 +2711,7 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 650f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -2507,6 +2722,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 1400f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 0
             });
 
@@ -2518,6 +2734,7 @@ namespace Activator
                 CastRange = 925f,
                 Delay = 500f,
                 HitType = new[] { global::Activator.HitType.CrowdControl },
+                MissileName = "luluqmissile",
                 MissileSpeed = 1400
             });
 
@@ -2550,6 +2767,7 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 650f,
                 Delay = 640f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -2572,6 +2790,7 @@ namespace Activator
                 CastRange = 1300f,
                 Delay = 500f,
                 HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.CrowdControl },
+                MissileName = "luxlightbindingmis",
                 MissileSpeed = 1200
             });
 
@@ -2582,6 +2801,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 1075f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1200
             });
 
@@ -2593,6 +2813,7 @@ namespace Activator
                 CastRange = 1100f,
                 Delay = 500f,
                 HitType = new[] { global::Activator.HitType.CrowdControl },
+                MissileName = "luxlightstrikekugel",
                 MissileSpeed = 1300
             });
 
@@ -2603,6 +2824,7 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 1100f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1300
             });
 
@@ -2614,6 +2836,7 @@ namespace Activator
                 CastRange = 3340f,
                 Delay = 1750f,
                 HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate },
+                MissileName = "luxmalicecannon",
                 MissileSpeed = 3000
             });
 
@@ -2635,6 +2858,8 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 1150f,
                 Delay = 250f,
+                HitType = new HitType[] { },
+                MissileName = "kalistamysticshotmis",
                 MissileSpeed = 1200
             });
 
@@ -2645,6 +2870,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 1150f,
                 Delay = 250f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1200
             });
 
@@ -2655,6 +2881,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 5000f,
                 Delay = 800f,
+                HitType = new HitType[] { },
                 MissileSpeed = 200
             });
 
@@ -2687,6 +2914,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 0f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -2697,6 +2925,7 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 400f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -2708,6 +2937,7 @@ namespace Activator
                 CastRange = 1000f,
                 Delay = 250f,
                 HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate, global::Activator.HitType.CrowdControl },
+                MissileName = "ufslash",
                 MissileSpeed = 700
             });
 
@@ -2719,6 +2949,7 @@ namespace Activator
                 CastRange = 900f,
                 Delay = 500f,
                 HitType = new[] { global::Activator.HitType.CrowdControl },
+                MissileName = "alzaharcallofthevoid",
                 MissileSpeed = int.MaxValue
             });
 
@@ -2729,6 +2960,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 800f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -2739,6 +2971,7 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 650f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -2793,6 +3026,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 625f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -2803,6 +3037,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 600f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 4000
             });
 
@@ -2813,6 +3048,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 0f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -2823,6 +3059,7 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 0f,
                 Delay = 230f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -2833,6 +3070,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 0f,
                 Delay = 370f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -2843,6 +3081,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 650f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1400
             });
 
@@ -2853,6 +3092,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 0f,
                 Delay = 0f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -2885,6 +3125,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 300f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 20
             });
 
@@ -2906,6 +3147,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 325f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 0
             });
 
@@ -2916,6 +3158,7 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 625f,
                 Delay = 0f,
+                HitType = new HitType[] { },
                 MissileSpeed = 2200
             });
 
@@ -2937,6 +3180,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 0f,
                 Delay = 0f,
+                HitType = new HitType[] { },
                 MissileSpeed = 700
             });
 
@@ -2947,6 +3191,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 600f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1500
             });
 
@@ -2957,6 +3202,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 750f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -2967,6 +3213,7 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 700f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1500
             });
 
@@ -2989,6 +3236,7 @@ namespace Activator
                 CastRange = 1300f,
                 Delay = 500f,
                 HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.CrowdControl },
+                MissileName = "darkbindingmissile",
                 MissileSpeed = 1200
             });
 
@@ -2999,6 +3247,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 1075f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -3009,6 +3258,7 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 750f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -3019,6 +3269,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 600f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -3030,6 +3281,7 @@ namespace Activator
                 CastRange = 875f,
                 Delay = 500f,
                 HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.CrowdControl },
+                MissileName = "namiqmissile",
                 MissileSpeed = 1750
             });
 
@@ -3040,6 +3292,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 725f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1100
             });
 
@@ -3062,6 +3315,7 @@ namespace Activator
                 CastRange = 2550f,
                 Delay = 500f,
                 HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate, global::Activator.HitType.CrowdControl },
+                MissileName = "namirmissile",
                 MissileSpeed = 1200
             });
 
@@ -3072,6 +3326,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 0f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -3093,6 +3348,7 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 850f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -3103,6 +3359,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 1f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -3114,6 +3371,7 @@ namespace Activator
                 CastRange = 950f,
                 Delay = 500f,
                 HitType = new[] { global::Activator.HitType.CrowdControl },
+                MissileName = "nautilusanchordragmissile",
                 MissileSpeed = 1200
             });
 
@@ -3124,6 +3382,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 0f,
                 Delay = 0f,
+                HitType = new HitType[] { },
                 MissileSpeed = 0
             });
 
@@ -3145,6 +3404,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 1500f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1400
             });
 
@@ -3155,6 +3415,8 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 1500f,
                 Delay = 125f,
+                HitType = new HitType[] { },
+                MissileName = "javelintoss",
                 MissileSpeed = 1300
             });
 
@@ -3165,6 +3427,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 150f,
                 Delay = 0f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -3175,6 +3438,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 900f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1450
             });
 
@@ -3185,6 +3449,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 375f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1500
             });
 
@@ -3195,6 +3460,7 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 600f,
                 Delay = 0f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -3205,6 +3471,7 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 300f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -3215,6 +3482,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 0f,
                 Delay = 0f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -3225,6 +3493,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 1125f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1600
             });
 
@@ -3235,6 +3504,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 0f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 500
             });
 
@@ -3256,6 +3526,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 2000f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 500
             });
 
@@ -3266,6 +3537,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 125f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1400
             });
 
@@ -3276,6 +3548,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 700f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -3297,6 +3570,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 650f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -3308,6 +3582,7 @@ namespace Activator
                 CastRange = 1000f,
                 Delay = 500f,
                 HitType = new[] { global::Activator.HitType.CrowdControl },
+                MissileName = "olafaxethrow",
                 MissileSpeed = 1600
             });
 
@@ -3318,6 +3593,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 0f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -3328,6 +3604,7 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 325f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -3338,6 +3615,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 0f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -3348,6 +3626,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 1100f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1200
             });
 
@@ -3359,6 +3638,7 @@ namespace Activator
                 CastRange = 0f,
                 Delay = 500f,
                 HitType = new[] { global::Activator.HitType.CrowdControl },
+                MissileName = "orianadissonancecommand",
                 MissileSpeed = 1200
             });
 
@@ -3369,6 +3649,7 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 1095f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1200
             });
 
@@ -3380,6 +3661,7 @@ namespace Activator
                 CastRange = 0f,
                 Delay = 500f,
                 HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate, global::Activator.HitType.CrowdControl },
+                MissileName = "orianadetonatecommand",
                 MissileSpeed = 1200
             });
 
@@ -3390,6 +3672,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 600f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1500
             });
 
@@ -3411,6 +3694,7 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 600f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 775
             });
 
@@ -3421,6 +3705,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 5500f,
                 Delay = 1000f,
+                HitType = new HitType[] { },
                 MissileSpeed = 3000
             });
 
@@ -3442,6 +3727,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 0f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -3452,6 +3738,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 0f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -3473,6 +3760,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 900f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -3484,6 +3772,7 @@ namespace Activator
                 CastRange = 1025f,
                 Delay = 500f,
                 HitType = new[] { global::Activator.HitType.CrowdControl },
+                MissileName = "quinnqmissile",
                 MissileSpeed = 1200
             });
 
@@ -3494,6 +3783,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 2100f,
                 Delay = 0f,
+                HitType = new HitType[] { },
                 MissileSpeed = 0
             });
 
@@ -3515,6 +3805,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 0f,
                 Delay = 0f,
+                HitType = new HitType[] { },
                 MissileSpeed = 0
             });
 
@@ -3525,6 +3816,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 700f,
                 Delay = 0f,
+                HitType = new HitType[] { },
                 MissileSpeed = 0
             });
 
@@ -3535,6 +3827,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 0f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 775
             });
 
@@ -3545,6 +3838,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 0f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -3566,6 +3860,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 300f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -3576,6 +3871,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 1f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -3597,6 +3893,7 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 450f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1400
             });
 
@@ -3607,6 +3904,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 1f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 775
             });
 
@@ -3617,6 +3915,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 0f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -3627,6 +3926,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 1f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -3638,6 +3938,7 @@ namespace Activator
                 CastRange = 1000f,
                 Delay = 500f,
                 HitType = new[] { global::Activator.HitType.CrowdControl },
+                MissileName = "rengarefinal",
                 MissileSpeed = 1500
             });
 
@@ -3648,6 +3949,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 0f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -3658,6 +3960,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 0f,
                 Delay = 0f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -3668,6 +3971,8 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 1650f,
                 Delay = 500f,
+                HitType = new HitType[] { },
+                MissileName = "reksaiqburrowedmis",
                 MissileSpeed = 1950
             });
 
@@ -3678,6 +3983,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 0f,
                 Delay = 350f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -3699,6 +4005,7 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 250f,
                 Delay = 0f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -3709,6 +4016,7 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 350f,
                 Delay = 900f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1450
             });
 
@@ -3719,6 +4027,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 2.147484E+09f,
                 Delay = 1000f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -3729,6 +4038,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 250f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 0
             });
 
@@ -3761,6 +4071,7 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 325f,
                 Delay = 0f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1450
             });
 
@@ -3771,6 +4082,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 0f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1200
             });
 
@@ -3782,6 +4094,7 @@ namespace Activator
                 CastRange = 900f,
                 Delay = 300f,
                 HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate },
+                MissileName = "rivenlightsabermissile",
                 MissileSpeed = 2200
             });
 
@@ -3792,6 +4105,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 600f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -3802,6 +4116,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 0f,
                 Delay = 0f,
+                HitType = new HitType[] { },
                 MissileSpeed = 0
             });
 
@@ -3834,6 +4149,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 625f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1400
             });
 
@@ -3855,6 +4171,7 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 600f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1000
             });
 
@@ -3865,6 +4182,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 625f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1400
             });
 
@@ -3876,6 +4194,7 @@ namespace Activator
                 CastRange = 650f,
                 Delay = 500f,
                 HitType = new[] { global::Activator.HitType.CrowdControl },
+                MissileName = "",
                 MissileSpeed = 1450
             });
 
@@ -3886,6 +4205,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 1f,
                 Delay = 1000f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1500
             });
 
@@ -3908,6 +4228,7 @@ namespace Activator
                 CastRange = 1175f,
                 Delay = 500f,
                 HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate, global::Activator.HitType.CrowdControl },
+                MissileName = "sejuaniglacialprison",
                 MissileSpeed = 1400
             });
 
@@ -3951,6 +4272,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 1125f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 395
             });
 
@@ -3961,6 +4283,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 475f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1500
             });
 
@@ -3971,6 +4294,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 0f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -3982,6 +4306,7 @@ namespace Activator
                 CastRange = 600f,
                 Delay = 500f,
                 HitType = new[] { global::Activator.HitType.CrowdControl },
+                MissileName = "shenshadowdash",
                 MissileSpeed = 1000
             });
 
@@ -3992,6 +4317,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 25000f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -4002,6 +4328,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 0f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -4012,6 +4339,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 0f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -4022,6 +4350,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 0f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -4032,6 +4361,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 0f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -4042,6 +4372,8 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 925f,
                 Delay = 500f,
+                HitType = new HitType[] { },
+                MissileName = "shyvanafireballmissile",
                 MissileSpeed = 1200
             });
 
@@ -4052,6 +4384,7 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 925f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1200
             });
 
@@ -4062,6 +4395,8 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 1000f,
                 Delay = 500f,
+                HitType = new HitType[] { },
+                MissileName = "shyvanatransformcast",
                 MissileSpeed = 700
             });
 
@@ -4072,6 +4407,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 1000f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 700
             });
 
@@ -4082,6 +4418,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 0f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -4114,6 +4451,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 0f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -4135,6 +4473,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 550f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -4146,6 +4485,7 @@ namespace Activator
                 CastRange = 1000f,
                 Delay = 500f,
                 HitType = new[] { global::Activator.HitType.CrowdControl },
+                MissileName = "sionemissile",
                 MissileSpeed = int.MaxValue
             });
 
@@ -4156,6 +4496,8 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 0f,
                 Delay = 500f,
+                HitType = new HitType[] { },
+                MissileName = "",
                 MissileSpeed = 500
             });
 
@@ -4164,8 +4506,10 @@ namespace Activator
                 SDataName = "sivirq",
                 ChampionName = "sivir",
                 Slot = SpellSlot.Q,
-                CastRange = 1250f,
-                Delay = 250f,
+                CastRange = 1165f,
+                Delay = 500f,
+                HitType = new HitType[] { },
+                MissileName = "sivirqmissile",
                 MissileSpeed = 1350
             });
 
@@ -4176,6 +4520,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 565f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -4186,6 +4531,7 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 0f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -4196,6 +4542,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 1000f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -4206,6 +4553,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 350f,
                 Delay = 0f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -4216,6 +4564,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 0f,
                 Delay = 0f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -4227,6 +4576,7 @@ namespace Activator
                 CastRange = 1100f,
                 Delay = 500f,
                 HitType = new[] { global::Activator.HitType.CrowdControl },
+                MissileName = "skarnerfracturemissile",
                 MissileSpeed = 1200
             });
 
@@ -4259,6 +4609,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 700f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1500
             });
 
@@ -4269,6 +4620,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 1000f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1500
             });
 
@@ -4291,6 +4643,7 @@ namespace Activator
                 CastRange = 900f,
                 Delay = 500f,
                 HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate, global::Activator.HitType.CrowdControl },
+                MissileName = "sonar",
                 MissileSpeed = 2400
             });
 
@@ -4301,6 +4654,8 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 675f,
                 Delay = 500f,
+                HitType = new HitType[] { },
+                MissileName = "",
                 MissileSpeed = int.MaxValue
             });
 
@@ -4311,6 +4666,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 750f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -4332,6 +4688,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 25000f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -4354,6 +4711,7 @@ namespace Activator
                 CastRange = 1040f,
                 Delay = 500f,
                 HitType = new[] { global::Activator.HitType.CrowdControl },
+                MissileName = "swainshadowgrasp",
                 MissileSpeed = 1250
             });
 
@@ -4364,6 +4722,7 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 625f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1400
             });
 
@@ -4374,6 +4733,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 700f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 950
             });
 
@@ -4384,6 +4744,8 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 800f,
                 Delay = 250f,
+                HitType = new HitType[] { },
+                MissileName = "syndraq",
                 MissileSpeed = 1750
             });
 
@@ -4394,6 +4756,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 925f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1450
             });
 
@@ -4405,6 +4768,7 @@ namespace Activator
                 CastRange = 950f,
                 Delay = 500f,
                 HitType = new[] { global::Activator.HitType.CrowdControl },
+                MissileName = "syndrawcast",
                 MissileSpeed = 1450
             });
 
@@ -4416,6 +4780,7 @@ namespace Activator
                 CastRange = 700f,
                 Delay = 500f,
                 HitType = new[] { global::Activator.HitType.CrowdControl },
+                MissileName = "syndrae",
                 MissileSpeed = 902
             });
 
@@ -4437,6 +4802,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 0f,
                 Delay = 0f,
+                HitType = new HitType[] { },
                 MissileSpeed = 0
             });
 
@@ -4447,6 +4813,8 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 750f,
                 Delay = 500f,
+                HitType = new HitType[] { },
+                MissileName = "talonrakemissileone",
                 MissileSpeed = 1200
             });
 
@@ -4468,7 +4836,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 550f,
                 Delay = 0f,
-                HitType = new[] { global::Activator.HitType.Stealth, global::Activator.HitType.Danger, global::Activator.HitType.Ultimate },
+                HitType = new[] { global::Activator.HitType.Stealth },
                 MissileSpeed = 0
             });
 
@@ -4479,6 +4847,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 750f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1200
             });
 
@@ -4489,6 +4858,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 400f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -4532,6 +4902,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 0f,
                 Delay = 0f,
+                HitType = new HitType[] { },
                 MissileSpeed = 943
             });
 
@@ -4542,6 +4913,7 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 0f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -4552,6 +4924,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 230f,
                 Delay = 0f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1500
             });
 
@@ -4563,6 +4936,7 @@ namespace Activator
                 CastRange = 1175f,
                 Delay = 500f,
                 HitType = new[] { global::Activator.HitType.CrowdControl },
+                MissileName = "threshqmissile",
                 MissileSpeed = 1200
             });
 
@@ -4573,6 +4947,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 950f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -4594,6 +4969,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 420f,
                 Delay = 300f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -4604,6 +4980,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 0f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -4625,6 +5002,7 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 625f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1400
             });
 
@@ -4657,6 +5035,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 0f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -4678,6 +5057,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 700f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1400
             });
 
@@ -4688,6 +5068,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 0f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -4709,6 +5090,8 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 660f,
                 Delay = 500f,
+                HitType = new HitType[] { },
+                MissileName = "slashcast",
                 MissileSpeed = 700
             });
 
@@ -4719,6 +5102,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 0f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -4741,6 +5125,7 @@ namespace Activator
                 CastRange = 800f,
                 Delay = 500f,
                 HitType = new[] { global::Activator.HitType.CrowdControl },
+                MissileName = "twitchvenomcaskmissile",
                 MissileSpeed = 1750
             });
 
@@ -4762,6 +5147,7 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 1200f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -4772,6 +5158,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 850f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 500
             });
 
@@ -4782,6 +5169,8 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 1450f,
                 Delay = 500f,
+                HitType = new HitType[] { },
+                MissileName = "sealfatemissile",
                 MissileSpeed = 1450
             });
 
@@ -4792,6 +5181,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 0f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -4824,6 +5214,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 600f,
                 Delay = 0f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -4834,6 +5225,7 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 525f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1200
             });
 
@@ -4844,6 +5236,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 5500f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -4854,6 +5247,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 0f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -4864,6 +5258,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 0f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -4885,6 +5280,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 0f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -4895,6 +5291,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 1000f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1600
             });
 
@@ -4905,6 +5302,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 1000f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1600
             });
 
@@ -4915,6 +5313,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 0f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -4925,6 +5324,8 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 950f,
                 Delay = 500f,
+                HitType = new HitType[] { },
+                MissileName = "urgotplasmagrenadeboom",
                 MissileSpeed = 1750
             });
 
@@ -4935,6 +5336,7 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 950f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1750
             });
 
@@ -4956,6 +5358,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 1500f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1500
             });
 
@@ -4966,6 +5369,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 0f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 0
             });
 
@@ -4977,6 +5381,7 @@ namespace Activator
                 CastRange = 925f,
                 Delay = 500f,
                 HitType = new[] { global::Activator.HitType.CrowdControl },
+                MissileName = "varuse",
                 MissileSpeed = 1500
             });
 
@@ -4988,6 +5393,7 @@ namespace Activator
                 CastRange = 1300f,
                 Delay = 500f,
                 HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate, global::Activator.HitType.CrowdControl },
+                MissileName = "varusrmissile",
                 MissileSpeed = 1500
             });
 
@@ -4998,6 +5404,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 250f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -5008,6 +5415,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 0f,
                 Delay = 0f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -5029,6 +5437,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 0f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -5039,6 +5448,8 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 850f,
                 Delay = 250f,
+                HitType = new HitType[] { },
+                MissileName = "veigarbalefulstrikemis",
                 MissileSpeed = 1750
             });
 
@@ -5049,6 +5460,8 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 900f,
                 Delay = 1200f,
+                HitType = new HitType[] { },
+                MissileName = "",
                 MissileSpeed = 1500
             });
 
@@ -5060,6 +5473,7 @@ namespace Activator
                 CastRange = 650f,
                 Delay = 0f,
                 HitType = new[] { global::Activator.HitType.CrowdControl },
+                MissileName = "",
                 MissileSpeed = 1500
             });
 
@@ -5082,6 +5496,7 @@ namespace Activator
                 CastRange = 1050f,
                 Delay = 300f,
                 HitType = new[] { global::Activator.HitType.CrowdControl },
+                MissileName = "velkozqmissile",
                 MissileSpeed = 1200
             });
 
@@ -5114,6 +5529,8 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 1050f,
                 Delay = 0f,
+                HitType = new HitType[] { },
+                MissileName = "velkozwmissile",
                 MissileSpeed = 1200
             });
 
@@ -5125,6 +5542,7 @@ namespace Activator
                 CastRange = 850f,
                 Delay = 0f,
                 HitType = new[] { global::Activator.HitType.CrowdControl },
+                MissileName = "velkozemissile",
                 MissileSpeed = 500
             });
 
@@ -5135,6 +5553,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 1575f,
                 Delay = 0f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1500
             });
 
@@ -5145,6 +5564,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 800f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1500
             });
 
@@ -5155,6 +5575,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 0f,
                 Delay = 0f,
+                HitType = new HitType[] { },
                 MissileSpeed = 0
             });
 
@@ -5165,6 +5586,7 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 600f,
                 Delay = 0f,
+                HitType = new HitType[] { },
                 MissileSpeed = 0
             });
 
@@ -5186,6 +5608,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 600f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1400
             });
 
@@ -5207,6 +5630,7 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 700f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1210
             });
 
@@ -5217,6 +5641,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 700f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1210
             });
 
@@ -5227,6 +5652,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 600f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1400
             });
 
@@ -5248,6 +5674,7 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 610f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1100
             });
 
@@ -5258,6 +5685,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 875f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1200
             });
 
@@ -5268,6 +5696,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 300f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -5278,6 +5707,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 400f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1450
             });
 
@@ -5299,6 +5729,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 425f,
                 Delay = 0f,
+                HitType = new HitType[] { },
                 MissileSpeed = 825
             });
 
@@ -5309,6 +5740,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 400f,
                 Delay = 0f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -5319,6 +5751,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 1000f,
                 Delay = 0f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -5329,6 +5762,7 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 1500f,
                 Delay = 0f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -5350,6 +5784,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 750f,
                 Delay = 750f,
+                HitType = new HitType[] { },
                 MissileSpeed = 500
             });
 
@@ -5361,6 +5796,7 @@ namespace Activator
                 CastRange = 1100f,
                 Delay = 500f,
                 HitType = new[] { global::Activator.HitType.CrowdControl },
+                MissileName = "xeratharcanebarrage2",
                 MissileSpeed = 20
             });
 
@@ -5372,6 +5808,7 @@ namespace Activator
                 CastRange = 1050f,
                 Delay = 500f,
                 HitType = new[] { global::Activator.HitType.CrowdControl },
+                MissileName = "xerathmagespearmissile",
                 MissileSpeed = 1600
             });
 
@@ -5382,6 +5819,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 5600f,
                 Delay = 750f,
+                HitType = new HitType[] { },
                 MissileSpeed = 500
             });
 
@@ -5392,6 +5830,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 200f,
                 Delay = 0f,
+                HitType = new HitType[] { },
                 MissileSpeed = 2000
             });
 
@@ -5402,6 +5841,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 0f,
                 Delay = 0f,
+                HitType = new HitType[] { },
                 MissileSpeed = 2000
             });
 
@@ -5434,6 +5874,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 475f,
                 Delay = 750f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1500
             });
 
@@ -5444,6 +5885,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 475f,
                 Delay = 750f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1500
             });
 
@@ -5455,6 +5897,7 @@ namespace Activator
                 CastRange = 1000f,
                 Delay = 750f,
                 HitType = new[] { global::Activator.HitType.CrowdControl },
+                MissileName = "yasuoq3w",
                 MissileSpeed = 1500
             });
 
@@ -5465,6 +5908,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 400f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 500
             });
 
@@ -5475,6 +5919,7 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 475f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 20
             });
 
@@ -5485,6 +5930,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 1200f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 20
             });
 
@@ -5495,6 +5941,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 0f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -5527,6 +5974,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 900f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1500
             });
 
@@ -5538,6 +5986,7 @@ namespace Activator
                 CastRange = 550f,
                 Delay = 500f,
                 HitType = new[] { global::Activator.HitType.CrowdControl },
+                MissileName = "zacq",
                 MissileSpeed = 902
             });
 
@@ -5548,6 +5997,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 350f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1600
             });
 
@@ -5580,6 +6030,8 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 900f,
                 Delay = 500f,
+                HitType = new HitType[] { },
+                MissileName = "zedshurikenmisone",
                 MissileSpeed = 902
             });
 
@@ -5590,6 +6042,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 550f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1600
             });
 
@@ -5611,6 +6064,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 850f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 0
             });
 
@@ -5621,6 +6075,8 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 850f,
                 Delay = 500f,
+                HitType = new HitType[] { },
+                MissileName = "ziggsqspell",
                 MissileSpeed = 1750
             });
 
@@ -5631,6 +6087,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 850f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1750
             });
 
@@ -5642,6 +6099,7 @@ namespace Activator
                 CastRange = 850f,
                 Delay = 500f,
                 HitType = new[] { global::Activator.HitType.CrowdControl },
+                MissileName = "ziggsw",
                 MissileSpeed = 1750
             });
 
@@ -5664,6 +6122,7 @@ namespace Activator
                 CastRange = 850f,
                 Delay = 500f,
                 HitType = new[] { global::Activator.HitType.CrowdControl },
+                MissileName = "ziggse",
                 MissileSpeed = 1750
             });
 
@@ -5686,6 +6145,7 @@ namespace Activator
                 CastRange = 850f,
                 Delay = 500f,
                 HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate },
+                MissileName = "ziggsr",
                 MissileSpeed = 1750
             });
 
@@ -5696,6 +6156,8 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 900f,
                 Delay = 300f,
+                HitType = new HitType[] { },
+                MissileName = "zileanqmissile",
                 MissileSpeed = 2000
             });
 
@@ -5706,6 +6168,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 0f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -5727,6 +6190,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 780f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -5737,6 +6201,8 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 800f,
                 Delay = 500f,
+                HitType = new HitType[] { },
+                MissileName = "zyraqfissure",
                 MissileSpeed = 1400
             });
 
@@ -5747,6 +6213,7 @@ namespace Activator
                 Slot = SpellSlot.W,
                 CastRange = 800f,
                 Delay = 500f,
+                HitType = new HitType[] { },
                 MissileSpeed = 2200
             });
 
@@ -5758,6 +6225,7 @@ namespace Activator
                 CastRange = 1100f,
                 Delay = 500f,
                 HitType = new[] { global::Activator.HitType.CrowdControl },
+                MissileName = "zyragraspingroots",
                 MissileSpeed = 1400
             });
 
@@ -5769,10 +6237,22 @@ namespace Activator
                 CastRange = 700f,
                 Delay = 500f,
                 HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate, global::Activator.HitType.CrowdControl },
-                MissileSpeed = 20
-            });
+                MissileSpeed = int.MaxValue
+            }); 
+        }
 
-           
+        public static spelldata GetByMissileName(string missilename)
+        {
+            foreach (var sdata in spells)
+            {
+                if (sdata.MissileName != null && sdata.MissileName.ToLower() == missilename ||
+                    sdata.ExtraMissileNames != null && sdata.ExtraMissileNames.Contains(missilename))
+                {
+                    return sdata;
+                }
+            }
+
+            return null;
         }
     }
 }

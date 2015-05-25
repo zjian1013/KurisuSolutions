@@ -12,7 +12,91 @@ namespace Activator
 
         public static void Load()
         {
+            GameObject.OnCreate += GameObject_OnCreate;
             Obj_AI_Base.OnProcessSpellCast += Obj_AI_Base_OnProcessSpellCast;
+        }
+
+        static void GameObject_OnCreate(GameObject sender, EventArgs args)
+        {
+            var missile = sender as Obj_SpellMissile;
+            if (missile == null || !missile.IsValid)
+                return;
+
+            var caster = missile.SpellCaster as Obj_AI_Hero;
+            if (caster == null || !caster.IsValid)
+                return;
+
+
+            var startPos = missile.StartPosition.To2D();
+            var endPos = missile.EndPosition.To2D();
+
+            var data = spelldata.GetByMissileName(missile.SData.Name.ToLower());
+                return;
+
+            var direction = (endPos - startPos).Normalized();
+            if (startPos.Distance(endPos) > data.CastRange)
+                endPos = startPos + direction*data.CastRange;
+
+            var missileDelay = (1000*(missile.SData.CastFrame/30));
+            var missileDistance = missile.Position.To2D().Distance(startPos);
+            var endtime = missileDelay - (int) (1000*missileDistance/data.MissileSpeed);
+
+            foreach (var hero in champion.Heroes)
+            {
+                // setup projection
+                var proj = hero.Player.ServerPosition.To2D().ProjectOn(startPos, endPos);
+                var projdist = hero.Player.ServerPosition.To2D().Distance(proj.SegmentPoint);
+
+                // get the evade time 
+                var evadetime =
+                    (int)
+                        (1000 * (missile.SData.LineWidth - projdist + hero.Player.BoundingRadius) /
+                         hero.Player.MoveSpeed);
+
+
+                // check if hero on segment
+                if (missile.SData.LineWidth + hero.Player.BoundingRadius > projdist)
+                {
+                    // ignore if can evade and using an evade assembly
+                    if (hero.Player.NetworkId == Activator.Player.NetworkId)
+                    {
+                        if (hero.Player.CanMove && evadetime < endtime)
+                        {
+                            if (Activator.Origin.Item("evadefow").GetValue<bool>())
+                            {
+                                return;
+                            }
+                        }
+                    }
+
+                    Utility.DelayAction.Add((int) (endtime - (endtime * 0.5)), delegate
+                    {
+                        hero.Attacker = caster;
+                        hero.HitTypes.Add(HitType.Spell);
+                        hero.IncomeDamage +=
+                            (float)Math.Abs(caster.GetSpellDamage(hero.Player, data.SDataName));
+
+                        // spell is important or lethal!
+                        if (data.HitType.Contains(HitType.Ultimate))
+                            hero.HitTypes.Add(HitType.Ultimate);
+
+                        // spell is important but not as fatal
+                        if (data.HitType.Contains(HitType.Danger))
+                            hero.HitTypes.Add(HitType.Danger);
+
+                        // spell has a crowd control effect
+                        if (data.HitType.Contains(HitType.CrowdControl))
+                            hero.HitTypes.Add(HitType.CrowdControl);
+
+                        Utility.DelayAction.Add((int) (endtime *2), delegate
+                        {
+                            hero.Attacker = null;
+                            hero.IncomeDamage = 0;
+                            hero.HitTypes.Clear();
+                        });
+                    });
+                }
+            }
         }
 
         private static void Obj_AI_Base_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
@@ -65,28 +149,18 @@ namespace Activator
                                     hero.IncomeDamage +=
                                         (float) Math.Abs(sender.GetSpellDamage(hero.Player, args.SData.Name));
 
-                                    if (args.SData.HaveHitEffect)
-                                        hero.HitTypes.Add(HitType.AutoAttack);
+                                    // spell is important or lethal!
+                                    if (data.HitType.Contains(HitType.Ultimate))
+                                        hero.HitTypes.Add(HitType.Ultimate);
 
-                                    // detect danger/cc/ultimates from our db
-                                    foreach (var item in spelldata.spells)
-                                    {
-                                        if (item.SDataName != args.SData.Name.ToLower())
-                                            continue;
+                                    // spell is important but not as fatal
+                                    if (data.HitType.Contains(HitType.Danger))
+                                        hero.HitTypes.Add(HitType.Danger);
 
-                                        // spell is important or lethal!
-                                        if (item.HitType.Contains(HitType.Ultimate))
-                                            hero.HitTypes.Add(HitType.Ultimate);
-
-                                        // spell is important but not as fatal
-                                        if (item.HitType.Contains(HitType.Danger))
-                                            hero.HitTypes.Add(HitType.Danger);
-
-                                        // spell has a crowd control effect
-                                        if (item.HitType.Contains(HitType.CrowdControl))
-                                            hero.HitTypes.Add(HitType.CrowdControl);
-                                    }
-
+                                    // spell has a crowd control effect
+                                    if (data.HitType.Contains(HitType.CrowdControl))
+                                        hero.HitTypes.Add(HitType.CrowdControl);
+                 
                                     // lazy safe reset
                                     Utility.DelayAction.Add((int) (data.Delay*2), delegate
                                     {
@@ -108,16 +182,14 @@ namespace Activator
                                 // important spelldata shit (hope sdata is accurate)
                                 var distance =
                                     (int) (1000*(sender.Distance(hero.Player.ServerPosition)/data.MissileSpeed));
-                                var endtime = data.Delay - 100 + Game.Ping/2 + distance -
-                                              (Environment.TickCount - start);
+                                var endtime = data.Delay - 100 + Game.Ping/2 + distance - (Environment.TickCount - start);
 
                                 // get the real end position normalized
                                 var direction = (args.End.To2D() - sender.ServerPosition.To2D()).Normalized();
                                 var endpos = sender.ServerPosition.To2D() + direction*data.CastRange;
 
                                 // setup projection
-                                var proj = hero.Player.ServerPosition.To2D()
-                                    .ProjectOn(sender.ServerPosition.To2D(), endpos);
+                                var proj = hero.Player.ServerPosition.To2D().ProjectOn(sender.ServerPosition.To2D(), endpos);
                                 var projdist = hero.Player.ServerPosition.To2D().Distance(proj.SegmentPoint);
 
                                 // get the evade time 
@@ -148,28 +220,17 @@ namespace Activator
                                         hero.IncomeDamage +=
                                             (float) Math.Abs(sender.GetSpellDamage(hero.Player, args.SData.Name));
 
-                                        if (args.SData.HaveHitEffect)
-                                            hero.HitTypes.Add(HitType.AutoAttack);
+                                        // spell is important or lethal!
+                                        if (data.HitType.Contains(HitType.Ultimate))
+                                            hero.HitTypes.Add(HitType.Ultimate);
 
-                                        // detect danger/cc/ultimates from our db
-                                        foreach (var item in spelldata.spells)
-                                        {
-                                            if (item.SDataName != args.SData.Name.ToLower())
-                                                continue;
+                                        // spell is important but not as fatal
+                                        if (data.HitType.Contains(HitType.Danger))
+                                            hero.HitTypes.Add(HitType.Danger);
 
-                                            // spell is important or lethal!
-                                            if (item.HitType.Contains(HitType.Ultimate))
-                                                hero.HitTypes.Add(HitType.Ultimate);
-
-                                            // spell is important but not as fatal
-                                            if (item.HitType.Contains(HitType.Danger))
-                                                hero.HitTypes.Add(HitType.Danger);
-
-                                            // spell has a crowd control effect
-                                            if (item.HitType.Contains(HitType.CrowdControl))
-                                                hero.HitTypes.Add(HitType.CrowdControl);
-
-                                        }
+                                        // spell has a crowd control effect
+                                        if (data.HitType.Contains(HitType.CrowdControl))
+                                            hero.HitTypes.Add(HitType.CrowdControl);
 
                                         // lazy safe reset
                                         Utility.DelayAction.Add((int) (endtime*2), delegate
@@ -205,36 +266,26 @@ namespace Activator
                                         hero.IncomeDamage +=
                                             (float) Math.Abs(sender.GetSpellDamage(hero.Player, args.SData.Name));
 
-                                        // detect danger/cc/ultimates from our db
-                                        foreach (var item in spelldata.spells)
+                                        // spell is important or lethal!
+                                        if (data.HitType.Contains(HitType.Ultimate))
+                                            hero.HitTypes.Add(HitType.Ultimate);
+
+                                        // spell is important but not as fatal
+                                        if (data.HitType.Contains(HitType.Danger))
+                                            hero.HitTypes.Add(HitType.Danger);
+
+                                        // spell has a crowd control effect
+                                        if (data.HitType.Contains(HitType.CrowdControl))
+                                            hero.HitTypes.Add(HitType.CrowdControl);
+
+                                        // lazy reset
+                                        Utility.DelayAction.Add((int) (endtime*2), delegate
                                         {
-                                            if (item.SDataName != args.SData.Name.ToLower())
-                                                continue;
+                                            hero.Attacker = null;
+                                            hero.IncomeDamage = 0;
+                                            hero.HitTypes.Clear();
+                                        });
 
-                                            Utility.DelayAction.Add(Game.Ping + 10, delegate
-                                            {
-                                                // spell is important or lethal!
-                                                if (item.HitType.Contains(HitType.Ultimate))
-                                                    hero.HitTypes.Add(HitType.Ultimate);
-
-                                                // spell is important but not as fatal
-                                                if (item.HitType.Contains(HitType.Danger))
-                                                    hero.HitTypes.Add(HitType.Danger);
-
-                                                // spell has a crowd control effect
-                                                if (item.HitType.Contains(HitType.CrowdControl))
-                                                    hero.HitTypes.Add(HitType.CrowdControl);
-
-                                            });
-
-                                            // lazy reset
-                                            Utility.DelayAction.Add((int) (endtime*2), delegate
-                                            {
-                                                hero.Attacker = null;
-                                                hero.IncomeDamage = 0;
-                                                hero.HitTypes.Clear();
-                                            });
-                                        }
                                     });
                                 }
                             }
