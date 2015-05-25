@@ -26,11 +26,14 @@ namespace Activator
             if (caster == null || !caster.IsValid)
                 return;
 
+            if (caster.Team == Activator.Player.Team)
+                return;
 
             var startPos = missile.StartPosition.To2D();
             var endPos = missile.EndPosition.To2D();
 
             var data = spelldata.GetByMissileName(missile.SData.Name.ToLower());
+            if (data.MissileName == string.Empty)
                 return;
 
             var direction = (endPos - startPos).Normalized();
