@@ -97,12 +97,12 @@ namespace KurisuNidalee
                 return;
 
             var attacker = gapcloser.Sender;
-            if (attacker.IsValidTarget(Javelin.Range))
+            if (attacker.IsValidTarget(260f))
             {
                 if (!_cougarForm)
                 {
                     var prediction = Javelin.GetPrediction(attacker);
-                    if (prediction.Hitchance != HitChance.Collision && HQ == 0)
+                    if (prediction.Hitchance != HitChance.Collision && Javelin.IsReady())
                         Javelin.Cast(prediction.CastPosition);
 
                     if (Aspectofcougar.IsReady())
@@ -111,9 +111,9 @@ namespace KurisuNidalee
 
                 if (_cougarForm)
                 {
-                    if (attacker.Distance(Me.ServerPosition) <= Takedown.Range && CQ == 0)
+                    if (attacker.Distance(Me.ServerPosition) <= Takedown.Range && Takedown.IsReady())
                         Takedown.CastOnUnit(Me);
-                    if (attacker.Distance(Me.ServerPosition) <= Swipe.Range && CE == 0)
+                    if (attacker.Distance(Me.ServerPosition) <= Swipe.Range && Swipe.IsReady())
                         Swipe.Cast(attacker.ServerPosition);
                 }
             }
@@ -144,7 +144,7 @@ namespace KurisuNidalee
             _mainMenu.AddSubMenu(nidaKeys);
 
             var nidaSpells = new Menu("Nidalee: Combo", "spells");
-            nidaSpells.AddItem(new MenuItem("seth", "Javelin Hitchance")).SetValue(new Slider(3,1,4));
+            nidaSpells.AddItem(new MenuItem("seth", "Javelin Hitchance")).SetValue(new Slider(4,1,4));
             nidaSpells.AddItem(new MenuItem("usehumanq", "Use Javelin Toss")).SetValue(true);
             nidaSpells.AddItem(new MenuItem("usehumanw", "Use Bushwack")).SetValue(true);
             nidaSpells.AddItem(new MenuItem("usecougarq", "Use Takedown")).SetValue(true);
@@ -224,7 +224,7 @@ namespace KurisuNidalee
             var nidaM = new Menu("Nidalee: Misc", "misc");
             nidaM.AddItem(new MenuItem("useitems", "Use Items")).SetValue(true);
             nidaM.AddItem(new MenuItem("dash", "Q on Dashing")).SetValue(false);
-            nidaM.AddItem(new MenuItem("gapp", "Q Anti-Gapcloser")).SetValue(false);
+            nidaM.AddItem(new MenuItem("gapp", "Q Anti-Gapcloser")).SetValue(true);
             nidaM.AddItem(new MenuItem("qimmobile", "Q on Immobile")).SetValue(true);
             nidaM.AddItem(new MenuItem("wimmobile", "W on Immobile")).SetValue(true);
             nidaM.AddItem(new MenuItem("formimm", "Switch Form Immobile")).SetValue(true);
@@ -245,9 +245,9 @@ namespace KurisuNidalee
 
             _target = TargetSelector.GetTarget(1200, TargetSelector.DamageType.Magical);
 
-            ProcessCooldowns();
-            PrimalSurge();
             AutoSpells();
+            PrimalSurge();
+            ProcessCooldowns();
 
             if (Me.HasBuff("Takedown"))
             {
@@ -475,9 +475,8 @@ namespace KurisuNidalee
         // Walljumper credits to Hellsing
         private static void UseFlee()
         {
-            if (!_cougarForm && Aspectofcougar.IsReady())
-                if ((CW == 0 || Pounce.IsReady()))
-                    Aspectofcougar.Cast();
+            if (!_cougarForm && Aspectofcougar.IsReady() && Pounce.IsReady()) 
+                Aspectofcougar.Cast();
 
             // We need to define a new move position since jumping over walls
             // requires you to be close to the specified wall. Therefore we set the move
@@ -503,7 +502,7 @@ namespace KurisuNidalee
             var wallJumpPossible = false;
 
             // Only calculate stuff when our Q is up and there is a wall inbetween
-            if (_cougarForm && (CW == 0 || Pounce.IsReady()) && wallCheck != null)
+            if (_cougarForm && Pounce.IsReady() && wallCheck != null)
             {
                 // Get our wall position to calculate from
                 var wallPosition = movePosition;
@@ -597,7 +596,7 @@ namespace KurisuNidalee
             else
             {
                 Orbwalking.Orbwalk(target, Game.CursorPos, 90f, 0f, false, false);
-                if (_cougarForm && (CW == 0 || Pounce.IsReady()))
+                if (_cougarForm && Pounce.IsReady())
                     Pounce.Cast(Game.CursorPos);
             }
         }
@@ -623,13 +622,13 @@ namespace KurisuNidalee
 
                 // Check is pounce is ready 
                 if (Pounce.IsReady() && _mainMenu.Item("usecougarw").GetValue<bool>() && 
-                   (target.Distance(Me.ServerPosition, true) > 250*250 ||
-                    CougarDamage(target) >= target.Health))
+                   (target.Distance(Me.ServerPosition, true) > 200*200 || CougarDamage(target) >= target.Health))
                 {
                     if (TargetHunted(target) & target.Distance(Me.ServerPosition, true) <= 750*750)
                     {
                         if (Takedown.IsReady())
                             Takedown.CastOnUnit(Me);
+
                         Pounce.Cast(target.ServerPosition);
                     }
 
@@ -637,6 +636,7 @@ namespace KurisuNidalee
                     {
                         if (Takedown.IsReady())
                             Takedown.CastOnUnit(Me);
+
                         Pounce.Cast(target.ServerPosition);
                     }
                 }
@@ -667,12 +667,12 @@ namespace KurisuNidalee
                     }
 
                     var prediction = Javelin.GetPrediction(target);
-                    if (prediction.Hitchance >= HitChance.Medium)
+                    if (prediction.Hitchance >= HitChance.Medium && !Pounce.IsReady())
                         Aspectofcougar.Cast();
                 }
 
                 // Switch to human form if can kill in aa and cougar skill not available      
-                if ((CW != 0 || !Pounce.IsReady()) && (CE != 0  || !Swipe.IsReady()) && (CQ != 0 || !Takedown.IsReady()))
+                if (!Pounce.IsReady() && !Swipe.IsReady() && !Takedown.IsReady())
                 {
                     if (target.Distance(Me.ServerPosition, true) > Takedown.RangeSqr && CanKillAA(target))
                     {
@@ -705,8 +705,8 @@ namespace KurisuNidalee
                 if (Aspectofcougar.IsReady() && _mainMenu.Item("usecougarr").GetValue<bool>()
                     && (TargetHunted(target) || target.Health <= CougarDamage(target) && (HQ != 0 || !Javelin.IsReady())))
                 {
-                    // e/q dont reset CQ/CE timer is safe
-                    if ((CW == 0 || Pounce.IsReady() && (CQ == 0 || CE == 0)))
+                    // check if pounce is ready and takedown or swipe before changing form
+                    if (CW == 0 && (CQ == 0 || CE == 0))
                     {
                         if (TargetHunted(target) && target.Distance(Me.ServerPosition, true) <= 750*750)
                             Aspectofcougar.Cast();
@@ -716,20 +716,21 @@ namespace KurisuNidalee
                 }
 
                 // Check bushwack and cast underneath targets feet.
-                if ((HW == 0 || Bushwack.IsReady()) && _mainMenu.Item("usehumanw").GetValue<bool>() &&
+                if (Bushwack.IsReady() && _mainMenu.Item("usehumanw").GetValue<bool>() &&
                          target.Distance(Me.ServerPosition, true) <= Bushwack.RangeSqr)
                 {
                     Bushwack.CastIfHitchanceEquals(target, HitChance.Medium);
                 }
             }
         }
+
         #endregion
 
         #region Nidalee: Harass
         private static void UseHarass()
         {
             var qtarget = TargetSelector.GetTargetNoCollision(Javelin);
-            if (qtarget.IsValidTarget(Javelin.Range))
+            if (qtarget.IsValidTarget())
             {
                 var actualHeroManaPercent = (int) ((Me.Mana/Me.MaxMana)*100);
                 var minPercent = _mainMenu.Item("humanqpct").GetValue<Slider>().Value;
@@ -1010,8 +1011,9 @@ namespace KurisuNidalee
                         var poutput = Javelin.GetPrediction(m);
                         if (!Javelin.IsReady() || poutput.Hitchance == HitChance.Collision ||
                             actualHeroManaPercent >= minPercent)
-                        {
-                            if (CQ == 0 && CE == 0 && (CW == 0 || Pounce.IsReady()))
+                        {                    
+                            // check if pounce is ready and takedown or swipe before changing form
+                            if (CW == 0 && (CE == 0 || CQ == 0))
                             {
                                 if (TargetHunted(m) & m.Distance(Me.ServerPosition, true) <= 750*750)
                                     Aspectofcougar.Cast();
@@ -1044,20 +1046,20 @@ namespace KurisuNidalee
 
                 if (_cougarForm)
                 {
-                    if (m.Distance(Me.ServerPosition, true) < Swipe.RangeSqr && CE == 0)
+                    if (m.Distance(Me.ServerPosition, true) < Swipe.RangeSqr && Swipe.IsReady())
                     {
                         if (m.Health <= cedmg && _mainMenu.Item("lhcougare").GetValue<bool>())
                             Swipe.Cast(m.ServerPosition);
                     }
 
 
-                    if (m.Distance(Me.ServerPosition, true) < Pounce.RangeSqr && (CW == 0 || Pounce.IsReady()))
+                    if (m.Distance(Me.ServerPosition, true) < Pounce.RangeSqr && Pounce.IsReady())
                     {
                         if (m.Health <= cwdmg && _mainMenu.Item("lhcougarw").GetValue<bool>())
                             Pounce.Cast(m.ServerPosition);
                     }
 
-                    if (m.Distance(Me.ServerPosition, true) < Takedown.RangeSqr && CQ == 0)
+                    if (m.Distance(Me.ServerPosition, true) < Takedown.RangeSqr && Takedown.IsReady())
                     {
                         if (m.Health <= cqdmg && _mainMenu.Item("lhcougarq").GetValue<bool>())
                             Takedown.CastOnUnit(Me);
@@ -1092,14 +1094,17 @@ namespace KurisuNidalee
         private static void NidaleeTracker(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
         {
             if (sender.IsMe)
+            {
                 GetCooldowns(args);
 
-            if (!sender.IsMe)
-                return;
-
-            if (args.SData.Name.ToLower() == "takedown") 
-                if (_cougarForm && Takedown.IsReady())
-                    Orbwalking.ResetAutoAttackTimer();
+                // check if it was a "unit" pounce (hunted pounce)
+                if (args.SData.Name == "Pounce" && args.Target != null)
+                {
+                    // reset the cooldown timer for hunted targets
+                    if (TargetHunted(args.Target as Obj_AI_Base))
+                        CWRem = Game.Time + CalculateCd(1.5f);
+                }
+            }
         }
 
         private static readonly float[] HumanQcd = { 6, 6, 6, 6, 6 };
@@ -1195,7 +1200,7 @@ namespace KurisuNidalee
                     Drawing.DrawText(wts[0] - 80, wts[1], Color.Orange, "Q: " + CQ.ToString("0.0"));
                 if (NotLearned(Bushwack))
                     Drawing.DrawText(wts[0] - 30, wts[1] + 30, Color.White, "W: Null");
-                else if ((CW == 0 || Pounce.IsReady()))
+                else if ((CW == 0 || !_cougarForm && Pounce.IsReady()))
                     Drawing.DrawText(wts[0] - 30, wts[1] + 30, Color.White, "W: Ready");
                 else
                     Drawing.DrawText(wts[0] - 30, wts[1] + 30, Color.Orange, "W: " + CW.ToString("0.0"));
