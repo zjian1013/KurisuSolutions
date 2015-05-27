@@ -31,8 +31,8 @@ namespace KurisuBlitz
                 return;
 
             // Set spells      
-            _q = new Spell(SpellSlot.Q, 1000f);
-            _q.SetSkillshot(250f, 75f, 1800f, true, SkillshotType.SkillshotLine);
+            _q = new Spell(SpellSlot.Q, 1050f);
+            _q.SetSkillshot(250f, 70f, 1800f, true, SkillshotType.SkillshotLine);
 
             _e = new Spell(SpellSlot.E, 150f);
             _r = new Spell(SpellSlot.R, 550f);
