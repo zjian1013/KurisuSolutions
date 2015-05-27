@@ -31,8 +31,8 @@ namespace KurisuBlitz
                 return;
            
             // Set spells      
-            _q = new Spell(SpellSlot.Q, 1000f);
-            _q.SetSkillshot(250f, 75f, 1800f, true, SkillshotType.SkillshotLine);
+            _q = new Spell(SpellSlot.Q, 1050f);
+            _q.SetSkillshot(250f, 70f, 1800f, true, SkillshotType.SkillshotLine);
 
             _e = new Spell(SpellSlot.E, 150f);
             _r = new Spell(SpellSlot.R, 550f);
@@ -62,26 +62,25 @@ namespace KurisuBlitz
 
             var menuQ = new Menu("Q Menu", "qmenu");
             menuQ.AddItem(new MenuItem("usecomboq", "Use in Combo")).SetValue(true);
-            menuQ.AddItem(new MenuItem("qdashing", "Q on Dashing Enemies")).SetValue(true);
-            menuQ.AddItem(new MenuItem("qimmobile", "Q on Immobile Enemies")).SetValue(true);
-            menuQ.AddItem(new MenuItem("hitchanceq", "Q Hitchance 1-Low, 4-Very High")).SetValue(new Slider(3, 1, 4));
-            menuQ.AddItem(new MenuItem("dnd", "Mininum Distance to Q")).SetValue(new Slider((int) _r.Range, 0, (int)_q.Range));
-            menuQ.AddItem(new MenuItem("dnd2", "Maximum Distance to Q")).SetValue(new Slider((int)_q.Range, 0, (int)_q.Range));
-            menuQ.AddItem(new MenuItem("hnd", "Dont grab if below health %")).SetValue(new Slider(0));
-            menuQ.AddItem(new MenuItem("interruptq", "Use for Interrupt")).SetValue(true);
-            menuQ.AddItem(new MenuItem("secureq", "Use for Killsteal")).SetValue(false);
+            menuQ.AddItem(new MenuItem("qdash", "Q on Dashing Enemies")).SetValue(false);
+            menuQ.AddItem(new MenuItem("qimm", "Q on Immobile Enemies")).SetValue(true);
+            menuQ.AddItem(new MenuItem("qhitc", "Q Hitchance 1-Low, 4-Very High")).SetValue(new Slider(3, 1, 4));
+            menuQ.AddItem(new MenuItem("minimumq", "Mininum Distance to Q")).SetValue(new Slider(0, 0, (int)_q.Range));
+            menuQ.AddItem(new MenuItem("minimumhp", "Dont grab if below health %")).SetValue(new Slider(0));
+            menuQ.AddItem(new MenuItem("intq", "Use for Interrupt")).SetValue(true);
+            menuQ.AddItem(new MenuItem("secq", "Use for Killsteal")).SetValue(false);
             spellmenu.AddSubMenu(menuQ);
 
             var menuE = new Menu("E Menu", "emenu");
             menuE.AddItem(new MenuItem("usecomboe", "Use in Combo")).SetValue(true);
-            menuE.AddItem(new MenuItem("interrupte", "Use for Interrupt")).SetValue(true);
-            menuE.AddItem(new MenuItem("securee", "Use for Killsteal")).SetValue(false);
+            menuE.AddItem(new MenuItem("inte", "Use for Interrupt")).SetValue(true);
+            menuE.AddItem(new MenuItem("sece", "Use for Killsteal")).SetValue(false);
             spellmenu.AddSubMenu(menuE);
 
             var menuR = new Menu("R Menu", "rmenu");
             menuR.AddItem(new MenuItem("usecombor", "Use in Combo")).SetValue(true);
-            menuR.AddItem(new MenuItem("interruptr", "Use for Interrupt")).SetValue(true);
-            menuR.AddItem(new MenuItem("securer", "Use for Killsteal")).SetValue(false);
+            menuR.AddItem(new MenuItem("intr", "Use for Interrupt")).SetValue(true);
+            menuR.AddItem(new MenuItem("secr", "Use for Killsteal")).SetValue(false);
             spellmenu.AddSubMenu(menuR);
 
 
@@ -109,7 +108,7 @@ namespace KurisuBlitz
 
         private static void BlitzOnInterruptableSpell(Obj_AI_Base unit, InterruptableSpell spell)
         {
-            if (_menu.Item("interruptq").GetValue<bool>())
+            if (_menu.Item("intq").GetValue<bool>())
             {
                 var prediction = _q.GetPrediction(unit);
                 if (prediction.Hitchance >= HitChance.Low)
@@ -118,7 +117,7 @@ namespace KurisuBlitz
                 }
             }
 
-            if (_menu.Item("interruptr").GetValue<bool>())
+            if (_menu.Item("intr").GetValue<bool>())
             {
                 if (unit.Distance(Me.ServerPosition, true) <= _r.RangeSqr)
                 {
@@ -126,7 +125,7 @@ namespace KurisuBlitz
                 }
             }
 
-            if (_menu.Item("interrupte").GetValue<bool>())
+            if (_menu.Item("inte").GetValue<bool>())
             {
                 if (unit.Distance(Me.ServerPosition, true) <= _e.RangeSqr)
                 {
@@ -159,15 +158,15 @@ namespace KurisuBlitz
         private static void BlitzOnUpdate(EventArgs args)
         {
             // kill secure
-            Secure(_menu.Item("secureq").GetValue<bool>(),
-                   _menu.Item("securee").GetValue<bool>(),
-                   _menu.Item("securer").GetValue<bool>());
+            Secure(_menu.Item("secq").GetValue<bool>(),
+                   _menu.Item("sece").GetValue<bool>(),
+                   _menu.Item("secr").GetValue<bool>());
 
-            if ((int) (Me.Health/Me.MaxHealth*100) >= _menu.Item("hnd").GetValue<Slider>().Value)
+            if ((int) (Me.Health/Me.MaxHealth*100) >= _menu.Item("minimumhp").GetValue<Slider>().Value)
             {
                 // auto grab
-                AutoCast(_menu.Item("qdashing").GetValue<bool>(),
-                         _menu.Item("qimmobile").GetValue<bool>());
+                AutoCast(_menu.Item("qdash").GetValue<bool>(),
+                         _menu.Item("qimm").GetValue<bool>());
 
                 if (_menu.Item("combokey").GetValue<KeyBind>().Active)
                 {
@@ -184,11 +183,11 @@ namespace KurisuBlitz
                 foreach (var itarget in ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsValidTarget(_q.Range)))
                 {
                     if (dashing && _menu.Item("dograb" + itarget.ChampionName).GetValue<StringList>().SelectedIndex == 2)
-                        if (itarget.Distance(Me.ServerPosition) > _menu.Item("dnd").GetValue<Slider>().Value)
+                        if (itarget.Distance(Me.ServerPosition) > _menu.Item("minimumq").GetValue<Slider>().Value)
                             _q.CastIfHitchanceEquals(itarget, HitChance.Dashing);
 
                     if (immobile && _menu.Item("dograb" + itarget.ChampionName).GetValue<StringList>().SelectedIndex == 2)
-                        if (itarget.Distance(Me.ServerPosition) > _menu.Item("dnd").GetValue<Slider>().Value)
+                        if (itarget.Distance(Me.ServerPosition) > _menu.Item("minimumq").GetValue<Slider>().Value)
                             _q.CastIfHitchanceEquals(itarget, HitChance.Immobile);
                 }
             }
@@ -214,9 +213,9 @@ namespace KurisuBlitz
                 if (qtarget.IsValidTarget())
                 {
                     var poutput = _q.GetPrediction(qtarget);
-                    if (poutput.Hitchance >= (HitChance) _menu.Item("hitchanceq").GetValue<Slider>().Value + 2)
+                    if (poutput.Hitchance >= (HitChance) _menu.Item("qhitc").GetValue<Slider>().Value + 2)
                     {
-                        if (qtarget.Distance(Me.ServerPosition) > _menu.Item("dnd").GetValue<Slider>().Value)
+                        if (qtarget.Distance(Me.ServerPosition) > _menu.Item("minimumq").GetValue<Slider>().Value)
                         {
                             if (_menu.Item("dograb" + qtarget.ChampionName).GetValue<StringList>().SelectedIndex != 0) 
                                 _q.Cast(poutput.CastPosition);
@@ -269,7 +268,7 @@ namespace KurisuBlitz
                         if (poutput.Hitchance >= HitChance.Medium)
                         {
                             if (qtarget.Distance(Me.ServerPosition) >
-                                _menu.Item("dnd").GetValue<Slider>().Value)
+                                _menu.Item("minimumq").GetValue<Slider>().Value)
                             {
                                 _q.Cast(poutput.CastPosition);
                             }
