@@ -159,15 +159,16 @@ namespace KurisuBlitz
         private static void BlitzOnUpdate(EventArgs args)
         {
             // kill secure
-            Secure(_menu.Item("secureq").GetValue<bool>(), _menu.Item("securee").GetValue<bool>(),
+            Secure(_menu.Item("secureq").GetValue<bool>(),
+                   _menu.Item("securee").GetValue<bool>(),
                    _menu.Item("securer").GetValue<bool>());
-
-            // auto grab
-            AutoCast(_menu.Item("qdashing").GetValue<bool>(),
-                     _menu.Item("qimmobile").GetValue<bool>());
 
             if ((int) (Me.Health/Me.MaxHealth*100) >= _menu.Item("hnd").GetValue<Slider>().Value)
             {
+                // auto grab
+                AutoCast(_menu.Item("qdashing").GetValue<bool>(),
+                         _menu.Item("qimmobile").GetValue<bool>());
+
                 if (_menu.Item("combokey").GetValue<KeyBind>().Active)
                 {
                     Combo(_menu.Item("usecomboq").GetValue<bool>(),
@@ -188,7 +189,7 @@ namespace KurisuBlitz
 
                     if (immobile && _menu.Item("dograb" + itarget.ChampionName).GetValue<StringList>().SelectedIndex == 2)
                         if (itarget.Distance(Me.ServerPosition) > _menu.Item("dnd").GetValue<Slider>().Value)
-                         _q.CastIfHitchanceEquals(itarget, HitChance.Immobile);
+                            _q.CastIfHitchanceEquals(itarget, HitChance.Immobile);
                 }
             }
 
@@ -196,7 +197,7 @@ namespace KurisuBlitz
             {
                 foreach (var rtarget in ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsValidTarget(_r.Range)))
                 {
-                    if (rtarget.IsValidTarget(_r.Range) && _menu.Item("usecombor").GetValue<bool>())
+                    if (_menu.Item("usecombor").GetValue<bool>())
                     {
                         if (!_e.IsReady() && rtarget.HasBuffOfType(BuffType.Knockup))
                             _r.Cast();
@@ -210,7 +211,7 @@ namespace KurisuBlitz
             if (useq && _q.IsReady())
             {
                 var qtarget = TargetSelector.GetTargetNoCollision(_q);
-                if (qtarget.IsValidTarget(_q.Range))
+                if (qtarget.IsValidTarget())
                 {
                     var poutput = _q.GetPrediction(qtarget);
                     if (poutput.Hitchance >= (HitChance) _menu.Item("hitchanceq").GetValue<Slider>().Value + 2)
@@ -227,7 +228,7 @@ namespace KurisuBlitz
             if (usee && _e.IsReady())
             {
                 var etarget = TargetSelector.GetTarget(250, TargetSelector.DamageType.Physical);
-                if (etarget.IsValidTarget(_e.Range + 100))
+                if (etarget.IsValidTarget())
                 {
                     if (_menu.Item("usecomboe").GetValue<bool>() && !_q.IsReady())
                         _e.CastOnUnit(Me);                   
@@ -267,8 +268,8 @@ namespace KurisuBlitz
                         var poutput = _q.GetPrediction(qtarget);
                         if (poutput.Hitchance >= HitChance.Medium)
                         {
-                            if (qtarget.Distance(Me.ServerPosition, true) >
-                                Math.Pow(_menu.Item("dnd2").GetValue<Slider>().Value, 2))
+                            if (qtarget.Distance(Me.ServerPosition) >
+                                _menu.Item("dnd").GetValue<Slider>().Value)
                             {
                                 _q.Cast(poutput.CastPosition);
                             }
