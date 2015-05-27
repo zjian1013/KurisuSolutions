@@ -1102,7 +1102,7 @@ namespace KurisuNidalee
                 {
                     // reset the cooldown timer for hunted targets
                     if (TargetHunted(args.Target as Obj_AI_Base))
-                        CWRem = Game.Time + CalculateCd(1.5f);
+                        CWRem = Game.Time + 1.5f;
                 }
             }
         }
