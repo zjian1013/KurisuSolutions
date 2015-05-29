@@ -100,7 +100,7 @@ namespace Activator.Items
             {
                 Menu.AddItem(new MenuItem("use" + Name + "Number", "Minimum Spells to Use")).SetValue(new Slider(DefaultHP/5, 1, 5));
                 Menu.AddItem(new MenuItem("use" + Name + "Time", "Minumum Durration to Use")).SetValue(new Slider(2, 1, 5)); ;
-                Menu.AddItem(new MenuItem("use" + Name + "Od", "Use only on Dangerous")).SetValue(false);
+                Menu.AddItem(new MenuItem("use" + Name + "Od", "Use Only for Dangerous")).SetValue(false);
             }
 
             if (Category.Any(t => t == MenuType.ActiveCheck))

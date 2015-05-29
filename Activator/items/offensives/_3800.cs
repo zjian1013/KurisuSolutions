@@ -18,7 +18,7 @@ namespace Activator.Items.Offensives
 
         internal override string DisplayName
         {
-            get { return "Righteous Glory"; }
+            get { return "Righteous Glory (Broken)"; }
         }
 
         internal override int Cooldown
