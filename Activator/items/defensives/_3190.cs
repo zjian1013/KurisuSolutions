@@ -54,7 +54,7 @@ namespace Activator.Items.Defensives
 
             foreach (var hero in champion.Heroes)
             {
-                if (hero.Player.Distance(Player.ServerPosition) > Range)
+                if (hero.Player.Distance(Player.ServerPosition) <= Range)
                 {
                     if (Menu.Item("use" + Name + "Norm").GetValue<bool>())
                         if (hero.IncomeDamage > 0 && hero.HitTypes.Contains(HitType.Danger))
