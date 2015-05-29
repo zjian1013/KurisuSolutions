@@ -46,12 +46,12 @@ namespace Activator.Items.Offensives
             {
                 if (Target.Health / Target.MaxHealth * 100 <= Menu.Item("EnemyLowHP" + Name + "Pct").GetValue<Slider>().Value)
                 {
-                    UseItem(Target, true);  
+                    UseItem(true);  
                 }
 
                 if (Player.Health / Player.MaxHealth * 100 <= Menu.Item("SelfLowHP" + Name + "Pct").GetValue<Slider>().Value)
                 {
-                    UseItem(Target, true);
+                    UseItem(true);
                 }
             }
         }
