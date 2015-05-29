@@ -36,7 +36,7 @@ namespace Activator.Items.Consumables
             get { return 0; }
         }
 
-        public override void OnTick(EventArgs args)
+        public override void OnTick()
         {
             foreach (var hero in champion.Heroes)
             {
@@ -45,28 +45,19 @@ namespace Activator.Items.Consumables
                     if (!Menu.Item("use" + Name).GetValue<bool>())
                         return;
 
-                    if (hero.UsingHealthPot)
+                    if (hero.Player.HasBuff("RegenerationPotion", true))
                         return;
 
                     if (hero.Player.IsRecalling() || hero.Player.InFountain())
                         return;
 
                     if (hero.Player.Health/hero.Player.MaxHealth*100 <=
-                        Menu.Item("SelfLowHP" + Name + "Pct").GetValue<Slider>().Value)
-                    {
-                        if (hero.IncomeDamage > 0)
-                        {
-                            UseItem();
-                            RemoveItem();
-                        }
-                    }
+                        Menu.Item("SelfLowHP" + Name + "Pct").GetValue<Slider>().Value && hero.IncomeDamage > 0)
+                        UseItem();
 
                     if (hero.IncomeDamage/hero.Player.MaxHealth*100 >=
                         Menu.Item("SelfMuchHP" + Name + "Pct").GetValue<Slider>().Value)
-                    {
-                        UseItem();
-                        RemoveItem();
-                    }
+                        UseItem();                       
                 }
             }
         }

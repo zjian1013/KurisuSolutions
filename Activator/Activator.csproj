@@ -90,7 +90,6 @@
     <Compile Include="items\offensives\_3042.cs" />
     <Compile Include="items\offensives\_3074.cs" />
     <Compile Include="items\offensives\_3077.cs" />
-    <Compile Include="items\offensives\_3131.cs" />
     <Compile Include="items\offensives\_3142.cs" />
     <Compile Include="items\offensives\_3144.cs" />
     <Compile Include="items\offensives\_3146.cs" />

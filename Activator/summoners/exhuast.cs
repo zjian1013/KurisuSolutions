@@ -27,7 +27,7 @@ namespace Activator.Summoners
             get { return 210000; }
         }
 
-        public override void OnTick(EventArgs args)
+        public override void OnTick()
         {
             if (!Menu.Item("use" + Name).GetValue<bool>())
                 return;
@@ -52,8 +52,7 @@ namespace Activator.Summoners
                 {
                     if (hero.IncomeDamage > 0 && hero.HitTypes.Contains(HitType.Ultimate))
                     {
-                        UseSpellOn(hero.Attacker);
-                        RemoveSpell();
+                        UseSpellOn(hero.Attacker);                
                     }
                 }
 
@@ -63,8 +62,7 @@ namespace Activator.Summoners
                     if (hero.Attacker.IsFacing(hero.Player) &&
                         hero.Attacker.NetworkId == highestadinrange.NetworkId)
                     {
-                        UseSpellOn(hero.Attacker);
-                        RemoveSpell();
+                        UseSpellOn(hero.Attacker);                      
                     }
                 }
 
@@ -73,8 +71,7 @@ namespace Activator.Summoners
                 {
                     if (!hero.Attacker.IsFacing(hero.Player))
                     {
-                        UseSpellOn(hero.Attacker);
-                        RemoveSpell();
+                        UseSpellOn(hero.Attacker);                    
                     }
                 }
             }

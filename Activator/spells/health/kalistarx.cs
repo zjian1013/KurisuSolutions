@@ -37,10 +37,9 @@ namespace Activator.Spells.Health
             get { return 0; }
         }
 
-        public override void OnTick(EventArgs args)
+        public override void OnTick()
         {
-            if (!Menu.Item("use" + Name).GetValue<bool>() ||
-                Player.GetSpell(Slot).State != SpellState.Ready)
+            if (!Menu.Item("use" + Name).GetValue<bool>())
                 return;
 
             var cooptarget =
@@ -49,28 +48,21 @@ namespace Activator.Spells.Health
 
             foreach (var hero in champion.Heroes)
             {
-                if (cooptarget != null)
+                if (cooptarget != null && hero.Player.NetworkId == cooptarget.NetworkId)
                 {
-                    if (hero.Player.NetworkId != Player.NetworkId)
-                        return;
-
-                    if (hero.Player.NetworkId == cooptarget.NetworkId)
+                    if (hero.Player.Distance(cooptarget.ServerPosition) <= Range)
                     {
-                        if (hero.Player.Distance(cooptarget.ServerPosition) <= Range &&
-                            !cooptarget.HasBuffOfType(BuffType.Invulnerability))
-
+                        if (!cooptarget.HasBuffOfType(BuffType.Invulnerability))
+                        {
                             if (hero.Player.Health/hero.Player.MaxHealth <=
                                 Menu.Item("SelfLowHP" + Name + "Pct").GetValue<Slider>().Value)
                             {
                                 if (hero.IncomeDamage > 0)
-                                {
                                     UseSpell();
-                                    RemoveSpell();
-                                }
                             }
+                        }
                     }
                 }
-
             }
         }
     }

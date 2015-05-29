@@ -31,7 +31,7 @@ namespace Activator
             GetSmiteSlot();
             GetTroysInGame();
             GetHeroesInGame();
-            GetSlotDelegates();
+            GetSlotDamage();
 
             new drawings();
 
@@ -56,7 +56,6 @@ namespace Activator
             ccmenu.AddItem(new MenuItem("cpoison", "Poisons")).SetValue(true);
             cmenu.AddSubMenu(ccmenu);
             cmenu.AddItem(new MenuItem("qssdebug", "Debug")).SetValue(false);   
-
 
             Origin.AddSubMenu(cmenu);
 
@@ -110,18 +109,29 @@ namespace Activator
             // ground object spells
             gametroyhandler.Load();
 
-            // start event ticking on item bought
-            Obj_AI_Base.OnPlaceItemInSlot += Obj_AI_Base_OnPlaceItemInSlot;
+            // on update/tick
+            Game.OnUpdate += Game_OnUpdate;
+
+        }
+
+        private static void Game_OnUpdate(EventArgs args)
+        {            
+            // temporary items instantiator
+            foreach (var item in spelldata.items)
+                if (LeagueSharp.Common.Items.HasItem(item.Id) &&
+                    LeagueSharp.Common.Items.CanUseItem(item.Id))
+                        item.OnTick();
 
             // temporary summoners instantiator
-            spelldata.summoners.ForEach(item => Game.OnUpdate += item.OnTick);
+            foreach (var summoner in spelldata.summoners)
+                if (Player.Spellbook.CanUseSpell(summoner.Slot) == SpellState.Ready)
+                    summoner.OnTick();
 
-            // temporary autospells instantiator
-            spelldata.mypells.ForEach(x => Game.OnUpdate += x.OnTick);
+            // temporary autospell instantiator
+            foreach (var autospell in spelldata.mypells)
+                if (Player.Spellbook.CanUseSpell(autospell.Slot) == SpellState.Ready)
+                    autospell.OnTick();
 
-            // instantiate item on load if we have (incase f5/f8)
-            spelldata.items.FindAll(item => LeagueSharp.Common.Items.HasItem(item.Id))
-                .ForEach(item => Game.OnUpdate += item.OnTick);
         }
 
         private static void NewItem(item item, Menu parent)
@@ -154,7 +164,7 @@ namespace Activator
                                  !t.Name.Contains("c__")); // wtf
         }
 
-        public static void GetSlotDelegates()
+        public static void GetSlotDamage()
         {
             // grab data from common
             foreach (var entry in Damage.Spells)
@@ -208,21 +218,6 @@ namespace Activator
                     TroysInGame = true;
                     gametroy.Troys.Add(new gametroy(i, item.Slot, item.Name, 0, false));
                     Console.WriteLine(i.ChampionName + " troy detected/added to table!");
-                }
-            }
-        }
-
-
-        private static void Obj_AI_Base_OnPlaceItemInSlot(Obj_AI_Base sender, Obj_AI_BasePlaceItemInSlotEventArgs args)
-        {
-            if (sender.IsMe)
-            {
-                foreach (var item in spelldata.items)
-                {
-                    if (item.Id == (int) args.Id)
-                    {
-                        Game.OnUpdate += item.OnTick;
-                    }
                 }
             }
         }

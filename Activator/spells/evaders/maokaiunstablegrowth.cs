@@ -23,7 +23,7 @@ namespace Activator.Spells.Evaders
 
         internal override MenuType[] Category
         {
-            get { return new[] { MenuType.SpellShield, MenuType.Zhonyas }; }
+            get { return new[] { MenuType.SpellShield, MenuType.Zhonyas, MenuType.SelfMinMP }; }
         }
 
         internal override int DefaultHP
@@ -33,61 +33,42 @@ namespace Activator.Spells.Evaders
 
         internal override int DefaultMP
         {
-            get { return 0; }
+            get { return 45; }
         }
 
-        public override void OnTick(EventArgs args)
+        public override void OnTick()
         {
-            if (!Menu.Item("use" + Name).GetValue<bool>() ||
-                Player.GetSpell(Slot).State != SpellState.Ready)
+            if (!Menu.Item("use" + Name).GetValue<bool>())
                 return;
 
+            if (Player.Mana/Player.MaxMana*100 <
+                Menu.Item("SelfMinMP" + Name + "Pct").GetValue<Slider>().Value)
+                return;
 
             foreach (var hero in champion.Heroes)
             {
-                if (hero.Player.NetworkId == Player.NetworkId)
-                {
-                    if (hero.Attacker == null)
-                        return;
+                if (hero.Attacker == null || hero.Player.NetworkId != Player.NetworkId)
+                    return;
 
-                    if (hero.Attacker.Distance(hero.Player.ServerPosition) > Range)
-                        return;
+                if (hero.Attacker.Distance(hero.Player.ServerPosition) > Range)
+                    return;
 
-                    if (Menu.Item("ss" + Name + "All").GetValue<bool>())
-                    {
-                        if (hero.IncomeDamage > 0 && hero.HitTypes.Contains(HitType.Spell))
-                        {
-                            CastOnBestTarget((Obj_AI_Hero)hero.Attacker);
-                            RemoveSpell();
-                        }
-                    }
+                if (Menu.Item("ss" + Name + "All").GetValue<bool>())
+                    if (hero.IncomeDamage > 0 && hero.HitTypes.Contains(HitType.Spell))
+                        CastOnBestTarget((Obj_AI_Hero)hero.Attacker);
 
-                    if (Menu.Item("ss" + Name + "CC").GetValue<bool>())
-                    {
-                        if (hero.IncomeDamage > 0 && hero.HitTypes.Contains(HitType.CrowdControl))
-                        {
-                            CastOnBestTarget((Obj_AI_Hero)hero.Attacker);
-                            RemoveSpell();
-                        }
-                    }
-                    if (Menu.Item("use" + Name + "Norm").GetValue<bool>())
-                    {
-                        if (hero.IncomeDamage > 0 && hero.HitTypes.Contains(HitType.Danger))
-                        {
-                            CastOnBestTarget((Obj_AI_Hero) hero.Attacker);
-                            RemoveSpell();
-                        }
-                    }
+                if (Menu.Item("ss" + Name + "CC").GetValue<bool>())
+                    if (hero.IncomeDamage > 0 && hero.HitTypes.Contains(HitType.CrowdControl))
+                        CastOnBestTarget((Obj_AI_Hero)hero.Attacker);
 
-                    if (Menu.Item("use" + Name + "Ulti").GetValue<bool>())
-                    {
-                        if (hero.IncomeDamage > 0 && hero.HitTypes.Contains(HitType.Ultimate))
-                        {
-                            CastOnBestTarget((Obj_AI_Hero)hero.Attacker);
-                            RemoveSpell();
-                        }
-                    }
-                }
+                if (Menu.Item("use" + Name + "Norm").GetValue<bool>())
+                    if (hero.IncomeDamage > 0 && hero.HitTypes.Contains(HitType.Danger))
+                        CastOnBestTarget((Obj_AI_Hero) hero.Attacker);
+
+                if (Menu.Item("use" + Name + "Ulti").GetValue<bool>())
+                    if (hero.IncomeDamage > 0 && hero.HitTypes.Contains(HitType.Ultimate))
+                        CastOnBestTarget((Obj_AI_Hero)hero.Attacker);     
+     
             }
         }
     }

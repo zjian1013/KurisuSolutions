@@ -33,7 +33,7 @@ namespace Activator
             var endPos = missile.EndPosition.To2D();
 
             var data = spelldata.GetByMissileName(missile.SData.Name.ToLower());
-            if (data.MissileName == string.Empty)
+            if (string.IsNullOrEmpty(data.MissileName))
                 return;
 
             var direction = (endPos - startPos).Normalized();
@@ -111,7 +111,7 @@ namespace Activator
                 foreach (var hero in champion.Heroes)
                 {
                     // auto attack dectection
-                    if (args.SData.IsAutoAttack())
+                    if (args.SData.IsAutoAttack() && args.Target.NetworkId == hero.Player.NetworkId)
                     {
                         var woop = (int) (hero.Player.Distance(sender.ServerPosition)/
                                           sender.BasicAttack.MissileSpeed);

@@ -26,7 +26,7 @@ namespace Activator.Summoners
             get { return 210000; }
         }
 
-        public override void OnTick(EventArgs args)
+        public override void OnTick()
         {
             foreach (var hero in champion.Heroes)
             {
@@ -41,8 +41,8 @@ namespace Activator.Summoners
 
                 if (hero.ForceQSS)
                 {
-                    UseSpell();
-                    RemoveSpell();
+                    UseSpell();                    
+                    hero.IncomeDamage = 0;
                 }
 
                 if (hero.QSSBuffCount >= Menu.Item("use" + Name + "Number").GetValue<Slider>().Value &&
@@ -52,8 +52,8 @@ namespace Activator.Summoners
                     {
                         Utility.DelayAction.Add(Game.Ping + 80, delegate
                         {
-                            UseSpell(Menu.Item("mode" + Name).GetValue<StringList>().SelectedIndex == 1);
-                            RemoveSpell();
+                            UseSpell(Menu.Item("mode" + Name).GetValue<StringList>().SelectedIndex == 1);                          
+                            hero.IncomeDamage = 0;
                         });
                     }
                 }

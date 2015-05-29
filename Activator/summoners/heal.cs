@@ -1,4 +1,5 @@
 ﻿using System;
+using LeagueSharp;
 using LeagueSharp.Common;
 
 namespace Activator.Summoners
@@ -25,7 +26,7 @@ namespace Activator.Summoners
             get { return 240000; }
         }
 
-        public override void OnTick(EventArgs args)
+        public override void OnTick()
         {
             if (!Menu.Item("use" + Name).GetValue<bool>())
                 return;
@@ -46,8 +47,8 @@ namespace Activator.Summoners
                         if (!hero.HitTypes.Contains(HitType.MinionAttack) || 
                             hero.IncomeDamage > hero.Player.Health)
                         {
-                            UseSpell();
-                            RemoveSpell();
+                            UseSpell();                            
+                            hero.IncomeDamage = 0;
                         }
                     }
                 }
@@ -60,8 +61,8 @@ namespace Activator.Summoners
                         if (!hero.HitTypes.Contains(HitType.MinionAttack) || 
                             hero.IncomeDamage > hero.Player.Health)
                         {
-                            UseSpell();
-                            RemoveSpell();
+                            UseSpell();                           
+                            hero.IncomeDamage = 0;
                         }
                     }
                 }

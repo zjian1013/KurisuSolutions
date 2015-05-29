@@ -45,17 +45,14 @@ namespace Activator.Items.Defensives
             get { return 0; }
         }
 
-        public override void OnTick(EventArgs args)
+        public override void OnTick()
         {
             if (!Menu.Item("use" + Name).GetValue<bool>())
-            {
                 return;
-            }
 
             if (Player.CountEnemiesInRange(Range) >= Menu.Item("SelfCount" + Name).GetValue<Slider>().Value)
             {
                 UseItem();
-                RemoveItem(true);
             }
         }
     }

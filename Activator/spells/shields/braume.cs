@@ -36,10 +36,9 @@ namespace Activator.Spells.Shields
             get { return 55; }
         }
 
-        public override void OnTick(EventArgs args)
+        public override void OnTick()
         {
-            if (!Menu.Item("use" + Name).GetValue<bool>() ||
-                Player.GetSpell(Slot).State != SpellState.Ready)
+            if (!Menu.Item("use" + Name).GetValue<bool>())
                 return;
 
             foreach (var hero in champion.Heroes)
@@ -50,35 +49,18 @@ namespace Activator.Spells.Shields
                         Menu.Item("SelfMuchHP" + Name + "Pct").GetValue<Slider>().Value)
                     {
                         if (hero.Attacker != null)
-                        {
                             UseSpellTowards(hero.Attacker.ServerPosition);
-                            RemoveSpell();
-                        }
                     }
 
                     if (Menu.Item("use" + Name + "Norm").GetValue<bool>())
-                    {
                         if (hero.IncomeDamage > 0 && hero.HitTypes.Contains(HitType.Danger))
-                        {
                             if (hero.Attacker != null)
-                            {
                                 UseSpellTowards(hero.Attacker.ServerPosition);
-                                RemoveSpell();
-                            }
-                        }
-                    }
 
                     if (Menu.Item("use" + Name + "Ulti").GetValue<bool>())
-                    {
                         if (hero.IncomeDamage > 0 && hero.HitTypes.Contains(HitType.Ultimate))
-                        {
                             if (hero.Attacker != null)
-                            {
                                 UseSpellTowards(hero.Attacker.ServerPosition);
-                                RemoveSpell();
-                            }
-                        }
-                    }
                 }
             }
         }

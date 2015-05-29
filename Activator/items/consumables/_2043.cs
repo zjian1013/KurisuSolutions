@@ -34,7 +34,7 @@ namespace Activator.Items.Consumables
             get { return 0; }
         }
 
-        public override void OnTick(EventArgs args)
+        public override void OnTick()
         {
  
         }

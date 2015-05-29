@@ -95,16 +95,10 @@ namespace Activator.Spells
             foreach (var hero in champion.Heroes)
             {
                 if (TargetSelector.GetPriority(primary) >= 2)
-                {
                     UseSpellOn(hero.Attacker);
-                    RemoveSpell();
-                }
 
                 else if (LowTarget != null)
-                {
                     UseSpellOn(LowTarget);
-                    RemoveSpell();
-                }
             }
         }
 
@@ -125,10 +119,7 @@ namespace Activator.Spells
             {
                 if (Spell.IsReady())
                 {
-                    if (Spell.IsReady())
-                    {
-                        Spell.Cast(targetpos);
-                    }
+                    Spell.Cast(targetpos);
                 }
             }
         }
@@ -139,25 +130,12 @@ namespace Activator.Spells
             {
                 if (Spell.IsReady())
                 {
-                    if (Spell.IsReady())
-                    {
-                        Spell.CastOnUnit(target);
-                    }
+                    Spell.CastOnUnit(target);
                 }
             }
         }
 
-        public void RemoveSpell()
-        {
-            //if (!Spell.IsReady())
-            //{
-            //    //Game.OnUpdate -= OnTick;
-            //    //Console.WriteLine("STOPPED");
-            //}
-        }
-
-
-        public virtual void OnTick(EventArgs args)
+        public virtual void OnTick()
         {
      
         }

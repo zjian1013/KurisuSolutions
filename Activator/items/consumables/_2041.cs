@@ -35,7 +35,7 @@ namespace Activator.Items.Consumables
             get { return 55; }
         }
 
-        public override void OnTick(EventArgs args)
+        public override void OnTick()
         {
             foreach (var hero in champion.Heroes)
             {
@@ -44,7 +44,7 @@ namespace Activator.Items.Consumables
                     if (!Menu.Item("use" + Name).GetValue<bool>())
                         return;
 
-                    if (hero.UsingMixedPot)
+                    if (hero.Player.HasBuff("ItemCrystalFlask", true))
                         return;
 
                     if (hero.Player.IsRecalling() || Player.InFountain())

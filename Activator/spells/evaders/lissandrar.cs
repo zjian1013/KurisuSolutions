@@ -36,10 +36,9 @@ namespace Activator.Spells.Evaders
             get { return 0; }
         }
 
-        public override void OnTick(EventArgs args)
+        public override void OnTick()
         {
-            if (!Menu.Item("use" + Name).GetValue<bool>() ||
-                Player.GetSpell(Slot).State != SpellState.Ready)
+            if (!Menu.Item("use" + Name).GetValue<bool>())
                 return;
 
             foreach (var hero in champion.Heroes)
@@ -47,22 +46,12 @@ namespace Activator.Spells.Evaders
                 if (hero.Player.NetworkId == Player.NetworkId)
                 {
                     if (Menu.Item("use" + Name + "Norm").GetValue<bool>())
-                    {
                         if (hero.IncomeDamage > 0 && hero.HitTypes.Contains(HitType.Danger))
-                        {
                             UseSpellOn(hero.Player);
-                            RemoveSpell();
-                        }
-                    }
-
+                            
                     if (Menu.Item("use" + Name + "Ulti").GetValue<bool>())
-                    {
                         if (hero.IncomeDamage > 0 && hero.HitTypes.Contains(HitType.Ultimate))
-                        {
                             UseSpellOn(hero.Player);
-                            RemoveSpell();
-                        }
-                    }
                 }
             }
         }

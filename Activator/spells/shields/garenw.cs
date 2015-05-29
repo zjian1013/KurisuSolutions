@@ -36,33 +36,23 @@ namespace Activator.Spells.Shields
             get { return 0; }
         }
 
-        public override void OnTick(EventArgs args)
+        public override void OnTick()
         {
-            if (!Menu.Item("use" + Name).GetValue<bool>() ||
-                Player.GetSpell(Slot).State != SpellState.Ready)
+            if (!Menu.Item("use" + Name).GetValue<bool>())
                 return;
 
             foreach (var hero in champion.Heroes)
             {
-                if (hero.Player.NetworkId != Player.NetworkId)
-                    return;
-
-                if (hero.IncomeDamage / hero.Player.MaxHealth * 100 >=
-                    Menu.Item("SelfMuchHP" + Name + "Pct").GetValue<Slider>().Value)
+                if (hero.Player.NetworkId == Player.NetworkId)
                 {
-                    UseSpell();
-                    RemoveSpell();
-                }
-
-                if (hero.Player.Health / hero.Player.MaxHealth * 100 <=
-                    Menu.Item("SelfLowHP" + Name + "Pct").GetValue<Slider>().Value)
-                {
-                    if (hero.IncomeDamage > 0)
-                    {
+                    if (hero.IncomeDamage / hero.Player.MaxHealth * 100 >=
+                        Menu.Item("SelfMuchHP" + Name + "Pct").GetValue<Slider>().Value)
                         UseSpell();
-                        RemoveSpell();
-                    }
-                }      
+
+                    if (hero.Player.Health/hero.Player.MaxHealth*100 <=
+                        Menu.Item("SelfLowHP" + Name + "Pct").GetValue<Slider>().Value && hero.IncomeDamage > 0)
+                        UseSpell();
+                }
             }
         }
     }

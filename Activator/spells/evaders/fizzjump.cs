@@ -23,7 +23,7 @@ namespace Activator.Spells.Evaders
 
         internal override MenuType[] Category
         {
-            get { return new[] { MenuType.SelfMuchHP, MenuType.Zhonyas, MenuType.TurretHP }; }
+            get { return new[] { MenuType.SelfMuchHP, MenuType.Zhonyas, MenuType.SelfMinMP }; }
         }
 
         internal override int DefaultHP
@@ -33,13 +33,16 @@ namespace Activator.Spells.Evaders
 
         internal override int DefaultMP
         {
-            get { return 0; }
+            get { return 45; }
         }
 
-        public override void OnTick(EventArgs args)
+        public override void OnTick()
         {
-            if (!Menu.Item("use" + Name).GetValue<bool>() ||
-                Player.GetSpell(Slot).State != SpellState.Ready)
+            if (!Menu.Item("use" + Name).GetValue<bool>())
+                return;
+
+            if (Player.Mana/Player.MaxMana*100 <
+                Menu.Item("SelfLMinMP" + Name + "Pct").GetValue<Slider>().Value)
                 return;
 
             foreach (var hero in champion.Heroes)
@@ -47,29 +50,16 @@ namespace Activator.Spells.Evaders
                 if (hero.Player.NetworkId == Player.NetworkId)
                 {
                     if (Menu.Item("use" + Name + "Norm").GetValue<bool>())
-                    {
                         if (hero.IncomeDamage > 0 && hero.HitTypes.Contains(HitType.Danger))
-                        {
                             UseSpellTowards(Game.CursorPos);
-                            RemoveSpell();
-                        }
-                    }
 
                     if (Menu.Item("use" + Name + "Ulti").GetValue<bool>())
-                    {
                         if (hero.IncomeDamage > 0 && hero.HitTypes.Contains(HitType.Ultimate))
-                        {
                             UseSpellTowards(Game.CursorPos);
-                            RemoveSpell();
-                        }
-                    }
 
                     if (hero.IncomeDamage / Player.MaxHealth * 100 >=
                         Menu.Item("SelfMuchHP" + Name + "Pct").GetValue<Slider>().Value)
-                    {
-                        UseSpellTowards(Game.CursorPos);
-                        RemoveSpell();
-                    }
+                            UseSpellTowards(Game.CursorPos);                
                 }
             }
         }

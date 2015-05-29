@@ -21,10 +21,9 @@ namespace Activator.Spells.Slows
             get { return new[] { MenuType.SlowRemoval, MenuType.ActiveCheck }; }
         }
 
-        public override void OnTick(EventArgs args)
+        public override void OnTick()
         {
-            if (!Menu.Item("use" + Name).GetValue<bool>() ||
-                Player.GetSpell(Slot).State != SpellState.Ready)
+            if (!Menu.Item("use" + Name).GetValue<bool>())
                 return;
 
             if (Player.HasBuffOfType(BuffType.Slow) && Menu.Item("use" + Name + "SSR").GetValue<bool>())

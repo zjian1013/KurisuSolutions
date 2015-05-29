@@ -34,12 +34,10 @@ namespace Activator.Items.Defensives
             get { return new[] { MenuType.Stealth, MenuType.ActiveCheck }; }
         }
 
-        public override void OnTick(EventArgs args)
+        public override void OnTick()
         {
             if (!Menu.Item("use" + Name).GetValue<bool>())
-            {
                 return;
-            }
         }
     }
 }

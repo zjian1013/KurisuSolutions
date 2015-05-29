@@ -19,19 +19,6 @@ namespace Activator
             {
                 if (hero.Player.NetworkId == sender.NetworkId)
                 {
-                    if (args.Buff.Name == "RegenerationPotion")
-                        hero.UsingHealthPot = true;
-
-                    if (args.Buff.Name == "FlaskOfCrystalWater")
-                        hero.UsingManaPot = true;
-
-
-                    if (args.Buff.Name == "ItemCrystalFlask" ||
-                        args.Buff.Name == "ItemMiniRegenPotion")
-                    {
-                        hero.UsingMixedPot = true;
-                    }
-
                     foreach (var buff in spelldebuff.debuffs)
                     {
                         if (buff.Name != args.Buff.Name.ToLower())
@@ -88,18 +75,6 @@ namespace Activator
             {
                 if (hero.Player.NetworkId == sender.NetworkId)
                 {
-                    if (args.Buff.Name == "RegenerationPotion")
-                        hero.UsingHealthPot = false;
-
-                    if (args.Buff.Name == "FlaskOfCrystalWater")
-                        hero.UsingManaPot = false;
-
-                    if (args.Buff.Name == "ItemCrystalFlask" ||
-                        args.Buff.Name == "ItemMiniRegenPotion")
-                    {
-                        hero.UsingMixedPot = false;
-                    }
- 
                     if (hero.QSSBuffCount <= 1)
                         hero.QSSHighestBuffTime = 0;
 

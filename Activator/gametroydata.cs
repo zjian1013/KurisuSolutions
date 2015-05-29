@@ -24,7 +24,7 @@ namespace Activator
                 Name = "Acidtrail_buf",
                 ChampionName = "Singed",
                 Slot = SpellSlot.Q,
-                HitType = new []{ global::Activator.HitType.Spell }
+                HitType = new []{ global::Activator.HitType.None }
             });
 
             spelldata.troydata.Add(new gametroydata
@@ -32,7 +32,7 @@ namespace Activator
                 Name = "Tremors_cas",
                 ChampionName = "Rammus",
                 Slot = SpellSlot.R,
-                HitType = new[] { global::Activator.HitType.Spell }
+                HitType = new[] { global::Activator.HitType.None }
             });
 
             spelldata.troydata.Add(new gametroydata
@@ -125,7 +125,7 @@ namespace Activator
                 Name = "Morgana_Base_W_Tar",
                 ChampionName = "Morgana",
                 Slot = SpellSlot.W,
-                HitType = new []{ global::Activator.HitType.Spell  }
+                HitType = new []{ global::Activator.HitType.None }
             });
 
         }

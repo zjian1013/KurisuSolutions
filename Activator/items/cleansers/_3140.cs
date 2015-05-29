@@ -46,7 +46,7 @@ namespace Activator.Items.Cleansers
             get { return 0; }
         }
 
-        public override void OnTick(EventArgs args)
+        public override void OnTick()
         {
             foreach (var hero in champion.Heroes)
             {
@@ -57,8 +57,7 @@ namespace Activator.Items.Cleansers
                 {
                     if (hero.ForceQSS)
                     {
-                        UseItem();
-                        RemoveItem(true);
+                        UseItem();                
                         hero.IncomeDamage = 0;
                     }
 
@@ -74,7 +73,6 @@ namespace Activator.Items.Cleansers
                                 {
                                     hero.QSSBuffCount = 0;
                                     hero.QSSHighestBuffTime = 0;
-                                    RemoveItem(true);
                                     hero.IncomeDamage = 0;
                                 }
                             });

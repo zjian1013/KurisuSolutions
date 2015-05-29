@@ -33,18 +33,6 @@ namespace Activator.Items
             }
         }
 
-        public double ActiveReduction
-        {
-            get
-            {
-                var inc = new[] { 0.04, 0.07, 0.1 };
-                return
-                    (from mastery in Player.Masteries
-                        where mastery.Id == 131 && mastery.Page > 0
-                        select inc[mastery.Points - 1]).FirstOrDefault();
-            }
-        }
-
         public void UseItem(bool combo = false)
         {
             if (!combo || Activator.Origin.Item("usecombo").GetValue<KeyBind>().Active)
@@ -66,32 +54,6 @@ namespace Activator.Items
             if (!combo || Activator.Origin.Item("usecombo").GetValue<KeyBind>().Active)
             {
                 LeagueSharp.Common.Items.UseItem(Id, pos);
-            }
-        }
-
-        public void RemoveItem(bool temporarily = false)     
-        {
-            if (temporarily)
-            {
-                if (LeagueSharp.Common.Items.HasItem(Id) && !LeagueSharp.Common.Items.CanUseItem(Id))
-                {
-                    Utility.DelayAction.Add((int)(Cooldown - (Cooldown * ActiveReduction) + Game.Ping),
-                        delegate
-                        {
-                            if (LeagueSharp.Common.Items.HasItem(Id))
-                                Game.OnUpdate += OnTick;
-                        });
-
-                    Game.OnUpdate -= OnTick;
-                }                 
-            }
-
-            else
-            {
-                if (!LeagueSharp.Common.Items.HasItem(Id))
-                {
-                    Game.OnUpdate -= OnTick;
-                }
             }
         }
 
@@ -149,7 +111,7 @@ namespace Activator.Items
             return this;
         }
 
-        public virtual void OnTick(EventArgs args)
+        public virtual void OnTick()
         {
 
         }

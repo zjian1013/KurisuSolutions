@@ -26,7 +26,7 @@ namespace Activator.Summoners
             get { return 180000; }
         }
 
-        public override void OnTick(EventArgs args)
+        public override void OnTick()
         {
             if (!Menu.Item("use" + Name).GetValue<bool>())
                 return;
@@ -36,16 +36,12 @@ namespace Activator.Summoners
                 if (hero.Player.IsRecalling() || hero.Player.InFountain())
                     return;
 
-                if (hero.Player.MaxMana <= 200)
+                if (hero.Player.MaxMana <= 200 || hero.Player.Distance(Player.ServerPosition) > Range)
                     return;
 
-                if (hero.Player.Distance(Player.ServerPosition) <= Range)
+                if (hero.Player.Mana/hero.Player.MaxMana*100 <= Menu.Item("SelfLowMP" + Name + "Pct").GetValue<Slider>().Value)
                 {
-                    if (hero.Player.Mana/hero.Player.MaxMana*100 <= Menu.Item("SelfLowMP" + Name + "Pct").GetValue<Slider>().Value)
-                    {
-                        UseSpell();
-                        RemoveSpell();
-                    }
+                    UseSpell();                       
                 }
             }
         }

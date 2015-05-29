@@ -36,30 +36,27 @@ namespace Activator.Spells.Heals
             get { return 55; }
         }
 
-        public override void OnTick(EventArgs args)
+        public override void OnTick()
         {
             if (!Menu.Item("use" + Name).GetValue<bool>() ||
                 Player.GetSpell(Slot).State != SpellState.Ready)
                 return;
 
+            if (Player.Mana/Player.MaxMana*100 <
+                Menu.Item("SelfLMinMP" + Name + "Pct").GetValue<Slider>().Value)
+                return;
+
             foreach (var hero in champion.Heroes)
             {
-                if (hero.Player.Distance(Player.ServerPosition) > Range)
-                    return;
-
-                if (Player.Health / Player.MaxHealth * 100 > Menu.Item("SelfMinHP" + Name + "Pct").GetValue<Slider>().Value)
+                if (hero.Player.Distance(Player.ServerPosition) <= Range)
                 {
                     if (hero.Player.Health / hero.Player.MaxHealth * 100 <=
                         Menu.Item("SelfLowHP" + Name + "Pct").GetValue<Slider>().Value)
-                    {
                         UseSpellOn(hero.Player);
-                    }
 
                     if (hero.IncomeDamage / hero.Player.MaxHealth * 100 >=
                         Menu.Item("SelfMuchHP" + Name + "Pct").GetValue<Slider>().Value)
-                    {
                         UseSpellOn(hero.Player);
-                    }
                 }
             }
         }

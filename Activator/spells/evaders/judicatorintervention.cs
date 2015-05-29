@@ -28,7 +28,7 @@ namespace Activator.Spells.Evaders
 
         internal override int DefaultHP
         {
-            get { return 15; }
+            get { return 10; }
         }
 
         internal override int DefaultMP
@@ -36,43 +36,27 @@ namespace Activator.Spells.Evaders
             get { return 0; }
         }
 
-        public override void OnTick(EventArgs args)
+        public override void OnTick()
         {
-            if (!Menu.Item("use" + Name).GetValue<bool>() ||
-                Player.GetSpell(Slot).State != SpellState.Ready)
+            if (!Menu.Item("use" + Name).GetValue<bool>())
                 return;
 
             foreach (var hero in champion.Heroes)
             {
-                if (hero.Player.Distance(Player.ServerPosition) > Range)
-                    return;
-
-                if (hero.Player.Health/hero.Player.MaxHealth <=
-                    Menu.Item("SelfLowHP" + Name + "Pct").GetValue<Slider>().Value)
+                if (hero.Player.Distance(Player.ServerPosition) <= Range)
                 {
-                    if(hero.IncomeDamage > 0)
-                    {
-                        UseSpellOn(hero.Player);
-                        RemoveSpell();
-                    }
-                }
+                    if (hero.Player.Health/hero.Player.MaxHealth <=
+                        Menu.Item("SelfLowHP" + Name + "Pct").GetValue<Slider>().Value)
+                        if (hero.IncomeDamage > 0)
+                            UseSpellOn(hero.Player);
 
-                if (Menu.Item("use" + Name + "Norm").GetValue<bool>())
-                {
-                    if (hero.IncomeDamage > 0 && hero.HitTypes.Contains(HitType.Danger))
-                    {
-                        UseSpellOn(hero.Player);
-                        RemoveSpell();
-                    }
-                }
+                    if (Menu.Item("use" + Name + "Norm").GetValue<bool>())
+                        if (hero.IncomeDamage > 0 && hero.HitTypes.Contains(HitType.Danger))
+                            UseSpellOn(hero.Player);
 
-                if (Menu.Item("use" + Name + "Ulti").GetValue<bool>())
-                {
-                    if (hero.IncomeDamage > 0 && hero.HitTypes.Contains(HitType.Ultimate))
-                    {
-                        UseSpellOn(hero.Player);
-                        RemoveSpell();
-                    }
+                    if (Menu.Item("use" + Name + "Ulti").GetValue<bool>())
+                        if (hero.IncomeDamage > 0 && hero.HitTypes.Contains(HitType.Ultimate))
+                            UseSpellOn(hero.Player);
                 }
             }
         }

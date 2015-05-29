@@ -36,24 +36,20 @@ namespace Activator.Spells.Health
             get { return 0; }
         }
 
-        public override void OnTick(EventArgs args)
+        public override void OnTick()
         {
-            if (!Menu.Item("use" + Name).GetValue<bool>() ||
-                Player.GetSpell(Slot).State != SpellState.Ready)
+            if (!Menu.Item("use" + Name).GetValue<bool>())
                 return;
 
             foreach (var hero in champion.Heroes)
             {
                 if (Player.HasBuffOfType(BuffType.Invulnerability))
-                    return;
-
-                if (hero.Player.Health / hero.Player.MaxHealth <=
-                    Menu.Item("SelfLowHP" + Name + "Pct").GetValue<Slider>().Value)
                 {
-                    if (hero.IncomeDamage > 0)
+                    if (hero.Player.Health / hero.Player.MaxHealth <=
+                        Menu.Item("SelfLowHP" + Name + "Pct").GetValue<Slider>().Value)
                     {
-                        UseSpell();
-                        RemoveSpell();
+                        if (hero.IncomeDamage > 0)
+                            UseSpell();
                     }
                 }
             }

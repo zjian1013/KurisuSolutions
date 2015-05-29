@@ -41,30 +41,6 @@ namespace Activator.Summoners
             }
         }
 
-        public double SummonerReduction
-        {
-            get
-            {
-                var inc = new[] { 0.04, 0.07, 0.1 };
-                return
-                    (from mastery in Player.Masteries
-                     where mastery.Id == 131 && mastery.Page > 0
-                     select inc[mastery.Points - 1]).FirstOrDefault();
-            }
-        }
-
-        public void RemoveSpell()
-        {
-            if (Player.GetSpell(Slot).State != SpellState.Ready)
-            {
-                Game.OnUpdate -= OnTick;
-                Utility.DelayAction.Add((int) (Cooldown - (Cooldown*SummonerReduction) + Game.Ping),
-                    () => Game.OnUpdate += OnTick);
-
-                Console.WriteLine("STOPPED");
-            }
-        }
-
         public summoner CreateMenu(Menu root)
         {
             Menu = new Menu(DisplayName, "m" + Name);
@@ -84,7 +60,7 @@ namespace Activator.Summoners
             {
                 Menu.AddItem(new MenuItem("use" + Name + "Number", "Minimum Spells to Use")).SetValue(new Slider(2, 1, 5));
                 Menu.AddItem(new MenuItem("use" + Name + "Time", "Minumum Durration to Use")).SetValue(new Slider(2, 1, 5));
-                Menu.AddItem(new MenuItem("use" + Name + "Od", "Use Only on Hero Debuffs")).SetValue(false);
+                Menu.AddItem(new MenuItem("use" + Name + "Od", "Use only on Dangerous")).SetValue(false);
                 Menu.AddItem(new MenuItem("mode" + Name, "Mode: ")).SetValue(new StringList(new[] { "Always", "Combo" }));
             }
 
@@ -131,7 +107,7 @@ namespace Activator.Summoners
 
         }
 
-        public virtual void OnTick(EventArgs args)
+        public virtual void OnTick()
         {
 
         }

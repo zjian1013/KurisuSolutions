@@ -23,7 +23,7 @@ namespace Activator.Spells.Evaders
 
         internal override MenuType[] Category
         {
-            get { return new[] { MenuType.SpellShield, MenuType.Zhonyas }; }
+            get { return new[] { MenuType.SpellShield, MenuType.Zhonyas, MenuType.SelfMinHP }; }
         }
 
         internal override int DefaultHP
@@ -33,13 +33,16 @@ namespace Activator.Spells.Evaders
 
         internal override int DefaultMP
         {
-            get { return 0; }
+            get { return 45; }
         }
 
-        public override void OnTick(EventArgs args)
+        public override void OnTick()
         {
-            if (!Menu.Item("use" + Name).GetValue<bool>() ||
-                Player.GetSpell(Slot).State != SpellState.Ready)
+            if (!Menu.Item("use" + Name).GetValue<bool>())
+                return;
+
+            if (Player.Mana / Player.MaxMana * 100 <
+                Menu.Item("SelfMinHP" + Name + "Pct").GetValue<Slider>().Value)
                 return;
 
             foreach (var hero in champion.Heroes)
@@ -52,7 +55,7 @@ namespace Activator.Spells.Evaders
                     if (hero.IncomeDamage > 0 && hero.HitTypes.Contains(HitType.Spell))
                     {
                         UseSpell();
-                        RemoveSpell();
+                        
                     }
                 }
 
@@ -61,7 +64,7 @@ namespace Activator.Spells.Evaders
                     if (hero.IncomeDamage > 0 && hero.HitTypes.Contains(HitType.CrowdControl))
                     {
                         UseSpell();
-                        RemoveSpell();
+                        
                     }
                 }
 
@@ -70,7 +73,7 @@ namespace Activator.Spells.Evaders
                     if (hero.IncomeDamage > 0 && hero.HitTypes.Contains(HitType.Danger))
                     {
                         UseSpell();
-                        RemoveSpell();
+                        
                     }
                 }
 
@@ -79,7 +82,7 @@ namespace Activator.Spells.Evaders
                     if (hero.IncomeDamage > 0 && hero.HitTypes.Contains(HitType.Ultimate))
                     {
                         UseSpell();
-                        RemoveSpell();
+                        
                     }
                 }
             }

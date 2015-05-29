@@ -34,7 +34,7 @@ namespace Activator.Items.Consumables
             get { return 40; }
         }
 
-        public override void OnTick(EventArgs args)
+        public override void OnTick()
         {
             foreach (var hero in champion.Heroes)
             {
@@ -43,7 +43,7 @@ namespace Activator.Items.Consumables
                     if (!Menu.Item("use" + Name).GetValue<bool>())
                         return;
 
-                    if (hero.UsingMixedPot)
+                    if (hero.Player.HasBuff("ItemMiniRegenPotion", true))
                         return;
 
                     if (hero.Player.IsRecalling() || hero.Player.InFountain())
@@ -53,8 +53,7 @@ namespace Activator.Items.Consumables
                     {
                         if (hero.IncomeDamage > 0)
                         {
-                            UseItem();
-                            RemoveItem();
+                            UseItem();                           
                         }
                     }
 
@@ -63,8 +62,7 @@ namespace Activator.Items.Consumables
 
                     if (hero.Player.Mana / hero.Player.MaxMana * 100 <= Menu.Item("SelfLowMP" + Name + "Pct").GetValue<Slider>().Value)
                     {
-                        UseItem();
-                        RemoveItem();
+                        UseItem();                       
                     }
                 }
             }

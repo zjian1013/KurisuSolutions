@@ -27,7 +27,7 @@ namespace Activator.Summoners
             get { return 210000; }
         }
 
-        public override void OnTick(EventArgs args)
+        public override void OnTick()
         {
             if (!Menu.Item("use" + Name).GetValue<bool>())
                 return;
@@ -46,8 +46,7 @@ namespace Activator.Summoners
                 {
                     if (target.Health <= ignotedmg)
                     {
-                        UseSpellOn(target);
-                        RemoveSpell();
+                        UseSpellOn(target);                        
                     }
                 }
 
@@ -64,14 +63,12 @@ namespace Activator.Summoners
                         totaldmg += Player.GetSpell(entry.Value).State == SpellState.Ready
                             ? entry.Key(Player, target, spellLevel - 1)
                             : 0;
-
                     }
 
                     // todo: item damage
                     if ((float)(totaldmg + ignotedmg) >= target.Health)
                     {
-                        UseSpellOn(target, true);
-                        RemoveSpell();
+                        UseSpellOn(target, true);                      
                     }
                 }
             }

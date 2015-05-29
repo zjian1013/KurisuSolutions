@@ -34,13 +34,16 @@ namespace Activator.Items.Consumables
             get { return 0; }
         }
 
-        public override void OnTick(EventArgs args)
+        public override void OnTick()
         {
             foreach (var hero in champion.Heroes)
             {
                 if (hero.Player.NetworkId == Player.NetworkId)
                 {
                     if (!Menu.Item("use" + Name).GetValue<bool>())
+                        return;
+
+                    if (hero.Player.HasBuff("ElixirOfRuin", true))
                         return;
 
                     if (hero.Player.IsRecalling() || hero.Player.InFountain())
@@ -50,16 +53,14 @@ namespace Activator.Items.Consumables
                     {
                         if (hero.IncomeDamage > 0)
                         {
-                            UseItem();
-                            RemoveItem();
+                            UseItem();                           
                         }
                     }
 
                     if (hero.IncomeDamage / hero.Player.MaxHealth * 100 >=
                         Menu.Item("SelfMuchHP" + Name + "Pct").GetValue<Slider>().Value)
                     {
-                        UseItem();
-                        RemoveItem();
+                        UseItem();                  
                     }
                 }
             }

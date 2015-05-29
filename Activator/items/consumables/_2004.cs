@@ -35,7 +35,7 @@ namespace Activator.Items.Consumables
             get { return 40; }
         }
 
-        public override void OnTick(EventArgs args)
+        public override void OnTick()
         {
             if (!Menu.Item("use" + Name).GetValue<bool>())
                 return;
@@ -47,7 +47,7 @@ namespace Activator.Items.Consumables
                     if (hero.Player.MaxMana <= 200)
                         continue;
 
-                    if (hero.UsingManaPot)
+                    if (hero.Player.HasBuff("FlaskOfCrystalWater", true))
                         return;
 
                     if (hero.Player.IsRecalling() || hero.Player.InFountain())
@@ -55,8 +55,7 @@ namespace Activator.Items.Consumables
 
                     if (hero.Player.Mana/hero.Player.MaxMana*100 <= Menu.Item("SelfLowMP" + Name + "Pct").GetValue<Slider>().Value)
                     {
-                        UseItem();
-                        RemoveItem();
+                        UseItem();   
                     }
                 }
             }

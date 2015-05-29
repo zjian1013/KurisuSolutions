@@ -43,7 +43,7 @@ namespace Activator.Items.Offensives
 
         private bool muramana;
 
-        public override void OnTick(EventArgs args)
+        public override void OnTick()
         {
             if (!muramana)
             {
@@ -71,7 +71,7 @@ namespace Activator.Items.Offensives
 
         private void OnCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
         {
-            if (!sender.IsMe)
+            if (!sender.IsMe || !LeagueSharp.Common.Items.HasItem(Id))
             {
                 return;
             }
