@@ -20,6 +20,7 @@ namespace Activator
         internal static bool SmiteInGame;
         internal static bool TroysInGame;
 
+        private static int GameTick;
         private static void Main(string[] args)
         {
             Console.WriteLine("Activator injected!");
@@ -113,9 +114,37 @@ namespace Activator
             // on update/tick
             Game.OnUpdate += Game_OnUpdate;
 
+            // auto level r
+            Obj_AI_Base.OnLevelUp += Obj_AI_Base_OnLevelUp;
+
         }
 
-        private static int GameTick;
+        private static void Obj_AI_Base_OnLevelUp(Obj_AI_Base sender, EventArgs args)
+        {
+            var hero = sender as Obj_AI_Hero;
+            if (hero == null)
+                return;
+
+            if (!hero.IsMe)
+                return;
+
+            if (hero.ChampionName == "Jayce" || hero.ChampionName == "Udyr")
+                return;
+
+            switch (Player.Level)
+            {
+                case 6:
+                    Player.Spellbook.LevelSpell(SpellSlot.R);
+                    break;
+                case 11:
+                    Player.Spellbook.LevelSpell(SpellSlot.R);
+                    break;
+                case 16:
+                    Player.Spellbook.LevelSpell(SpellSlot.R);
+                    break;
+            }
+        }
+
         private static void Game_OnUpdate(EventArgs args)
         {
             if (Environment.TickCount - GameTick < 
