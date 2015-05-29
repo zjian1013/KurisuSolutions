@@ -26,7 +26,7 @@ namespace Activator.Spells.Slows
             if (!Menu.Item("use" + Name).GetValue<bool>())
                 return;
 
-            if (Player.HasBuffOfType(BuffType.Slow) && Menu.Item("use" + Name + "SSR").GetValue<bool>())
+            if (Player.HasBuffOfType(BuffType.Slow) && Menu.Item("use" + Name + "sr").GetValue<bool>())
             {
                 UseSpell(Menu.Item("mode" + Name).GetValue<StringList>().SelectedIndex == 1);
             }

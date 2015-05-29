@@ -38,7 +38,7 @@ namespace Activator.Summoners
             var highestadinrange =
                 ObjectManager.Get<Obj_AI_Hero>()
                     .OrderByDescending(h => h.FlatPhysicalDamageMod)
-                    .FirstOrDefault(x => x.Distance(Player.ServerPosition) <= Range + 250);
+                    .FirstOrDefault(x => x.IsEnemy && x.Distance(Player.ServerPosition) <= Range + 250);
 
             foreach (var hero in champion.Heroes)
             {
@@ -49,30 +49,22 @@ namespace Activator.Summoners
                     continue;
 
                 if (Menu.Item("use" + Name + "Ulti").GetValue<bool>())
-                {
                     if (hero.IncomeDamage > 0 && hero.HitTypes.Contains(HitType.Ultimate))
-                    {
                         UseSpellOn(hero.Attacker);                
-                    }
-                }
 
                 if (hero.Player.Health/hero.Player.MaxHealth*100 <=
                     Menu.Item("a" + Name + "Pct").GetValue<Slider>().Value)
                 {
-                    if (hero.Attacker.IsFacing(hero.Player) &&
+                    if (!hero.Player.IsFacing(hero.Attacker) &&
                         hero.Attacker.NetworkId == highestadinrange.NetworkId)
-                    {
                         UseSpellOn(hero.Attacker);                      
-                    }
                 }
 
                 if (hero.Attacker.Health / hero.Attacker.MaxHealth * 100 <=
                          Menu.Item("e" + Name + "Pct").GetValue<Slider>().Value)
                 {
                     if (!hero.Attacker.IsFacing(hero.Player))
-                    {
                         UseSpellOn(hero.Attacker);                    
-                    }
                 }
             }
         }

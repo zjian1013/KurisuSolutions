@@ -42,7 +42,7 @@ namespace Activator.Spells
                 Menu.AddItem(new MenuItem("Stealth" + Name + "Pct", "Use on Stealth!")).SetValue(true);
 
             if (Category.Any(t => t == MenuType.SlowRemoval))
-                Menu.AddItem(new MenuItem("use" + Name + "SSR", "Use on When Slowed!")).SetValue(true);
+                Menu.AddItem(new MenuItem("use" + Name + "sr", "Use on Slows")).SetValue(true);
 
             if (Category.Any(t => t == MenuType.EnemyLowHP))
                 Menu.AddItem(new MenuItem("EnemyLowHP" + Name + "Pct", "Use on Enemy HP % <="))
@@ -83,7 +83,7 @@ namespace Activator.Spells
             }
 
             if (Category.Any(t => t == MenuType.ActiveCheck))
-                Menu.AddItem(new MenuItem("List" + Name, "Mode: "))
+                Menu.AddItem(new MenuItem("mode" + Name, "Mode: "))
                     .SetValue(new StringList(new[] { "Always", "Combo" }));
 
             root.AddSubMenu(Menu);
