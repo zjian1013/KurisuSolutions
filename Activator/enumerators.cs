@@ -3,14 +3,22 @@
     public enum HitType
     {
         None = 0,
-        AutoAttack = 1,
-        MinionAttack = 2,
-        TurretAttack = 3,
-        Spell = 4,
-        Danger = 5,
-        Ultimate = 6,
-        CrowdControl = 7,
-        Stealth = 8
+        AutoAttack,
+        MinionAttack,
+        TurretAttack,
+        Spell,
+        Danger,
+        Ultimate,
+        CrowdControl,
+        Stealth
+    }
+
+    public enum MapType
+    {
+        SummonersRift,
+        CrystalScar,
+        HowlingAbyss,
+        TwistedTreeline
     }
 
     public enum MenuType
@@ -27,7 +35,6 @@
         SelfLowMP,
         SelfMinMP,
         SelfMinHP,
-        EnemyLowHP,
-        TurretHP
+        EnemyLowHP
     }
 }
