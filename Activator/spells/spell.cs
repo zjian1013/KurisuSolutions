@@ -39,7 +39,7 @@ namespace Activator.Spells
             Menu.AddItem(new MenuItem("use" + Name, "Use " + DisplayName)).SetValue(true);
 
             if (Category.Any(t => t == MenuType.Stealth))
-                Menu.AddItem(new MenuItem("Stealth" + Name + "Pct", "Use on Stealth!")).SetValue(true);
+                Menu.AddItem(new MenuItem("Stealth" + Name + "Pct", "Use on Stealth")).SetValue(true);
 
             if (Category.Any(t => t == MenuType.SlowRemoval))
                 Menu.AddItem(new MenuItem("use" + Name + "sr", "Use on Slows")).SetValue(true);

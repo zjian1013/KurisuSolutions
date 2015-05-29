@@ -16,7 +16,7 @@ namespace Activator.Items.Defensives
 
         internal override string DisplayName
         {
-            get { return "Oracle's Lens"; }
+            get { return "Oracle's Lens (Broken)"; }
         }
 
         internal override int Cooldown

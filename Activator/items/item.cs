@@ -69,15 +69,15 @@ namespace Activator.Items
                     .SetValue(new Slider(DefaultHP));
 
             if (Category.Any(t => t == MenuType.SelfLowHP))
-                Menu.AddItem(new MenuItem("SelfLowHP" + Name + "Pct", "Use on Self HP % <="))
+                Menu.AddItem(new MenuItem("SelfLowHP" + Name + "Pct", "Use on Hero HP % <="))
                     .SetValue(new Slider(Name == "Botrk" ? 70 : DefaultHP));
 
             if (Category.Any(t => t == MenuType.SelfMuchHP))
-                Menu.AddItem(new MenuItem("SelfMuchHP" + Name + "Pct", "Use on Self Dmg Dealt % >="))
+                Menu.AddItem(new MenuItem("SelfMuchHP" + Name + "Pct", "Use on Hero Dmg Dealt % >="))
                     .SetValue(new Slider(40));
 
             if (Category.Any(t => t == MenuType.SelfLowMP))
-                Menu.AddItem(new MenuItem("SelfLowMP" + Name + "Pct", "Use on Self Mana % <="))
+                Menu.AddItem(new MenuItem("SelfLowMP" + Name + "Pct", "Use on Hero Mana % <="))
                     .SetValue(new Slider(DefaultMP));
 
             if (Category.Any(t => t == MenuType.SelfCount))
