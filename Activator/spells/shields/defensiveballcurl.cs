@@ -2,6 +2,7 @@
 using Activator.Spells;
 using LeagueSharp.Common;
 
+namespace Activator.Spells.Shields
 {
     class defensiveballcurl : spell
     {
@@ -41,6 +42,7 @@ using LeagueSharp.Common;
                 return;
 
             if (Player.Mana / Player.MaxMana * 100 <
+                Menu.Item("SelfMinMP" + Name + "Pct").GetValue<Slider>().Value)
                 return;
 
             foreach (var hero in champion.Heroes)
@@ -59,4 +61,3 @@ using LeagueSharp.Common;
         }
     }
 }
-
