@@ -93,6 +93,7 @@ namespace Activator
                 zmenu.AddSubMenu(ddmenu);
             }
 
+            zmenu.AddItem(new MenuItem("ticklimit", "Tick Limiter")).SetValue(new Slider(600, 0, 1500));
             zmenu.AddItem(new MenuItem("evadeon", "Evade Integration")).SetValue(false);
             zmenu.AddItem(new MenuItem("evadefow", "Evade Integration (FoW)")).SetValue(false);
             zmenu.AddItem(new MenuItem("usecombo", "Combo Key")).SetValue(new KeyBind(32, KeyBindType.Press, true));
@@ -114,8 +115,13 @@ namespace Activator
 
         }
 
+        private static int GameTick;
         private static void Game_OnUpdate(EventArgs args)
-        {            
+        {
+            if (Environment.TickCount - GameTick < 
+                Origin.Item("ticklimit").GetValue<Slider>().Value)
+                return;
+
             // temporary items instantiator
             foreach (var item in spelldata.items)
                 if (LeagueSharp.Common.Items.HasItem(item.Id) &&
@@ -132,6 +138,7 @@ namespace Activator
                 if (Player.Spellbook.CanUseSpell(autospell.Slot) == SpellState.Ready)
                     autospell.OnTick();
 
+            GameTick = Environment.TickCount;
         }
 
         private static void NewItem(item item, Menu parent)
