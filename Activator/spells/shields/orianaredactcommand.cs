@@ -46,7 +46,6 @@ namespace Activator.Spells.Shields
                 Menu.Item("SelfMinMP" + Name + "Pct").GetValue<Slider>().Value)
                 return;
 
-
             foreach (var hero in champion.Heroes)
             {
                 if (hero.Player.Distance(Player.ServerPosition) <= Range)

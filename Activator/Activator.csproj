@@ -139,7 +139,12 @@
     <Compile Include="spells\shields\luxprismaticwave.cs" />
     <Compile Include="spells\shields\moltenshield.cs" />
     <Compile Include="spells\shields\nautiluspiercinggaze.cs" />
+    <Compile Include="spells\shields\obduracy.cs" />
     <Compile Include="spells\shields\orianaredactcommand.cs" />
+    <Compile Include="spells\shields\rumbleshield.cs" />
+    <Compile Include="spells\shields\shenfeint.cs" />
+    <Compile Include="spells\shields\sionw.cs" />
+    <Compile Include="spells\shields\urgotshield.cs" />
     <Compile Include="spells\slows\evelynnw.cs" />
     <Compile Include="spells\slows\garenq.cs" />
     <Compile Include="spells\slows\highlander.cs" />
