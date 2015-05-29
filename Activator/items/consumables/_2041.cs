@@ -50,24 +50,20 @@ namespace Activator.Items.Consumables
                     if (hero.Player.IsRecalling() || Player.InFountain())
                         return;
 
-                    if (hero.Player.Health / hero.Player.MaxHealth*100 <= Menu.Item("SelfLowHP" + Name + "Pct").GetValue<Slider>().Value)
-                    {
+                    if (hero.Player.Health/hero.Player.MaxHealth*100 <=
+                        Menu.Item("SelfLowHP" + Name + "Pct").GetValue<Slider>().Value && hero.IncomeDamage > 0)
                         UseItem();
-                    }
 
                     if (hero.IncomeDamage/hero.Player.MaxHealth*100 >=
                         Menu.Item("SelfMuchHP" + Name + "Pct").GetValue<Slider>().Value)
-                    {
                         UseItem();
-                    }
 
                     if (hero.Player.MaxMana <= 200) 
                         continue;
 
-                    if (hero.Player.Mana / hero.Player.MaxMana * 100 <= Menu.Item("SelfLowMP" + Name + "Pct").GetValue<Slider>().Value)
-                    {
+                    if (hero.Player.Mana / hero.Player.MaxMana * 100 <= 
+                        Menu.Item("SelfLowMP" + Name + "Pct").GetValue<Slider>().Value)
                         UseItem();
-                    }
                 }
             }
         }
