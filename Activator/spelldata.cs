@@ -49,7 +49,7 @@ namespace Activator
                 CastRange = 0f,
                 Delay = 0f,
                 HitType = new HitType[] { },
-                MissileSpeed = 0
+                MissileSpeed = int.MaxValue
             });
 
             spells.Add(new spelldata
@@ -60,7 +60,7 @@ namespace Activator
                 CastRange = 0f,
                 Delay = 0f,
                 HitType = new HitType[] { },
-                MissileSpeed = 0
+                MissileSpeed = int.MaxValue
             });
 
             spells.Add(new spelldata
@@ -83,7 +83,7 @@ namespace Activator
                 CastRange = 550f,
                 Delay = 0f,
                 HitType = new HitType[] { },
-                MissileSpeed = 0
+                MissileSpeed = int.MaxValue
             });
 
             spells.Add(new spelldata
@@ -195,7 +195,7 @@ namespace Activator
                 CastRange = 650f,
                 Delay = 200f,
                 HitType = new[] { global::Activator.HitType.CrowdControl },
-                MissileSpeed = 0
+                MissileSpeed = int.MaxValue
             });
 
             spells.Add(new spelldata
@@ -206,7 +206,7 @@ namespace Activator
                 CastRange = 575f,
                 Delay = 0f,
                 HitType = new HitType[] { },
-                MissileSpeed = 0
+                MissileSpeed = int.MaxValue
             });
 
             spells.Add(new spelldata
@@ -479,7 +479,7 @@ namespace Activator
                 CastRange = 0f,
                 Delay = 0f,
                 HitType = new HitType[] { },
-                MissileSpeed = 0
+                MissileSpeed = int.MaxValue
             });
 
             spells.Add(new spelldata
@@ -856,7 +856,7 @@ namespace Activator
                 CastRange = 0f,
                 Delay = 0f,
                 HitType = new HitType[] { },
-                MissileSpeed = 0
+                MissileSpeed = int.MaxValue
             });
 
             spells.Add(new spelldata
@@ -1238,7 +1238,7 @@ namespace Activator
                 CastRange = 100f,
                 Delay = 0f,
                 HitType = new HitType[] { },
-                MissileSpeed = 0
+                MissileSpeed = int.MaxValue
             });
 
             spells.Add(new spelldata
@@ -1249,7 +1249,7 @@ namespace Activator
                 CastRange = 210f,
                 Delay = 0f,
                 HitType = new HitType[] { },
-                MissileSpeed = 0
+                MissileSpeed = int.MaxValue
             });
 
             spells.Add(new spelldata
@@ -1260,7 +1260,7 @@ namespace Activator
                 CastRange = 210f,
                 Delay = 500f,
                 HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate },
-                MissileSpeed = 0
+                MissileSpeed = int.MaxValue
             });
 
             spells.Add(new spelldata
@@ -1282,7 +1282,7 @@ namespace Activator
                 CastRange = 0f,
                 Delay = 500f,
                 HitType = new HitType[] { },
-                MissileSpeed = 0
+                MissileSpeed = int.MaxValue
             });
 
             spells.Add(new spelldata
@@ -1485,7 +1485,7 @@ namespace Activator
                 CastRange = 0f,
                 Delay = 0f,
                 HitType = new HitType[] { },
-                MissileSpeed = 0
+                MissileSpeed = int.MaxValue
             });
 
             spells.Add(new spelldata
@@ -1778,7 +1778,7 @@ namespace Activator
                 CastRange = 300f,
                 Delay = 500f,
                 HitType = new[] { global::Activator.HitType.CrowdControl },
-                MissileSpeed = 0
+                MissileSpeed = int.MaxValue
             });
 
             spells.Add(new spelldata
@@ -1801,7 +1801,7 @@ namespace Activator
                 CastRange = 650f,
                 Delay = 250f,
                 HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate },
-                MissileSpeed = 0
+                MissileSpeed = int.MaxValue
             });
 
             spells.Add(new spelldata
@@ -1812,7 +1812,7 @@ namespace Activator
                 CastRange = 210f,
                 Delay = 500f,
                 HitType = new HitType[] { },
-                MissileSpeed = 0
+                MissileSpeed = int.MaxValue
             });
 
             spells.Add(new spelldata
@@ -1823,7 +1823,7 @@ namespace Activator
                 CastRange = 0f,
                 Delay = 500f,
                 HitType = new HitType[] { },
-                MissileSpeed = 0
+                MissileSpeed = int.MaxValue
             });
 
             spells.Add(new spelldata
@@ -1845,7 +1845,7 @@ namespace Activator
                 CastRange = 0f,
                 Delay = 0f,
                 HitType = new HitType[] { },
-                MissileSpeed = 0
+                MissileSpeed = int.MaxValue
             });
 
             spells.Add(new spelldata
@@ -2114,7 +2114,7 @@ namespace Activator
                 CastRange = 0f,
                 Delay = 0f,
                 HitType = new HitType[] { },
-                MissileSpeed = 0
+                MissileSpeed = int.MaxValue
             });
 
             spells.Add(new spelldata
@@ -2170,7 +2170,7 @@ namespace Activator
                 CastRange = 700f,
                 Delay = 500f,
                 HitType = new HitType[] { },
-                MissileSpeed = 0
+                MissileSpeed = int.MaxValue
             });
 
             spells.Add(new spelldata
@@ -2587,7 +2587,7 @@ namespace Activator
                 CastRange = 215f,
                 Delay = 0f,
                 HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.CrowdControl },
-                MissileSpeed = 0
+                MissileSpeed = int.MaxValue
             });
 
             spells.Add(new spelldata
@@ -2598,7 +2598,7 @@ namespace Activator
                 CastRange = 500f,
                 Delay = 3000f,
                 HitType = new HitType[] { },
-                MissileSpeed = 0
+                MissileSpeed = int.MaxValue
             });
 
             spells.Add(new spelldata
@@ -2725,7 +2725,7 @@ namespace Activator
                 CastRange = 1400f,
                 Delay = 500f,
                 HitType = new HitType[] { },
-                MissileSpeed = 0
+                MissileSpeed = int.MaxValue
             });
 
             spells.Add(new spelldata
@@ -2895,7 +2895,7 @@ namespace Activator
                 CastRange = 1000f,
                 Delay = 0f,
                 HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.CrowdControl },
-                MissileSpeed = 0
+                MissileSpeed = int.MaxValue
             });
 
             spells.Add(new spelldata
@@ -3139,7 +3139,7 @@ namespace Activator
                 CastRange = 0f,
                 Delay = 500f,
                 HitType = new[] { global::Activator.HitType.Stealth },
-                MissileSpeed = 0
+                MissileSpeed = int.MaxValue
             });
 
             spells.Add(new spelldata
@@ -3150,7 +3150,7 @@ namespace Activator
                 CastRange = 325f,
                 Delay = 500f,
                 HitType = new HitType[] { },
-                MissileSpeed = 0
+                MissileSpeed = int.MaxValue
             });
 
             spells.Add(new spelldata
@@ -3385,7 +3385,7 @@ namespace Activator
                 CastRange = 0f,
                 Delay = 0f,
                 HitType = new HitType[] { },
-                MissileSpeed = 0
+                MissileSpeed = int.MaxValue
             });
 
             spells.Add(new spelldata
@@ -3518,7 +3518,7 @@ namespace Activator
                 CastRange = 500f,
                 Delay = 0f,
                 HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.CrowdControl },
-                MissileSpeed = 0
+                MissileSpeed = int.MaxValue
             });
 
             spells.Add(new spelldata
@@ -3786,7 +3786,7 @@ namespace Activator
                 CastRange = 2100f,
                 Delay = 0f,
                 HitType = new HitType[] { },
-                MissileSpeed = 0
+                MissileSpeed = int.MaxValue
             });
 
             spells.Add(new spelldata
@@ -3808,7 +3808,7 @@ namespace Activator
                 CastRange = 0f,
                 Delay = 0f,
                 HitType = new HitType[] { },
-                MissileSpeed = 0
+                MissileSpeed = int.MaxValue
             });
 
             spells.Add(new spelldata
@@ -3819,7 +3819,7 @@ namespace Activator
                 CastRange = 700f,
                 Delay = 0f,
                 HitType = new HitType[] { },
-                MissileSpeed = 0
+                MissileSpeed = int.MaxValue
             });
 
             spells.Add(new spelldata
@@ -4041,7 +4041,7 @@ namespace Activator
                 CastRange = 250f,
                 Delay = 500f,
                 HitType = new HitType[] { },
-                MissileSpeed = 0
+                MissileSpeed = int.MaxValue
             });
 
             spells.Add(new spelldata
@@ -4052,7 +4052,7 @@ namespace Activator
                 CastRange = 250f,
                 Delay = 500f,
                 HitType = new[] { global::Activator.HitType.CrowdControl },
-                MissileSpeed = 0
+                MissileSpeed = int.MaxValue
             });
 
             spells.Add(new spelldata
@@ -4119,7 +4119,7 @@ namespace Activator
                 CastRange = 0f,
                 Delay = 0f,
                 HitType = new HitType[] { },
-                MissileSpeed = 0
+                MissileSpeed = int.MaxValue
             });
 
             spells.Add(new spelldata
@@ -4805,7 +4805,7 @@ namespace Activator
                 CastRange = 0f,
                 Delay = 0f,
                 HitType = new HitType[] { },
-                MissileSpeed = 0
+                MissileSpeed = int.MaxValue
             });
 
             spells.Add(new spelldata
@@ -4839,7 +4839,7 @@ namespace Activator
                 CastRange = 550f,
                 Delay = 0f,
                 HitType = new[] { global::Activator.HitType.Stealth },
-                MissileSpeed = 0
+                MissileSpeed = int.MaxValue
             });
 
             spells.Add(new spelldata
@@ -5372,7 +5372,7 @@ namespace Activator
                 CastRange = 0f,
                 Delay = 500f,
                 HitType = new HitType[] { },
-                MissileSpeed = 0
+                MissileSpeed = int.MaxValue
             });
 
             spells.Add(new spelldata
@@ -5578,7 +5578,7 @@ namespace Activator
                 CastRange = 0f,
                 Delay = 0f,
                 HitType = new HitType[] { },
-                MissileSpeed = 0
+                MissileSpeed = int.MaxValue
             });
 
             spells.Add(new spelldata
@@ -5589,7 +5589,7 @@ namespace Activator
                 CastRange = 600f,
                 Delay = 0f,
                 HitType = new HitType[] { },
-                MissileSpeed = 0
+                MissileSpeed = int.MaxValue
             });
 
             spells.Add(new spelldata
@@ -5600,7 +5600,7 @@ namespace Activator
                 CastRange = 800f,
                 Delay = 500f,
                 HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate, global::Activator.HitType.CrowdControl },
-                MissileSpeed = 0
+                MissileSpeed = int.MaxValue
             });
 
             spells.Add(new spelldata
@@ -6056,7 +6056,7 @@ namespace Activator
                 CastRange = 300f,
                 Delay = 0f,
                 HitType = new[] { global::Activator.HitType.CrowdControl },
-                MissileSpeed = 0
+                MissileSpeed = int.MaxValue
             });
 
             spells.Add(new spelldata
@@ -6067,7 +6067,7 @@ namespace Activator
                 CastRange = 850f,
                 Delay = 500f,
                 HitType = new HitType[] { },
-                MissileSpeed = 0
+                MissileSpeed = int.MaxValue
             });
 
             spells.Add(new spelldata

@@ -36,7 +36,7 @@ namespace Activator.Items.Consumables
 
         public override void OnTick()
         {
- 
+
         }
     }
 }

@@ -9,6 +9,7 @@ namespace Activator
     public class projectionhandler
     {
         public static Obj_AI_Hero Target;
+        public static int LastCastedSpell;
 
         public static void Load()
         {
@@ -107,7 +108,6 @@ namespace Activator
         {
             if (sender.IsEnemy && sender.Type == GameObjectType.obj_AI_Hero)
             {
-                var start = Environment.TickCount;
                 foreach (var hero in champion.Heroes)
                 {
                     // auto attack dectection
@@ -139,6 +139,7 @@ namespace Activator
 
                     foreach (var data in spelldata.spells.Where(x => x.SDataName == args.SData.Name.ToLower()))
                     {
+                        LastCastedSpell = Environment.TickCount;
                         // self/selfaoe spell detection
                         if (args.SData.TargettingType == SpellDataTargetType.Self ||
                             args.SData.TargettingType == SpellDataTargetType.SelfAoe)
@@ -186,7 +187,7 @@ namespace Activator
                                 // important spelldata shit (hope sdata is accurate)
                                 var distance =
                                     (int) (1000*(sender.Distance(hero.Player.ServerPosition)/data.MissileSpeed));
-                                var endtime = data.Delay - 100 + Game.Ping/2 + distance - (Environment.TickCount - start);
+                                var endtime = data.Delay - 100 + Game.Ping/2 + distance - (Environment.TickCount - LastCastedSpell);
 
                                 // get the real end position normalized
                                 var direction = (args.End.To2D() - sender.ServerPosition.To2D()).Normalized();
@@ -262,7 +263,7 @@ namespace Activator
                                     var distance =
                                         (int) (1000*(sender.Distance(hero.Player.ServerPosition)/data.MissileSpeed));
                                     var endtime = data.Delay - 100 + Game.Ping/2 + distance -
-                                                  (Environment.TickCount - start);
+                                                  (Environment.TickCount - LastCastedSpell);
 
                                     Utility.DelayAction.Add((int) (endtime - (endtime*0.5)), delegate
                                     {
