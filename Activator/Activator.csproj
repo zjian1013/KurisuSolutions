@@ -128,6 +128,7 @@
     <Compile Include="spells\health\sorakar.cs" />
     <Compile Include="spells\health\yorickreviveally.cs" />
     <Compile Include="spells\shields\braume.cs" />
+    <Compile Include="spells\shields\defensiveballcurl.cs" />
     <Compile Include="spells\shields\dianaorbs.cs" />
     <Compile Include="spells\shields\eyeofthestorm.cs" />
     <Compile Include="spells\shields\fiorariposte.cs" />

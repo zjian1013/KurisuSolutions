@@ -6,7 +6,6 @@ namespace Activator
 {
     public class spelldebuffhandler
     {
-
         public static void Load()
         {
             Obj_AI_Base.OnBuffAdd += Obj_AI_Base_OnBuffAdd;

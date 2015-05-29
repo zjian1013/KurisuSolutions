@@ -171,6 +171,17 @@ namespace Activator
                 CleanseTimer = 0,
                 Slot = SpellSlot.E
             });
+
+            debuffs.Add(new spelldebuff
+            {
+                Name = "suppression",
+                Evade = false,
+                Damage = true,
+                EvadeTimer = 0,
+                Cleanse = true,
+                CleanseTimer = 0,
+                Slot = SpellSlot.R
+            });
         }
     }
 }

@@ -42,7 +42,7 @@ namespace Activator.Spells.Heals
                 return;
 
             if (Player.Mana/Player.MaxMana*100 <
-                Menu.Item("SelfLMinMP" + Name + "Pct").GetValue<Slider>().Value)
+                Menu.Item("SelfMinMP" + Name + "Pct").GetValue<Slider>().Value)
                 return;
 
             foreach (var hero in champion.Heroes)

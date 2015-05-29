@@ -1,19 +1,18 @@
 ﻿using System;
-using LeagueSharp;
+using Activator.Spells;
 using LeagueSharp.Common;
 
-namespace Activator.Spells.Shields
 {
-    class fiorariposte : spell
+    class defensiveballcurl : spell
     {
         internal override string Name
         {
-            get { return "fiorariposte"; }
+            get { return "defensiveballcurl"; }
         }
 
         internal override string DisplayName
         {
-            get { return "Riposte | W"; }
+            get { return "Defensive Ball Curl | W"; }
         }
 
         internal override float Range
@@ -23,7 +22,7 @@ namespace Activator.Spells.Shields
 
         internal override MenuType[] Category
         {
-            get { return new[] { MenuType.SelfLowHP, MenuType.SelfMinMP }; }
+            get { return new[] { MenuType.SelfLowHP, MenuType.SelfMuchHP, MenuType.SelfMinMP }; }
         }
 
         internal override int DefaultHP
@@ -41,23 +40,23 @@ namespace Activator.Spells.Shields
             if (!Menu.Item("use" + Name).GetValue<bool>())
                 return;
 
-            if (Player.Mana/Player.MaxMana*100 <
-                Menu.Item("SelfMinMP" + Name + "Pct").GetValue<Slider>().Value)
+            if (Player.Mana / Player.MaxMana * 100 <
                 return;
-
 
             foreach (var hero in champion.Heroes)
             {
                 if (hero.Player.NetworkId == Player.NetworkId)
                 {
-                    if (hero.Player.Health/hero.Player.MaxHealth*100 <=
-                        Menu.Item("SelfLowHP" + Name + "Pct").GetValue<Slider>().Value)
-                    {
-                        if (hero.IncomeDamage > 0 && hero.HitTypes.Contains(HitType.AutoAttack))
-                            UseSpell();
-                    }
+                    if (hero.IncomeDamage / hero.Player.MaxHealth * 100 >=
+                        Menu.Item("SelfMuchHP" + Name + "Pct").GetValue<Slider>().Value)
+                        UseSpellOn(hero.Player);
+
+                    if (hero.Player.Health / hero.Player.MaxHealth * 100 <=
+                        Menu.Item("SelfLowHP" + Name + "Pct").GetValue<Slider>().Value && hero.IncomeDamage > 0)
+                        UseSpellOn(hero.Player);
                 }
             }
         }
     }
 }
+
