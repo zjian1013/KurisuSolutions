@@ -14,6 +14,7 @@ namespace Activator.Items
         internal virtual string DisplayName { get; set; }
         internal virtual float Range { get; set; }
         internal virtual MenuType[] Category { get; set; }
+        internal virtual MapType[] Maps { get; set; }
 
         internal virtual int DefaultMP { get; set; }
         internal virtual int DefaultHP { get; set; }

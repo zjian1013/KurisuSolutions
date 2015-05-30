@@ -13,7 +13,7 @@ namespace Activator
         public int CleanseTimer { get; set; }
         public SpellSlot Slot { get; set; }
 
-        public static List<spelldebuff> debuffs = new List<spelldebuff>(); 
+        public static List<spelldebuff> debuffs = new List<spelldebuff>();
 
         static spelldebuff()
         {
@@ -74,10 +74,21 @@ namespace Activator
 
             debuffs.Add(new spelldebuff
             {
+                Name = "varusrsecondary",
+                Evade = false,
+                Damage = true,
+                EvadeTimer = 0,
+                Cleanse = true,
+                CleanseTimer = 0,
+                Slot = SpellSlot.R
+            });
+
+            debuffs.Add(new spelldebuff
+            {
                 Name = "caitlynaceinthehole",
                 Evade = true,
                 Damage = true,
-                EvadeTimer = 1000,
+                EvadeTimer = 800,
                 Cleanse = false,
                 CleanseTimer = 0,
                 Slot = SpellSlot.R
@@ -183,5 +194,24 @@ namespace Activator
                 Slot = SpellSlot.R
             });
         }
+
+        public static List<string> excludedbuffs = new List<string>
+        {
+            "vir",
+            "virknockup",
+            "yasuorknockupcombo",
+            "yasuorknockupcombotar",
+            "zyrabramblezoneknockup",
+            "frozenheartaura",
+            "dariusaxebrabcone",
+            "frozenheartauracosmetic",
+            "sunfirecapeaura",
+            "fizzmoveback",
+            "blessingofthelizardelderslow",
+            "dragonburning",
+            "rocketgrab2",
+            "monkeykingspinknockup",
+            "frostarrow",
+        };
     }
 }

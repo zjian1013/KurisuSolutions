@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
 
@@ -18,6 +19,9 @@ namespace Activator
             {
                 if (hero.Player.NetworkId == sender.NetworkId)
                 {
+                    if (spelldebuff.excludedbuffs.Any(buff => args.Buff.Name.ToLower() == buff))
+                        return;
+
                     foreach (var buff in spelldebuff.debuffs)
                     {
                         if (buff.Name != args.Buff.Name.ToLower())
@@ -74,6 +78,9 @@ namespace Activator
             {
                 if (hero.Player.NetworkId == sender.NetworkId)
                 {
+                    if (spelldebuff.excludedbuffs.Any(buff => args.Buff.Name.ToLower() == buff))
+                        return;
+
                     if (hero.QSSBuffCount <= 1)
                         hero.QSSHighestBuffTime = 0;
 

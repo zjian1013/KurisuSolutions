@@ -645,17 +645,6 @@ namespace Activator
 
             spells.Add(new spelldata
             {
-                SDataName = "caitlynaceinthehole",
-                ChampionName = "caitlyn",
-                Slot = SpellSlot.R,
-                CastRange = 2500f,
-                Delay = 0f,
-                HitType = new HitType[] { },
-                MissileSpeed = 1500
-            });
-
-            spells.Add(new spelldata
-            {
                 SDataName = "cassiopeianoxiousblast",
                 ChampionName = "cassiopeia",
                 Slot = SpellSlot.Q,

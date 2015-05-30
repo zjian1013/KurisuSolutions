@@ -50,7 +50,7 @@ namespace Activator.Spells.Health
                 {
                     if (!Player.HasBuffOfType(BuffType.Invulnerability))
                     {
-                        if (hero.Player.Health/hero.Player.MaxHealth <=
+                        if (hero.Player.Health/hero.Player.MaxHealth*100 <=
                             Menu.Item("SelfLowHP" + Name + "Pct").GetValue<Slider>().Value)
                         {
                             if (hero.IncomeDamage > 0)

@@ -36,6 +36,10 @@ namespace Activator.Items.Cleansers
             get { return new[] { MenuType.Cleanse, MenuType.ActiveCheck }; }
         }
 
+        {
+            get { return new[] { MapType.CrystalScar }; }
+        }
+
         internal override int DefaultHP
         {
             get { return 5; }

@@ -4,31 +4,31 @@ using LeagueSharp.Common;
 
 namespace Activator.Spells.Health
 {
-    class lulur : spell
+    class undyingrage : spell
     {
         internal override string Name
         {
-            get { return "lulur"; }
+            get { return "undyingrage"; }
         }
 
         internal override string DisplayName
         {
-            get { return "Wild Growth | R"; }
+            get { return "Undying Rage | R"; }
         }
 
         internal override float Range
         {
-            get { return 900f; }
+            get { return float.MaxValue; }
         }
 
         internal override MenuType[] Category
         {
-            get { return new[] { MenuType.SelfLowHP, MenuType.SelfCount  }; }
+            get { return new[] { MenuType.SelfLowHP }; }
         }
 
         internal override int DefaultHP
         {
-            get { return 20; }
+            get { return 15; }
         }
 
         internal override int DefaultMP
@@ -43,20 +43,16 @@ namespace Activator.Spells.Health
 
             foreach (var hero in champion.Heroes)
             {
-                if (hero.Player.Distance(Player.ServerPosition) <= Range)
+                if (hero.Player.NetworkId == Player.NetworkId)
                 {
                     if (!Player.HasBuffOfType(BuffType.Invulnerability))
                     {
-                        if (hero.Player.Health/hero.Player.MaxHealth*100 <=
+                        if (hero.Player.Health / hero.Player.MaxHealth*100 <=
                             Menu.Item("SelfLowHP" + Name + "Pct").GetValue<Slider>().Value)
                         {
                             if (hero.IncomeDamage > 0)
-                                UseSpellOn(hero.Player);
+                                UseSpell();
                         }
-
-                        if (hero.Player.CountEnemiesInRange(Range) >=
-                            Menu.Item("SelfCount" + Name).GetValue<Slider>().Value)
-                            UseSpellOn(hero.Player);
                     }
                 }
             }
