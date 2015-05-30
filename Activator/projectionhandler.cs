@@ -41,12 +41,11 @@ namespace Activator
             if (startPos.Distance(endPos) > data.CastRange)
                 endPos = startPos + direction*data.CastRange;
 
-            var missileDelay = (1000*(missile.SData.CastFrame/30));
-            var missileDistance = missile.Position.To2D().Distance(startPos);
-            var endtime = missileDelay - (int) (1000*missileDistance/data.MissileSpeed);
-
             foreach (var hero in champion.Heroes)
             {
+                var distance = (int)(1000 * (startPos.Distance(hero.Player.ServerPosition) / data.MissileSpeed));
+                var endtime = - 100 + Game.Ping/2 + distance;
+
                 // setup projection
                 var proj = hero.Player.ServerPosition.To2D().ProjectOn(startPos, endPos);
                 var projdist = hero.Player.ServerPosition.To2D().Distance(proj.SegmentPoint);
