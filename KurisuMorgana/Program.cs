@@ -23,14 +23,16 @@ namespace KurisuMorgana
         private static void Game_OnGameLoad(EventArgs args)
         {
             if (Me.ChampionName != "Morgana")
+            {
                 return;
+            }
 
             // set spells
             _q = new Spell(SpellSlot.Q, 1300f);
-            _q.SetSkillshot(250f, 80f, 1200f, true, SkillshotType.SkillshotLine);
+            _q.SetSkillshot(0.25f, 75f, 1200f, true, SkillshotType.SkillshotLine);
 
             _w = new Spell(SpellSlot.W, 900f);
-            _w.SetSkillshot(250f, 175f, 2200f, false, SkillshotType.SkillshotCircle);
+            _w.SetSkillshot(0.50f, 400f, 2200f, false, SkillshotType.SkillshotCircle);
 
             _e = new Spell(SpellSlot.E, 750f);
             _r = new Spell(SpellSlot.R, 600f);
@@ -45,10 +47,10 @@ namespace KurisuMorgana
             TargetSelector.AddToMenu(tsmenu);
             _menu.AddSubMenu(tsmenu);
 
-            var kkmenu = new Menu("Keybinds", "keybinds");
-            kkmenu.AddItem(new MenuItem("combokey", "Combo (active)")).SetValue(new KeyBind(32, KeyBindType.Press));
-            kkmenu.AddItem(new MenuItem("harasskey", "Harass (active)")).SetValue(new KeyBind('C', KeyBindType.Press));
-            _menu.AddSubMenu(kkmenu);
+            var kbmenu = new Menu("Keybinds", "keybinds");
+            kbmenu.AddItem(new MenuItem("combokey", "Combo (active)")).SetValue(new KeyBind(32, KeyBindType.Press));
+            kbmenu.AddItem(new MenuItem("harasskey", "Harass (active)")).SetValue(new KeyBind('C', KeyBindType.Press));
+            _menu.AddSubMenu(kbmenu);
 
             var drmenu = new Menu("Drawings", "drawings");
             drmenu.AddItem(new MenuItem("drawq", "Draw Q")).SetValue(true);
@@ -63,7 +65,7 @@ namespace KurisuMorgana
             var spellmenu = new Menu("SpellMenu", "spells");
 
             var menuQ = new Menu("Dark Binding (Q)", "qmenu");
-            menuQ.AddItem(new MenuItem("hitchanceq", "Binding Hitchance ")).SetValue(new Slider(3, 1, 4));
+            menuQ.AddItem(new MenuItem("hitchanceq", "Binding Hitchance ")).SetValue(new Slider(4, 1, 4));
             menuQ.AddItem(new MenuItem("useqcombo", "Use in Combo")).SetValue(true);
             menuQ.AddItem(new MenuItem("useharassq", "Use in Harass")).SetValue(true);
             menuQ.AddItem(new MenuItem("useqanti", "Use on Gapcloser")).SetValue(true);
@@ -81,8 +83,8 @@ namespace KurisuMorgana
             spellmenu.AddSubMenu(menuW);
 
             var menuE = new Menu("BlackShield (E)", "emenu");
-            menuE.AddItem(new MenuItem("eco", "Check Minion Collision")).SetValue(false);
-            menuE.AddItem(new MenuItem("eco2", "Check Hero Collision")).SetValue(false);
+            //menuE.AddItem(new MenuItem("eco", "Check Minion Collision")).SetValue(false);
+            //menuE.AddItem(new MenuItem("eco2", "Check Hero Collision")).SetValue(false);
 
             // create menu per ally
             var allyMenu = new Menu("Use for", "useonwho");
@@ -156,12 +158,11 @@ namespace KurisuMorgana
                 return;
             }
 
-            CheckDamage(TargetSelector.GetTarget(_q.Range + 10, TargetSelector.DamageType.Magical));
-
-
             AutoCast(_menu.Item("useqdash").GetValue<bool>(),
                      _menu.Item("useqauto").GetValue<bool>(),
                      _menu.Item("usewauto").GetValue<bool>());
+
+            CheckDamage(TargetSelector.GetTarget(_q.Range + 10, TargetSelector.DamageType.Magical));
 
             if (_menu.Item("combokey").GetValue<KeyBind>().Active)
             {
@@ -318,14 +319,11 @@ namespace KurisuMorgana
         {
             if (_q.IsReady())
             {
-                var itarget =
-                    ObjectManager.Get<Obj_AI_Hero>()
-                        .FirstOrDefault(h => h.IsEnemy && h.Distance(Me.ServerPosition, true) <= _q.RangeSqr);
-
-                if (itarget.IsValidTarget())
+                foreach (var itarget in ObjectManager.Get<Obj_AI_Hero>().Where(h => h.IsValidTarget(_q.Range)))
                 {
                     if (dashing && _menu.Item("dobind" + itarget.ChampionName).GetValue<StringList>().SelectedIndex == 2)
-                        _q.CastIfHitchanceEquals(itarget, HitChance.Dashing);
+                        if (itarget.Distance(Me.ServerPosition) <= 300f)
+                            _q.CastIfHitchanceEquals(itarget, HitChance.Dashing);
 
                     if (immobile && _menu.Item("dobind" + itarget.ChampionName).GetValue<StringList>().SelectedIndex == 2)
                         _q.CastIfHitchanceEquals(itarget, HitChance.Immobile);
@@ -334,12 +332,9 @@ namespace KurisuMorgana
 
             if (_w.IsReady() && soil)
             {
-                var itarget =
-                    ObjectManager.Get<Obj_AI_Hero>()
-                        .FirstOrDefault(h => h.IsEnemy && h.Distance(Me.ServerPosition, true) <= _w.RangeSqr + 400*400);
-
-                if (itarget.IsValidTarget())
-                    _w.CastIfHitchanceEquals(itarget, HitChance.Immobile);          
+                ObjectManager.Get<Obj_AI_Hero>()
+                    .FindAll(h => h.IsValidTarget(_w.Range))
+                    .ForEach(x => _w.CastIfHitchanceEquals(x, HitChance.Immobile));
             }
 
             if (_r.IsReady())
@@ -355,7 +350,7 @@ namespace KurisuMorgana
 
         private static void AntiGapcloser_OnEnemyGapcloser(ActiveGapcloser gapcloser)
         {
-            if (gapcloser.Sender.IsValidTarget(200))
+            if (gapcloser.Sender.IsValidTarget(250f))
             {
                 if (_menu.Item("useqanti").GetValue<bool>())
                 {
