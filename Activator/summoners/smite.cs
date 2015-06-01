@@ -65,15 +65,15 @@ namespace Activator.Summoners
                 return;
 
             // smite hero blu/red
-            if (Player.GetSpell(Activator.Smite).Name == "s5_summonersmiteduel" ||
-                Player.GetSpell(Activator.Smite).Name == "s5_summonersmiteplayerganker")
+            if (Player.GetSpell(Activator.Smite).Name.ToLower() == "s5_summonersmiteduel" ||
+                Player.GetSpell(Activator.Smite).Name.ToLower() == "s5_summonersmiteplayerganker")
             {
                 if (!Menu.Item("savesmite").GetValue<bool>() ||
                      Menu.Item("savesmite").GetValue<bool>() && Player.GetSpell(Activator.Smite).Ammo > 1)
                 {
                     // KS Smite
                     if (Menu.Item("smitemode").GetValue<StringList>().SelectedIndex == 0 &&
-                        Player.GetSpell(Activator.Smite).Name == "S5_SummonerSmitePlayerGanker")
+                        Player.GetSpell(Activator.Smite).Name.ToLower() == "s5_summonersmiteplayerganker")
                     {
                         var firsthero =
                             ObjectManager.Get<Obj_AI_Hero>()
@@ -84,7 +84,7 @@ namespace Activator.Summoners
 
                     // Combo Smite
                     if (Menu.Item("smitemode").GetValue<StringList>().SelectedIndex == 1 ||
-                        Player.GetSpell(Activator.Smite).Name == "S5_SummonerSmiteDuel")
+                        Player.GetSpell(Activator.Smite).Name.ToLower() == "s5_summonersmiteduel")
                     {
                         if (Activator.Origin.Item("usecombo").GetValue<KeyBind>().Active)
                         {
