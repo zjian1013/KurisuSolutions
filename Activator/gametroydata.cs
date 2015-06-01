@@ -127,7 +127,6 @@ namespace Activator
                 Slot = SpellSlot.W,
                 HitType = new []{ global::Activator.HitType.None }
             });
-
         }
     }
 }

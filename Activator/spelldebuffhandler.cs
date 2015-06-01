@@ -22,6 +22,13 @@ namespace Activator
                     if (spelldebuff.excludedbuffs.Any(buff => args.Buff.Name.ToLower() == buff))
                         return;
 
+                    if (args.Buff.Type == BuffType.Invulnerability)
+                    {
+                        hero.Attacker = null;
+                        hero.IncomeDamage = 0;
+                        hero.HitTypes.Clear();
+                    }
+
                     foreach (var buff in spelldebuff.debuffs)
                     {
                         if (buff.Name != args.Buff.Name.ToLower())
@@ -80,6 +87,13 @@ namespace Activator
                 {
                     if (spelldebuff.excludedbuffs.Any(buff => args.Buff.Name.ToLower() == buff))
                         return;
+
+                    if (args.Buff.Type == BuffType.Invulnerability)
+                    {
+                        hero.Attacker = null;
+                        hero.IncomeDamage = 0;
+                        hero.HitTypes.Clear();
+                    }
 
                     if (hero.QSSBuffCount <= 1)
                         hero.QSSHighestBuffTime = 0;

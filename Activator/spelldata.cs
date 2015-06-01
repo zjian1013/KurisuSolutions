@@ -18,6 +18,7 @@ namespace Activator
         public string MissileName { get; set; }
         public string[] ExtraMissileNames { get; set; }
         public int MissileSpeed { get; set; }
+        public string[] FromObject { get; set; }
         public HitType[] HitType { get; set; }
 
         public static List<item> items = new List<item>(); 
@@ -819,8 +820,8 @@ namespace Activator
                 SDataName = "dariusexecute",
                 ChampionName = "darius",
                 Slot = SpellSlot.R,
-                CastRange = 460f,
-                Delay = 200f,
+                CastRange = 550f,
+                Delay = 450f,
                 HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate },
                 MissileSpeed = int.MaxValue
             });
@@ -1405,8 +1406,19 @@ namespace Activator
                 ChampionName = "garen",
                 Slot = SpellSlot.Q,
                 CastRange = 0f,
-                Delay = 200f,
+                Delay = 300f,
                 HitType = new HitType[] { },
+                MissileSpeed = int.MaxValue
+            });
+
+            spells.Add(new spelldata
+            {
+                SDataName = "garenqattack",
+                ChampionName = "garen",
+                Slot = SpellSlot.Q,
+                CastRange = 350f,
+                Delay = 300f,
+                HitType = new[] { global::Activator.HitType.CrowdControl },
                 MissileSpeed = int.MaxValue
             });
 
@@ -1439,7 +1451,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 400f,
                 Delay = 120f,
-                HitType = new HitType[] { },
+                HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate },
                 MissileSpeed = int.MaxValue
             });
 
@@ -2597,19 +2609,8 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 900f,
                 Delay = 0f,
-                HitType = new[] { global::Activator.HitType.CrowdControl },
+                HitType = new HitType[] { },
                 MissileName = "leonazenithblademissile",
-                MissileSpeed = 2000
-            });
-
-            spells.Add(new spelldata
-            {
-                SDataName = "leonazenithblademissle",
-                ChampionName = "leona",
-                Slot = SpellSlot.E,
-                CastRange = 900f,
-                Delay = 0f,
-                HitType = new[] { global::Activator.HitType.CrowdControl },
                 MissileSpeed = 2000
             });
 
@@ -2726,17 +2727,6 @@ namespace Activator
                 Delay = 500f,
                 HitType = new[] { global::Activator.HitType.CrowdControl },
                 MissileName = "luluqmissile",
-                MissileSpeed = 1400
-            });
-
-            spells.Add(new spelldata
-            {
-                SDataName = "luluqmissle",
-                ChampionName = "lulu",
-                Slot = SpellSlot.Q,
-                CastRange = 925f,
-                Delay = 500f,
-                HitType = new[] { global::Activator.HitType.CrowdControl },
                 MissileSpeed = 1400
             });
 
@@ -3221,11 +3211,11 @@ namespace Activator
 
             spells.Add(new spelldata
             {
-                SDataName = "darkbindingmissile",
+                SDataName = "darkbinding",
                 ChampionName = "morgana",
                 Slot = SpellSlot.Q,
                 CastRange = 1300f,
-                Delay = 500f,
+                Delay = 250f,
                 HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.CrowdControl },
                 MissileName = "darkbindingmissile",
                 MissileSpeed = 1200
@@ -3305,7 +3295,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 2550f,
                 Delay = 500f,
-                HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate, global::Activator.HitType.CrowdControl },
+                HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.CrowdControl },
                 MissileName = "namirmissile",
                 MissileSpeed = 1200
             });
@@ -3316,8 +3306,8 @@ namespace Activator
                 ChampionName = "nasus",
                 Slot = SpellSlot.Q,
                 CastRange = 0f,
-                Delay = 500f,
-                HitType = new HitType[] { },
+                Delay = 450f,
+                HitType = new[] { global::Activator.HitType.Danger },
                 MissileSpeed = int.MaxValue
             });
 
@@ -3406,7 +3396,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 1500f,
                 Delay = 125f,
-                HitType = new HitType[] { },
+                HitType = new HitType[] { global::Activator.HitType.Danger },
                 MissileName = "javelintoss",
                 MissileSpeed = 1300
             });
@@ -3615,9 +3605,11 @@ namespace Activator
                 SDataName = "orianaizunacommand",
                 ChampionName = "orianna",
                 Slot = SpellSlot.Q,
-                CastRange = 1100f,
+                CastRange = 900f,
                 Delay = 500f,
                 HitType = new HitType[] { },
+                MissileName = "orianaizuna",
+                FromObject = new[] { "yomu_ring" },
                 MissileSpeed = 1200
             });
 
@@ -3626,10 +3618,11 @@ namespace Activator
                 SDataName = "orianadissonancecommand",
                 ChampionName = "orianna",
                 Slot = SpellSlot.W,
-                CastRange = 0f,
-                Delay = 500f,
+                CastRange = 400f,
+                Delay = 350f,
                 HitType = new[] { global::Activator.HitType.CrowdControl },
                 MissileName = "orianadissonancecommand",
+                FromObject = new[] { "yomu_ring" },
                 MissileSpeed = 1200
             });
 
@@ -3641,6 +3634,8 @@ namespace Activator
                 CastRange = 1095f,
                 Delay = 500f,
                 HitType = new HitType[] { },
+                MissileName = "orianaredact",
+                FromObject = new[] { "yomu_ring" },
                 MissileSpeed = 1200
             });
 
@@ -3649,10 +3644,11 @@ namespace Activator
                 SDataName = "orianadetonatecommand",
                 ChampionName = "orianna",
                 Slot = SpellSlot.R,
-                CastRange = 0f,
-                Delay = 500f,
+                CastRange = 470f,
+                Delay = 450f,
                 HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate, global::Activator.HitType.CrowdControl },
                 MissileName = "orianadetonatecommand",
+                FromObject = new [] { "yomu_ring" },
                 MissileSpeed = 1200
             });
 
@@ -5182,7 +5178,7 @@ namespace Activator
                 ChampionName = "twistedfate",
                 Slot = SpellSlot.W,
                 CastRange = 600f,
-                Delay = 0f,
+                Delay = 250f,
                 HitType = new[] { global::Activator.HitType.CrowdControl },
                 MissileSpeed = int.MaxValue
             });
@@ -5193,7 +5189,7 @@ namespace Activator
                 ChampionName = "twistedfate",
                 Slot = SpellSlot.W,
                 CastRange = 600f,
-                Delay = 0f,
+                Delay = 250f,
                 HitType = new[] { global::Activator.HitType.CrowdControl },
                 MissileSpeed = int.MaxValue
             });
@@ -5204,7 +5200,7 @@ namespace Activator
                 ChampionName = "twistedfate",
                 Slot = SpellSlot.W,
                 CastRange = 600f,
-                Delay = 0f,
+                Delay = 250f,
                 HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
@@ -5214,7 +5210,7 @@ namespace Activator
                 SDataName = "cardmasterstack",
                 ChampionName = "twistedfate",
                 Slot = SpellSlot.E,
-                CastRange = 525f,
+                CastRange = 0f,
                 Delay = 500f,
                 HitType = new HitType[] { },
                 MissileSpeed = 1200

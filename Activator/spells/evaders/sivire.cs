@@ -23,7 +23,7 @@ namespace Activator.Spells.Evaders
 
         internal override MenuType[] Category
         {
-            get { return new[] { MenuType.SpellShield, MenuType.Zhonyas, MenuType.SelfMinMP,  }; }
+            get { return new[] { MenuType.SpellShield, MenuType.Zhonyas }; }
         }
 
         internal override int DefaultHP
@@ -39,10 +39,6 @@ namespace Activator.Spells.Evaders
         public override void OnTick()
         {
             if (!Menu.Item("use" + Name).GetValue<bool>())
-                return;
-
-            if (Player.Mana / Player.MaxMana * 100 <
-                Menu.Item("SelfMinMP" + Name + "Pct").GetValue<Slider>().Value)
                 return;
 
             foreach (var hero in champion.Heroes)

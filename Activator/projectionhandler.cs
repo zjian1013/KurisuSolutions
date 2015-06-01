@@ -2,14 +2,13 @@
 using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
-using SharpDX;
 
 namespace Activator
 {
     public class projectionhandler
     {
         public static Obj_AI_Hero Target;
-        public static int LastCastedSpell;
+        public static int Last;
 
         public static void Load()
         {
@@ -34,7 +33,7 @@ namespace Activator
             var endPos = missile.EndPosition.To2D();
 
             var data = spelldata.GetByMissileName(missile.SData.Name.ToLower());
-            if (string.IsNullOrEmpty(data.MissileName))
+            if (data == null)
                 return;
 
             var direction = (endPos - startPos).Normalized();
@@ -138,12 +137,19 @@ namespace Activator
 
                     foreach (var data in spelldata.spells.Where(x => x.SDataName == args.SData.Name.ToLower()))
                     {
-                        LastCastedSpell = Environment.TickCount;
+                        Last = Environment.TickCount;
                         // self/selfaoe spell detection
                         if (args.SData.TargettingType == SpellDataTargetType.Self ||
                             args.SData.TargettingType == SpellDataTargetType.SelfAoe)
                         {
-                            if (hero.Player.Distance(sender.ServerPosition) <= data.CastRange)
+                            var fromObj =
+                                ObjectManager.Get<GameObject>()
+                                    .FirstOrDefault(
+                                        x => data.FromObject != null && data.FromObject.Any(y => x.Name.Contains(y)));
+
+                            var correctpos = fromObj != null ? fromObj.Position : sender.ServerPosition;
+                            var correctrange = fromObj != null ? fromObj.Position.Distance(args.End) + 100f : data.CastRange;
+                            if (hero.Player.Distance(correctpos) <= correctrange)
                             {
                                 // delay the spell a bit before missile endtime
                                 Utility.DelayAction.Add((int) (data.Delay - (data.Delay*0.5)), delegate
@@ -164,7 +170,7 @@ namespace Activator
                                     // spell has a crowd control effect
                                     if (data.HitType.Contains(HitType.CrowdControl))
                                         hero.HitTypes.Add(HitType.CrowdControl);
-                 
+
                                     // lazy safe reset
                                     Utility.DelayAction.Add((int) (data.Delay*2), delegate
                                     {
@@ -173,7 +179,6 @@ namespace Activator
                                         hero.HitTypes.Clear();
                                     });
                                 });
-
                             }
                         }
 
@@ -181,19 +186,26 @@ namespace Activator
                         if (args.SData.TargettingType == SpellDataTargetType.Cone ||
                             args.SData.TargettingType.ToString().Contains("Location"))
                         {
-                            if (hero.Player.Distance(sender.ServerPosition) <= data.CastRange)
+                            var fromObj =
+                                ObjectManager.Get<GameObject>()
+                                    .FirstOrDefault(
+                                        x => data.FromObject != null && data.FromObject.Any(y => x.Name.Contains(y)));
+
+                            var correctpos = fromObj != null ? fromObj.Position : sender.ServerPosition;
+                            var correctrange = fromObj != null ? fromObj.Position.Distance(args.End) + 100f : data.CastRange;
+                            if (hero.Player.Distance(correctpos) <= correctrange)
                             {
                                 // important spelldata shit (hope sdata is accurate)
                                 var distance =
-                                    (int) (1000*(sender.Distance(hero.Player.ServerPosition)/data.MissileSpeed));
-                                var endtime = data.Delay - 100 + Game.Ping/2 + distance - (Environment.TickCount - LastCastedSpell);
+                                    (int)(1000 * (correctpos.Distance(hero.Player.ServerPosition) / data.MissileSpeed));
+                                var endtime = data.Delay - 100 + Game.Ping/2 + distance - (Environment.TickCount - Last);
 
                                 // get the real end position normalized
-                                var direction = (args.End.To2D() - sender.ServerPosition.To2D()).Normalized();
-                                var endpos = sender.ServerPosition.To2D() + direction*data.CastRange;
+                                var direction = (args.End.To2D() - correctpos.To2D()).Normalized();
+                                var endpos = correctpos.To2D() + direction * correctrange;
 
                                 // setup projection
-                                var proj = hero.Player.ServerPosition.To2D().ProjectOn(sender.ServerPosition.To2D(), endpos);
+                                var proj = hero.Player.ServerPosition.To2D().ProjectOn(correctpos.To2D(), endpos);
                                 var projdist = hero.Player.ServerPosition.To2D().Distance(proj.SegmentPoint);
 
                                 // get the evade time 
@@ -262,7 +274,7 @@ namespace Activator
                                     var distance =
                                         (int) (1000*(sender.Distance(hero.Player.ServerPosition)/data.MissileSpeed));
                                     var endtime = data.Delay - 100 + Game.Ping/2 + distance -
-                                                  (Environment.TickCount - LastCastedSpell);
+                                                  (Environment.TickCount - Last);
 
                                     Utility.DelayAction.Add((int) (endtime - (endtime*0.5)), delegate
                                     {

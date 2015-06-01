@@ -2,7 +2,6 @@
 using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
-
 namespace Activator
 {
     public class gametroyhandler
@@ -76,28 +75,28 @@ namespace Activator
                     if (!troy.Included || !troy.Owner.IsEnemy)
                         continue;
 
-                    if (troy.Obj.IsValid && hero.Player.Distance(troy.Obj.Position) <= troy.Obj.BoundingRadius)
+                    // detect danger/cc/ultimates from our db
+                    foreach (var item in spelldata.troydata)
                     {
-                        hero.Attacker = troy.Owner;
-                        hero.IncomeDamage = (float) troy.Owner.GetSpellDamage(hero.Player, troy.Slot);
-
-                        // detect danger/cc/ultimates from our db
-                        foreach (var item in spelldata.troydata)
+                        if (troy.Obj.IsValid && hero.Player.Distance(troy.Obj.Position) <= troy.Obj.BoundingRadius)
                         {
-                            if (troy.Name != item.Name)
-                                continue;
+                            if (troy.Name == item.Name)
+                            {
+                                hero.Attacker = troy.Owner;
+                                hero.IncomeDamage = (float) troy.Owner.GetSpellDamage(hero.Player, troy.Slot);
 
-                            // spell is important or lethal!
-                            if (item.HitType.Contains(HitType.Ultimate))
-                                hero.HitTypes.Add(HitType.Ultimate);
+                                // spell is important or lethal
+                                if (item.HitType.Contains(HitType.Ultimate))
+                                    hero.HitTypes.Add(HitType.Ultimate);
 
-                            // spell is important but not as fatal
-                            if (item.HitType.Contains(HitType.Danger))
-                                hero.HitTypes.Add(HitType.Danger);
+                                // spell is important but not as fatal
+                                if (item.HitType.Contains(HitType.Danger))
+                                    hero.HitTypes.Add(HitType.Danger);
 
-                            // spell has a crowd control effect
-                            if (item.HitType.Contains(HitType.CrowdControl))
-                                hero.HitTypes.Add(HitType.CrowdControl);
+                                // spell has a crowd control effect
+                                if (item.HitType.Contains(HitType.CrowdControl))
+                                    hero.HitTypes.Add(HitType.CrowdControl);
+                            }
                         }
                     }
                 }
