@@ -149,6 +149,7 @@ namespace Activator
 
                             var correctpos = fromObj != null ? fromObj.Position : sender.ServerPosition;
                             var correctrange = fromObj != null ? fromObj.Position.Distance(args.End) + 100f : data.CastRange;
+
                             if (hero.Player.Distance(correctpos) <= correctrange)
                             {
                                 // delay the spell a bit before missile endtime
@@ -193,9 +194,10 @@ namespace Activator
 
                             var correctpos = fromObj != null ? fromObj.Position : sender.ServerPosition;
                             var correctrange = fromObj != null ? fromObj.Position.Distance(args.End) + 100f : data.CastRange;
+                            var correctwidth = args.SData.LineWidth == 0 ? args.SData.CastRadius : args.SData.LineWidth;
+
                             if (hero.Player.Distance(correctpos) <= correctrange)
                             {
-                                // important spelldata shit (hope sdata is accurate)
                                 var distance =
                                     (int)(1000 * (correctpos.Distance(hero.Player.ServerPosition) / data.MissileSpeed));
                                 var endtime = data.Delay - 100 + Game.Ping/2 + distance - (Environment.TickCount - Last);
@@ -211,15 +213,15 @@ namespace Activator
                                 // get the evade time 
                                 var evadetime =
                                     (int)
-                                        (1000*(args.SData.LineWidth - projdist + hero.Player.BoundingRadius)/
+                                        (1000*(correctwidth - projdist + hero.Player.BoundingRadius)/
                                          hero.Player.MoveSpeed);
 
-                                if (args.SData.LineWidth + hero.Player.BoundingRadius > projdist)
+                                if (correctwidth + hero.Player.BoundingRadius > projdist)
                                 {
                                     // ignore if can evade and using an evade assembly
                                     if (hero.Player.NetworkId == Activator.Player.NetworkId)
                                     {
-                                        if (hero.Player.CanMove && evadetime < endtime)
+                                        if (hero.Player.CanMove && evadetime < endtime && correctwidth <= 400)
                                         {
                                             if (Activator.Origin.Item("evadeon").GetValue<bool>() &&
                                                !Activator.Origin.Item("usecombo").GetValue<KeyBind>().Active)

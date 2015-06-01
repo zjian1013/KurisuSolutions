@@ -44,12 +44,11 @@ namespace Activator.Summoners
                 {
                     if (hero.IncomeDamage > 0)
                     {
-                        if (!hero.HitTypes.Contains(HitType.MinionAttack) || 
-                            hero.IncomeDamage > hero.Player.Health)
-                        {
-                            UseSpell();                            
-                            hero.IncomeDamage = 0;
-                        }
+                        if (hero.HitTypes.Contains(HitType.MinionAttack) &&
+                            hero.IncomeDamage < hero.Player.Health)
+                            return;
+
+                        UseSpell();
                     }
                 }
 
@@ -58,12 +57,11 @@ namespace Activator.Summoners
                 {
                     if (hero.IncomeDamage > 0)
                     {
-                        if (!hero.HitTypes.Contains(HitType.MinionAttack) || 
-                            hero.IncomeDamage > hero.Player.Health)
-                        {
-                            UseSpell();                           
-                            hero.IncomeDamage = 0;
-                        }
+                        if (hero.HitTypes.Contains(HitType.MinionAttack) &&
+                            hero.IncomeDamage < hero.Player.Health)
+                            return;
+
+                        UseSpell();                           
                     }
                 }
             }

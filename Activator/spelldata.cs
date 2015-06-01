@@ -6129,8 +6129,8 @@ namespace Activator
                 SDataName = "ziggsr",
                 ChampionName = "ziggs",
                 Slot = SpellSlot.R,
-                CastRange = 850f,
-                Delay = 500f,
+                CastRange = 2500f,
+                Delay = 1800f,
                 HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate },
                 MissileName = "ziggsr",
                 MissileSpeed = 1750
