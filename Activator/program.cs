@@ -232,13 +232,13 @@ namespace Activator
 
         public static void GetSmiteSlot()
         {
-            if (Player.GetSpell(SpellSlot.Summoner1).Name.Contains("smite"))
+            if (Player.GetSpell(SpellSlot.Summoner1).Name.ToLower().Contains("smite"))
             {
                 SmiteInGame = true;
                 Smite = SpellSlot.Summoner1;
             }
 
-            if (Player.GetSpell(SpellSlot.Summoner2).Name.Contains("smite"))
+            if (Player.GetSpell(SpellSlot.Summoner2).Name.ToLower().Contains("smite"))
             {
                 SmiteInGame = true;
                 Smite = SpellSlot.Summoner2;

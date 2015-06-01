@@ -16,6 +16,22 @@ namespace Activator
 
         void Drawing_OnDraw(EventArgs args)
         {
+            if (Activator.Origin.Item("qssdebug").GetValue<bool>())
+            {
+                foreach (var hero in champion.Heroes)
+                {
+                    var mpos = Drawing.WorldToScreen(hero.Player.Position);
+
+                    if (!hero.Player.IsDead)
+                    {
+                        Drawing.DrawText(mpos[0] - 40, mpos[1] + 0, Color.White, "Income Damage: " + hero.IncomeDamage);
+                        Drawing.DrawText(mpos[0] - 40, mpos[1] + 15, Color.White, "QSSBuffCount: " + hero.QSSBuffCount);
+                        Drawing.DrawText(mpos[0] - 40, mpos[1] + 30, Color.White,
+                            "QSSHighestBuffTime: " + hero.QSSHighestBuffTime);
+                    }
+                }
+            }
+
             if (Activator.SmiteInGame)
             {
                 if (!Activator.Origin.Item("usesmite").GetValue<KeyBind>().Active ||
@@ -69,24 +85,7 @@ namespace Activator
                         }
                     }
                 }
-            }
-        
-            
-            if (Activator.Origin.Item("qssdebug").GetValue<bool>())
-            {
-                foreach (var hero in champion.Heroes)
-                {
-                    var mpos = Drawing.WorldToScreen(hero.Player.Position);
-
-                    if (!hero.Player.IsDead)
-                    {
-                        Drawing.DrawText(mpos[0] - 40, mpos[1] + 0, Color.White, "Income Damage: " + hero.IncomeDamage);
-                        Drawing.DrawText(mpos[0] - 40, mpos[1] + 15, Color.White, "QSSBuffCount: " + hero.QSSBuffCount);
-                        Drawing.DrawText(mpos[0] - 40, mpos[1] + 30, Color.White,
-                            "QSSHighestBuffTime: " + hero.QSSHighestBuffTime);
-                    }
-                }
-            }
+            }               
         }
     }
 }
