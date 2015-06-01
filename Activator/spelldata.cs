@@ -96,6 +96,7 @@ namespace Activator
                 Delay = 250f,
                 HitType = new HitType[] { },
                 MissileName = "ahriorbmissile",
+                ExtraMissileNames = new [] { "ahriorbreturn" },
                 MissileSpeed = 1450
             });
 
@@ -964,6 +965,42 @@ namespace Activator
 
             spells.Add(new spelldata
             {
+                SDataName = "ekkoq",
+                ChampionName = "ekko",
+                Slot = SpellSlot.Q,
+                CastRange = 1075f,
+                Delay = 66f,
+                HitType = new[] { global::Activator.HitType.CrowdControl },
+                MissileName = "ekkoqmis",
+                ExtraMissileNames = new []{ "ekkoqreturn" },
+                MissileSpeed = 1400
+            });
+
+            spells.Add(new spelldata
+            {
+                SDataName = "ekkoeattack",
+                ChampionName = "ekko",
+                Slot = SpellSlot.E,
+                CastRange = 300f,
+                Delay = 100f,
+                HitType = new[] { global::Activator.HitType.Danger },
+                MissileSpeed = int.MaxValue
+            });
+
+             spells.Add(new spelldata
+             {
+                 SDataName = "ekkor",
+                 ChampionName = "ekko",
+                 Slot = SpellSlot.R,
+                 CastRange = 500f,
+                 Delay = 250f,
+                 HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate },
+                 FromObject = new [] { "Ekko_Base_R_TrailEnd" },
+                 MissileSpeed = int.MaxValue
+             });
+
+            spells.Add(new spelldata
+            {
                 SDataName = "elisehumanq",
                 ChampionName = "elise",
                 Slot = SpellSlot.Q,
@@ -1114,8 +1151,9 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 1200f,
                 Delay = 250f,
-                HitType = new HitType[] { global::Activator.HitType.CrowdControl },
+                HitType = new[] { global::Activator.HitType.CrowdControl },
                 MissileName = "ezrealmysticshotmissile",
+                ExtraMissileNames = new[] { "ezrealmysticshotpulsemissile" },
                 MissileSpeed = 2000
             });
 
@@ -2715,6 +2753,8 @@ namespace Activator
                 CastRange = 1400f,
                 Delay = 500f,
                 HitType = new HitType[] { },
+                MissileName  = "lucianrmissileoffhand",
+                ExtraMissileNames = new[] { "lucianrmissile" },
                 MissileSpeed = int.MaxValue
             });
 
@@ -2841,6 +2881,7 @@ namespace Activator
                 Delay = 250f,
                 HitType = new HitType[] { },
                 MissileName = "kalistamysticshotmis",
+                ExtraMissileNames = new[] { "kalistamysticshotmistrue" },
                 MissileSpeed = 1200
             });
 
@@ -4082,6 +4123,7 @@ namespace Activator
                 Delay = 300f,
                 HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate },
                 MissileName = "rivenlightsabermissile",
+                ExtraMissileNames = new[] { "rivenlightsabermissileside" },
                 MissileSpeed = 2200
             });
 
@@ -4497,6 +4539,7 @@ namespace Activator
                 Delay = 500f,
                 HitType = new HitType[] { },
                 MissileName = "sivirqmissile",
+                ExtraMissileNames = new []{ "sivirqreturn" },
                 MissileSpeed = 1350
             });
 
@@ -5618,6 +5661,7 @@ namespace Activator
                 CastRange = 700f,
                 Delay = 500f,
                 HitType = new HitType[] { },
+                MissileName = "viktordeathraymis",
                 MissileSpeed = 1210
             });
 
@@ -6019,6 +6063,8 @@ namespace Activator
                 Delay = 500f,
                 HitType = new HitType[] { },
                 MissileName = "zedshurikenmisone",
+                FromObject = new[] { "Zed_Clone_idle.troy", "Zed_Clone_Idle.troy" },
+                ExtraMissileNames = new[] { "zedshurikenmistwo", "zedshurikenmisthree" },
                 MissileSpeed = 902
             });
 

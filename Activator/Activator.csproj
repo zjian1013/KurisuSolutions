@@ -103,6 +103,7 @@
     <Compile Include="spelldebuffhandler.cs" />
     <Compile Include="spells\evaders\alphastrike.cs" />
     <Compile Include="spells\evaders\blackshield.cs" />
+    <Compile Include="spells\evaders\chronobreak.cs" />
     <Compile Include="spells\evaders\fioradance.cs" />
     <Compile Include="spells\evaders\fizzjump.cs" />
     <Compile Include="spells\evaders\hallucinatefull.cs" />
