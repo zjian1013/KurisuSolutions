@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using LeagueSharp.Common;
 
 namespace Activator.Spells.Shields
@@ -53,8 +54,12 @@ namespace Activator.Spells.Shields
                         UseSpell();
 
                     if (hero.Player.Health / hero.Player.MaxHealth * 100 <=
-                        Menu.Item("SelfLowHP" + Name + "Pct").GetValue<Slider>().Value && hero.IncomeDamage > 0)
-                        UseSpell();
+                        Menu.Item("SelfLowHP" + Name + "Pct").GetValue<Slider>().Value)
+                    {
+                        if (hero.IncomeDamage > 0 &&
+                            hero.HitTypes.Except(ExcludedList).Any())
+                            UseSpell();
+                    }
                 }
             }
         }

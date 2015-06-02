@@ -1,5 +1,5 @@
 ﻿using System;
-using LeagueSharp;
+using System.Linq;
 using LeagueSharp.Common;
 
 namespace Activator.Summoners
@@ -42,27 +42,17 @@ namespace Activator.Summoners
                 if (hero.Player.Health/hero.Player.MaxHealth*100 <=
                     Menu.Item("SelfLowHP" + Name + "Pct").GetValue<Slider>().Value)
                 {
-                    if (hero.IncomeDamage > 0)
-                    {
-                        if (hero.HitTypes.Contains(HitType.MinionAttack) &&
-                            hero.IncomeDamage < hero.Player.Health)
-                            return;
-
+                    if (hero.IncomeDamage > 0 &&
+                        hero.HitTypes.Except(ExcludedList).Any())
                         UseSpell();
-                    }
                 }
 
                 if (hero.IncomeDamage/hero.Player.MaxHealth*100 >=
                     Menu.Item("SelfMuchHP" + Name + "Pct").GetValue<Slider>().Value)
                 {
-                    if (hero.IncomeDamage > 0)
-                    {
-                        if (hero.HitTypes.Contains(HitType.MinionAttack) &&
-                            hero.IncomeDamage < hero.Player.Health)
-                            return;
-
-                        UseSpell();                           
-                    }
+                    if (hero.IncomeDamage > 0 &&
+                        hero.HitTypes.Except(ExcludedList).Any())
+                        UseSpell();                       
                 }
             }
         }

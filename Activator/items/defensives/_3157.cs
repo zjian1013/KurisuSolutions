@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
 
@@ -66,8 +67,12 @@ namespace Activator.Items.Defensives
                             UseItem();
 
                     if (Player.Health/Player.MaxHealth*100 <=
-                        Menu.Item("SelfLowHP" + Name + "Pct").GetValue<Slider>().Value && hero.IncomeDamage > 0)
-                        UseItem();
+                        Menu.Item("SelfLowHP" + Name + "Pct").GetValue<Slider>().Value)
+                    {
+                        if (hero.IncomeDamage > 0 &&
+                            hero.HitTypes.Except(ExcludedList).Any())
+                            UseItem();
+                    }
                 }
             }
         }

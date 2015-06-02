@@ -52,15 +52,11 @@ namespace Activator.Spells.Shields
                 {
                     if (hero.IncomeDamage / hero.Player.MaxHealth * 100 >=
                         Menu.Item("SelfMuchHP" + Name + "Pct").GetValue<Slider>().Value)
-                        UseSpellOn(hero.Player);
+                        UseSpell();
 
-                    if (hero.Player.Health / hero.Player.MaxHealth * 100 <=
-                        Menu.Item("SelfLowHP" + Name + "Pct").GetValue<Slider>().Value)
-                    {
-                        if (hero.IncomeDamage > 0 && 
-                            hero.HitTypes.Except(ExcludedList).Any())
-                            UseSpell();
-                    }
+                    if (hero.Player.Health/hero.Player.MaxHealth*100 <=
+                        Menu.Item("SelfLowHP" + Name + "Pct").GetValue<Slider>().Value && hero.IncomeDamage > 0)
+                        UseSpell();
                 }
             }
         }

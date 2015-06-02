@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
 
@@ -50,8 +51,12 @@ namespace Activator.Spells.Shields
                         UseSpellTowards(hero.Player.ServerPosition);
 
                     if (hero.Player.Health/hero.Player.MaxHealth*100 <=
-                        Menu.Item("SelfLowHP" + Name + "Pct").GetValue<Slider>().Value && hero.IncomeDamage > 0)
-                        UseSpellTowards(hero.Player.ServerPosition);
+                        Menu.Item("SelfLowHP" + Name + "Pct").GetValue<Slider>().Value)
+                    {
+                        if (hero.IncomeDamage > 0 &&
+                            hero.HitTypes.Except(ExcludedList).Any())
+                            UseSpellTowards(hero.Player.ServerPosition);
+                    }
                 }
             }
         }
