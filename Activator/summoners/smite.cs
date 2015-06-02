@@ -75,11 +75,13 @@ namespace Activator.Summoners
                     if (Menu.Item("smitemode").GetValue<StringList>().SelectedIndex == 0 &&
                         Player.GetSpell(Activator.Smite).Name.ToLower() == "s5_summonersmiteplayerganker")
                     {
-                        var firsthero =
-                            ObjectManager.Get<Obj_AI_Hero>()
-                                .First(h => h.IsValidTarget(500) && !h.IsZombie && h.Health <= 20 + 8*Player.Level);
-
-                        Player.Spellbook.CastSpell(Activator.Smite, firsthero);
+                        foreach (
+                            var hero in
+                                ObjectManager.Get<Obj_AI_Hero>()
+                                    .Where(h => h.IsValidTarget(500) && !h.IsZombie && h.Health <= 20 + 8*Player.Level))
+                        {
+                            Player.Spellbook.CastSpell(Activator.Smite, hero);
+                        }
                     }
 
                     // Combo Smite
@@ -88,9 +90,11 @@ namespace Activator.Summoners
                     {
                         if (Activator.Origin.Item("usecombo").GetValue<KeyBind>().Active)
                         {
-                            foreach (var hero in ObjectManager.Get<Obj_AI_Hero>()
-                                .Where(h => h.IsValidTarget(500) && !h.IsZombie)
-                                .OrderBy(h => h.Distance(Game.CursorPos)))
+                            foreach (
+                                var hero in
+                                    ObjectManager.Get<Obj_AI_Hero>()
+                                        .Where(h => h.IsValidTarget(500) && !h.IsZombie)
+                                        .OrderBy(h => h.Distance(Game.CursorPos)))
                             {
                                 Player.Spellbook.CastSpell(Activator.Smite, hero);
                             }
