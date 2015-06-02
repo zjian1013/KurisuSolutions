@@ -63,7 +63,7 @@ namespace KurisuBlitz
             var menuQ = new Menu("Q Menu", "qmenu");
             menuQ.AddItem(new MenuItem("usecomboq", "Use in Combo")).SetValue(true);
             menuQ.AddItem(new MenuItem("hitchanceq", "Q Hitchance 1-Low, 4-Very High")).SetValue(new Slider(3, 1, 4));
-            menuQ.AddItem(new MenuItem("dnd", "Mininum Distance to Q")).SetValue(new Slider((int)_r.Range, 0, (int)_q.Range));
+            menuQ.AddItem(new MenuItem("dnd", "Mininum Distance to Q")).SetValue(new Slider(255, 0, (int)_q.Range));
             menuQ.AddItem(new MenuItem("hnd", "Dont grab if below health %")).SetValue(new Slider(0));
             menuQ.AddItem(new MenuItem("qdashing", "Q on Dashing Enemies")).SetValue(true);
             menuQ.AddItem(new MenuItem("qimmobile", "Q on Immobile Enemies")).SetValue(true);
