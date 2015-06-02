@@ -71,12 +71,6 @@ namespace Activator.Items.Cleansers
                             Utility.DelayAction.Add(Game.Ping + 80, delegate
                             {
                                 UseItem(Menu.Item("mode" + Name).GetValue<StringList>().SelectedIndex == 1);
-                                if (!LeagueSharp.Common.Items.CanUseItem(Id))
-                                {
-                                    hero.QSSBuffCount = 0;
-                                    hero.QSSHighestBuffTime = 0;
-                                    hero.IncomeDamage = 0;
-                                }
                             });
                         }
                     }

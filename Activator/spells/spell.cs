@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
@@ -19,6 +20,13 @@ namespace Activator.Spells
         public SpellSlot Slot { get { return Player.GetSpellSlot(Name); } }
         public Spell Spell { get { return new Spell(Player.GetSpellSlot(Name)); } }
         public Obj_AI_Hero Player { get { return ObjectManager.Player; } }
+
+        public List<HitType> ExcludedList = new List<HitType>
+        {
+            HitType.None,
+            HitType.MinionAttack,
+            HitType.Stealth
+        };
 
         public Obj_AI_Hero LowTarget
         {

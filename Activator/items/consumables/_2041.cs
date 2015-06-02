@@ -32,7 +32,7 @@ namespace Activator.Items.Consumables
 
         internal override int DefaultMP
         {
-            get { return 55; }
+            get { return 35; }
         }
 
         public override void OnTick()

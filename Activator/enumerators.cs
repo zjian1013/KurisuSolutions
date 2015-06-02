@@ -3,14 +3,14 @@
     public enum HitType
     {
         None = 0,
-        AutoAttack,
-        MinionAttack,
-        TurretAttack,
-        Spell,
-        Danger,
-        Ultimate,
-        CrowdControl,
-        Stealth
+        AutoAttack = 1,
+        MinionAttack = 2,
+        TurretAttack = 3,
+        Spell = 4,
+        Danger = 5,
+        Ultimate = 6,
+        CrowdControl = 7,
+        Stealth = 8
     }
 
     public enum MapType

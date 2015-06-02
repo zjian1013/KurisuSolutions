@@ -23,7 +23,7 @@ namespace Activator.Spells.Evaders
 
         internal override MenuType[] Category
         {
-            get { return new[] { MenuType.SelfLowHP, MenuType.Zhonyas }; }
+            get { return new[] { MenuType.Zhonyas }; }
         }
 
         internal override int DefaultHP
@@ -45,11 +45,6 @@ namespace Activator.Spells.Evaders
             {
                 if (hero.Player.NetworkId == Activator.Player.NetworkId)
                 {
-                    if (hero.Player.Health/hero.Player.MaxHealth*100 <=
-                        Menu.Item("SelfLowHP" + Name + "Pct").GetValue<Slider>().Value)
-                        if (hero.IncomeDamage > 0)
-                            UseSpell();
-
                     if (Menu.Item("use" + Name + "Norm").GetValue<bool>())
                         if (hero.IncomeDamage > 0 && hero.HitTypes.Contains(HitType.Danger))
                             UseSpell();

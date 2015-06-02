@@ -76,7 +76,7 @@
     <Compile Include="items\consumables\_2041.cs" />
     <Compile Include="items\consumables\_2043.cs" />
     <Compile Include="items\consumables\_2137.cs" />
-    <Compile Include="items\defensives\_3048.cs" />
+    <Compile Include="items\defensives\_3040.cs" />
     <Compile Include="items\defensives\_3069.cs" />
     <Compile Include="items\defensives\_3090.cs" />
     <Compile Include="items\defensives\_3143.cs" />

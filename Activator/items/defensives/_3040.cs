@@ -3,11 +3,11 @@ using LeagueSharp.Common;
 
 namespace Activator.Items.Defensives
 {
-    class _3048 : item
+    class _3040 : item
     {
         internal override int Id
         {
-            get { return 3048; }
+            get { return 3040; }
         }
 
         internal override string Name
@@ -56,13 +56,13 @@ namespace Activator.Items.Defensives
             {
                 if (hero.Player.NetworkId == Player.NetworkId)
                 {
-                    if (Menu.Item("use" + Name + "Norm").GetValue<bool>())
-                        if (hero.IncomeDamage > 0 && hero.HitTypes.Contains(HitType.Danger))
-                            UseItem();
+                    if (Menu.Item("use" + Name + "Norm").GetValue<bool>() && 
+                        hero.IncomeDamage > 0 && hero.HitTypes.Contains(HitType.Danger))
+                        UseItem();
 
-                    if (Menu.Item("use" + Name + "Ulti").GetValue<bool>())
-                        if (hero.IncomeDamage > 0 && hero.HitTypes.Contains(HitType.Ultimate))
-                            UseItem();
+                    if (Menu.Item("use" + Name + "Ulti").GetValue<bool>() && 
+                        hero.IncomeDamage > 0 && hero.HitTypes.Contains(HitType.Ultimate))
+                        UseItem();
 
                     if (hero.Player.Health/hero.Player.MaxHealth*100 <=
                         Menu.Item("SelfLowHP" + Name + "Pct").GetValue<Slider>().Value && hero.IncomeDamage > 0)

@@ -66,15 +66,11 @@ namespace Activator
                         args.Buff.Type == BuffType.Slow && Activator.Origin.Item("cslow").GetValue<bool>() ||
                         args.Buff.Name == "summonerexhaust" && Activator.Origin.Item("cexhaust").GetValue<bool>())
                     {
+                        hero.IncomeDamage = 1;
                         hero.QSSBuffCount = hero.QSSBuffCount + 1;
-
-                        if (args.Buff.EndTime - args.Buff.StartTime > hero.QSSHighestBuffTime)
+                        if (Math.Ceiling(args.Buff.EndTime - args.Buff.StartTime) > hero.QSSHighestBuffTime)
                             hero.QSSHighestBuffTime = (int) (Math.Ceiling(args.Buff.EndTime - args.Buff.StartTime));
                     }
-                }
-                else
-                {
-                    return;
                 }
             }
         }
@@ -136,9 +132,10 @@ namespace Activator
                         args.Buff.Type == BuffType.Slow && Activator.Origin.Item("cslow").GetValue<bool>() ||
                         args.Buff.Name == "summonerexhaust" && Activator.Origin.Item("cexhaust").GetValue<bool>())
                     {
-                        if (hero.QSSBuffCount > 0)
+                        hero.IncomeDamage = 0;
+                        if (hero.QSSBuffCount > 0) 
                             hero.QSSBuffCount = hero.QSSBuffCount - 1;
-                        else
+                        else 
                             hero.QSSBuffCount = 0;
                     }
                 }

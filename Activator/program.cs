@@ -1,13 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Collections.Generic;
+using LeagueSharp;
+using LeagueSharp.Common;
 using Activator.Items;
 using Activator.Spells;
 using Activator.Summoners;
-using LeagueSharp;
-using LeagueSharp.Common;
 
 namespace Activator
 {
@@ -20,7 +20,7 @@ namespace Activator
         internal static bool SmiteInGame;
         internal static bool TroysInGame;
 
-        private static int GameTick;
+        private static int gametick;
         private static void Main(string[] args)
         {
             Console.WriteLine("Activator injected!");
@@ -94,7 +94,7 @@ namespace Activator
                 zmenu.AddSubMenu(ddmenu);
             }
 
-            zmenu.AddItem(new MenuItem("ticklimit", "Tick Limiter")).SetValue(new Slider(50, 0, 150));
+            zmenu.AddItem(new MenuItem("ticklimit", "Tick Limiter")).SetValue(new Slider(100, 0, 350));
             zmenu.AddItem(new MenuItem("evadeon", "Evade Integration")).SetValue(false);
             zmenu.AddItem(new MenuItem("evadefow", "Evade Integration (FoW)")).SetValue(false);
             zmenu.AddItem(new MenuItem("usecombo", "Combo Key")).SetValue(new KeyBind(32, KeyBindType.Press, true));
@@ -147,27 +147,24 @@ namespace Activator
 
         private static void Game_OnUpdate(EventArgs args)
         {
-            if (Environment.TickCount - GameTick < 
+            if (Environment.TickCount - gametick < 
                 Origin.Item("ticklimit").GetValue<Slider>().Value)
                 return;
 
-            // temporary items instantiator
             foreach (var item in spelldata.items)
                 if (LeagueSharp.Common.Items.HasItem(item.Id) &&
                     LeagueSharp.Common.Items.CanUseItem(item.Id))
                         item.OnTick();
 
-            // temporary summoners instantiator
             foreach (var summoner in spelldata.summoners)
                 if (Player.Spellbook.CanUseSpell(summoner.Slot) == SpellState.Ready)
                     summoner.OnTick();
 
-            // temporary autospell instantiator
             foreach (var autospell in spelldata.mypells)
                 if (Player.Spellbook.CanUseSpell(autospell.Slot) == SpellState.Ready)
                     autospell.OnTick();
 
-            GameTick = Environment.TickCount;
+            gametick = Environment.TickCount;
         }
 
         private static void NewItem(item item, Menu parent)
@@ -202,31 +199,21 @@ namespace Activator
 
         public static void GetSlotDamage()
         {
-            // grab data from common
-            foreach (var entry in Damage.Spells)
+            foreach (
+                var spell in
+                    Damage.Spells.Where(entry => entry.Key == Player.ChampionName).SelectMany(entry => entry.Value))
             {
-                if (entry.Key == Player.ChampionName)
-                {
-                    foreach (var spell in entry.Value)
-                    {
-                        // spell.Damage (the damage algorithm)
-                        // get and save the damage delegate for later use
-                        spelldata.combod.Add(spell.Damage, spell.Slot);
-                        Console.WriteLine(Player.ChampionName + ": " + spell.Slot + " " + spell.Stage + " - dmg added!");
-                    }
-                }
+                spelldata.combod.Add(spell.Damage, spell.Slot);
+                Console.WriteLine(Player.ChampionName + ": " + spell.Slot + " " + spell.Stage + " - dmg added!");
             }
         }
 
         public static void GetHeroesInGame()
         {
-            foreach (var i in ObjectManager.Get<Obj_AI_Hero>())
+            foreach (var i in ObjectManager.Get<Obj_AI_Hero>().Where(i => i.Team == Player.Team))
             {
-                if (i.Team == Player.Team)
-                {
-                    champion.Heroes.Add(new champion(i, 0));
-                    Console.WriteLine(i.ChampionName + " ally added to table!");
-                }
+                champion.Heroes.Add(new champion(i, 0));
+                Console.WriteLine(i.ChampionName + " ally added to table!");
             }
         }
 
