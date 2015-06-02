@@ -94,10 +94,11 @@ namespace Activator
                 zmenu.AddSubMenu(ddmenu);
             }
 
-            zmenu.AddItem(new MenuItem("ticklimit", "Tick Limiter")).SetValue(new Slider(100, 0, 350));
             zmenu.AddItem(new MenuItem("evadeon", "Evade Integration")).SetValue(false);
             zmenu.AddItem(new MenuItem("evadefow", "Evade Integration (FoW)")).SetValue(false);
             zmenu.AddItem(new MenuItem("usecombo", "Combo Key")).SetValue(new KeyBind(32, KeyBindType.Press, true));
+
+
             Origin.AddSubMenu(zmenu);       
 
             Origin.AddToMainMenu();

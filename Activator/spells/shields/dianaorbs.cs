@@ -58,12 +58,8 @@ namespace Activator.Spells.Shields
                         Menu.Item("SelfLowHP" + Name + "Pct").GetValue<Slider>().Value)
                     {
                         if (hero.IncomeDamage > 0 &&
-                            hero.HitTypes.Except(ExcludedList).Any())
+                            hero.HitTypes.Except(ExcludedList).Any() || hero.IncomeDamage > hero.Player.Health)
                             UseSpell();
-
-                        if (hero.IncomeDamage > 0 &&
-                            hero.HitTypes.Except(ExcludedList).Any())
-                            UseSpellOn(hero.Player);
                     }
                 }
             }
