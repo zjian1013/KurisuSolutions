@@ -31,8 +31,8 @@ namespace KurisuBlitz
                 return;
 
             // Set spells      
-            _q = new Spell(SpellSlot.Q, 1050f);
-            _q.SetSkillshot(250f, 70f, 1800f, true, SkillshotType.SkillshotLine);
+            _q = new Spell(SpellSlot.Q, 1000f);
+            _q.SetSkillshot(0.25f, 70f, 1800f, true, SkillshotType.SkillshotLine);
 
             _e = new Spell(SpellSlot.E, 150f);
             _r = new Spell(SpellSlot.R, 550f);
@@ -62,12 +62,11 @@ namespace KurisuBlitz
 
             var menuQ = new Menu("Q Menu", "qmenu");
             menuQ.AddItem(new MenuItem("usecomboq", "Use in Combo")).SetValue(true);
-            menuQ.AddItem(new MenuItem("qdashing", "Q on Dashing Enemies")).SetValue(true);
-            menuQ.AddItem(new MenuItem("qimmobile", "Q on Immobile Enemies")).SetValue(true);
             menuQ.AddItem(new MenuItem("hitchanceq", "Q Hitchance 1-Low, 4-Very High")).SetValue(new Slider(3, 1, 4));
             menuQ.AddItem(new MenuItem("dnd", "Mininum Distance to Q")).SetValue(new Slider((int)_r.Range, 0, (int)_q.Range));
-            menuQ.AddItem(new MenuItem("dnd2", "Maximum Distance to Q")).SetValue(new Slider((int)_q.Range, 0, (int)_q.Range));
             menuQ.AddItem(new MenuItem("hnd", "Dont grab if below health %")).SetValue(new Slider(0));
+            menuQ.AddItem(new MenuItem("qdashing", "Q on Dashing Enemies")).SetValue(true);
+            menuQ.AddItem(new MenuItem("qimmobile", "Q on Immobile Enemies")).SetValue(true);
             menuQ.AddItem(new MenuItem("interruptq", "Use for Interrupt")).SetValue(true);
             menuQ.AddItem(new MenuItem("secureq", "Use for Killsteal")).SetValue(false);
             spellmenu.AddSubMenu(menuQ);
@@ -162,12 +161,12 @@ namespace KurisuBlitz
             Secure(_menu.Item("secureq").GetValue<bool>(), _menu.Item("securee").GetValue<bool>(),
                    _menu.Item("securer").GetValue<bool>());
 
-            // auto grab
-            AutoCast(_menu.Item("qdashing").GetValue<bool>(),
-                     _menu.Item("qimmobile").GetValue<bool>());
-
             if ((int)(Me.Health / Me.MaxHealth * 100) >= _menu.Item("hnd").GetValue<Slider>().Value)
             {
+                // auto grab
+                AutoCast(_menu.Item("qdashing").GetValue<bool>(),
+                         _menu.Item("qimmobile").GetValue<bool>());
+
                 if (_menu.Item("combokey").GetValue<KeyBind>().Active)
                 {
                     Combo(_menu.Item("usecomboq").GetValue<bool>(),
@@ -180,16 +179,11 @@ namespace KurisuBlitz
         {
             if (_q.IsReady())
             {
-                foreach (var itarget in ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsValidTarget(_q.Range)))
-                {
-                    if (dashing && _menu.Item("dograb" + itarget.ChampionName).GetValue<StringList>().SelectedIndex == 2)
-                        if (itarget.Distance(Me.ServerPosition) > _menu.Item("dnd").GetValue<Slider>().Value)
-                            _q.CastIfHitchanceEquals(itarget, HitChance.Dashing);
-
-                    if (immobile && _menu.Item("dograb" + itarget.ChampionName).GetValue<StringList>().SelectedIndex == 2)
-                        if (itarget.Distance(Me.ServerPosition) > _menu.Item("dnd").GetValue<Slider>().Value)
-                            _q.CastIfHitchanceEquals(itarget, HitChance.Immobile);
-                }
+                ObjectManager.Get<Obj_AI_Hero>()
+                    .FindAll(
+                        h => h.IsValidTarget(_q.Range) && h.Distance(Me.ServerPosition) > _e.Range + 200 &&
+                            _menu.Item("dograb" + h.ChampionName).GetValue<StringList>().SelectedIndex == 2)
+                    .ForEach(x => _q.CastIfHitchanceEquals(x, HitChance.Immobile));
             }
 
             if (_r.IsReady())
@@ -267,8 +261,7 @@ namespace KurisuBlitz
                         var poutput = _q.GetPrediction(qtarget);
                         if (poutput.Hitchance >= HitChance.Medium)
                         {
-                            if (qtarget.Distance(Me.ServerPosition, true) >
-                                Math.Pow(_menu.Item("dnd2").GetValue<Slider>().Value, 2))
+                            if (qtarget.Distance(Me.ServerPosition) >_menu.Item("dnd").GetValue<Slider>().Value)
                             {
                                 _q.Cast(poutput.CastPosition);
                             }
