@@ -105,7 +105,7 @@ namespace KurisuRiven
 
         #endregion
 
-        private static int build = 26;
+        private static int build = 28;
         public KurisuRiven()
         {
             Console.WriteLine("KurisuRiven enabled!");
@@ -133,6 +133,7 @@ namespace KurisuRiven
                         Drawings();
 
                         Game.OnUpdate += Game_OnUpdate;
+
                         Obj_AI_Base.OnNewPath += Obj_AI_Base_OnNewPath;
                         Game.PrintChat("<b><font color=\"#FF9900\">KurisuRiven:</font></b> " +
                                        "Build <b><font color=\"#FF9900\">" + build + "</font></b> Loaded!");
@@ -165,7 +166,7 @@ namespace KurisuRiven
                 {
                     didq = false;
                     canaa = true;
-                    canmv = true;
+                    canmv = true;                
                 }
             }
         }
@@ -188,9 +189,9 @@ namespace KurisuRiven
             canburst = rtarg != null && r.IsReady() && q.IsReady() && ((ComboDamage(rtarg)/1.6) >= rtarg.Health ||
                        rtarg.CountEnemiesInRange(w.Range) >= menuslide("multic"));
     
-            if (menulist("cancelt") == 0 && qtarg != player)
+            if (qtarg != player && qtarg.IsFacing(player))
                 movepos = player.ServerPosition + (player.ServerPosition - qtarg.ServerPosition).Normalized()*28;
-            if (menulist("cancelt") == 1 && qtarg != player)
+            if (qtarg != player && !qtarg.IsFacing(player))
                 movepos = player.ServerPosition.Extend(qtarg.ServerPosition, 350);
             if (qtarg == player)
                 movepos = Game.CursorPos;
@@ -276,23 +277,16 @@ namespace KurisuRiven
             drMenu.AddItem(new MenuItem("drawengage", "Draw Engage Range")).SetValue(true);
             drMenu.AddItem(new MenuItem("drawdmg", "Draw Damage Bar")).SetValue(true);
             drMenu.AddItem(new MenuItem("drawburst", "Draw Burst Range")).SetValue(true);
-            drMenu.AddItem(new MenuItem("drawtarg", "Debug Current Target")).SetValue(false);
+            drMenu.AddItem(new MenuItem("drawtarg", "Draw Target")).SetValue(false);
             menu.AddSubMenu(drMenu);
 
             var combo = new Menu("Combo", "combo");
             var qmenu = new Menu("Q  Settings", "rivenq");
+            qmenu.AddItem(new MenuItem("autoaq", "CanQ Delay (ms)")).SetValue(new Slider(15, 0, 300));
             qmenu.AddItem(new MenuItem("qint", "Interrupt with 3rd Q")).SetValue(true);
+            qmenu.AddItem(new MenuItem("keepq", "Keep Q Buff Up")).SetValue(true);
             qmenu.AddItem(new MenuItem("usegap", "Gapclose with Q")).SetValue(true);
             qmenu.AddItem(new MenuItem("gaptime", "Gapclose Q Delay (ms)")).SetValue(new Slider(110, 50, 200));
-            qmenu.AddItem(new MenuItem("keepq", "Keep Q Buff Up")).SetValue(true);
-            qmenu.AddItem(new MenuItem("cancelt", "Cancel Q with"))
-                .SetValue(
-                    new StringList(
-                        new[]
-                        {"Move (Behind Me)", "Move (Target)" } ));
-
-            qmenu.AddItem(new MenuItem("sepp", "Increase delay until AA's don't cancel:"));
-            qmenu.AddItem(new MenuItem("aaq", "Auto-Attack -> CanQ Delay (ms)")).SetValue(new Slider(15, 0, 300));
             combo.AddSubMenu(qmenu);
 
             var wmenu = new Menu("W Settings", "rivenw");
@@ -312,8 +306,8 @@ namespace KurisuRiven
             var rmenu = new Menu("R  Settings", "rivenr");
             rmenu.AddItem(new MenuItem("user", "Use R in Combo")).SetValue(true);
             rmenu.AddItem(new MenuItem("useignote", "Use R + Smart Ignite")).SetValue(true);
-            rmenu.AddItem(new MenuItem("multib", "Flash R/W if Can Burst Target")).SetValue(false);
-            rmenu.AddItem(new MenuItem("multic", "Flash R/W if Hit >= (6 = OFF)")).SetValue(new Slider(3, 2, 6));
+            rmenu.AddItem(new MenuItem("multib", "Flash R/W if Can Burst Target")).SetValue(true);
+            rmenu.AddItem(new MenuItem("multic", "Flash R/W if Hit >= (6 = OFF)")).SetValue(new Slider(4, 2, 6));
             rmenu.AddItem(new MenuItem("overk", "Dont R if Target HP % <=")).SetValue(new Slider(25, 1, 99));
             rmenu.AddItem(new MenuItem("userq", "Use R Only if Q Count <=")).SetValue(new Slider(1, 1, 3));
             rmenu.AddItem(new MenuItem("ultwhen", "Use R When"))
@@ -704,16 +698,9 @@ namespace KurisuRiven
 
         private static void Wave()
         {
-            var minions = MinionManager.GetMinions(player.Position, 600f,
-            MinionTypes.All, MinionTeam.Enemy, MinionOrderTypes.MaxHealth);
-
+            var minions = MinionManager.GetMinions(player.Position, 600f);
             foreach (var unit in minions)
             {
-                if (player.GetAutoAttackDamage(unit, true) >= unit.Health)
-                {
-                    OrbTo(unit);
-                }
-
                 if (q.IsReady() && unit.Distance(player.ServerPosition) <= q.Range + 100)
                 {
                     if (canq && menubool("uselaneq") && minions.Count >= 2)
@@ -888,8 +875,8 @@ namespace KurisuRiven
                 switch (args.SData.Name)
                 {
                     case "RivenTriCleave":
-                        canmv = false;
                         didq = true;
+                        canmv = false;
                         lastq = Utils.GameTimeTickCount;
                         canq = false;
 
@@ -897,9 +884,9 @@ namespace KurisuRiven
                             ssfl = false;
 
                         // cancel q animation
-                        if (qtarg.IsValidTarget(myhitbox + 100))
+                        if (qtarg.IsValid && qtarg.Distance(player.ServerPosition) <= e.Range + q.Range)
                         {
-                            Utility.DelayAction.Add(100 + Game.Ping/2,
+                            Utility.DelayAction.Add(100 + 100 - Game.Ping/2,
                                 () => player.IssueOrder(GameObjectOrder.MoveTo, movepos));
                         }
 
@@ -994,7 +981,7 @@ namespace KurisuRiven
                         {
                             // delay till after aa
                             Utility.DelayAction.Add(
-                                50 + (int) (player.AttackDelay*100) + Game.Ping/2 + menuslide("aaq"), delegate
+                                50 + (int) (player.AttackDelay*100) + Game.Ping/2 + menuslide("autoaq"), delegate
                                 {
                                     if (Items.CanUseItem(3077))
                                         Items.UseItem(3077);
@@ -1009,7 +996,7 @@ namespace KurisuRiven
                         if (qtarg.IsValid<Obj_AI_Minion>() && !qtarg.Name.StartsWith("Minion"))
                         {
                             Utility.DelayAction.Add(
-                                50 + (int) (player.AttackDelay*100) + Game.Ping/2 + menuslide("aaq"), delegate
+                                50 + (int) (player.AttackDelay*100) + Game.Ping/2 + menuslide("autoaq"), delegate
                                 {
                                     if (Items.CanUseItem(3077))
                                         Items.UseItem(3077);
@@ -1165,14 +1152,11 @@ namespace KurisuRiven
                  didhd = false;
             }
 
-            if (didq)
+            if (didq && Utils.GameTimeTickCount - lastq >= (int)(player.AttackCastDelay * 1000) + 310)
             {
-                if (Utils.GameTimeTickCount - lastq >= (int)(player.AttackCastDelay*1000) + Game.Ping/2 + 0.85f)
-                {
-                    didq = false;
-                    canmv = true;
-                    canaa = true;
-                }
+                didq = false;
+                canmv = true;
+                canaa = true;
             }
 
             if (didw)
@@ -1194,11 +1178,9 @@ namespace KurisuRiven
                 }             
             }
 
-            var delay = (int) (player.AttackDelay*100) + Game.Ping/2;
-            var timer = menulist("cancelt") == 0 ? delay - 30 : delay;
             if (didaa)
             {
-                if (Utils.GameTimeTickCount - lastaa >= + timer + menuslide("aaq"))
+                if (Utils.GameTimeTickCount - lastaa >= (player.AttackDelay * 100) + 100 - Game.Ping + menuslide("autoaq"))
                 {
                     didaa = false;
                     canmv = true;
