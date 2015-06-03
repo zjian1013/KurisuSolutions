@@ -136,11 +136,5 @@ namespace Activator.Summoners
                 }
             }
         }
-
-
-        public override void OnDraw(EventArgs args)
-        {
-            
-        }
     }
 }

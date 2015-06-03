@@ -94,7 +94,6 @@ namespace Activator
                 zmenu.AddSubMenu(ddmenu);
             }
 
-            zmenu.AddItem(new MenuItem("ticklimit", "Tick Limiter")).SetValue(new Slider(200, 0, 350));
             zmenu.AddItem(new MenuItem("evadeon", "Evade Integration")).SetValue(false);
             zmenu.AddItem(new MenuItem("evadefow", "Evade Integration (FoW)")).SetValue(false);
             zmenu.AddItem(new MenuItem("usecombo", "Combo Key")).SetValue(new KeyBind(32, KeyBindType.Press, true));
@@ -149,22 +148,23 @@ namespace Activator
 
         private static void Game_OnUpdate(EventArgs args)
         {
-            if (Utils.GameTimeTickCount - GameTimeTick < 
-                Origin.Item("ticklimit").GetValue<Slider>().Value)
+            if (Utils.GameTimeTickCount - GameTimeTick < 100)
                 return;
+
+            foreach (var summoner in spelldata.summoners)
+                if (Player.Spellbook.CanUseSpell(summoner.Slot) == SpellState.Ready ||
+                    summoner.ExtraNames.Any(
+                        x => Player.Spellbook.CanUseSpell(Player.GetSpellSlot(x)) == SpellState.Ready))
+                    summoner.OnTick();
+ 
+            foreach (var autospell in spelldata.mypells)
+                if (Player.Spellbook.CanUseSpell(autospell.Slot) == SpellState.Ready)
+                    autospell.OnTick();
 
             foreach (var item in spelldata.items)
                 if (LeagueSharp.Common.Items.HasItem(item.Id) &&
                     LeagueSharp.Common.Items.CanUseItem(item.Id))
                         item.OnTick();
-
-            foreach (var summoner in spelldata.summoners)
-                if (Player.Spellbook.CanUseSpell(summoner.Slot) == SpellState.Ready)
-                    summoner.OnTick();
-
-            foreach (var autospell in spelldata.mypells)
-                if (Player.Spellbook.CanUseSpell(autospell.Slot) == SpellState.Ready)
-                    autospell.OnTick();
 
             GameTimeTick = Utils.GameTimeTickCount;
         }
