@@ -72,12 +72,12 @@ namespace Activator
                         }
                     }
 
-                    Utility.DelayAction.Add((int) (endtime - (endtime * 0.5)), delegate
+                    Utility.DelayAction.Add((int) (endtime - (endtime * 0.5)), () =>
                     {
                         hero.Attacker = caster;
                         hero.HitTypes.Add(HitType.Spell);
                         hero.IncomeDamage +=
-                            (float)Math.Abs(caster.GetSpellDamage(hero.Player, data.SDataName));
+                            (float) Math.Abs(caster.GetSpellDamage(hero.Player, data.SDataName));
 
                         // spell is important or lethal!
                         if (data.HitType.Contains(HitType.Ultimate))
@@ -91,7 +91,7 @@ namespace Activator
                         if (data.HitType.Contains(HitType.CrowdControl))
                             hero.HitTypes.Add(HitType.CrowdControl);
 
-                        Utility.DelayAction.Add((int) (endtime *2), delegate
+                        Utility.DelayAction.Add((int) (endtime*2), () =>
                         {
                             hero.Attacker = null;
                             hero.IncomeDamage = 0;
@@ -118,7 +118,7 @@ namespace Activator
                                       1000*woop;
 
                         // delay a little bit before missile endtime
-                        Utility.DelayAction.Add((int) (endtime - (endtime*0.5)), delegate
+                        Utility.DelayAction.Add((int) (endtime - (endtime*0.5)), () =>
                         {
                             hero.Attacker = sender;
                             hero.HitTypes.Add(HitType.AutoAttack);
@@ -137,7 +137,7 @@ namespace Activator
 
                     foreach (var data in spelldata.spells.Where(x => x.SDataName == args.SData.Name.ToLower()))
                     {
-                        Last = Environment.TickCount;
+                        Last = Utils.GameTimeTickCount;
                         // self/selfaoe spell detection
                         if (args.SData.TargettingType == SpellDataTargetType.Self ||
                             args.SData.TargettingType == SpellDataTargetType.SelfAoe)
@@ -153,7 +153,7 @@ namespace Activator
                             if (hero.Player.Distance(correctpos) <= correctrange)
                             {
                                 // delay the spell a bit before missile endtime
-                                Utility.DelayAction.Add((int) (data.Delay - (data.Delay*0.5)), delegate
+                                Utility.DelayAction.Add((int) (data.Delay - (data.Delay*0.5)), () =>
                                 {
                                     hero.Attacker = sender;
                                     hero.HitTypes.Add(HitType.Spell);
@@ -173,7 +173,7 @@ namespace Activator
                                         hero.HitTypes.Add(HitType.CrowdControl);
 
                                     // lazy safe reset
-                                    Utility.DelayAction.Add((int) (data.Delay*2), delegate
+                                    Utility.DelayAction.Add((int) (data.Delay*2), () =>
                                     {
                                         hero.Attacker = null;
                                         hero.IncomeDamage = 0;
@@ -200,7 +200,7 @@ namespace Activator
                             {
                                 var distance =
                                     (int)(1000 * (correctpos.Distance(hero.Player.ServerPosition) / data.MissileSpeed));
-                                var endtime = data.Delay - 100 + Game.Ping/2 + distance - (Environment.TickCount - Last);
+                                var endtime = data.Delay - 100 + Game.Ping/2 + distance - (Utils.GameTimeTickCount - Last);
 
                                 // get the real end position normalized
                                 var direction = (args.End.To2D() - correctpos.To2D()).Normalized();
@@ -232,7 +232,7 @@ namespace Activator
                                     }
 
                                     // delay the action a little bit before endtime
-                                    Utility.DelayAction.Add((int) (endtime - (endtime*0.5)), delegate
+                                    Utility.DelayAction.Add((int) (endtime - (endtime*0.5)), () =>
                                     {
                                         hero.Attacker = sender;
                                         hero.HitTypes.Add(HitType.Spell);
@@ -252,7 +252,7 @@ namespace Activator
                                             hero.HitTypes.Add(HitType.CrowdControl);
 
                                         // lazy safe reset
-                                        Utility.DelayAction.Add((int) (endtime*2), delegate
+                                        Utility.DelayAction.Add((int) (endtime*2), () =>
                                         {
                                             hero.Attacker = null;
                                             hero.IncomeDamage = 0;
@@ -276,9 +276,9 @@ namespace Activator
                                     var distance =
                                         (int) (1000*(sender.Distance(hero.Player.ServerPosition)/data.MissileSpeed));
                                     var endtime = data.Delay - 100 + Game.Ping/2 + distance -
-                                                  (Environment.TickCount - Last);
+                                                  (Utils.GameTimeTickCount - Last);
 
-                                    Utility.DelayAction.Add((int) (endtime - (endtime*0.5)), delegate
+                                    Utility.DelayAction.Add((int) (endtime - (endtime*0.5)), () =>
                                     {
                                         hero.Attacker = sender;
                                         hero.HitTypes.Add(HitType.Spell);
@@ -298,13 +298,12 @@ namespace Activator
                                             hero.HitTypes.Add(HitType.CrowdControl);
 
                                         // lazy reset
-                                        Utility.DelayAction.Add((int) (endtime*2), delegate
+                                        Utility.DelayAction.Add((int) (endtime*2), () =>
                                         {
                                             hero.Attacker = null;
                                             hero.IncomeDamage = 0;
                                             hero.HitTypes.Clear();
                                         });
-
                                     });
                                 }
                             }
@@ -322,7 +321,7 @@ namespace Activator
                         if (sender.Distance(hero.Player.ServerPosition) <= 900 &&
                             Activator.Player.Distance(hero.Player.ServerPosition) <= 1000)
                         {
-                            Utility.DelayAction.Add(500, delegate
+                            Utility.DelayAction.Add(500, () =>
                             {
                                 hero.HitTypes.Add(HitType.TurretAttack);
                                 hero.IncomeDamage =
@@ -330,7 +329,7 @@ namespace Activator
                                         sender.BaseAttackDamage + sender.FlatPhysicalDamageMod));
 
                                 // lazy reset
-                                Utility.DelayAction.Add(1000, delegate
+                                Utility.DelayAction.Add(1000, () =>
                                 {
                                     hero.Attacker = null;
                                     hero.IncomeDamage = 0;
@@ -359,7 +358,7 @@ namespace Activator
                                         sender.BaseAttackDamage + sender.FlatPhysicalDamageMod));
 
                             // lazy reset
-                            Utility.DelayAction.Add(1000, delegate
+                            Utility.DelayAction.Add(1000, () =>
                             {
                                 hero.Attacker = null;
                                 hero.IncomeDamage = 0;
