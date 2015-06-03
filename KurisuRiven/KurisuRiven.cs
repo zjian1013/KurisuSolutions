@@ -33,6 +33,7 @@ namespace KurisuRiven
         private static bool didws;
         private static bool didaa;
         private static bool didhd;
+        private static bool didhs;
         private static bool ssfl;
 
         private static Menu menu;
@@ -105,7 +106,7 @@ namespace KurisuRiven
 
         #endregion
 
-        private static int build = 28;
+        private static int build = 29;
         public KurisuRiven()
         {
             Console.WriteLine("KurisuRiven enabled!");
@@ -174,24 +175,23 @@ namespace KurisuRiven
         #region Riven: Update
         private static void Game_OnUpdate(EventArgs args)
         {
-            rtarg = TargetSelector.GetTarget(1200, TargetSelector.DamageType.Physical);
-
-            myhitbox = player.AttackRange + player.Distance(player.BBox.Minimum) + 1;
-
             hashd = Items.HasItem(3077) || Items.HasItem(3074);
             canhd = !didaa && (Items.CanUseItem(3077) || Items.CanUseItem(3074));
+            rtarg = TargetSelector.GetTarget(1200, TargetSelector.DamageType.Physical);
+            myhitbox = player.AttackRange + player.Distance(player.BBox.Minimum) + 1;
 
             if (!qtarg.IsValidTarget(myhitbox + 100))
                  qtarg = player;
 
-            ulton = player.GetSpell(SpellSlot.R).Name != "RivenFengShuiEngine";
 
+            didhs = menu.Item("harasskey").GetValue<KeyBind>().Active;
+            ulton = player.GetSpell(SpellSlot.R).Name != "RivenFengShuiEngine";
             canburst = rtarg != null && r.IsReady() && q.IsReady() && ((ComboDamage(rtarg)/1.6) >= rtarg.Health ||
                        rtarg.CountEnemiesInRange(w.Range) >= menuslide("multic"));
-    
-            if (qtarg != player && qtarg.IsFacing(player))
+
+            if (qtarg != player && qtarg.IsFacing(player) && qtarg.Distance(player.ServerPosition) < myhitbox + 120)
                 movepos = player.ServerPosition + (player.ServerPosition - qtarg.ServerPosition).Normalized()*28;
-            if (qtarg != player && !qtarg.IsFacing(player))
+            if (qtarg != player && (!qtarg.IsFacing(player) || qtarg.Distance(player.ServerPosition) > myhitbox + 120))
                 movepos = player.ServerPosition.Extend(qtarg.ServerPosition, 350);
             if (qtarg == player)
                 movepos = Game.CursorPos;
@@ -213,8 +213,7 @@ namespace KurisuRiven
                 ComboTarget(rtarg);
             }
 
-            if (rtarg.IsValidTarget() && 
-                menu.Item("harasskey").GetValue<KeyBind>().Active)
+            if (didhs && rtarg.IsValidTarget())
             {
                 HarassTarget(rtarg);
             }
@@ -321,15 +320,13 @@ namespace KurisuRiven
 
             menu.AddSubMenu(combo);
 
-            var harass = new Menu("Harass", "harass");
-            harass.AddItem(new MenuItem("usegaph", "Gapclose with Q")).SetValue(true);
-            harass.AddItem(new MenuItem("gaptimeh", "Gapclose Q Delay (ms)")).SetValue(new Slider(110, 50, 200));
-            harass.AddItem(new MenuItem("maxgap", "Maximum Gapclose Q's")).SetValue(new Slider(2, 1, 3));
-            harass.AddItem(new MenuItem("useharasse", "Use E in Harass")).SetValue(true);
-            harass.AddItem(new MenuItem("etoo", "Use E to"))
-                .SetValue(new StringList(new[] { "Away from Target", "Ally Turret", "Cursor" }, 1));
-
+            var harass = new Menu("Harass [Beta]", "harass");
+            harass.AddItem(new MenuItem("qtoo", "Use 3rd Q:"))
+                .SetValue(new StringList(new[] {"Away from Target", "To Ally Turret", "To Cursor"}, 1));
             harass.AddItem(new MenuItem("useharassw", "Use W in Harass")).SetValue(true);
+            harass.AddItem(new MenuItem("usegaph", "Use E in Harass (Gapclose)")).SetValue(true);
+            harass.AddItem(new MenuItem("useitemh", "Use Tiamat/Hydra")).SetValue(true);
+
             menu.AddSubMenu(harass);
 
             var farming = new Menu("Farming", "farming");
@@ -534,89 +531,59 @@ namespace KurisuRiven
 
         private static void HarassTarget(Obj_AI_Base target)
         {
-            OrbTo(target);
-
-            Vector3 epos;
-            switch (menulist("etoo"))
+            Vector3 qpos;
+            switch (menulist("qtoo"))
             {
                 case 0:
-                    epos = player.ServerPosition + 
-                        (player.ServerPosition - target.ServerPosition).Normalized()*45;
+                    qpos = player.ServerPosition + 
+                        (player.ServerPosition - target.ServerPosition).Normalized()*500;
                     break;
                 case 1:
-                    epos = ObjectManager.Get<Obj_AI_Turret>()
+                    qpos = ObjectManager.Get<Obj_AI_Turret>()
                         .Where(t => (t.IsAlly)).OrderBy(t => t.Distance(player.Position)).First().Position;
                     break;
                 default:
-                    epos = Game.CursorPos;
+                    qpos = Game.CursorPos;
                     break;
             }
 
+            if (q.IsReady())
+                OrbTo(target);
 
-            if (target.Distance(player.ServerPosition) <= w.Range + 10)
+            if (cleavecount >= 2 && canq)
             {
-                if (w.IsReady() && canw && (cleavecount >= 2 || !q.IsReady()))
-                {
-                    if (menubool("useharassw"))
-                    {
-                        w.Cast();
-                    }
-                }
+                canaa = false;
+            }
 
-                if ((!w.IsReady() || player.GetSpell(SpellSlot.W).State == SpellState.NotLearned) &&
-                   (!q.IsReady() || player.GetSpell(SpellSlot.Q).State == SpellState.NotLearned))
+            if (cleavecount == 2 && canq && q.IsReady())
+            {
+                player.IssueOrder(GameObjectOrder.MoveTo, qpos);
+                Utility.DelayAction.Add(200, () =>
                 {
-                    if (e.IsReady() && cane)
-                    {
-                        // dash away ->
-                        e.Cast(epos);
-                    }
+                    q.Cast(qpos);
+                });
+            }
+
+            if (q.IsReady() && canq && cleavecount < 2)
+            {
+                if (target.Distance(player.ServerPosition) <= myhitbox + q.Range)
+                {
+                    q.Cast(target.ServerPosition);
                 }
             }
 
-            if (target.Distance(player.ServerPosition) <= q.Range + 30)
+            if (e.IsReady() && cane && q.IsReady() && cleavecount < 1 &&
+                target.Distance(player.ServerPosition) > myhitbox + 100 &&
+                target.Distance(player.ServerPosition) <= e.Range + myhitbox + 50)
             {
-                // q engage ->
-                if (q.IsReady() && Utils.GameTimeTickCount - laste >=  800)
-                {
-                    if (canq && !player.Position.Extend(player.Position, q.Range).UnderTurret(true))
-                        q.Cast(target.ServerPosition);
-                }
-
-                else
-                {
-                    if (Utils.GameTimeTickCount - lastq >= 500)
-                    {
-                        if (menubool("useharasse"))
-                        {
-                            // stun? ->
-                            if (!w.IsReady() || player.GetSpell(SpellSlot.W).State == SpellState.NotLearned)
-                            {
-                                if (e.IsReady() && cane)
-                                {
-                                    // dash away ->
-                                    e.Cast(epos);
-                                }
-                            }
-                        }
-                    }
-                }
+                if (menubool("usegaph"))
+                    e.Cast(target.ServerPosition);
             }
 
-            else if (target.Distance(player.ServerPosition) > myhitbox + 100)
+            else if (w.IsReady() && canw && target.Distance(player.ServerPosition) <= w.Range + 10)
             {
-                // gapclose harass ->
-                if (Utils.GameTimeTickCount - lastq >= menuslide("gaptimeh") * 10 && !didaa)
-                {
-                    if (q.IsReady() && menubool("usegaph") && 
-                        Utils.GameTimeTickCount - laste >= 800)
-                    {
-                        if (cleavecount < menuslide("maxgap"))
-                        {
-                            q.Cast(target.ServerPosition);
-                        }
-                    }
-                }
+                if (menubool("useharassw"))
+                    w.Cast();
             }
 
         }
@@ -970,10 +937,11 @@ namespace KurisuRiven
                             CheckR();
                             Utility.DelayAction.Add(Game.Ping + 175, () => q.Cast(Game.CursorPos));
                         }
+
                         break;
                 }
 
-                if (args.SData.Name.Contains("BasicAttack"))
+                if (args.SData.Name.Contains("Attack"))
                 {
                     if (menu.Item("combokey").GetValue<KeyBind>().Active)
                     {
@@ -991,9 +959,10 @@ namespace KurisuRiven
                         }
                     }
 
-                    else if (menu.Item("clearkey").GetValue<KeyBind>().Active)
+                    else if (menu.Item("clearkey").GetValue<KeyBind>().Active ||
+                            (menu.Item("harasskey").GetValue<KeyBind>().Active && menubool("useitemh")))
                     {
-                        if (qtarg.IsValid<Obj_AI_Minion>() && !qtarg.Name.StartsWith("Minion"))
+                        if (qtarg.IsValid<Obj_AI_Base>() && !qtarg.Name.StartsWith("Minion"))
                         {
                             Utility.DelayAction.Add(
                                 50 + (int) (player.AttackDelay*100) + Game.Ping/2 + menuslide("autoaq"), delegate
@@ -1004,10 +973,10 @@ namespace KurisuRiven
                                         Items.UseItem(3074);
                                 });
                         }
-                    }           
+                    }
                 }
 
-                if (!didq && args.SData.Name.Contains("BasicAttack"))
+                if (!didq && args.SData.Name.Contains("Attack"))
                 {
                     didaa = true;
                     canaa = false;
@@ -1152,11 +1121,14 @@ namespace KurisuRiven
                  didhd = false;
             }
 
-            if (didq && Utils.GameTimeTickCount - lastq >= (int)(player.AttackCastDelay * 1000) + 310)
+            if (didq)
             {
-                didq = false;
-                canmv = true;
-                canaa = true;
+                if (Utils.GameTimeTickCount - lastq >= (int)(player.AttackCastDelay * 1000) + 310)
+                {
+                    didq = false;
+                    canmv = true;
+                    canaa = true;
+                }
             }
 
             if (didw)
@@ -1217,7 +1189,7 @@ namespace KurisuRiven
 
             if (!canaa)
             {
-                if (!(didq || didw|| dide || didws || didhd))
+                if (!(didq || didw|| dide || didws || didhd || didhs))
                 {
                     if (Utils.GameTimeTickCount - lastaa >= 1000)
                     {
@@ -1228,7 +1200,7 @@ namespace KurisuRiven
 
             if (!canmv)
             {
-                if (!(didq || didw || dide || didws || didhd))
+                if (!(didq || didw || dide || didws || didhd || didhs))
                 {
                     if (Utils.GameTimeTickCount - lastaa >= 1100)
                     {
