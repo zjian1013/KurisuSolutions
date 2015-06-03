@@ -597,8 +597,11 @@ namespace KurisuRiven
             {
                 foreach (var target in ObjectManager.Get<Obj_AI_Hero>().Where(h => h.IsValidTarget(r.Range)))
                 {
+                    if (target.IsZombie)
+                        return;
+
                     // only kill or killsteal etc ->
-                    if (r.GetDamage(target) >= rtarg.Health && canws)
+                    if (r.GetDamage(target) >= target.Health && canws)
                     {
                         if (r.GetPrediction(target, true).Hitchance == HitChance.VeryHigh)
                             r.Cast(r.GetPrediction(target, true).CastPosition);
@@ -609,6 +612,9 @@ namespace KurisuRiven
                 if (menulist("wsmode") == 1 && rtarg.IsValidTarget(r.Range))
                 {
                     r.CastIfWillHit(rtarg, menuslide("rmulti"));
+
+                    if (rtarg.IsZombie)
+                        return;
 
                     var po = r.GetPrediction(rtarg, true);
                     if ((r.GetDamage(rtarg) / rtarg.MaxHealth * 100) >= rtarg.Health / rtarg.MaxHealth * 100)
@@ -927,8 +933,12 @@ namespace KurisuRiven
                         {
                             if (menu.Item("combokey").GetValue<KeyBind>().Active)
                             {
-                                if (canburst && r.GetPrediction(rtarg).Hitchance >= HitChance.Medium)
-                                    Utility.DelayAction.Add(150, () => r.Cast(r.GetPrediction(rtarg).CastPosition));
+                                if (canburst && r.GetPrediction(rtarg).Hitchance >= HitChance.Medium &&
+                                    rtarg.IsValidTarget() && !rtarg.IsZombie)
+                                {
+                                    Utility.DelayAction.Add(150, 
+                                        () => r.Cast(r.GetPrediction(rtarg).CastPosition));
+                                }
                             }
                         }
 
