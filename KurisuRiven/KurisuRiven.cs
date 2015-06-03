@@ -631,9 +631,9 @@ namespace KurisuRiven
                 foreach (var target in ObjectManager.Get<Obj_AI_Hero>().Where(h => h.IsValidTarget(r.Range)))
                 {
                     // only kill or killsteal etc ->
-                    if (r.GetDamage(target) >= rtarg.Health && canw)
+                    if (r.GetDamage(target) >= rtarg.Health && canws)
                     {
-                        if (r.GetPrediction(target, true).Hitchance >= HitChance.Low)
+                        if (r.GetPrediction(target, true).Hitchance == HitChance.VeryHigh)
                             r.Cast(r.GetPrediction(target, true).CastPosition);
                     }
                 }
@@ -646,16 +646,16 @@ namespace KurisuRiven
                     var po = r.GetPrediction(rtarg, true);
                     if ((r.GetDamage(rtarg) / rtarg.MaxHealth * 100) >= rtarg.Health / rtarg.MaxHealth * 100)
                     {
-                        if (po.Hitchance >= HitChance.Low && canws)
+                        if (po.Hitchance >= HitChance.VeryHigh && canws)
                             r.Cast(po.CastPosition);
                     }
 
-                    if (rtarg.Health <= xtra((float) 
+                    if (q.IsReady() && rtarg.Health <= xtra((float) 
                        (r.GetDamage(rtarg) + player.GetAutoAttackDamage(rtarg)*2 + Qdmg(rtarg)* 2)))
                     {
                         if (rtarg.Distance(player.ServerPosition) <= myhitbox + 100)
                         {
-                            if (po.Hitchance >= HitChance.Low && canws)
+                            if (po.Hitchance >= HitChance.VeryHigh && canws)
                                 r.Cast(po.CastPosition);
                         }
                     }
