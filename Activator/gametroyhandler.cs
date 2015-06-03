@@ -28,7 +28,7 @@ namespace Activator
                 {
                     troy.Included = true;
                     troy.Obj = obj;
-                    troy.Start = Environment.TickCount;
+                    troy.Start = Utils.GameTimeTickCount;
                     Game.OnUpdate += Game_OnUpdate;
                 }
             }

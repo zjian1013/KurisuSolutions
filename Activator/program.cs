@@ -16,11 +16,11 @@ namespace Activator
         internal static Menu Origin;
         internal static Obj_AI_Hero Player = ObjectManager.Player;
 
+        internal static int GameTimeTick;
         internal static SpellSlot Smite;
         internal static bool SmiteInGame;
         internal static bool TroysInGame;
 
-        private static int gametick;
         private static void Main(string[] args)
         {
             Console.WriteLine("Activator injected!");
@@ -149,7 +149,7 @@ namespace Activator
 
         private static void Game_OnUpdate(EventArgs args)
         {
-            if (Environment.TickCount - gametick < 
+            if (Utils.GameTimeTickCount - GameTimeTick < 
                 Origin.Item("ticklimit").GetValue<Slider>().Value)
                 return;
 
@@ -166,7 +166,7 @@ namespace Activator
                 if (Player.Spellbook.CanUseSpell(autospell.Slot) == SpellState.Ready)
                     autospell.OnTick();
 
-            gametick = Environment.TickCount;
+            GameTimeTick = Utils.GameTimeTickCount;
         }
 
         private static void NewItem(item item, Menu parent)
