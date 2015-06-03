@@ -523,9 +523,9 @@ namespace KurisuRiven
             {
                 if (menubool("usegap"))
                 {
-                    if (!e.IsReady() && Environment.TickCount - lastq >= menuslide("gaptime")*10 && !didaa)
+                    if (!e.IsReady() && Utils.GameTimeTickCount - lastq >= menuslide("gaptime")*10 && !didaa)
                     {
-                        if (q.IsReady() && Environment.TickCount - laste >= 700)
+                        if (q.IsReady() && Utils.GameTimeTickCount - laste >= 700)
                         {
                             q.Cast(target.ServerPosition);
                         }
@@ -583,7 +583,7 @@ namespace KurisuRiven
             if (target.Distance(player.ServerPosition) <= q.Range + 30)
             {
                 // q engage ->
-                if (q.IsReady() && Environment.TickCount - laste >=  800)
+                if (q.IsReady() && Utils.GameTimeTickCount - laste >=  800)
                 {
                     if (canq && !player.Position.Extend(player.Position, q.Range).UnderTurret(true))
                         q.Cast(target.ServerPosition);
@@ -591,7 +591,7 @@ namespace KurisuRiven
 
                 else
                 {
-                    if (Environment.TickCount - lastq >= 500)
+                    if (Utils.GameTimeTickCount - lastq >= 500)
                     {
                         if (menubool("useharasse"))
                         {
@@ -612,10 +612,10 @@ namespace KurisuRiven
             else if (target.Distance(player.ServerPosition) > myhitbox + 100)
             {
                 // gapclose harass ->
-                if (Environment.TickCount - lastq >= menuslide("gaptimeh") * 10 && !didaa)
+                if (Utils.GameTimeTickCount - lastq >= menuslide("gaptimeh") * 10 && !didaa)
                 {
                     if (q.IsReady() && menubool("usegaph") && 
-                        Environment.TickCount - laste >= 800)
+                        Utils.GameTimeTickCount - laste >= 800)
                     {
                         if (cleavecount < menuslide("maxgap"))
                         {
@@ -753,7 +753,7 @@ namespace KurisuRiven
 
             if (ssfl)
             {
-                if (Environment.TickCount - lastq >= 600)
+                if (Utils.GameTimeTickCount - lastq >= 600)
                 {
                     q.Cast(Game.CursorPos);
                 }
@@ -774,7 +774,7 @@ namespace KurisuRiven
                     q.Cast(Game.CursorPos);
                 }
 
-                if (e.IsReady() && Environment.TickCount - lastq >= 250)
+                if (e.IsReady() && Utils.GameTimeTickCount - lastq >= 250)
                 {
                     e.Cast(Game.CursorPos);
                 }
@@ -787,9 +787,9 @@ namespace KurisuRiven
 
         private static void SemiQ()
         {
-            if (canq && Environment.TickCount - lastaa >= 150 && menubool("semiq"))
+            if (canq && Utils.GameTimeTickCount - lastaa >= 150 && menubool("semiq"))
             {
-                if (q.IsReady() && Environment.TickCount - lastaa < 1200 && qtarg != null)
+                if (q.IsReady() && Utils.GameTimeTickCount - lastaa < 1200 && qtarg != null)
                 {
                     if (qtarg.IsValidTarget(q.Range + 100))
                     {
@@ -842,7 +842,7 @@ namespace KurisuRiven
             var targets = enemies as IList<Obj_AI_Hero> ?? enemies.ToList();
             foreach (var target in targets)
             {
-                if (cleavecount <= menuslide("userq") && (q.IsReady() || Environment.TickCount - lastq < 1000))
+                if (cleavecount <= menuslide("userq") && (q.IsReady() || Utils.GameTimeTickCount - lastq < 1000))
                 {
                     if (targets.Count(ene => ene.Distance(player.ServerPosition) <= 650) >= 2)
                     {
@@ -890,7 +890,7 @@ namespace KurisuRiven
                     case "RivenTriCleave":
                         canmv = false;
                         didq = true;
-                        lastq = Environment.TickCount;
+                        lastq = Utils.GameTimeTickCount;
                         canq = false;
 
                         if (!ulton)
@@ -906,13 +906,13 @@ namespace KurisuRiven
                         break;
                     case "RivenMartyr":
                         didw = true;
-                        lastw = Environment.TickCount;
+                        lastw = Utils.GameTimeTickCount;
                         canw = false;
 
                         break;
                     case "RivenFeint":
                         dide = true;
-                        laste = Environment.TickCount;
+                        laste = Utils.GameTimeTickCount;
                         cane = false;
 
                         if (menu.Item("fleekey").GetValue<KeyBind>().Active)
@@ -964,7 +964,7 @@ namespace KurisuRiven
           
                         break;
                     case "ItemTiamatCleave":
-                        lasthd = Environment.TickCount;
+                        lasthd = Utils.GameTimeTickCount;
                         didhd = true;
                         canws = true;
                         canhd = false;
@@ -1028,7 +1028,7 @@ namespace KurisuRiven
                     canw = false;
                     cane = false;
                     canws = false;
-                    lastaa = Environment.TickCount;
+                    lastaa = Utils.GameTimeTickCount;
                     qtarg = (Obj_AI_Base) args.Target;
                 }
             };
@@ -1125,7 +1125,7 @@ namespace KurisuRiven
 
                 if (player.HasBuff("RivenTriCleave", true))
                 {
-                    if (Environment.TickCount - lastq >= 3650)
+                    if (Utils.GameTimeTickCount - lastq >= 3650)
                     {
                         if (!player.IsRecalling() && !player.Spellbook.IsChanneling)
                         {
@@ -1160,14 +1160,14 @@ namespace KurisuRiven
 
         private static void CombatCore()
         {
-            if (didhd && canhd && Environment.TickCount - lasthd >= 250)
+            if (didhd && canhd && Utils.GameTimeTickCount - lasthd >= 250)
             {
                  didhd = false;
             }
 
             if (didq)
             {
-                if (Environment.TickCount - lastq >= (int)(player.AttackCastDelay*1000) + Game.Ping/2 + 0.85f)
+                if (Utils.GameTimeTickCount - lastq >= (int)(player.AttackCastDelay*1000) + Game.Ping/2 + 0.85f)
                 {
                     didq = false;
                     canmv = true;
@@ -1177,7 +1177,7 @@ namespace KurisuRiven
 
             if (didw)
             {
-                if (Environment.TickCount - lastw >= 266)
+                if (Utils.GameTimeTickCount - lastw >= 266)
                 {
                     didw = false;
                     canmv = true;
@@ -1187,7 +1187,7 @@ namespace KurisuRiven
 
             if (dide)
             {
-                if (Environment.TickCount - laste >= 300)
+                if (Utils.GameTimeTickCount - laste >= 300)
                 {
                     dide = false;
                     canmv = true;
@@ -1198,7 +1198,7 @@ namespace KurisuRiven
             var timer = menulist("cancelt") == 0 ? delay - 30 : delay;
             if (didaa)
             {
-                if (Environment.TickCount - lastaa >= + timer + menuslide("aaq"))
+                if (Utils.GameTimeTickCount - lastaa >= + timer + menuslide("aaq"))
                 {
                     didaa = false;
                     canmv = true;
@@ -1237,7 +1237,7 @@ namespace KurisuRiven
             {
                 if (!(didq || didw|| dide || didws || didhd))
                 {
-                    if (Environment.TickCount - lastaa >= 1000)
+                    if (Utils.GameTimeTickCount - lastaa >= 1000)
                     {
                         canaa = true;
                     }
@@ -1248,7 +1248,7 @@ namespace KurisuRiven
             {
                 if (!(didq || didw || dide || didws || didhd))
                 {
-                    if (Environment.TickCount - lastaa >= 1100)
+                    if (Utils.GameTimeTickCount - lastaa >= 1100)
                     {
                         canmv = true;
                     }
