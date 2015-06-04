@@ -757,7 +757,7 @@ namespace KurisuRiven
             {
                 if (q.IsReady() && Utils.GameTimeTickCount - lastaa < 1200 && qtarg != null)
                 {
-                    if (qtarg.IsValidTarget(q.Range + 100))
+                    if (qtarg.IsValidTarget(q.Range + 100) && !menu.Item("harasskey").GetValue<KeyBind>().Active)
                     {
                         if (qtarg.IsValid<Obj_AI_Hero>())
                             q.Cast(qtarg.ServerPosition);
