@@ -691,7 +691,7 @@ namespace KurisuNidalee
             if (!_cougarForm && target.IsValidTarget(Javelin.Range))
             {
                 var qtarget = TargetSelector.GetTargetNoCollision(Javelin);
-                if (qtarget != null && Javelin.IsReady() && _mainMenu.Item("usehumanq").GetValue<bool>())
+                if (qtarget.IsValidTarget() && Javelin.IsReady() && _mainMenu.Item("usehumanq").GetValue<bool>())
                 {
                     Javelin.CastIfHitchanceEquals(qtarget,
                         (HitChance) _mainMenu.Item("seth").GetValue<Slider>().Value + 2);
