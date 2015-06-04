@@ -66,8 +66,7 @@ namespace Activator.Items.Defensives
                     if (hero.Player.Health/hero.Player.MaxHealth*100 <=
                         Menu.Item("SelfLowHP" + Name + "Pct").GetValue<Slider>().Value)
                     {
-                        if (hero.IncomeDamage > 0 &&
-                            hero.HitTypes.Except(ExcludedList).Any())
+                        if (hero.IncomeDamage > 0 || hero.MinionDamage > hero.Player.Health)
                             UseItem(hero.Player);
                     }
                 }

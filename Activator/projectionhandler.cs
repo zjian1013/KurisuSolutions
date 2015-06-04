@@ -351,9 +351,7 @@ namespace Activator
                         if (hero.Player.Distance(sender.ServerPosition) <= 750 &&
                             Activator.Player.Distance(hero.Player.ServerPosition) <= 1000)
                         {
-                            hero.Attacker = sender;
-                            hero.HitTypes.Add(HitType.MinionAttack);
-                            hero.IncomeDamage =
+                            hero.MinionDamage =
                                 (float)
                                     Math.Abs(sender.CalcDamage(hero.Player, Damage.DamageType.Physical,
                                         sender.BaseAttackDamage + sender.FlatPhysicalDamageMod));
@@ -361,9 +359,7 @@ namespace Activator
                             // lazy reset
                             Utility.DelayAction.Add(1000, () =>
                             {
-                                hero.Attacker = null;
-                                hero.IncomeDamage = 0;
-                                hero.HitTypes.Clear();
+                                hero.MinionDamage = 0;
                             });
                         }
                     }

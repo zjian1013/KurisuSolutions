@@ -19,13 +19,6 @@ namespace Activator.Summoners
         public SpellSlot Slot { get { return Player.GetSpellSlot(Name); } }
         public Obj_AI_Hero Player { get { return ObjectManager.Player; } }
 
-        public List<HitType> ExcludedList = new List<HitType>
-        {
-            HitType.None,
-            HitType.MinionAttack,
-            HitType.Stealth
-        };
-
         public void UseSpell(bool combo = false)
         {
             if (!combo || Activator.Origin.Item("usecombo").GetValue<KeyBind>().Active)

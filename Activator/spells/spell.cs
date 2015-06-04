@@ -21,13 +21,6 @@ namespace Activator.Spells
         public Spell Spell { get { return new Spell(Player.GetSpellSlot(Name)); } }
         public Obj_AI_Hero Player { get { return ObjectManager.Player; } }
 
-        public List<HitType> ExcludedList = new List<HitType>
-        {
-            HitType.None,
-            HitType.MinionAttack,
-            HitType.Stealth
-        };
-
         public Obj_AI_Hero LowTarget
         {
             get

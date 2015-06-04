@@ -48,25 +48,22 @@ namespace Activator.Summoners
                 if (hero.Player.Health / hero.Player.MaxHealth * 100 <=
                     Menu.Item("SelfLowHP" + Name + "Pct").GetValue<Slider>().Value)
                 {
-                    if (hero.IncomeDamage > 0 &&
-                        hero.HitTypes.Except(ExcludedList).Any())
+                    if (hero.IncomeDamage > 0)
                         UseSpell();
                 }
 
                 if (hero.IncomeDamage / hero.Player.MaxHealth * 100 >=
                     Menu.Item("SelfMuchHP" + Name + "Pct").GetValue<Slider>().Value)
                 {
-                    if (hero.IncomeDamage > 0 &&
-                        hero.HitTypes.Except(ExcludedList).Any())
+                    if (hero.IncomeDamage > 0)
                         UseSpell();
                 }
 
                 if (Menu.Item("use" + Name + "Ulti").GetValue<bool>())
                 {
-                    if (hero.IncomeDamage > 0 && hero.HitTypes.Contains(HitType.Ultimate))
-                    {
-                        UseSpell();                    
-                    }
+                    if (hero.IncomeDamage > 0)
+                        if (hero.HitTypes.Contains(HitType.Ultimate))
+                            UseSpell();
                 }
             }
         }

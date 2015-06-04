@@ -35,28 +35,26 @@ namespace Activator.Summoners
             if (!Menu.Item("use" + Name).GetValue<bool>())
                 return;
 
-            if (Player.IsRecalling() || Player.InFountain())
-                return;
-
             foreach (var hero in champion.Heroes)
             {
                 if (hero.Player.Distance(Player.ServerPosition) > Range)
                     return;
 
+                if (hero.Player.IsRecalling() || hero.Player.InFountain())
+                    return;
+
                 if (hero.Player.Health/hero.Player.MaxHealth*100 <=
                     Menu.Item("SelfLowHP" + Name + "Pct").GetValue<Slider>().Value)
                 {
-                    if (hero.IncomeDamage > 0 &&
-                        hero.HitTypes.Except(ExcludedList).Any())
+                    if (hero.IncomeDamage > 0)
                         UseSpell();
                 }
 
                 if (hero.IncomeDamage/hero.Player.MaxHealth*100 >=
                     Menu.Item("SelfMuchHP" + Name + "Pct").GetValue<Slider>().Value)
                 {
-                    if (hero.IncomeDamage > 0 &&
-                        hero.HitTypes.Except(ExcludedList).Any())
-                        UseSpell();                       
+                    if (hero.IncomeDamage > 0)
+                        UseSpell();                     
                 }
             }
         }

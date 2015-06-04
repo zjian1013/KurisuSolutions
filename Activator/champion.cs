@@ -6,6 +6,7 @@ namespace Activator
     public class champion
     {
         public float IncomeDamage;
+        public float MinionDamage;
         public Obj_AI_Hero Player;
         public Obj_AI_Base Attacker;
 

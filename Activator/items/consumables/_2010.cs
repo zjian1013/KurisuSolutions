@@ -54,8 +54,12 @@ namespace Activator.Items.Consumables
                         return;
 
                     if (hero.Player.Health/hero.Player.MaxHealth*100 <=
-                        Menu.Item("SelfLowHP" + Name + "Pct").GetValue<Slider>().Value && hero.IncomeDamage > 0)
-                        UseItem();
+                        Menu.Item("SelfLowHP" + Name + "Pct").GetValue<Slider>().Value)
+                    {
+                        if (hero.IncomeDamage > 0 ||
+                            hero.MinionDamage > 0)
+                            UseItem();
+                    }
 
                     if (hero.Player.MaxMana <= 200)
                         continue;

@@ -23,13 +23,6 @@ namespace Activator.Items
         public Menu Menu { get; private set; }
         public Obj_AI_Hero Player { get { return ObjectManager.Player; } }
 
-        public List<HitType> ExcludedList = new List<HitType>
-        {
-            HitType.None,
-            HitType.MinionAttack,
-            HitType.Stealth
-        };
-
         public Obj_AI_Base Target
         {
             get

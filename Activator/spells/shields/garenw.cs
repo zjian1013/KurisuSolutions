@@ -53,8 +53,7 @@ namespace Activator.Spells.Shields
                     if (hero.Player.Health/hero.Player.MaxHealth*100 <=
                         Menu.Item("SelfLowHP" + Name + "Pct").GetValue<Slider>().Value)
                     {
-                        if (hero.IncomeDamage > 0 &&
-                            hero.HitTypes.Except(ExcludedList).Any() || hero.IncomeDamage > hero.Player.Health)
+                        if (hero.IncomeDamage > 0 || hero.MinionDamage > hero.Player.Health)
                             UseSpell();
                     }
                 }
