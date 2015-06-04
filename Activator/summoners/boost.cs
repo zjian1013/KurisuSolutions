@@ -16,6 +16,11 @@ namespace Activator.Summoners
             get { return "Cleanse"; }
         }
 
+        internal override string[] ExtraNames
+        {
+            get { return new[] { "" }; }
+        }
+
         internal override float Range
         {
             get { return float.MaxValue; }

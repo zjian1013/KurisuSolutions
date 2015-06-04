@@ -16,6 +16,10 @@ namespace Activator.Summoners
         {
             get { return "Ignite"; }
         }
+        internal override string[] ExtraNames
+        {
+            get { return new[] { "" }; }
+        }
 
         internal override float Range
         {

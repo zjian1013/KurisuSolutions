@@ -15,6 +15,10 @@ namespace Activator.Summoners
         {
             get { return "Heal"; }
         }
+        internal override string[] ExtraNames
+        {
+            get { return new[] { "" }; }
+        }
 
         internal override float Range
         {

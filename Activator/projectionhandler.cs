@@ -16,7 +16,7 @@ namespace Activator
             Obj_AI_Base.OnProcessSpellCast += Obj_AI_Base_OnProcessSpellCast;
         }
 
-        static void GameObject_OnCreate(GameObject sender, EventArgs args)
+        private static void GameObject_OnCreate(GameObject sender, EventArgs args)
         {
             var missile = sender as Obj_SpellMissile;
             if (missile == null || !missile.IsValid)
@@ -101,6 +101,7 @@ namespace Activator
                 }
             }
         }
+
 
         private static void Obj_AI_Base_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
         {

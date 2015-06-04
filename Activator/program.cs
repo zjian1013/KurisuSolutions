@@ -117,7 +117,6 @@ namespace Activator
 
             // auto level r
             Obj_AI_Base.OnLevelUp += Obj_AI_Base_OnLevelUp;
-
         }
 
         private static void Obj_AI_Base_OnLevelUp(Obj_AI_Base sender, EventArgs args)
@@ -152,7 +151,7 @@ namespace Activator
                 return;
 
             foreach (var summoner in spelldata.summoners)
-                if (Player.Spellbook.CanUseSpell(summoner.Slot) == SpellState.Ready ||
+                if (Player.Spellbook.CanUseSpell(summoner.Slot) == SpellState.Ready || 
                     summoner.ExtraNames.Any(
                         x => Player.Spellbook.CanUseSpell(Player.GetSpellSlot(x)) == SpellState.Ready))
                     summoner.OnTick();

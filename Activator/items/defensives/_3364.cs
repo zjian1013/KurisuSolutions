@@ -29,6 +29,11 @@ namespace Activator.Items.Defensives
             get { return 600f; }
         }
 
+        internal override int DefaultHP
+        {
+            get { return 99; }
+        }
+
         internal override MenuType[] Category
         {
             get { return new[] { MenuType.Stealth, MenuType.ActiveCheck }; }
@@ -36,8 +41,7 @@ namespace Activator.Items.Defensives
 
         public override void OnTick()
         {
-            if (!Menu.Item("use" + Name).GetValue<bool>())
-                return;
+
         }
     }
 }

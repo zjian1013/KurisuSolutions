@@ -73,6 +73,13 @@ namespace Activator.Items
             Menu = new Menu(Name, "m" + Name);
             Menu.AddItem(new MenuItem("use" + Name, "Use " + usefname)).SetValue(true);
 
+            //if (Category.Any(t => t == MenuType.Stealth))
+            //{
+            //    Menu.AddItem(new MenuItem("Stealth" + Name + "Ward", "Use on Placed Wards")).SetValue(DefaultHP == 99);
+            //    Menu.AddItem(new MenuItem("Stealth" + Name + "Traps", "Use on Placed Traps (Shrooms etc)")).SetValue(DefaultHP == 99);
+            //    Menu.AddItem(new MenuItem("Stealth" + Name + "Hero", "Use on Enemy Stealth")).SetValue(true);
+            //}
+
             if (Category.Any(t => t == MenuType.EnemyLowHP))
                 Menu.AddItem(new MenuItem("EnemyLowHP" + Name + "Pct", "Use on Enemy HP % <="))
                     .SetValue(new Slider(DefaultHP));
