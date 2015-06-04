@@ -937,12 +937,12 @@ namespace KurisuRiven
                             if (!flash.IsReady() || !menubool("multib"))
                                 return;
 
-                            var ww = w.IsReady() ? w.Range + 20 : myhitbox;
+                            var ww = w.IsReady() ? w.Range + 10 : myhitbox;
 
                             if (menu.Item("combokey").GetValue<KeyBind>().Active)
                             {
                                 if (rtarg.Distance(player.ServerPosition) > e.Range + ww &&
-                                    rtarg.Distance(player.ServerPosition) <= e.Range + ww + 350)
+                                    rtarg.Distance(player.ServerPosition) <= e.Range + ww + 300)
                                 {
                                     player.Spellbook.CastSpell(flash, rtarg.ServerPosition);
                                 }
@@ -1349,7 +1349,7 @@ namespace KurisuRiven
                     if (menubool("drawburst") && canburst && flash.IsReady())
                     {
                         var ee = e.IsReady() ? e.Range : 0f;
-                        var ww = w.IsReady() ? w.Range + 20 : myhitbox;
+                        var ww = w.IsReady() ? w.Range + 10 : myhitbox;
                         Render.Circle.DrawCircle(player.Position, ee + ww + 300, Color.GreenYellow, 1);
                     }
 
