@@ -859,14 +859,14 @@ namespace KurisuRiven
                             if (args.Target.NetworkId == player.NetworkId &&
                                 orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LastHit)
                             {
-                                Utility.DelayAction.Add(Game.Ping + 100, () => e.Cast(epos));
+                                e.Cast(epos);
                             }
                             break;
                         case SpellDataTargetType.SelfAoe:
                             if (player.Distance(sender.ServerPosition) <= args.SData.CastRange &&
                                 orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LastHit)
                             {
-                                Utility.DelayAction.Add(Game.Ping + 100, () => e.Cast(epos));
+                                e.Cast(epos);
                             }
                             break;
                     }
