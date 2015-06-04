@@ -757,7 +757,9 @@ namespace KurisuRiven
             {
                 if (q.IsReady() && Utils.GameTimeTickCount - lastaa < 1200 && qtarg != null)
                 {
-                    if (qtarg.IsValidTarget(q.Range + 100) && !menu.Item("harasskey").GetValue<KeyBind>().Active)
+                    if (qtarg.IsValidTarget(q.Range + 100) && 
+                       !menu.Item("harasskey").GetValue<KeyBind>().Active &&
+                       !menu.Item("combokey").GetValue<KeyBind>().Active)
                     {
                         if (qtarg.IsValid<Obj_AI_Hero>())
                             q.Cast(qtarg.ServerPosition);
@@ -853,18 +855,22 @@ namespace KurisuRiven
                     var epos = player.ServerPosition +
                                (player.ServerPosition - sender.ServerPosition).Normalized()*300;
 
+                    if (player.Distance(sender.ServerPosition) > args.SData.CastRange)
+                        return;
+
                     switch (args.SData.TargettingType)
                     {
                         case SpellDataTargetType.Unit:
-                            if (args.Target.NetworkId == player.NetworkId &&
-                                orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LastHit)
+                            if (args.Target.NetworkId == player.NetworkId)
                             {
-                                e.Cast(epos);
+                                if (orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LastHit)
+                                {
+                                    e.Cast(epos);
+                                }
                             }
                             break;
                         case SpellDataTargetType.SelfAoe:
-                            if (player.Distance(sender.ServerPosition) <= args.SData.CastRange &&
-                                orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LastHit)
+                            if (orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LastHit)
                             {
                                 e.Cast(epos);
                             }
