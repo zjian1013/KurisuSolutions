@@ -183,12 +183,12 @@ namespace KurisuRiven
             if (!qtarg.IsValidTarget(myhitbox + 100))
                  qtarg = player;
 
-
             didhs = menu.Item("harasskey").GetValue<KeyBind>().Active;
             ulton = player.GetSpell(SpellSlot.R).Name != "RivenFengShuiEngine";
             canburst = rtarg != null && r.IsReady() && q.IsReady() && ((ComboDamage(rtarg)/1.6) >= rtarg.Health ||
                        rtarg.CountEnemiesInRange(w.Range) >= menuslide("multic"));
 
+            player.SetSkin(player.BaseSkinName, menu.Item("skinset").GetValue<StringList>().SelectedIndex);
             if (qtarg != player && qtarg.IsFacing(player) && qtarg.Distance(player.ServerPosition) < myhitbox + 120)
                 movepos = player.ServerPosition + (player.ServerPosition - qtarg.ServerPosition).Normalized()*28;
             if (qtarg != player && (!qtarg.IsFacing(player) || qtarg.Distance(player.ServerPosition) > myhitbox + 120))
@@ -229,7 +229,8 @@ namespace KurisuRiven
                 menu.Item("fleekey").GetValue<KeyBind>().Active)
             {
                 Flee();
-            }         
+            }
+
         }
 
         #endregion
@@ -300,6 +301,7 @@ namespace KurisuRiven
                 .SetValue(new StringList(new[] { "E -> W/R -> Tiamat -> Q", "E -> Tiamat -> W/R -> Q" } ));
             emenu.AddItem(new MenuItem("erange", "E Only if Target > AARange or Engage")).SetValue(true);
             emenu.AddItem(new MenuItem("vhealth", "Or Use E if HP% <=")).SetValue(new Slider(40));
+            emenu.AddItem(new MenuItem("ashield", "Shield Spells While LastHit")).SetValue(true);
             combo.AddSubMenu(emenu);
 
             var rmenu = new Menu("R  Settings", "rivenr");
@@ -310,13 +312,12 @@ namespace KurisuRiven
             rmenu.AddItem(new MenuItem("overk", "Dont R if Target HP % <=")).SetValue(new Slider(25, 1, 99));
             rmenu.AddItem(new MenuItem("userq", "Use R Only if Q Count <=")).SetValue(new Slider(1, 1, 3));
             rmenu.AddItem(new MenuItem("ultwhen", "Use R When"))
-                .SetValue(new StringList(new[] {"Normal", "Hard", "Always"}, 1));
+                .SetValue(new StringList(new[] {"Normal Kill", "Hard Kill", "Always"}, 1));
             rmenu.AddItem(new MenuItem("usews", "Use Windslash (R2) in Combo")).SetValue(true);
             rmenu.AddItem(new MenuItem("wsmode", "Windslash (R2) for"))
                 .SetValue(new StringList(new[] {"Kill Only", "Kill Or MaxDamage"}, 1));
             rmenu.AddItem(new MenuItem("rmulti", "Windslash if enemies hit >=")).SetValue(new Slider(3, 2, 5));
             combo.AddSubMenu(rmenu);
-
 
             menu.AddSubMenu(combo);
 
@@ -331,7 +332,6 @@ namespace KurisuRiven
 
             var farming = new Menu("Farming", "farming");
 
-
             var jg = new Menu("Jungle", "jungle");
             jg.AddItem(new MenuItem("uselaneq", "Use Q in Laneclear")).SetValue(true);
             jg.AddItem(new MenuItem("uselanew", "Use W in Laneclear")).SetValue(true);
@@ -345,9 +345,13 @@ namespace KurisuRiven
             wc.AddItem(new MenuItem("usejunglee", "Use E in Jungle")).SetValue(true);
             farming.AddSubMenu(wc);
 
-
             menu.AddSubMenu(farming);
 
+            var skinchange = new Menu("Skin Changer", "skinchange");
+            skinchange.AddItem(new MenuItem("skinset", ""))
+                .SetValue(
+                    new StringList(new[] { "Classic", "Redeemed", "Crimson", "Battle Bunny", "Championship", "Dragonblade" }, 4));
+            menu.AddSubMenu(skinchange);
 
             menu.AddToMainMenu();
 
@@ -588,7 +592,7 @@ namespace KurisuRiven
 
         }
         #endregion
-
+         
         #region Riven: Windslash
 
         private static void Windslash()
@@ -617,7 +621,7 @@ namespace KurisuRiven
                         return;
 
                     var po = r.GetPrediction(rtarg, true);
-                    if ((r.GetDamage(rtarg) / rtarg.MaxHealth * 100) >= rtarg.Health / rtarg.MaxHealth * 100)
+                    if ((r.GetDamage(rtarg) / rtarg.MaxHealth * 100) >= rtarg.Health / rtarg.MaxHealth * 50)
                     {
                         if (po.Hitchance >= HitChance.VeryHigh && canws)
                             r.Cast(po.CastPosition);
@@ -674,25 +678,27 @@ namespace KurisuRiven
             var minions = MinionManager.GetMinions(player.Position, 600f);
             foreach (var unit in minions)
             {
-                if (q.IsReady() && unit.Distance(player.ServerPosition) <= q.Range + 100)
+                if (q.IsReady() && unit.Distance(player.ServerPosition) <= myhitbox + 100)
                 {
                     if (canq && menubool("uselaneq") && minions.Count >= 2)
                         q.Cast(unit.ServerPosition);
                 }
 
-                if (w.IsReady() &&
-                    minions.Count(m => m.Distance(player.ServerPosition) <= w.Range + 10) >= menuslide("wminion"))
+                if (w.IsReady())
                 {
-                    if (canw && menubool("uselanew"))
+                    if (minions.Count(m => m.Distance(player.ServerPosition) <= w.Range + 10) >= menuslide("wminion"))
                     {
-                        Items.UseItem(3077);
-                        Items.UseItem(3074);
-                        w.Cast();
+                        if (canw && menubool("uselanew"))
+                        {
+                            Items.UseItem(3077);
+                            Items.UseItem(3074);
+                            w.Cast();
+                        }
                     }
                 }
 
-                if (e.IsReady() && (unit.Distance(player.ServerPosition) > myhitbox + 30 ||
-                    player.Health / player.MaxHealth * 100 <= 70))
+                if (e.IsReady() && 
+                   (unit.Distance(player.ServerPosition) > myhitbox + 30 || player.Health / player.MaxHealth * 100 <= 70))
                 {
                     if (cane && menubool("uselanee"))
                         e.Cast(unit.ServerPosition);
@@ -795,7 +801,7 @@ namespace KurisuRiven
             if (!r.IsReady() || ulton || !menubool("user"))
                 return;
 
-            if (menulist("ultwhen") == 2)
+            if (menulist("ultwhen") == 2 && cleavecount <= menuslide("userq"))
                 r.Cast();
 
             var enemies = HeroManager.Enemies.Where(ene => ene.IsValidTarget(r.Range + 250));
@@ -842,6 +848,30 @@ namespace KurisuRiven
         {
             Obj_AI_Base.OnProcessSpellCast += (sender, args) =>
             {
+                if (sender.IsEnemy && sender.Type == player.Type && menubool("ashield"))
+                {
+                    var epos = player.ServerPosition +
+                               (player.ServerPosition - sender.ServerPosition).Normalized()*300;
+
+                    switch (args.SData.TargettingType)
+                    {
+                        case SpellDataTargetType.Unit:
+                            if (args.Target.NetworkId == player.NetworkId &&
+                                orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LastHit)
+                            {
+                                Utility.DelayAction.Add(Game.Ping + 100, () => e.Cast(epos));
+                            }
+                            break;
+                        case SpellDataTargetType.SelfAoe:
+                            if (player.Distance(sender.ServerPosition) <= args.SData.CastRange &&
+                                orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LastHit)
+                            {
+                                Utility.DelayAction.Add(Game.Ping + 100, () => e.Cast(epos));
+                            }
+                            break;
+                    }
+                }
+
                 if (!sender.IsMe)
                     return;
 
