@@ -16,7 +16,6 @@ namespace Activator
         internal static Menu Origin;
         internal static Obj_AI_Hero Player = ObjectManager.Player;
 
-        internal static int GameTimeTick;
         internal static SpellSlot Smite;
         internal static bool SmiteInGame;
         internal static bool TroysInGame;
@@ -147,9 +146,6 @@ namespace Activator
 
         private static void Game_OnUpdate(EventArgs args)
         {
-            if (Utils.GameTimeTickCount - GameTimeTick < 100)
-                return;
-
             foreach (var summoner in spelldata.summoners)
                 if (Player.Spellbook.CanUseSpell(summoner.Slot) == SpellState.Ready || 
                     summoner.ExtraNames.Any(
@@ -164,8 +160,6 @@ namespace Activator
                 if (LeagueSharp.Common.Items.HasItem(item.Id) &&
                     LeagueSharp.Common.Items.CanUseItem(item.Id))
                         item.OnTick();
-
-            GameTimeTick = Utils.GameTimeTickCount;
         }
 
         private static void NewItem(item item, Menu parent)
