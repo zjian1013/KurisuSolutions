@@ -11,9 +11,9 @@ namespace Activator
         public static int Last;
 
         public static void Load()
-        {
+        {                     
+            Obj_AI_Base.OnProcessSpellCast += Obj_AI_Base_OnProcessSpellCast; 
             GameObject.OnCreate += GameObject_OnCreate;
-            Obj_AI_Base.OnProcessSpellCast += Obj_AI_Base_OnProcessSpellCast;
         }
 
         private static void GameObject_OnCreate(GameObject sender, EventArgs args)
