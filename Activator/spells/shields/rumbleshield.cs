@@ -8,7 +8,7 @@ namespace Activator.Spells.Shields
     {
         internal override string Name
         {
-            get { return "rumblieshield"; }
+            get { return "rumbleshield"; }
         }
 
         internal override string DisplayName
