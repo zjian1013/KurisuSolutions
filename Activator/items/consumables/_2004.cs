@@ -35,7 +35,7 @@ namespace Activator.Items.Consumables
             get { return 40; }
         }
 
-        public override void OnTick()
+        public override void OnTick(EventArgs args)
         {
             if (!Menu.Item("use" + Name).GetValue<bool>())
                 return;
@@ -55,7 +55,9 @@ namespace Activator.Items.Consumables
 
                     if (hero.Player.Mana/hero.Player.MaxMana*100 <= 
                         Menu.Item("SelfLowMP" + Name + "Pct").GetValue<Slider>().Value)
+                    {
                         UseItem();   
+                    }
                 }
             }
         }

@@ -51,7 +51,7 @@ namespace Activator.Items.Cleansers
             get { return 0; }
         }
 
-        public override void OnTick()
+        public override void OnTick(EventArgs args)
         {
             foreach (var hero in champion.Heroes)
             {
@@ -73,7 +73,7 @@ namespace Activator.Items.Cleansers
                     {
                         if (!Menu.Item("use" + Name + "Od").GetValue<bool>())
                         {
-                            Utility.DelayAction.Add(Game.Ping + 80, delegate
+                            Utility.DelayAction.Add(Game.Ping + 150, delegate
                             {
                                 UseItem(Menu.Item("mode" + Name).GetValue<StringList>().SelectedIndex == 1);
                             });

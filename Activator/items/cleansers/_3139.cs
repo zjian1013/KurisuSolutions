@@ -46,7 +46,7 @@ namespace Activator.Items.Cleansers
             get { return 0; }
         }
 
-        public override void OnTick()
+        public override void OnTick(EventArgs args)
         {
             foreach (var hero in champion.Heroes)
             {

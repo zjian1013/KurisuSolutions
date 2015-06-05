@@ -17,8 +17,6 @@ namespace Activator.Spells
         internal virtual int DefaultHP { get; set; }
 
         public Menu Menu { get; private set; }
-        public SpellSlot Slot { get { return Player.GetSpellSlot(Name); } }
-        public Spell Spell { get { return new Spell(Player.GetSpellSlot(Name)); } }
         public Obj_AI_Hero Player { get { return ObjectManager.Player; } }
 
         public Obj_AI_Hero LowTarget
@@ -66,7 +64,7 @@ namespace Activator.Spells
                     .SetValue(new Slider(4, 1, 5));
 
             if (Category.Any(t => t == MenuType.SelfMinMP))
-                Menu.AddItem(new MenuItem("SelfMinMP" + Name + "Pct", "Minimum Mana % <=")).SetValue(new Slider(40));
+                Menu.AddItem(new MenuItem("SelfMinMP" + Name + "Pct", "Minimum Mana/Energy % <=")).SetValue(new Slider(40));
 
             if (Category.Any(t => t == MenuType.SelfMinHP))
                 Menu.AddItem(new MenuItem("SelfMinHP" + Name + "Pct", "Minimum HP % <=")).SetValue(new Slider(40));
@@ -107,9 +105,9 @@ namespace Activator.Spells
         {
             if (!combo || Activator.Origin.Item("usecombo").GetValue<KeyBind>().Active)
             {
-                if (Spell.IsReady())
+                if (Player.GetSpellSlot(Name).IsReady())
                 {
-                    Spell.Cast();
+                    Player.Spellbook.CastSpell(Player.GetSpellSlot(Name));
                 }
             }
         }
@@ -118,9 +116,9 @@ namespace Activator.Spells
         {
             if (!combo || Activator.Origin.Item("usecombo").GetValue<KeyBind>().Active)
             {
-                if (Spell.IsReady())
+                if (Player.GetSpellSlot(Name).IsReady())
                 {
-                    Spell.Cast(targetpos);
+                    Player.Spellbook.CastSpell(Player.GetSpellSlot(Name), targetpos);
                 }
             }
         }
@@ -129,14 +127,14 @@ namespace Activator.Spells
         {
             if (!combo || Activator.Origin.Item("usecombo").GetValue<KeyBind>().Active)
             {
-                if (Spell.IsReady())
+                if (Player.GetSpellSlot(Name).IsReady())
                 {
-                    Spell.CastOnUnit(target);
+                    Player.Spellbook.CastSpell(Player.GetSpellSlot(Name), target);
                 }
             }
         }
 
-        public virtual void OnTick()
+        public virtual void OnTick(EventArgs args)
         {
      
         }

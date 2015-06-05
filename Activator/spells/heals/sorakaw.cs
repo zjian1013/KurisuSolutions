@@ -36,13 +36,13 @@ namespace Activator.Spells.Heals
             get { return 55; }
         }
 
-        public override void OnTick()
+        public override void OnTick(EventArgs args)
         {
             if (!Menu.Item("use" + Name).GetValue<bool>() ||
-                Player.GetSpell(Slot).State != SpellState.Ready)
+                Player.GetSpell(Player.GetSpellSlot(Name)).State != SpellState.Ready)
                 return;
 
-            if (Player.Mana/Player.MaxMana*100 <
+            if (Player.Health/Player.MaxHealth*100 <
                 Menu.Item("SelfMinHP" + Name + "Pct").GetValue<Slider>().Value)
                 return;
 

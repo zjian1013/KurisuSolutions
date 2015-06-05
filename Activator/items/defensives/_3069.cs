@@ -23,7 +23,7 @@ namespace Activator.Items.Defensives
 
         internal override int Cooldown
         {
-            get { return 60000; }
+            get { return 40000; }
         }
 
         internal override float Range
@@ -46,7 +46,7 @@ namespace Activator.Items.Defensives
             get { return 0; }
         }
 
-        public override void OnTick()
+        public override void OnTick(EventArgs args)
         {
             if (!Menu.Item("use" + Name).GetValue<bool>())
                 return;
@@ -68,7 +68,7 @@ namespace Activator.Items.Defensives
                     {
                         if (hero.IncomeDamage > 0 && hero.Attacker != null &&
                             hero.Attacker.Distance(hero.Player.ServerPosition) <= 600)
-                            UseItem();               
+                            UseItem();    
                     }
                 }
             }
@@ -77,7 +77,7 @@ namespace Activator.Items.Defensives
             {
                 if (Target.Health / Target.MaxHealth * 100 <= Menu.Item("EnemyLowHP" + Name + "Pct").GetValue<Slider>().Value)
                 {
-                    UseItem();           
+                    UseItem();
                 }
             }
         }

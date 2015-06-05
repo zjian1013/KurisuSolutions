@@ -21,7 +21,7 @@ namespace Activator.Spells.Slows
             get { return new[] { MenuType.SlowRemoval, MenuType.ActiveCheck }; }
         }
 
-        public override void OnTick()
+        public override void OnTick(EventArgs args)
         {
             if (!Menu.Item("use" + Name).GetValue<bool>())
                 return;

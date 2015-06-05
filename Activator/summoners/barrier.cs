@@ -32,7 +32,7 @@ namespace Activator.Summoners
             get { return 210000; }
         }
 
-        public override void OnTick()
+        public override void OnTick(EventArgs args)
         {
             if (!Menu.Item("use" + Name).GetValue<bool>())
                 return;

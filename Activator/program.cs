@@ -111,12 +111,38 @@ namespace Activator
             // ground object spells
             gametroyhandler.Load();
 
-            // on update/tick
-            Game.OnUpdate += Game_OnUpdate;
-
             // auto level r
             Obj_AI_Base.OnLevelUp += Obj_AI_Base_OnLevelUp;
+
+            // on item in slot
+            Obj_AI_Base.OnPlaceItemInSlot += Obj_AI_Base_OnPlaceItemInSlot;
+
+            foreach (var autospell in spelldata.mypells)
+                if (Player.GetSpellSlot(autospell.Name) != SpellSlot.Unknown)
+                    Game.OnUpdate += autospell.OnTick;
+
+            foreach (var item in spelldata.items)
+                if (LeagueSharp.Common.Items.HasItem(item.Id))
+                    Game.OnUpdate += item.OnTick;
+
+            foreach (var summoner in spelldata.summoners)
+                if (summoner.Slot != SpellSlot.Unknown ||
+                    summoner.ExtraNames.Any(
+                        x => Player.GetSpellSlot(x) != SpellSlot.Unknown))
+                    Game.OnUpdate += summoner.OnTick;
         }
+
+        private static void Obj_AI_Base_OnPlaceItemInSlot(Obj_AI_Base sender, Obj_AI_BasePlaceItemInSlotEventArgs args)
+        {
+            if (!sender.IsMe)
+                return;
+
+            foreach (var item in spelldata.items)
+                if (item.Id == (int) args.Id)
+                    Game.OnUpdate += item.OnTick;
+        }
+
+
 
         private static void Obj_AI_Base_OnLevelUp(Obj_AI_Base sender, EventArgs args)
         {
@@ -142,24 +168,6 @@ namespace Activator
                     Player.Spellbook.LevelSpell(SpellSlot.R);
                     break;
             }
-        }
-
-        private static void Game_OnUpdate(EventArgs args)
-        {
-            foreach (var summoner in spelldata.summoners)
-                if (Player.Spellbook.CanUseSpell(summoner.Slot) == SpellState.Ready || 
-                    summoner.ExtraNames.Any(
-                        x => Player.Spellbook.CanUseSpell(Player.GetSpellSlot(x)) == SpellState.Ready))
-                    summoner.OnTick();
- 
-            foreach (var autospell in spelldata.mypells)
-                if (Player.Spellbook.CanUseSpell(autospell.Slot) == SpellState.Ready)
-                    autospell.OnTick();
-
-            foreach (var item in spelldata.items)
-                if (LeagueSharp.Common.Items.HasItem(item.Id) &&
-                    LeagueSharp.Common.Items.CanUseItem(item.Id))
-                        item.OnTick();
         }
 
         private static void NewItem(item item, Menu parent)

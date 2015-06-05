@@ -31,10 +31,10 @@ namespace Activator.Items.Consumables
 
         internal override int DefaultMP
         {
-            get { return 40; }
+            get { return 35; }
         }
 
-        public override void OnTick()
+        public override void OnTick(EventArgs args)
         {
             foreach (var hero in champion.Heroes)
             {
@@ -66,7 +66,7 @@ namespace Activator.Items.Consumables
 
                     if (hero.Player.Mana / hero.Player.MaxMana * 100 <= 
                         Menu.Item("SelfLowMP" + Name + "Pct").GetValue<Slider>().Value)
-                        UseItem();                       
+                        UseItem();                     
                 }
             }
         }

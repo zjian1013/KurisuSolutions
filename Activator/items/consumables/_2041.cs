@@ -32,10 +32,10 @@ namespace Activator.Items.Consumables
 
         internal override int DefaultMP
         {
-            get { return 35; }
+            get { return 25; }
         }
 
-        public override void OnTick()
+        public override void OnTick(EventArgs args)
         {
             foreach (var hero in champion.Heroes)
             {

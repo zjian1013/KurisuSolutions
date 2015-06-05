@@ -35,7 +35,7 @@ namespace Activator.Spells.Shields
             get { return 55; }
         }
 
-        public override void OnTick()
+        public override void OnTick(EventArgs args)
         {
             if (!Menu.Item("use" + Name).GetValue<bool>())
                 return;

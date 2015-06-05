@@ -43,7 +43,7 @@ namespace Activator.Items.Offensives
 
         private bool muramana;
 
-        public override void OnTick()
+        public override void OnTick(EventArgs args)
         {
             if (!muramana)
             {

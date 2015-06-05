@@ -106,7 +106,7 @@ namespace Activator.Summoners
 
         }
 
-        public virtual void OnTick()
+        public virtual void OnTick(EventArgs args)
         {
 
         }

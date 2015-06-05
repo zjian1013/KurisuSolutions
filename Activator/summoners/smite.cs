@@ -59,7 +59,7 @@ namespace Activator.Summoners
             }
         }
 
-        public override void OnTick()
+        public override void OnTick(EventArgs args)
         {
             if (!Menu.Item("usesmite").GetValue<KeyBind>().Active)
                 return;

@@ -36,7 +36,7 @@ namespace Activator.Items.Consumables
             get { return 0; }
         }
 
-        public override void OnTick()
+        public override void OnTick(EventArgs args)
         {
             foreach (var hero in champion.Heroes)
             {
@@ -56,12 +56,12 @@ namespace Activator.Items.Consumables
                     {
                         if (hero.IncomeDamage > 0 ||
                             hero.MinionDamage > 0)
-                            UseItem();
+                            UseItem(); 
                     }
 
                     if (hero.IncomeDamage/hero.Player.MaxHealth*100 >=
                         Menu.Item("SelfMuchHP" + Name + "Pct").GetValue<Slider>().Value)
-                        UseItem();                       
+                        UseItem();         
                 }
             }
         }

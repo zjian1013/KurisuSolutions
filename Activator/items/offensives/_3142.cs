@@ -40,7 +40,7 @@ namespace Activator.Items.Offensives
             get { return 0; }
         }
 
-        public override void OnTick()
+        public override void OnTick(EventArgs args)
         {
             if (Menu.Item("use" + Name).GetValue<bool>() && Target != null)
             {
@@ -51,7 +51,7 @@ namespace Activator.Items.Offensives
 
                 if (Player.Health / Player.MaxHealth * 100 <= Menu.Item("SelfLowHP" + Name + "Pct").GetValue<Slider>().Value)
                 {
-                    UseItem(Target);     
+                    UseItem(Target);
                 }
             }
         }

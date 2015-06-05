@@ -20,6 +20,11 @@ namespace Activator.Items.Offensives
             get { return "Guardian's Horn"; }
         }
 
+        internal override MapType[] Maps
+        {
+            get { return new[] { MapType.HowlingAbyss }; }
+        }
+
         internal override int Cooldown
         {
             get { return 25000; }
@@ -45,7 +50,7 @@ namespace Activator.Items.Offensives
             get { return 0; }
         }
 
-        public override void OnTick()
+        public override void OnTick(EventArgs args)
         {
             if (Menu.Item("use" + Name).GetValue<bool>() && Target != null)
             {

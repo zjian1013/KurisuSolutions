@@ -36,7 +36,7 @@ namespace Activator.Spells.Evaders
             get { return 40; }
         }
 
-        public override void OnTick()
+        public override void OnTick(EventArgs args)
         {
             if (!Menu.Item("use" + Name).GetValue<bool>())
                 return;

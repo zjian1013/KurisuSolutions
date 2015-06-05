@@ -39,7 +39,8 @@ namespace Activator.Items
         {
             if (!combo || Activator.Origin.Item("usecombo").GetValue<KeyBind>().Active)
             {
-                LeagueSharp.Common.Items.UseItem(Id);
+                if(LeagueSharp.Common.Items.CanUseItem(Id))
+                   LeagueSharp.Common.Items.UseItem(Id);
             }
         }
 
@@ -47,7 +48,8 @@ namespace Activator.Items
         {
             if (!combo || Activator.Origin.Item("usecombo").GetValue<KeyBind>().Active)
             {
-                LeagueSharp.Common.Items.UseItem(Id, target);
+                if (LeagueSharp.Common.Items.CanUseItem(Id))
+                    LeagueSharp.Common.Items.UseItem(Id, target);
             }
         }
 
@@ -55,7 +57,8 @@ namespace Activator.Items
         {
             if (!combo || Activator.Origin.Item("usecombo").GetValue<KeyBind>().Active)
             {
-                LeagueSharp.Common.Items.UseItem(Id, pos);
+                if (LeagueSharp.Common.Items.CanUseItem(Id))
+                    LeagueSharp.Common.Items.UseItem(Id, pos);
             }
         }
 
@@ -120,7 +123,7 @@ namespace Activator.Items
             return this;
         }
 
-        public virtual void OnTick()
+        public virtual void OnTick(EventArgs args)
         {
 
         }

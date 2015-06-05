@@ -129,6 +129,7 @@
     <Compile Include="spells\health\sorakar.cs" />
     <Compile Include="spells\health\undyingrage.cs" />
     <Compile Include="spells\health\yorickreviveally.cs" />
+    <Compile Include="spells\shields\blindmonkwone.cs" />
     <Compile Include="spells\shields\braume.cs" />
     <Compile Include="spells\shields\defensiveballcurl.cs" />
     <Compile Include="spells\shields\dianaorbs.cs" />
@@ -140,12 +141,15 @@
     <Compile Include="spells\shields\lulue.cs" />
     <Compile Include="spells\shields\luxprismaticwave.cs" />
     <Compile Include="spells\shields\moltenshield.cs" />
+    <Compile Include="spells\shields\mordekaiserw.cs" />
     <Compile Include="spells\shields\nautiluspiercinggaze.cs" />
     <Compile Include="spells\shields\obduracy.cs" />
     <Compile Include="spells\shields\orianaredactcommand.cs" />
     <Compile Include="spells\shields\rumbleshield.cs" />
     <Compile Include="spells\shields\shenfeint.cs" />
     <Compile Include="spells\shields\sionw.cs" />
+    <Compile Include="spells\shields\skarnerw.cs" />
+    <Compile Include="spells\shields\udyrturtle.cs" />
     <Compile Include="spells\shields\urgotshield.cs" />
     <Compile Include="spells\slows\evelynnw.cs" />
     <Compile Include="spells\slows\garenq.cs" />

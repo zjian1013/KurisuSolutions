@@ -39,7 +39,7 @@ namespace Activator.Items.Defensives
             get { return new[] { MenuType.Stealth, MenuType.ActiveCheck }; }
         }
 
-        public override void OnTick()
+        public override void OnTick(EventArgs args)
         {
 
         }

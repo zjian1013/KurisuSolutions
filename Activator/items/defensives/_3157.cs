@@ -47,7 +47,7 @@ namespace Activator.Items.Defensives
             get { return 0; }
         }
 
-        public override void OnTick()
+        public override void OnTick(EventArgs args)
         {
             if (!Menu.Item("use" + Name).GetValue<bool>())
             {
@@ -60,7 +60,7 @@ namespace Activator.Items.Defensives
                 {
                     if (Menu.Item("use" + Name + "Norm").GetValue<bool>())
                         if (hero.IncomeDamage > 0 && hero.HitTypes.Contains(HitType.Danger))
-                            UseItem();      
+                            UseItem();
 
                     if (Menu.Item("use" + Name + "Ulti").GetValue<bool>())
                         if (hero.IncomeDamage > 0 && hero.HitTypes.Contains(HitType.Ultimate))

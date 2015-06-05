@@ -37,10 +37,10 @@ namespace Activator.Spells.Shields
             get { return 55; }
         }
 
-        public override void OnTick()
+        public override void OnTick(EventArgs args)
         {
             if (!Menu.Item("use" + Name).GetValue<bool>() ||
-                Player.GetSpell(Slot).State != SpellState.Ready)
+                Player.GetSpell(Player.GetSpellSlot(Name)).State != SpellState.Ready)
                 return;
 
             if (Player.Mana/Player.MaxMana*100 <

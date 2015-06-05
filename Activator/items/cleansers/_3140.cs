@@ -46,7 +46,7 @@ namespace Activator.Items.Cleansers
             get { return 0; }
         }
 
-        public override void OnTick()
+        public override void OnTick(EventArgs args)
         {
             foreach (var hero in champion.Heroes)
             {
@@ -57,7 +57,7 @@ namespace Activator.Items.Cleansers
                 {
                     if (hero.ForceQSS)
                     {
-                        UseItem();                
+                        UseItem();
                         hero.IncomeDamage = 0;
                     }
 
