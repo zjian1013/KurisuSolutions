@@ -73,19 +73,26 @@ namespace Activator.Summoners
                     var totaldmg = 0d;
                     totaldmg += Player.GetAutoAttackDamage(target, true) * 5;
 
-                    foreach (var entry in spelldata.combod)
-                    {
-                        var spellLevel = Player.GetSpell(entry.Value).Level;
+                    totaldmg += (from entry in spelldata.combod
+                        let spellLevel = Player.GetSpell(entry.Value).Level
+                        select
+                            Player.GetSpell(entry.Value).State == SpellState.Ready
+                                ? entry.Key(Player, target, spellLevel - 1)
+                                : 0).Sum();
 
-                        totaldmg += Player.GetSpell(entry.Value).State == SpellState.Ready
-                            ? entry.Key(Player, target, spellLevel - 1)
-                            : 0;
-                    }
-
-                    // todo: item damage
                     if ((float)(totaldmg + ignotedmg) >= target.Health)
                     {
-                        UseSpellOn(target, true);                      
+                        if (target.Level <= 3)
+                        {
+                            if (target.InventoryItems.Any(
+                                item => item.Id == (ItemId) 2003 || 
+                                        item.Id == (ItemId) 2010))
+                            {
+                                return;
+                            }
+                        }
+
+                        UseSpellOn(target, true);
                     }
                 }
             }
