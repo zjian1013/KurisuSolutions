@@ -36,6 +36,11 @@ namespace Activator.Items.Cleansers
             get { return new[] { MenuType.Cleanse, MenuType.ActiveCheck }; }
         }
 
+        internal override MapType[] Maps
+        {
+            get { return new[] { MapType.HowlingAbyss, MapType.SummonersRift }; }
+        }
+
         internal override int DefaultHP
         {
             get { return 5; }

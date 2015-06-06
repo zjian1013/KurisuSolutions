@@ -38,7 +38,7 @@ namespace Activator.Items.Cleansers
 
         internal override MapType[] Maps
         {
-            get { return new[] { MapType.CrystalScar }; }
+            get { return new[] { MapType.CrystalScar, MapType.TwistedTreeline }; }
         }
 
         internal override int DefaultHP

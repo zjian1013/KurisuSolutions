@@ -60,6 +60,8 @@
   <ItemGroup>
     <Compile Include="champion.cs" />
     <Compile Include="drawings.cs" />
+    <Compile Include="items\defensives\_3048.cs" />
+    <Compile Include="items\offensives\_3043.cs" />
     <Compile Include="items\offensives\_3092.cs" />
     <Compile Include="projectionhandler.cs" />
     <Compile Include="enumerators.cs" />
@@ -162,6 +164,7 @@
     <Compile Include="summoners\heal.cs" />
     <Compile Include="summoners\mana.cs" />
     <Compile Include="summoners\smite.cs" />
+    <Compile Include="summoners\snowball.cs" />
     <Compile Include="summoners\summoner.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -46,6 +46,11 @@ namespace Activator.Items.Defensives
             get { return new[] { MenuType.SelfLowHP, MenuType.Zhonyas }; }
         }
 
+        internal override MapType[] Maps
+        {
+            get { return new[] { MapType.Common }; }
+        }
+
         public override void OnTick(EventArgs args)
         {
             if (!Menu.Item("use" + Name).GetValue<bool>())

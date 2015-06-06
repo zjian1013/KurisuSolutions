@@ -24,6 +24,11 @@ namespace Activator.Items.Consumables
             get { return new[] { MenuType.Stealth, MenuType.ActiveCheck }; }
         }
 
+        internal override MapType[] Maps
+        {
+            get { return new[] { MapType.SummonersRift }; }
+        }
+
         internal override int DefaultHP
         {
             get { return 0; }

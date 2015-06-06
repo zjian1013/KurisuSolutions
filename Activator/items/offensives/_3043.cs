@@ -4,11 +4,11 @@ using LeagueSharp.Common;
 
 namespace Activator.Items.Offensives
 {
-    class _3042 : item
+    class _3043 : item
     {
         internal override int Id
         {
-            get { return 3042; }
+            get { return 3043; }
         }
 
         internal override string Name
@@ -28,7 +28,7 @@ namespace Activator.Items.Offensives
 
         internal override MapType[] Maps
         {
-            get { return new[] { MapType.SummonersRift, MapType.TwistedTreeline, MapType.HowlingAbyss }; }
+            get { return new[] { MapType.CrystalScar }; }
         }
 
         internal override int DefaultHP
@@ -41,7 +41,7 @@ namespace Activator.Items.Offensives
             get { return 35; }
         }
 
-        public _3042()
+        public _3043()
         {
             Obj_AI_Base.OnProcessSpellCast += OnCast;
         }
@@ -93,7 +93,7 @@ namespace Activator.Items.Offensives
                 }
                 else
                 {
-                    Utility.DelayAction.Add(500 + (int)(args.SData.CastFrame / 30), () => muramana = false);
+                    Utility.DelayAction.Add(500 + (int)(args.SData.CastFrame/30), () => muramana = false);
                 }
             }
 

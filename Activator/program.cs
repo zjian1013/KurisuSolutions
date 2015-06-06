@@ -16,6 +16,7 @@ namespace Activator
         internal static Menu Origin;
         internal static Obj_AI_Hero Player = ObjectManager.Player;
 
+        internal static int MapId;
         internal static SpellSlot Smite;
         internal static bool SmiteInGame;
         internal static bool TroysInGame;
@@ -28,6 +29,8 @@ namespace Activator
 
         private static void Game_OnGameLoad(EventArgs args)
         {
+            MapId = (int) Utility.Map.GetMap().Type;
+
             GetSmiteSlot();
             GetTroysInGame();
             GetHeroesInGame();
@@ -138,7 +141,7 @@ namespace Activator
                 return;
 
             foreach (var item in spelldata.items)
-                if (item.Id == (int) args.Id)
+                if (item.Id == (int) args.Id) 
                     Game.OnUpdate += item.OnTick;
         }
 
@@ -172,7 +175,11 @@ namespace Activator
 
         private static void NewItem(item item, Menu parent)
         {
-            spelldata.items.Add(item.CreateMenu(parent));
+            if (item.Maps.Contains((MapType) MapId) ||
+                item.Maps.Contains(MapType.Common))
+            {
+                spelldata.items.Add(item.CreateMenu(parent));
+            }
         }
 
         private static void NewSpell(spell spell, Menu parent)

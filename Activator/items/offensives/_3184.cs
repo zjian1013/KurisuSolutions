@@ -30,6 +30,11 @@ namespace Activator.Items.Offensives
             get { return new[] { MenuType.SelfLowHP, MenuType.EnemyLowHP }; }
         }
 
+        internal override MapType[] Maps
+        {
+            get { return new[] { MapType.CrystalScar, MapType.HowlingAbyss }; }
+        }
+
         internal override int DefaultHP
         {
             get { return 95; }

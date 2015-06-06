@@ -50,6 +50,9 @@ namespace Activator
 
                 if (Activator.Origin.Item("drawfill").GetValue<bool>())
                 {
+                    if (Activator.MapId != (int) MapType.SummonersRift)
+                        return;
+
                     foreach (
                         var minion in
                             ObjectManager.Get<Obj_AI_Minion>()

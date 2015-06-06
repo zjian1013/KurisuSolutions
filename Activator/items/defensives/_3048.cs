@@ -1,30 +1,29 @@
 ﻿using System;
 using System.Linq;
-using LeagueSharp;
 using LeagueSharp.Common;
 
 namespace Activator.Items.Defensives
 {
-    class _3157 : item
+    class _3048 : item
     {
         internal override int Id
         {
-            get { return 3157; }
+            get { return 3048; }
         }
 
         internal override string Name
         {
-            get { return "Zhonyas"; }
+            get { return "Seraphs"; }
         }
 
         internal override string DisplayName
         {
-            get { return "Zhonay's Hourglass"; }
+            get { return "Seraph's Embrace"; }
         }
 
         internal override int Cooldown
         {
-            get { return 90000; }
+            get { return 120000; }
         }
 
         internal override float Range
@@ -39,12 +38,12 @@ namespace Activator.Items.Defensives
 
         internal override MapType[] Maps
         {
-            get { return new[] { MapType.SummonersRift, MapType.HowlingAbyss }; }
+            get { return new[] { MapType.CrystalScar }; }
         }
 
         internal override int DefaultHP
         {
-            get { return 20; }
+            get { return 50; }
         }
 
         internal override int DefaultMP
@@ -63,20 +62,24 @@ namespace Activator.Items.Defensives
             {
                 if (hero.Player.NetworkId == Player.NetworkId)
                 {
-                    if (Menu.Item("use" + Name + "Norm").GetValue<bool>())
-                        if (hero.IncomeDamage > 0 && hero.HitTypes.Contains(HitType.Danger))
-                            UseItem();
+                    if (Menu.Item("use" + Name + "Norm").GetValue<bool>() &&
+                        hero.IncomeDamage > 0 && hero.HitTypes.Contains(HitType.Danger))
+                        UseItem();
 
-                    if (Menu.Item("use" + Name + "Ulti").GetValue<bool>())
-                        if (hero.IncomeDamage > 0 && hero.HitTypes.Contains(HitType.Ultimate))
-                            UseItem();
+                    if (Menu.Item("use" + Name + "Ulti").GetValue<bool>() &&
+                        hero.IncomeDamage > 0 && hero.HitTypes.Contains(HitType.Ultimate))
+                        UseItem();
 
-                    if (Player.Health/Player.MaxHealth*100 <=
+                    if (hero.Player.Health / hero.Player.MaxHealth * 100 <=
                         Menu.Item("SelfLowHP" + Name + "Pct").GetValue<Slider>().Value)
                     {
                         if (hero.IncomeDamage > 0 || hero.MinionDamage > hero.Player.Health)
                             UseItem();
                     }
+
+                    if (hero.IncomeDamage / hero.Player.MaxHealth * 100 >=
+                        Menu.Item("SelfMuchHP" + Name + "Pct").GetValue<Slider>().Value)
+                        UseItem();
                 }
             }
         }

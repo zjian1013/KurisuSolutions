@@ -14,11 +14,12 @@
     }
 
     public enum MapType
-    {
-        SummonersRift,
-        CrystalScar,
-        HowlingAbyss,
-        TwistedTreeline
+    {        
+        Common = 0,
+        SummonersRift = 1,
+        CrystalScar = 2,
+        TwistedTreeline = 3,
+        HowlingAbyss = 4,
     }
 
     public enum MenuType

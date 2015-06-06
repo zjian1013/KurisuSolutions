@@ -36,6 +36,11 @@ namespace Activator.Items.Offensives
             get { return new[] { MenuType.EnemyLowHP, MenuType.ActiveCheck }; }
         }
 
+        internal override MapType[] Maps
+        {
+            get { return new[] { MapType.Common }; }
+        }
+
         internal override int DefaultHP
         {
             get { return 55; }

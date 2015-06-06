@@ -25,6 +25,11 @@ namespace Activator.Items.Consumables
             get { return new[] { MenuType.SelfLowMP, MenuType.SelfLowHP, MenuType.SelfMuchHP }; }
         }
 
+        internal override MapType[] Maps
+        {
+            get { return new[] { MapType.SummonersRift, MapType.TwistedTreeline, MapType.CrystalScar }; }
+        }
+
         internal override int DefaultHP
         {
             get { return 55; }

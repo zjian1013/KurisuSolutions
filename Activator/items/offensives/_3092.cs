@@ -40,6 +40,11 @@ namespace Activator.Items.Offensives
             get { return new[] { MenuType.ActiveCheck, MenuType.SelfLowHP, MenuType.EnemyLowHP }; }
         }
 
+        internal override MapType[] Maps
+        {
+            get { return new[] { MapType.Common }; }
+        }
+
         public override void OnTick(EventArgs args)
         {
             if (Menu.Item("use" + Name).GetValue<bool>() && Target != null)

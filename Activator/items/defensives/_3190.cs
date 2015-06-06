@@ -36,6 +36,11 @@ namespace Activator.Items.Defensives
             get { return new[] { MenuType.SelfLowHP, MenuType.SelfMuchHP, MenuType.Zhonyas }; }
         }
 
+        internal override MapType[] Maps
+        {
+            get { return new[] { MapType.Common }; }
+        }
+
         internal override int DefaultHP
         {
             get { return 50; }

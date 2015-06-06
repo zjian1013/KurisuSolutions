@@ -39,6 +39,11 @@ namespace Activator.Items.Defensives
             get { return new[] { MenuType.Stealth, MenuType.ActiveCheck }; }
         }
 
+        internal override MapType[] Maps
+        {
+            get { return new[] { MapType.SummonersRift }; }
+        }
+
         public override void OnTick(EventArgs args)
         {
 
