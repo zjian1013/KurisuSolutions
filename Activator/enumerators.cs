@@ -1,4 +1,14 @@
-﻿namespace Activator
+﻿#region Copyright © 2015 Kurisu Solutions
+// All rights are reserved. Transmission or reproduction in part or whole,
+// any form or by any means, mechanical, electronical or otherwise, is prohibited
+// without the prior written consent of the copyright owner.
+// 
+// Document:	activator/enumerators.cs
+// Date:		06/06/2015
+// Author:		Robin Kurisu
+#endregion
+
+namespace Activator
 {
     public enum HitType
     {

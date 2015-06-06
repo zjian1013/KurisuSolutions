@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using LeagueSharp;
 using LeagueSharp.Common;
 
@@ -51,7 +50,7 @@ namespace Activator.Summoners
             if (Name == "summonerheal")
             {
                 Menu.AddItem(new MenuItem("SelfLowHP" + Name + "Pct", "Use on Hero HP % <="))
-                    .SetValue(new Slider(20));
+                    .SetValue(new Slider(25));
                 Menu.AddItem(new MenuItem("SelfMuchHP" + Name + "Pct", "Use on Hero Dmg Dealt % >="))
                     .SetValue(new Slider(45));
             }
@@ -61,7 +60,7 @@ namespace Activator.Summoners
                 Menu.AddItem(new MenuItem("use" + Name + "Number", "Minimum Spells to Use")).SetValue(new Slider(2, 1, 5));
                 Menu.AddItem(new MenuItem("use" + Name + "Time", "Minumum Durration to Use")).SetValue(new Slider(2, 1, 5));
                 Menu.AddItem(new MenuItem("use" + Name + "Od", "Use only on Dangerous")).SetValue(false);
-                Menu.AddItem(new MenuItem("mode" + Name, "Mode: ")).SetValue(new StringList(new[] { "Always", "Combo" }));
+                Menu.AddItem(new MenuItem("mode" + Name, "Mode: ")).SetValue(new StringList(new[] { "Always", "Combo" }, 1));
             }
 
             if (Name == "summonerdot")
@@ -73,7 +72,7 @@ namespace Activator.Summoners
 
             if (Name == "summonerbarrier")
             {
-                Menu.AddItem(new MenuItem("SelfLowHP" + Name + "Pct", "Use on Hero HP % <=")).SetValue(new Slider(20));
+                Menu.AddItem(new MenuItem("SelfLowHP" + Name + "Pct", "Use on Hero HP % <=")).SetValue(new Slider(25));
                 Menu.AddItem(new MenuItem("SelfMuchHP" + Name + "Pct", "Use on Hero Dmg Dealt % >=")).SetValue(new Slider(45));
                 Menu.AddItem(new MenuItem("use" + Name + "Ulti", "Use on Dangerous (Ultimates Only)")).SetValue(true);
             }
@@ -93,7 +92,7 @@ namespace Activator.Summoners
                 Menu.AddItem(new MenuItem("smitelarge", "Smite Large Camps")).SetValue(true);
                 Menu.AddItem(new MenuItem("smitesuper", "Smite Epic Camps")).SetValue(true);
                 Menu.AddItem(new MenuItem("smitemode", "Smite Enemies: "))
-                    .SetValue(new StringList(new[] { "Killsteal", "Combo", "Nope" }));
+                    .SetValue(new StringList(new[] { "Killsteal", "Combo", "Nope" }, 1));
                 Menu.AddItem(new MenuItem("savesmite", "Save a Smite Charge").SetValue(true));          
             }
 

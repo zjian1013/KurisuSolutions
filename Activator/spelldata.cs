@@ -1,8 +1,18 @@
-﻿using Activator.Items;
-using Activator.Spells;
-using Activator.Summoners;
+﻿#region Copyright © 2015 Kurisu Solutions
+// All rights are reserved. Transmission or reproduction in part or whole,
+// any form or by any means, mechanical, electronical or otherwise, is prohibited
+// without the prior written consent of the copyright owner.
+// 
+// Document:	activator/spelldata.cs
+// Date:		06/06/2015
+// Author:		Robin Kurisu
+#endregion
+
 using LeagueSharp;
 using LeagueSharp.Common;
+using Activator.Items;
+using Activator.Spells;
+using Activator.Summoners;
 using System.Collections.Generic;
 using System.Linq;
 

@@ -1,13 +1,23 @@
-﻿using System;
+﻿#region Copyright © 2015 Kurisu Solutions
+// All rights are reserved. Transmission or reproduction in part or whole,
+// any form or by any means, mechanical, electronical or otherwise, is prohibited
+// without the prior written consent of the copyright owner.
+// 
+// Document:	activator/program.cs
+// Date:		06/06/2015
+// Author:		Robin Kurisu
+#endregion
+
+using System;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Collections.Generic;
-using LeagueSharp;
-using LeagueSharp.Common;
 using Activator.Items;
 using Activator.Spells;
 using Activator.Summoners;
+using LeagueSharp;
+using LeagueSharp.Common;
 
 namespace Activator
 {
@@ -214,7 +224,7 @@ namespace Activator
                     Damage.Spells.Where(entry => entry.Key == Player.ChampionName).SelectMany(entry => entry.Value))
             {
                 spelldata.combod.Add(spell.Damage, spell.Slot);
-                Console.WriteLine(Player.ChampionName + ": " + spell.Slot + " " + spell.Stage + " - dmg added!");
+                //Console.WriteLine(Player.ChampionName + ": " + spell.Slot + " " + spell.Stage + " - dmg added!");
             }
         }
 
@@ -223,7 +233,7 @@ namespace Activator
             foreach (var i in ObjectManager.Get<Obj_AI_Hero>().Where(i => i.Team == Player.Team))
             {
                 champion.Heroes.Add(new champion(i, 0));
-                Console.WriteLine(i.ChampionName + " ally added to table!");
+                //Console.WriteLine(i.ChampionName + " ally added to table!");
             }
         }
 
@@ -250,7 +260,7 @@ namespace Activator
                 {
                     TroysInGame = true;
                     gametroy.Troys.Add(new gametroy(i, item.Slot, item.Name, 0, false));
-                    Console.WriteLine(i.ChampionName + " troy detected/added to table!");
+                    //Console.WriteLine(i.ChampionName + " troy detected/added to table!");
                 }
             }
         }
