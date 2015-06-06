@@ -132,6 +132,9 @@ namespace KurisuMorgana
             }
 
             _menu.AddSubMenu(menuM);
+
+
+            _menu.AddItem(new MenuItem("support", "Support")).SetValue(false);
             _menu.AddToMainMenu();
 
             Game.PrintChat("<font color=\"#FF9900\"><b>KurisuMorgana:</b></font> Loaded");
@@ -140,6 +143,7 @@ namespace KurisuMorgana
             Drawing.OnDraw += Drawing_OnDraw;
             Game.OnUpdate += Game_OnGameUpdate;
             AntiGapcloser.OnEnemyGapcloser += AntiGapcloser_OnEnemyGapcloser;
+            Orbwalking.BeforeAttack += Orbwalking_BeforeAttack;
 
             try
             {
@@ -148,6 +152,20 @@ namespace KurisuMorgana
             catch (Exception e)
             {
                 Console.WriteLine("Exception thrown KurisuMorgana: (BlackShield: {0})", e);
+            }
+        }
+
+        private static void Orbwalking_BeforeAttack(Orbwalking.BeforeAttackEventArgs args)
+        {
+            if (args.Target.Type == GameObjectType.obj_AI_Minion)
+            {
+                if (_menu.Item("support").GetValue<bool>())
+                {
+                    if (Me.CountAlliesInRange(1200) > 1)
+                    {
+                        args.Process = false;
+                    }
+                }
             }
         }
 
