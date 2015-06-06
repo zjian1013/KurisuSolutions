@@ -31,12 +31,18 @@ namespace Activator.Summoners
             get { return 210000; }
         }
 
+        private static Spell ignote;
+        public dot()
+        {
+            ignote = new Spell(Player.GetSpellSlot(Name), Range);
+        }
+
         public override void OnTick(EventArgs args)
         {
             if (!Menu.Item("use" + Name).GetValue<bool>())
                 return;
 
-            if (Player.Spellbook.CanUseSpell(Player.GetSpellSlot(Name)) != SpellState.Ready)
+            if (!ignote.IsReady())
                 return;
 
             foreach (

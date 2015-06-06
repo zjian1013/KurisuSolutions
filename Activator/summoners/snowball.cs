@@ -28,7 +28,6 @@ namespace Activator.Summoners
         }
 
         private static Spell mark;
-        private static Obj_AI_Hero target;
 
         public snowball()
         {
