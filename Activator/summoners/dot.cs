@@ -66,6 +66,10 @@ namespace Activator.Summoners
                 // combo ignite
                 if (Menu.Item("mode" + Name).GetValue<StringList>().SelectedIndex == 1)
                 {
+                    if (Player.ChampionName == "Cassiopeia" && 
+                       !target.HasBuffOfType(BuffType.Poison))
+                        return;
+
                     var totaldmg = 0d;
                     totaldmg += Player.GetAutoAttackDamage(target, true) * 5;
 
