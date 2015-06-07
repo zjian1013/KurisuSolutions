@@ -4549,7 +4549,7 @@ namespace Activator
                 Delay = 500f,
                 HitType = new HitType[] { },
                 MissileName = "sivirqmissile",
-                ExtraMissileNames = new []{ "sivirqreturn" },
+                ExtraMissileNames = new []{ "sivirqmissilereturn" },
                 MissileSpeed = 1350
             });
 

@@ -68,7 +68,7 @@ namespace Activator
             ccmenu.AddItem(new MenuItem("cslow", "Slows")).SetValue(true);
             ccmenu.AddItem(new MenuItem("cpoison", "Poisons")).SetValue(true);
             cmenu.AddSubMenu(ccmenu);
-            cmenu.AddItem(new MenuItem("qssdebug", "Debug")).SetValue(false);   
+
 
             Origin.AddSubMenu(cmenu);
 
@@ -106,6 +106,7 @@ namespace Activator
                 zmenu.AddSubMenu(ddmenu);
             }
 
+            zmenu.AddItem(new MenuItem("acdebug", "Debug (Dont use in Game)")).SetValue(false);   
             zmenu.AddItem(new MenuItem("evadeon", "Evade Integration")).SetValue(false);
             zmenu.AddItem(new MenuItem("evadefow", "Evade Integration (FoW)")).SetValue(false);
             zmenu.AddItem(new MenuItem("usecombo", "Combo Key")).SetValue(new KeyBind(32, KeyBindType.Press, true));

@@ -27,7 +27,10 @@ namespace Activator
         }
 
         private static void GameObject_OnCreate(GameObject sender, EventArgs args)
-        {
+        {            
+            // please leave debugging off in real games
+            var debugg = Activator.Origin.Item("acdebug").GetValue<bool>();
+
             var missile = sender as Obj_SpellMissile;
             if (missile == null || !missile.IsValid)
                 return;
@@ -36,7 +39,7 @@ namespace Activator
             if (caster == null || !caster.IsValid)
                 return;
 
-            if (caster.Team == Activator.Player.Team)
+            if (!debugg && caster.Team == Activator.Player.Team)
                 return;
 
             var startPos = missile.StartPosition.To2D();
@@ -89,6 +92,7 @@ namespace Activator
                         hero.IncomeDamage +=
                             (float) Math.Abs(caster.GetSpellDamage(hero.Player, data.SDataName));
 
+
                         // spell is important or lethal!
                         if (data.HitType.Contains(HitType.Ultimate))
                             hero.HitTypes.Add(HitType.Ultimate);
@@ -115,7 +119,9 @@ namespace Activator
 
         private static void Obj_AI_Base_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
         {
-            if (sender.IsEnemy && sender.Type == GameObjectType.obj_AI_Hero)
+            // please leave debugging off in real games
+            var debugg = Activator.Origin.Item("acdebug").GetValue<bool>();
+            if (debugg ? sender.IsMe : sender.IsEnemy && sender.Type == GameObjectType.obj_AI_Hero)
             {
                 foreach (var hero in champion.Heroes)
                 {

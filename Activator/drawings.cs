@@ -16,7 +16,7 @@ namespace Activator
 
         void Drawing_OnDraw(EventArgs args)
         {
-            if (Activator.Origin.Item("qssdebug").GetValue<bool>())
+            if (Activator.Origin.Item("acdebug").GetValue<bool>())
             {
                 foreach (var hero in champion.Heroes)
                 {
