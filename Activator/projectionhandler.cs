@@ -159,9 +159,8 @@ namespace Activator
                                         x => data.FromObject != null && data.FromObject.Any(y => x.Name.Contains(y)));
 
                             var correctpos = fromObj != null ? fromObj.Position : sender.ServerPosition;
-                            var correctrange = fromObj != null ? fromObj.Position.Distance(args.End) + 100f : data.CastRange;
 
-                            if (hero.Player.Distance(correctpos) <= correctrange)
+                            if (hero.Player.Distance(correctpos) <= data.CastRange)
                             {
                                 // delay the spell a bit before missile endtime
                                 Utility.DelayAction.Add((int) (data.Delay - (data.Delay*0.5)), () =>
@@ -204,10 +203,9 @@ namespace Activator
                                         x => data.FromObject != null && data.FromObject.Any(y => x.Name.Contains(y)));
 
                             var correctpos = fromObj != null ? fromObj.Position : sender.ServerPosition;
-                            var correctrange = fromObj != null ? fromObj.Position.Distance(args.End) + 100f : data.CastRange;
                             var correctwidth = args.SData.LineWidth == 0 ? args.SData.CastRadius : args.SData.LineWidth;
 
-                            if (hero.Player.Distance(correctpos) <= correctrange)
+                            if (hero.Player.Distance(correctpos) <= data.CastRange)
                             {
                                 var distance =
                                     (int)(1000 * (correctpos.Distance(hero.Player.ServerPosition) / data.MissileSpeed));
@@ -215,7 +213,7 @@ namespace Activator
 
                                 // get the real end position normalized
                                 var direction = (args.End.To2D() - correctpos.To2D()).Normalized();
-                                var endpos = correctpos.To2D() + direction * correctrange;
+                                var endpos = correctpos.To2D() + direction * data.CastRange;
 
                                 // setup projection
                                 var proj = hero.Player.ServerPosition.To2D().ProjectOn(correctpos.To2D(), endpos);
