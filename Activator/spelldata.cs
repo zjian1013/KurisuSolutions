@@ -1470,6 +1470,55 @@ namespace Activator
                 MissileSpeed = int.MaxValue
             });
 
+
+            spells.Add(new spelldata
+            {
+                SDataName = "gnarq",
+                ChampionName = "gnar",
+                Slot = SpellSlot.Q,
+                CastRange = 1185f,
+                Delay = 250f,
+                HitType = new[] { global::Activator.HitType.CrowdControl },
+                MissileSpeed = 2400,
+                MissileName = "gnarqmissile",
+                ExtraMissileNames = new[] { "gnarqmissilereturn" }
+            });
+
+
+            spells.Add(new spelldata
+            {
+                SDataName = "gnarbigq",
+                ChampionName = "gnar",
+                Slot = SpellSlot.Q,
+                CastRange = 1150f,
+                Delay = 500f,
+                HitType = new[] { global::Activator.HitType.CrowdControl },
+                MissileSpeed = 2000,
+                MissileName = "gnarbigqmissile"
+            });
+
+            spells.Add(new spelldata
+            {
+                SDataName = "gnarbigw",
+                ChampionName = "gnar",
+                Slot = SpellSlot.W,
+                CastRange = 600f,
+                Delay = 600f,
+                HitType = new[] { global::Activator.HitType.CrowdControl },
+                MissileSpeed = int.MaxValue
+            });
+
+            spells.Add(new spelldata
+            {
+                SDataName = "gnarult",
+                ChampionName = "gnar",
+                CastRange = 450f,
+                Slot = SpellSlot.R,
+                Delay = 500f,
+                HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate, global::Activator.HitType.CrowdControl },
+                MissileSpeed = int.MaxValue
+            });
+
             spells.Add(new spelldata
             {
                 SDataName = "garenw",

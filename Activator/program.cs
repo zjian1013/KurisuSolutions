@@ -52,6 +52,7 @@ namespace Activator
             Origin = new Menu("Activator", "activator", true);
             var cmenu = new Menu("Cleansers", "cleansers");
             GetItemGroup("Items.Cleansers").ForEach(t => NewItem((item) NewInstance(t), cmenu));
+            cmenu.AddItem(new MenuItem("acdebug", "Debug")).SetValue(false);   
 
             var ccmenu = new Menu("Cleanse Debuffs", "cdeb");
             ccmenu.AddItem(new MenuItem("cexhaust", "Exhaust")).SetValue(true);
@@ -106,14 +107,12 @@ namespace Activator
                 zmenu.AddSubMenu(ddmenu);
             }
 
-            zmenu.AddItem(new MenuItem("acdebug", "Debug (Dont use in Game)")).SetValue(false);   
+
             zmenu.AddItem(new MenuItem("evadeon", "Evade Integration")).SetValue(false);
             zmenu.AddItem(new MenuItem("evadefow", "Evade Integration (FoW)")).SetValue(false);
             zmenu.AddItem(new MenuItem("usecombo", "Combo Key")).SetValue(new KeyBind(32, KeyBindType.Press, true));
 
-
             Origin.AddSubMenu(zmenu);       
-
             Origin.AddToMainMenu();
 
             // auras and buffs
@@ -155,8 +154,6 @@ namespace Activator
                 if (item.Id == (int) args.Id) 
                     Game.OnUpdate += item.OnTick;
         }
-
-
 
         private static void Obj_AI_Base_OnLevelUp(Obj_AI_Base sender, EventArgs args)
         {
