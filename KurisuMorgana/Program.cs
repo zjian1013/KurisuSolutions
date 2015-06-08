@@ -83,16 +83,11 @@ namespace KurisuMorgana
             spellmenu.AddSubMenu(menuW);
 
             var menuE = new Menu("BlackShield (E)", "emenu");
-            //menuE.AddItem(new MenuItem("eco", "Check Minion Collision")).SetValue(false);
-            //menuE.AddItem(new MenuItem("eco2", "Check Hero Collision")).SetValue(false);
+            menuE.AddItem(new MenuItem("useeanti", "Use on Gapcloser")).SetValue(true);
 
-            // create menu per ally
-            var allyMenu = new Menu("Use for", "useonwho");
             foreach (var frn in ObjectManager.Get<Obj_AI_Hero>().Where(x => x.Team == Me.Team))
-                allyMenu.AddItem(new MenuItem("useon" + frn.ChampionName, frn.ChampionName)).SetValue(true);              
+                menuE.AddItem(new MenuItem("useon" + frn.ChampionName, "Shield " + frn.ChampionName)).SetValue(true);              
 
-            menuE.AddSubMenu(allyMenu);
-   
             foreach (var ene in ObjectManager.Get<Obj_AI_Hero>().Where(x => x.Team != Me.Team))
             {
                 // create menu per enemy
@@ -377,6 +372,11 @@ namespace KurisuMorgana
                     {
                         _q.Cast(poutput.CastPosition);
                     }
+                }
+
+                if (_menu.Item("useeanti").GetValue<bool>())
+                {
+                    _e.CastOnUnit(Me);
                 }
             }
         }
