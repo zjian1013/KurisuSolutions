@@ -107,7 +107,7 @@ namespace Activator
                         {
                             hero.Attacker = null;
                             hero.HitTypes.Remove(HitType.Spell);
-                            hero.IncomeDamage -= (float) damage;
+                            hero.IncomeDamage = 0;
 
                             // spell is important or lethal!
                             if (data.HitType.Contains(HitType.Ultimate))
@@ -133,9 +133,6 @@ namespace Activator
             {
                 foreach (var hero in champion.Heroes)
                 {
-                    if (hero.IncomeDamage < 0)
-                        hero.IncomeDamage = 0;
-
                     // auto attack dectection
                     if (args.SData.IsAutoAttack() && args.Target.NetworkId == hero.Player.NetworkId)
                     {
@@ -155,7 +152,7 @@ namespace Activator
                             {
                                 hero.Attacker = null;
                                 hero.HitTypes.Remove(HitType.AutoAttack);
-                                hero.IncomeDamage -= (float) damage;
+                                hero.IncomeDamage = 0;
                             });
                         });
                     }
@@ -205,7 +202,7 @@ namespace Activator
                                     {
                                         hero.Attacker = null;
                                         hero.HitTypes.Remove(HitType.Spell);
-                                        hero.IncomeDamage -= (float) sdamage;
+                                        hero.IncomeDamage = 0;
 
                                         if (data.HitType.Contains(HitType.Ultimate))
                                             hero.HitTypes.Remove(HitType.Ultimate);
@@ -292,7 +289,7 @@ namespace Activator
                                         {
                                             hero.Attacker = null;
                                             hero.HitTypes.Remove(HitType.Spell);
-                                            hero.IncomeDamage -= (float) sdamage;
+                                            hero.IncomeDamage = 0;
 
                                             if (data.HitType.Contains(HitType.Ultimate))
                                                 hero.HitTypes.Remove(HitType.Ultimate);
@@ -386,7 +383,7 @@ namespace Activator
                                 Utility.DelayAction.Add(1200, () =>
                                 {
                                     hero.Attacker = null;
-                                    hero.IncomeDamage -= (float) tdamage;
+                                    hero.IncomeDamage = 0;
                                     hero.HitTypes.Remove(HitType.TurretAttack);
                                 });
                             });
@@ -412,7 +409,7 @@ namespace Activator
                             // lazy reset
                             Utility.DelayAction.Add(1000, () =>
                             {
-                                hero.MinionDamage -= (float) mdamage;
+                                hero.MinionDamage = 0;
                             });
                         }
                     }
