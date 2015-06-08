@@ -148,7 +148,7 @@ namespace Activator
                             hero.IncomeDamage += (float) damage;
 
                             // lazy reset
-                            Utility.DelayAction.Add(endtime + 1200, delegate
+                            Utility.DelayAction.Add(endtime + 800, delegate
                             {
                                 hero.Attacker = null;
                                 hero.HitTypes.Remove(HitType.AutoAttack);
