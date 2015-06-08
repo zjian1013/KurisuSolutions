@@ -133,6 +133,9 @@ namespace Activator
             {
                 foreach (var hero in champion.Heroes)
                 {
+                    if (hero.IncomeDamage < 0)
+                        hero.IncomeDamage = 0;
+
                     // auto attack dectection
                     if (args.SData.IsAutoAttack() && args.Target.NetworkId == hero.Player.NetworkId)
                     {
