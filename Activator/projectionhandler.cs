@@ -80,7 +80,7 @@ namespace Activator
                             if (Activator.Origin.Item("evadefow").GetValue<bool>() &&
                                !Activator.Origin.Item("usecombo").GetValue<KeyBind>().Active)
                             {
-                                return;
+                                continue;
                             }
                         }
                     }
@@ -260,7 +260,7 @@ namespace Activator
                                             if (Activator.Origin.Item("evadeon").GetValue<bool>() &&
                                                !Activator.Origin.Item("usecombo").GetValue<KeyBind>().Active)
                                             {
-                                                return;
+                                                continue;
                                             }
                                         }
                                     }
