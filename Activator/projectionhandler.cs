@@ -65,10 +65,6 @@ namespace Activator
                         (1000 * (missile.SData.LineWidth - projdist + hero.Player.BoundingRadius) /
                          hero.Player.MoveSpeed);
 
-                var damage = Math.Abs(caster.GetSpellDamage(hero.Player, data.SDataName));
-                if (damage < 1)
-                    damage = 1;
-
                 // check if hero on segment
                 if (missile.SData.LineWidth + hero.Player.BoundingRadius > projdist)
                 {
@@ -80,7 +76,7 @@ namespace Activator
                             if (Activator.Origin.Item("evadefow").GetValue<bool>() &&
                                !Activator.Origin.Item("usecombo").GetValue<KeyBind>().Active)
                             {
-                                continue;
+                                return;
                             }
                         }
                     }
@@ -89,7 +85,7 @@ namespace Activator
                     {
                         hero.Attacker = caster;
                         hero.HitTypes.Add(HitType.Spell);
-                        hero.IncomeDamage += (float) damage;
+                        hero.IncomeDamage += (float) Math.Abs(caster.GetSpellDamage(hero.Player, data.SDataName));
 
                         // spell is important or lethal!
                         if (data.HitType.Contains(HitType.Ultimate))
@@ -136,19 +132,15 @@ namespace Activator
                     // auto attack dectection
                     if (args.SData.IsAutoAttack() && args.Target.NetworkId == hero.Player.NetworkId)
                     {
-                        var woop = (int) (hero.Player.Distance(sender.ServerPosition)/sender.BasicAttack.MissileSpeed);
-                        var endtime = (int) (sender.AttackCastDelay*1000) - 100 + Game.Ping/2 + 1000*woop;
-                        var damage = Math.Abs(sender.GetAutoAttackDamage(hero.Player, true));
-
                         // delay a little bit before missile endtime
-                        Utility.DelayAction.Add((int) (endtime - (endtime*0.3)), () =>
+                        Utility.DelayAction.Add(250, () =>
                         {
                             hero.Attacker = sender;
                             hero.HitTypes.Add(HitType.AutoAttack);
-                            hero.IncomeDamage += (float) damage;
+                            hero.IncomeDamage += (float) Math.Abs(sender.GetAutoAttackDamage(hero.Player));
 
                             // lazy reset
-                            Utility.DelayAction.Add(endtime + 800, delegate
+                            Utility.DelayAction.Add(1000, delegate
                             {
                                 hero.Attacker = null;
                                 hero.HitTypes.Remove(HitType.AutoAttack);
@@ -156,10 +148,6 @@ namespace Activator
                             });
                         });
                     }
-
-                    var sdamage = Math.Abs(sender.GetSpellDamage(hero.Player, args.SData.Name));
-                    if (sdamage < 1)
-                        sdamage = 1;
 
                     foreach (var data in spelldata.spells.Where(x => x.SDataName == args.SData.Name.ToLower()))
                     {
@@ -183,7 +171,8 @@ namespace Activator
                                 {
                                     hero.Attacker = sender;
                                     hero.HitTypes.Add(HitType.Spell);
-                                    hero.IncomeDamage += (float) sdamage;
+                                    hero.IncomeDamage +=
+                                        (float) Math.Abs(sender.GetSpellDamage(hero.Player, args.SData.Name));
 
                                     // spell is important or lethal!
                                     if (data.HitType.Contains(HitType.Ultimate))
@@ -255,12 +244,12 @@ namespace Activator
                                     // ignore if can evade and using an evade assembly
                                     if (hero.Player.NetworkId == Activator.Player.NetworkId)
                                     {
-                                        if (hero.Player.CanMove && evadetime < endtime && correctwidth <= 400)
+                                        if (hero.Player.CanMove && evadetime < endtime && correctwidth <= 250)
                                         {
                                             if (Activator.Origin.Item("evadeon").GetValue<bool>() &&
                                                !Activator.Origin.Item("usecombo").GetValue<KeyBind>().Active)
                                             {
-                                                continue;
+                                                return;
                                             }
                                         }
                                     }
@@ -270,7 +259,8 @@ namespace Activator
                                     {
                                         hero.Attacker = sender;
                                         hero.HitTypes.Add(HitType.Spell);
-                                        hero.IncomeDamage += (float) sdamage;
+                                        hero.IncomeDamage +=
+                                            (float) Math.Abs(sender.GetSpellDamage(hero.Player, args.SData.Name));
 
                                         // spell is important or lethal!
                                         if (data.HitType.Contains(HitType.Ultimate))
@@ -324,7 +314,8 @@ namespace Activator
                                     {
                                         hero.Attacker = sender;
                                         hero.HitTypes.Add(HitType.Spell);
-                                        hero.IncomeDamage += (float) sdamage;
+                                        hero.IncomeDamage +=
+                                            (float) Math.Abs(sender.GetSpellDamage(hero.Player, args.SData.Name));
 
                                         // spell is important or lethal!
                                         if (data.HitType.Contains(HitType.Ultimate))
@@ -343,7 +334,7 @@ namespace Activator
                                         {
                                             hero.Attacker = null;
                                             hero.HitTypes.Remove(HitType.Spell);
-                                            hero.IncomeDamage -= (float) sdamage;
+                                            hero.IncomeDamage = 0;
 
                                             if (data.HitType.Contains(HitType.Ultimate))
                                                 hero.HitTypes.Remove(HitType.Ultimate);
