@@ -4232,7 +4232,7 @@ namespace Activator
 
             spells.Add(new spelldata
             {
-                SDataName = "overload",
+                SDataName = "ryzeq",
                 ChampionName = "ryze",
                 Slot = SpellSlot.Q,
                 CastRange = 625f,
@@ -4310,11 +4310,11 @@ namespace Activator
 
             spells.Add(new spelldata
             {
-                SDataName = "sejuaniglacialprisonstart",
+                SDataName = "sejuaniglacialprisoncast",
                 ChampionName = "sejuani",
                 Slot = SpellSlot.R,
                 CastRange = 1175f,
-                Delay = 500f,
+                Delay = 250f,
                 HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate, global::Activator.HitType.CrowdControl },
                 MissileName = "sejuaniglacialprison",
                 MissileSpeed = 1400
