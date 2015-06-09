@@ -82,7 +82,7 @@ namespace Activator.Items
 
             if (Category.Any(t => t == MenuType.SelfLowHP))
                 Menu.AddItem(new MenuItem("SelfLowHP" + Name + "Pct", "Use on Hero HP % <="))
-                    .SetValue(new Slider(Name == "Botrk" ? 70 : DefaultHP));
+                    .SetValue(new Slider(Name == "Botrk" ? 70 : DefaultHP/2));
 
             if (Category.Any(t => t == MenuType.SelfMuchHP))
                 Menu.AddItem(new MenuItem("SelfMuchHP" + Name + "Pct", "Use on Hero Dmg Dealt % >="))

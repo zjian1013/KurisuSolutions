@@ -50,7 +50,7 @@ namespace Activator.Summoners
             if (Name == "summonerheal")
             {
                 Menu.AddItem(new MenuItem("SelfLowHP" + Name + "Pct", "Use on Hero HP % <="))
-                    .SetValue(new Slider(25));
+                    .SetValue(new Slider(20));
                 Menu.AddItem(new MenuItem("SelfMuchHP" + Name + "Pct", "Use on Hero Dmg Dealt % >="))
                     .SetValue(new Slider(45));
             }
@@ -72,7 +72,7 @@ namespace Activator.Summoners
 
             if (Name == "summonerbarrier")
             {
-                Menu.AddItem(new MenuItem("SelfLowHP" + Name + "Pct", "Use on Hero HP % <=")).SetValue(new Slider(25));
+                Menu.AddItem(new MenuItem("SelfLowHP" + Name + "Pct", "Use on Hero HP % <=")).SetValue(new Slider(20));
                 Menu.AddItem(new MenuItem("SelfMuchHP" + Name + "Pct", "Use on Hero Dmg Dealt % >=")).SetValue(new Slider(45));
                 Menu.AddItem(new MenuItem("use" + Name + "Ulti", "Use on Dangerous (Ultimates Only)")).SetValue(true);
             }
