@@ -60,7 +60,7 @@ namespace Activator.Spells
                     .SetValue(new Slider(DefaultMP));
 
             if (Category.Any(t => t == MenuType.SelfCount))
-                Menu.AddItem(new MenuItem("SelfCount" + Name, "Use On # Near Hero >="))
+                Menu.AddItem(new MenuItem("SelfCount" + Name, "Use on # Near Hero >="))
                     .SetValue(new Slider(4, 1, 5));
 
             if (Category.Any(t => t == MenuType.SelfMinMP))
@@ -78,7 +78,7 @@ namespace Activator.Spells
             if (Category.Any(t => t == MenuType.Zhonyas))
             {
                 Menu.AddItem(new MenuItem("use" + Name + "Norm", "Use on Dangerous (Spells)")).SetValue(false);
-                Menu.AddItem(new MenuItem("use" + Name + "Ulti", "Use On Dangerous (Ultimates Only)")).SetValue(true);
+                Menu.AddItem(new MenuItem("use" + Name + "Ulti", "Use on Dangerous (Ultimates Only)")).SetValue(true);
             }
 
             if (Category.Any(t => t == MenuType.ActiveCheck))

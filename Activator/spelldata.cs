@@ -35,7 +35,6 @@ namespace Activator
         public static List<spell> mypells = new List<spell>();
         public static List<summoner> summoners = new List<summoner>();
         public static List<spelldata> spells = new List<spelldata>();
-        public static List<gametroydata> troydata = new List<gametroydata>(); 
         public static Dictionary<SpellDamageDelegate, SpellSlot> combod = new Dictionary<SpellDamageDelegate, SpellSlot>();
 
         static spelldata()
@@ -3311,7 +3310,7 @@ namespace Activator
 
             spells.Add(new spelldata
             {
-                SDataName = "darkbinding",
+                SDataName = "darkbindingmissile",
                 ChampionName = "morgana",
                 Slot = SpellSlot.Q,
                 CastRange = 1300f,

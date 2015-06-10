@@ -107,7 +107,6 @@ namespace Activator
                 zmenu.AddSubMenu(ddmenu);
             }
 
-
             zmenu.AddItem(new MenuItem("evadeon", "Evade Integration")).SetValue(false);
             zmenu.AddItem(new MenuItem("evadefow", "Evade Integration (FoW)")).SetValue(false);
             zmenu.AddItem(new MenuItem("usecombo", "Combo Key")).SetValue(new KeyBind(32, KeyBindType.Press, true));
@@ -222,7 +221,7 @@ namespace Activator
                     Damage.Spells.Where(entry => entry.Key == Player.ChampionName).SelectMany(entry => entry.Value))
             {
                 spelldata.combod.Add(spell.Damage, spell.Slot);
-                //Console.WriteLine(Player.ChampionName + ": " + spell.Slot + " " + spell.Stage + " - dmg added!");
+                Console.WriteLine("[A]: " + Player.ChampionName + ": " + spell.Slot + " " + spell.Stage + " - dmg added!");
             }
         }
 
@@ -231,7 +230,7 @@ namespace Activator
             foreach (var i in ObjectManager.Get<Obj_AI_Hero>().Where(i => i.Team == Player.Team))
             {
                 champion.Heroes.Add(new champion(i, 0));
-                //Console.WriteLine(i.ChampionName + " ally added to table!");
+                Console.WriteLine("[A]: " + i.ChampionName + " ally added to table!");
             }
         }
 
@@ -254,11 +253,11 @@ namespace Activator
         {
             foreach (var i in ObjectManager.Get<Obj_AI_Hero>().Where(h => h.Team != Player.Team))
             {
-                foreach (var item in spelldata.troydata.Where(x => x.ChampionName == i.ChampionName))
+                foreach (var item in gametroydata.troydata.Where(x => x.ChampionName == i.ChampionName))
                 {
                     TroysInGame = true;
                     gametroy.Troys.Add(new gametroy(i, item.Slot, item.Name, 0, false));
-                    //Console.WriteLine(i.ChampionName + " troy detected/added to table!");
+                    Console.WriteLine("[A]: " + i.ChampionName + " troy detected/added to table!");
                 }
             }
         }

@@ -37,15 +37,13 @@ namespace Activator.Summoners
 
             foreach (var hero in champion.Heroes)
             { 
-                if (hero.Player.IsRecalling() || hero.Player.InFountain())
-                    return;
-
                 if (hero.Player.MaxMana <= 200 || hero.Player.Distance(Player.ServerPosition) > Range)
                     return;
 
                 if (hero.Player.Mana/hero.Player.MaxMana*100 <= Menu.Item("SelfLowMP" + Name + "Pct").GetValue<Slider>().Value)
                 {
-                    UseSpell();                       
+                    if (!hero.Player.IsRecalling() && !hero.Player.InFountain())
+                        UseSpell();
                 }
             }
         }

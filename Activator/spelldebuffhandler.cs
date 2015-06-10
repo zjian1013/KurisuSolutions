@@ -49,7 +49,7 @@ namespace Activator
                             Utility.DelayAction.Add(buff.EvadeTimer, delegate
                             {
                                 hero.IncomeDamage = 1;
-                                hero.HitTypes.Add(HitType.Ultimate);
+                                hero.HitTypes.Clear();
                             });
                         }
 

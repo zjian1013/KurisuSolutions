@@ -50,20 +50,25 @@ namespace Activator.Items.Consumables
 
                     if (hero.Player.Health/hero.Player.MaxHealth*100 <= 15 && 
                         hero.IncomeDamage > 0)
-                        UseItem();
+                    {
+                        if (hero.IncomeDamage > 0 || hero.MinionDamage > 0)
+                        {
+                            if (!hero.Player.IsRecalling() && !hero.Player.InFountain())
+                                UseItem();
+                        }
+                    }
 
                     if (hero.Player.HasBuff("ItemMiniRegenPotion", true))
-                        return;
-
-                    if (hero.Player.IsRecalling() || hero.Player.InFountain())
                         return;
 
                     if (hero.Player.Health/hero.Player.MaxHealth*100 <=
                         Menu.Item("SelfLowHP" + Name + "Pct").GetValue<Slider>().Value)
                     {
-                        if (hero.IncomeDamage > 0 ||
-                            hero.MinionDamage > 0)
-                            UseItem();
+                        if (hero.IncomeDamage > 0 || hero.MinionDamage > 0)
+                        {
+                            if (!hero.Player.IsRecalling() && !hero.Player.InFountain())
+                                UseItem();
+                        }
                     }
 
                     if (hero.Player.MaxMana <= 200)
@@ -71,7 +76,13 @@ namespace Activator.Items.Consumables
 
                     if (hero.Player.Mana / hero.Player.MaxMana * 100 <= 
                         Menu.Item("SelfLowMP" + Name + "Pct").GetValue<Slider>().Value)
-                        UseItem();                     
+                    {
+                        if (hero.IncomeDamage > 0 || hero.MinionDamage > 0)
+                        {
+                            if (!hero.Player.IsRecalling() && !hero.Player.InFountain())
+                                UseItem();
+                        }         
+                    }       
                 }
             }
         }

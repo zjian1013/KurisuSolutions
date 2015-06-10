@@ -55,13 +55,14 @@ namespace Activator.Items.Consumables
                     if (hero.Player.HasBuff("FlaskOfCrystalWater", true))
                         return;
 
-                    if (hero.Player.IsRecalling() || hero.Player.InFountain())
-                        return;
-
                     if (hero.Player.Mana/hero.Player.MaxMana*100 <= 
                         Menu.Item("SelfLowMP" + Name + "Pct").GetValue<Slider>().Value)
                     {
-                        UseItem();   
+                        if (hero.IncomeDamage > 0 || hero.MinionDamage > 0)
+                        {
+                            if (!hero.Player.IsRecalling() && !hero.Player.InFountain())
+                                UseItem();
+                        }
                     }
                 }
             }

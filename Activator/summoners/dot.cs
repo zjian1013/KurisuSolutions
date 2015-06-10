@@ -71,7 +71,7 @@ namespace Activator.Summoners
                         return;
 
                     var totaldmg = 0d;
-                    totaldmg += Player.GetAutoAttackDamage(target, true) * 5;
+                    totaldmg += Player.GetAutoAttackDamage(target, true) * 3;
 
                     totaldmg += (from entry in spelldata.combod
                         let spellLevel = Player.GetSpell(entry.Value).Level
