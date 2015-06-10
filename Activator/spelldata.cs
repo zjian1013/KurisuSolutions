@@ -1793,8 +1793,8 @@ namespace Activator
                 SDataName = "ireliaequilibriumstrike",
                 ChampionName = "irelia",
                 Slot = SpellSlot.E,
-                CastRange = 325f,
-                Delay = 500f,
+                CastRange = 450f,
+                Delay = 250f,
                 HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.CrowdControl },
                 MissileSpeed = int.MaxValue
             });
@@ -1805,7 +1805,7 @@ namespace Activator
                 ChampionName = "irelia",
                 Slot = SpellSlot.R,
                 CastRange = 1200f,
-                Delay = 500f,
+                Delay = 250f,
                 HitType = new HitType[] { },
                 MissileName = "ireliatranscendentblades",
                 MissileSpeed = 779
@@ -1861,7 +1861,7 @@ namespace Activator
                 ChampionName = "jarvaniv",
                 Slot = SpellSlot.Q,
                 CastRange = 700f,
-                Delay = 500f,
+                Delay = 250f,
                 HitType = new HitType[] { },
                 MissileName = "",
                 MissileSpeed = int.MaxValue
@@ -1907,7 +1907,7 @@ namespace Activator
                 ChampionName = "jax",
                 Slot = SpellSlot.Q,
                 CastRange = 210f,
-                Delay = 500f,
+                Delay = 250f,
                 HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
@@ -1918,7 +1918,7 @@ namespace Activator
                 ChampionName = "jax",
                 Slot = SpellSlot.W,
                 CastRange = 0f,
-                Delay = 500f,
+                Delay = 250f,
                 HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
@@ -1951,7 +1951,7 @@ namespace Activator
                 ChampionName = "jayce",
                 Slot = SpellSlot.Q,
                 CastRange = 600f,
-                Delay = 500f,
+                Delay = 250f,
                 HitType = new[] { global::Activator.HitType.CrowdControl },
                 MissileSpeed = int.MaxValue
             });
@@ -1962,7 +1962,7 @@ namespace Activator
                 ChampionName = "jayce",
                 Slot = SpellSlot.Q,
                 CastRange = 1050f,
-                Delay = 500f,
+                Delay = 250f,
                 HitType = new HitType[] { },
                 MissileName = "jayceshockblastmis",
                 MissileSpeed = 1200
@@ -1974,7 +1974,7 @@ namespace Activator
                 ChampionName = "jayce",
                 Slot = SpellSlot.W,
                 CastRange = 285f,
-                Delay = 500f,
+                Delay = 250f,
                 HitType = new HitType[] { },
                 MissileSpeed = 1500
             });

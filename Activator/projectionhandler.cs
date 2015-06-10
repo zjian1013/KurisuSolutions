@@ -55,7 +55,7 @@ namespace Activator
                 if (!hero.Player.IsValidTarget() || hero.Player.IsZombie)
                 {
                     hero.HitTypes.Clear();
-                    return;
+                    continue;
                 }
 
                 var distance = (1000 * (startPos.Distance(hero.Player.ServerPosition) / data.MissileSpeed));
@@ -127,7 +127,7 @@ namespace Activator
                     if (!hero.Player.IsValidTarget() || hero.Player.IsZombie)
                     {
                         hero.HitTypes.Clear();
-                        return;
+                        continue;
                     }
 
                     // auto attack dectection
