@@ -83,8 +83,8 @@ namespace Activator
                 foreach (var troy in gametroy.Troys)
                 {
                     // check if troy is included and is enemy
-                    //if (!troy.Included || !troy.Owner.IsEnemy)
-                    //    continue;
+                    if (!troy.Included || !troy.Owner.IsEnemy)
+                        continue;
 
                     // detect danger/cc/ultimates from our db
                     foreach (var item in gametroydata.troydata)
