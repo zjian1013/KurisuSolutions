@@ -52,6 +52,12 @@ namespace Activator
 
             foreach (var hero in champion.Heroes)
             {
+                if (!hero.Player.IsValidTarget() || hero.Player.IsZombie)
+                {
+                    hero.HitTypes.Clear();
+                    return;
+                }
+
                 var distance = (1000 * (startPos.Distance(hero.Player.ServerPosition) / data.MissileSpeed));
                 var endtime = - 100 + Game.Ping/2 + distance;
 
@@ -103,7 +109,6 @@ namespace Activator
                         Utility.DelayAction.Add((int) (endtime + 1200), () =>
                         {
                             hero.Attacker = null;
-                            hero.HitTypes.Remove(HitType.Spell);
                             hero.IncomeDamage = 0;
                             hero.HitTypes.Clear();
                         });
@@ -119,6 +124,12 @@ namespace Activator
             {
                 foreach (var hero in champion.Heroes)
                 {
+                    if (!hero.Player.IsValidTarget() || hero.Player.IsZombie)
+                    {
+                        hero.HitTypes.Clear();
+                        return;
+                    }
+
                     // auto attack dectection
                     if (args.SData.IsAutoAttack() && args.Target.NetworkId == hero.Player.NetworkId)
                     {
@@ -180,7 +191,6 @@ namespace Activator
                                     Utility.DelayAction.Add((int) (data.Delay + 1200), () =>
                                     {
                                         hero.Attacker = null;
-                                        hero.HitTypes.Remove(HitType.Spell);
                                         hero.IncomeDamage = 0;
                                         hero.HitTypes.Clear();
                                     });
@@ -275,7 +285,6 @@ namespace Activator
                                         Utility.DelayAction.Add((int) (endtime + 1200), () =>
                                         {
                                             hero.Attacker = null;
-                                            hero.HitTypes.Remove(HitType.Spell);
                                             hero.IncomeDamage = 0;
                                             hero.HitTypes.Clear();
                                         });
