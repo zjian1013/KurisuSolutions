@@ -48,8 +48,11 @@ namespace Activator
                         {
                             Utility.DelayAction.Add(buff.EvadeTimer, delegate
                             {
-                                hero.IncomeDamage = 1;
-                                hero.HitTypes.Clear();
+                                if (hero.Player.HasBuff(buff.Name, true))
+                                {
+                                    hero.IncomeDamage = 1;
+                                    hero.HitTypes.Add(HitType.Ultimate);
+                                }
                             });
                         }
 

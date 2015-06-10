@@ -52,7 +52,7 @@ namespace Activator
 
             foreach (var hero in champion.Heroes)
             {
-                if (!hero.Player.IsValidTarget() || hero.Player.IsZombie)
+                if (hero.Player.IsDead || hero.Player.IsZombie)
                 {
                     hero.HitTypes.Clear();
                     continue;
@@ -124,7 +124,7 @@ namespace Activator
             {
                 foreach (var hero in champion.Heroes)
                 {
-                    if (!hero.Player.IsValidTarget() || hero.Player.IsZombie)
+                    if (hero.Player.IsDead || hero.Player.IsZombie)
                     {
                         hero.HitTypes.Clear();
                         continue;

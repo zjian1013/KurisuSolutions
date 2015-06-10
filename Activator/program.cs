@@ -142,6 +142,20 @@ namespace Activator
                     summoner.ExtraNames.Any(
                         x => Player.GetSpellSlot(x) != SpellSlot.Unknown))
                     Game.OnUpdate += summoner.OnTick;
+
+            //Game.OnUpdate += eventArgs =>
+            //{
+            //    foreach (var h in champion.Heroes)
+            //    {
+            //        if (h.Player.ChampionName == Player.ChampionName)
+            //        {
+            //            foreach (var z in h.HitTypes)
+            //            {
+            //                Console.WriteLine(z + " - " + Utils.GameTimeTickCount);
+            //            }
+            //        }
+            //    }
+            //};
         }
 
         private static void Obj_AI_Base_OnPlaceItemInSlot(Obj_AI_Base sender, Obj_AI_BasePlaceItemInSlotEventArgs args)

@@ -44,12 +44,6 @@ namespace Activator.Summoners
                 if (hero.Player.Distance(Player.ServerPosition) > Range)
                     return;
 
-                if (hero.ForceQSS)
-                {
-                    UseSpell();                    
-                    hero.IncomeDamage = 0;
-                }
-
                 if (hero.QSSBuffCount >= Menu.Item("use" + Name + "Number").GetValue<Slider>().Value &&
                     hero.QSSHighestBuffTime >= Menu.Item("use" + Name + "Time").GetValue<Slider>().Value)
                 {

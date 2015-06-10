@@ -74,7 +74,7 @@ namespace Activator
             debuffs.Add(new spelldebuff
             {
                 Name = "soulshackles",
-                Evade = false,
+                Evade = true,
                 Damage = false,
                 EvadeTimer = 2600,
                 Cleanse = true,
@@ -98,7 +98,7 @@ namespace Activator
                 Name = "caitlynaceinthehole",
                 Evade = true,
                 Damage = true,
-                EvadeTimer = 800,
+                EvadeTimer = 900,
                 Cleanse = false,
                 CleanseTimer = 0,
                 Slot = SpellSlot.R
