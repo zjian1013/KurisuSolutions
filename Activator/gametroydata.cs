@@ -9,6 +9,7 @@
 #endregion
 
 using LeagueSharp;
+using System.Collections.Generic;
 
 namespace Activator
 {
@@ -19,9 +20,11 @@ namespace Activator
         public SpellSlot Slot { get; set; }
         public HitType[] HitType { get; set; }
 
+        public static List<gametroydata> troydata = new List<gametroydata>(); 
+
         static gametroydata()
         {
-            spelldata.troydata.Add( new gametroydata
+            troydata.Add( new gametroydata
             {
                 Name = "Nautilus_R_sequence_impact",
                 ChampionName = "Nautilus",
@@ -29,7 +32,7 @@ namespace Activator
                 HitType = new[] { global::Activator.HitType.CrowdControl, global::Activator.HitType.Danger }
             });
 
-            spelldata.troydata.Add(new gametroydata
+            troydata.Add(new gametroydata
             {
                 Name = "Acidtrail_buf",
                 ChampionName = "Singed",
@@ -37,7 +40,7 @@ namespace Activator
                 HitType = new []{ global::Activator.HitType.None }
             });
 
-            spelldata.troydata.Add(new gametroydata
+            troydata.Add(new gametroydata
             {
                 Name = "Tremors_cas",
                 ChampionName = "Rammus",
@@ -45,7 +48,7 @@ namespace Activator
                 HitType = new[] { global::Activator.HitType.None }
             });
 
-            spelldata.troydata.Add(new gametroydata
+            troydata.Add(new gametroydata
             {
                 Name = "Crowstorm",
                 ChampionName = "FiddleSticks",
@@ -53,7 +56,7 @@ namespace Activator
                 HitType = new []{ global::Activator.HitType.Danger, global::Activator.HitType.Ultimate}
             });
 
-            spelldata.troydata.Add(new gametroydata
+            troydata.Add(new gametroydata
             {
                 Name = "caitlyn_Base_yordleTrap_idle",
                 ChampionName = "Caitlyn",
@@ -61,7 +64,7 @@ namespace Activator
                 HitType = new[] { global::Activator.HitType.CrowdControl }
             });
 
-            spelldata.troydata.Add(new gametroydata
+            troydata.Add(new gametroydata
             {
                 Name = "LuxLightstrike_tar",
                 ChampionName = "Lux",
@@ -69,7 +72,7 @@ namespace Activator
                 HitType = new []{global::Activator.HitType.CrowdControl }
             });
 
-            spelldata.troydata.Add(new gametroydata
+            troydata.Add(new gametroydata
             {
                 Name = "ViktorChaosStorm",
                 ChampionName = "Viktor",
@@ -82,7 +85,7 @@ namespace Activator
                     }
             });
 
-            spelldata.troydata.Add(new gametroydata
+            troydata.Add(new gametroydata
             {
                 Name = "ViktorCatalyst",
                 ChampionName = "Viktor",
@@ -90,7 +93,7 @@ namespace Activator
                 HitType = new[] { global::Activator.HitType.CrowdControl }
             });
 
-            spelldata.troydata.Add(new gametroydata
+            troydata.Add(new gametroydata
             {
                 Name = "cryo_storm",
                 ChampionName = "Anivia",
@@ -98,7 +101,7 @@ namespace Activator
                 HitType = new[] { global::Activator.HitType.CrowdControl }
             });
 
-            spelldata.troydata.Add(new gametroydata
+            troydata.Add(new gametroydata
             {
                 Name = "ZiggsE",
                 ChampionName = "Ziggs",
@@ -106,7 +109,7 @@ namespace Activator
                 HitType = new []{ global::Activator.HitType.CrowdControl }
             });
 
-            spelldata.troydata.Add(new gametroydata
+            troydata.Add(new gametroydata
             {
                 Name = "ZiggsWRing",
                 ChampionName = "Ziggs",
@@ -114,7 +117,7 @@ namespace Activator
                 HitType = new []{ global::Activator.HitType.CrowdControl }
             });
 
-            spelldata.troydata.Add(new gametroydata
+            troydata.Add(new gametroydata
             {
                 Name = "CassMiasma_tar",
                 ChampionName = "Cassiopeia",
@@ -122,7 +125,7 @@ namespace Activator
                 HitType = new[] { global::Activator.HitType.CrowdControl, global::Activator.HitType.Spell }
             });
 
-            spelldata.troydata.Add(new gametroydata
+            troydata.Add(new gametroydata
             {
                 Name = "Soraka_Base_E_rune",
                 ChampionName = "Soraka",
@@ -130,9 +133,9 @@ namespace Activator
                 HitType = new[] { global::Activator.HitType.CrowdControl }
             });
 
-            spelldata.troydata.Add(new gametroydata
+            troydata.Add(new gametroydata
             {
-                Name = "Morgana_Base_W_Tar",
+                Name = "W_Tar",
                 ChampionName = "Morgana",
                 Slot = SpellSlot.W,
                 HitType = new []{ global::Activator.HitType.None }
