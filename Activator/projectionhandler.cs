@@ -54,6 +54,7 @@ namespace Activator
             {
                 if (hero.Player.IsDead || hero.Player.IsZombie)
                 {
+                    hero.IncomeDamage = 0;
                     hero.HitTypes.Clear();
                     continue;
                 }
@@ -92,7 +93,7 @@ namespace Activator
                     {
                         hero.Attacker = caster;
                         hero.HitTypes.Add(HitType.Spell);
-                        hero.IncomeDamage += (float) Math.Abs(caster.GetSpellDamage(hero.Player, data.SDataName));
+                        hero.IncomeDamage = (float) Math.Abs(caster.GetSpellDamage(hero.Player, data.SDataName));
 
                         // spell is important or lethal!
                         if (data.HitType.Contains(HitType.Ultimate))
@@ -126,6 +127,7 @@ namespace Activator
                 {
                     if (hero.Player.IsDead || hero.Player.IsZombie)
                     {
+                        hero.IncomeDamage = 0;
                         hero.HitTypes.Clear();
                         continue;
                     }
@@ -138,7 +140,7 @@ namespace Activator
                         {
                             hero.Attacker = sender;
                             hero.HitTypes.Add(HitType.AutoAttack);
-                            hero.IncomeDamage += (float) Math.Abs(sender.GetAutoAttackDamage(hero.Player));
+                            hero.IncomeDamage = (float) Math.Abs(sender.GetAutoAttackDamage(hero.Player));
 
                             // lazy reset
                             Utility.DelayAction.Add(1000, delegate
@@ -172,7 +174,7 @@ namespace Activator
                                 {
                                     hero.Attacker = sender;
                                     hero.HitTypes.Add(HitType.Spell);
-                                    hero.IncomeDamage +=
+                                    hero.IncomeDamage =
                                         (float) Math.Abs(sender.GetSpellDamage(hero.Player, args.SData.Name));
 
                                     // spell is important or lethal!
@@ -266,7 +268,7 @@ namespace Activator
                                     {
                                         hero.Attacker = sender;
                                         hero.HitTypes.Add(HitType.Spell);
-                                        hero.IncomeDamage +=
+                                        hero.IncomeDamage =
                                             (float) Math.Abs(sender.GetSpellDamage(hero.Player, args.SData.Name));
 
                                         // spell is important or lethal!
@@ -312,7 +314,7 @@ namespace Activator
                                     {
                                         hero.Attacker = sender;
                                         hero.HitTypes.Add(HitType.Spell);
-                                        hero.IncomeDamage +=
+                                        hero.IncomeDamage =
                                             (float) Math.Abs(sender.GetSpellDamage(hero.Player, args.SData.Name));
 
                                         // spell is important or lethal!
@@ -347,27 +349,27 @@ namespace Activator
             {
                 foreach (var hero in champion.Heroes)
                 {
-                    if (args.Target.NetworkId == hero.Player.NetworkId)
-                    {
-                        if (sender.Distance(hero.Player.ServerPosition) <= 900 &&
-                            Activator.Player.Distance(hero.Player.ServerPosition) <= 1000)
-                        {
-                            Utility.DelayAction.Add(500, () =>
-                            {
-                                hero.HitTypes.Add(HitType.TurretAttack);
-                                hero.IncomeDamage +=
-                                    (float) Math.Abs(sender.CalcDamage(hero.Player, Damage.DamageType.Physical,
-                                        sender.BaseAttackDamage + sender.FlatPhysicalDamageMod));
+                    if (args.Target.NetworkId != hero.Player.NetworkId) 
+                        continue;
 
-                                // lazy reset
-                                Utility.DelayAction.Add(1200, () =>
-                                {
-                                    hero.Attacker = null;
-                                    hero.IncomeDamage = 0;
-                                    hero.HitTypes.Remove(HitType.TurretAttack);
-                                });
+                    if (sender.Distance(hero.Player.ServerPosition) <= 900 &&
+                        Activator.Player.Distance(hero.Player.ServerPosition) <= 1000)
+                    {
+                        Utility.DelayAction.Add(500, () =>
+                        {
+                            hero.HitTypes.Add(HitType.TurretAttack);
+                            hero.IncomeDamage =
+                                (float) Math.Abs(sender.CalcDamage(hero.Player, Damage.DamageType.Physical,
+                                    sender.BaseAttackDamage + sender.FlatPhysicalDamageMod));
+
+                            // lazy reset
+                            Utility.DelayAction.Add(1200, () =>
+                            {
+                                hero.Attacker = null;
+                                hero.IncomeDamage = 0;
+                                hero.HitTypes.Clear();
                             });
-                        }
+                        });
                     }
                 }
             }
@@ -376,21 +378,21 @@ namespace Activator
             {
                 foreach (var hero in champion.Heroes)
                 {
-                    if (hero.Player.NetworkId == args.Target.NetworkId)
-                    {
-                       if (hero.Player.Distance(sender.ServerPosition) <= 750 &&
-                            Activator.Player.Distance(hero.Player.ServerPosition) <= 1000)
-                       {
-                           hero.MinionDamage +=
-                               (float) Math.Abs(sender.CalcDamage(hero.Player, Damage.DamageType.Physical,
-                                   sender.BaseAttackDamage + sender.FlatPhysicalDamageMod));
+                    if (hero.Player.NetworkId != args.Target.NetworkId) 
+                        continue;
 
-                            // lazy reset
-                            Utility.DelayAction.Add(1000, () =>
-                            {
-                                hero.MinionDamage = 0;
-                            });
-                        }
+                    if (hero.Player.Distance(sender.ServerPosition) <= 750 &&
+                        Activator.Player.Distance(hero.Player.ServerPosition) <= 1000)
+                    {
+                        hero.MinionDamage =
+                            (float) Math.Abs(sender.CalcDamage(hero.Player, Damage.DamageType.Physical,
+                                sender.BaseAttackDamage + sender.FlatPhysicalDamageMod));
+
+                        // lazy reset
+                        Utility.DelayAction.Add(1000, () =>
+                        {
+                            hero.MinionDamage = 0;
+                        });
                     }
                 }
             }
