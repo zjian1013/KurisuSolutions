@@ -24,10 +24,10 @@ namespace Activator
 
                     if (!hero.Player.IsDead)
                     {
+                        Drawing.DrawText(mpos[0] - 40, mpos[1] - 15, Color.White, "Immune: " + hero.Immunity);
                         Drawing.DrawText(mpos[0] - 40, mpos[1] + 0, Color.White, "Income Damage: " + hero.IncomeDamage);
                         Drawing.DrawText(mpos[0] - 40, mpos[1] + 15, Color.White, "QSSBuffCount: " + hero.QSSBuffCount);
-                        Drawing.DrawText(mpos[0] - 40, mpos[1] + 30, Color.White,
-                            "QSSHighestBuffTime: " + hero.QSSHighestBuffTime);
+                        Drawing.DrawText(mpos[0] - 40, mpos[1] + 30, Color.White, "QSSHighestBuffTime: " + hero.QSSHighestBuffTime);
                     }
                 }
             }

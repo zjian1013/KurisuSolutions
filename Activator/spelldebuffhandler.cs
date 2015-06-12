@@ -30,13 +30,12 @@ namespace Activator
                 if (hero.Player.NetworkId == sender.NetworkId)
                 {
                     if (spelldebuff.excludedbuffs.Any(buff => args.Buff.Name.ToLower() == buff))
-                        return;
+                        continue;
 
-                    if (args.Buff.Type == BuffType.Invulnerability)
+                    if (args.Buff.Type == BuffType.SpellImmunity ||
+                        args.Buff.Type == BuffType.Invulnerability)
                     {
-                        hero.Attacker = null;
-                        hero.IncomeDamage = 0;
-                        hero.HitTypes.Clear();
+                        hero.Immunity = true;
                     }
 
                     foreach (var buff in spelldebuff.debuffs)
@@ -95,13 +94,12 @@ namespace Activator
                 if (hero.Player.NetworkId == sender.NetworkId)
                 {
                     if (spelldebuff.excludedbuffs.Any(buff => args.Buff.Name.ToLower() == buff))
-                        return;
+                        continue;
 
-                    if (args.Buff.Type == BuffType.Invulnerability)
+                    if (args.Buff.Type == BuffType.SpellImmunity ||
+                        args.Buff.Type == BuffType.Invulnerability)
                     {
-                        hero.Attacker = null;
-                        hero.IncomeDamage = 0;
-                        hero.HitTypes.Clear();
+                        hero.Immunity = false;
                     }
 
                     if (hero.QSSBuffCount <= 1)

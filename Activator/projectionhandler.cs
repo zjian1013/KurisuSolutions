@@ -52,7 +52,7 @@ namespace Activator
 
             foreach (var hero in champion.Heroes)
             {
-                if (hero.Player.IsDead || hero.Player.IsZombie)
+                if (hero.Player.IsDead || hero.Player.IsZombie || hero.Immunity)
                 {
                     hero.IncomeDamage = 0;
                     hero.HitTypes.Clear();
@@ -122,7 +122,7 @@ namespace Activator
             {
                 foreach (var hero in champion.Heroes)
                 {
-                    if (hero.Player.IsDead || hero.Player.IsZombie)
+                    if (hero.Player.IsDead || hero.Player.IsZombie || hero.Immunity)
                     {
                         hero.IncomeDamage = 0;
                         hero.HitTypes.Clear();
@@ -352,6 +352,9 @@ namespace Activator
                     if (sender.Distance(hero.Player.ServerPosition) <= 900 &&
                         Activator.Player.Distance(hero.Player.ServerPosition) <= 1000)
                     {
+                        if (hero.Immunity)
+                            continue;
+
                         Utility.DelayAction.Add(500, () =>
                         {
                             hero.HitTypes.Add(HitType.TurretAttack);

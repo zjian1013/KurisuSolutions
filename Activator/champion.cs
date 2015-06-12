@@ -21,6 +21,7 @@ namespace Activator
         public Obj_AI_Base Attacker;
 
         public bool ForceQSS;
+        public bool Immunity;
         public int QSSBuffCount;
         public int QSSHighestBuffTime;
 
