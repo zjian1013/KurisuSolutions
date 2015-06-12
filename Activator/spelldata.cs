@@ -5698,7 +5698,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 600f,
                 Delay = 250f,
-                HitType = new HitType[] { global::Activator.HitType.Danger },
+                HitType = new[] { global::Activator.HitType.Danger },
                 MissileSpeed = 1400
             });
 
@@ -5919,9 +5919,9 @@ namespace Activator
                 ChampionName = "yasuo",
                 Slot = SpellSlot.Q,
                 CastRange = 475f,
-                Delay = 450f,
+                Delay = 250f,
                 HitType = new[] { global::Activator.HitType.Danger },
-                MissileSpeed = 1500
+                MissileSpeed = int.MaxValue
             });
 
             spells.Add(new spelldata
@@ -5930,20 +5930,20 @@ namespace Activator
                 ChampionName = "yasuo",
                 Slot = SpellSlot.Q,
                 CastRange = 475f,
-                Delay = 450f,
+                Delay = 250f,
                 HitType = new[] { global::Activator.HitType.Danger },
-                MissileSpeed = 1500
+                MissileSpeed = int.MaxValue
             });
 
             spells.Add(new spelldata
             {
-                SDataName = "yasuoq3w",
+                SDataName = "yasuoq3",
                 ChampionName = "yasuo",
                 Slot = SpellSlot.Q,
                 CastRange = 1000f,
-                Delay = 450f,
+                Delay = 250f,
                 HitType = new[] { global::Activator.HitType.CrowdControl },
-                MissileName = "yasuoq3w",
+                MissileName = "yasuoq3mis",
                 MissileSpeed = 1500
             });
 
