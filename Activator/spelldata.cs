@@ -625,8 +625,8 @@ namespace Activator
                 ChampionName = "caitlyn",
                 Slot = SpellSlot.Q,
                 CastRange = 2000f,
-                Delay = 250f,
-                HitType = new HitType[] { },
+                Delay = 625f,
+                HitType = new [] { global::Activator.HitType.Danger },
                 MissileName = "caitlynpiltoverpeacemaker",
                 MissileSpeed = 2200
             });
@@ -637,8 +637,8 @@ namespace Activator
                 ChampionName = "caitlyn",
                 Slot = SpellSlot.W,
                 CastRange = 800f,
-                Delay = 0f,
-                HitType = new[] { global::Activator.HitType.CrowdControl },
+                Delay = 550f,
+                HitType = new HitType[] { },
                 MissileSpeed = 1400
             });
 
@@ -647,7 +647,7 @@ namespace Activator
                 SDataName = "caitlynentrapment",
                 ChampionName = "caitlyn",
                 Slot = SpellSlot.E,
-                CastRange = 950f,
+                CastRange = 1050f,
                 Delay = 250f,
                 HitType = new[] { global::Activator.HitType.CrowdControl },
                 MissileName = "caitlynentrapmentmissile",
