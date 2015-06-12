@@ -269,12 +269,6 @@ namespace KurisuGraves
                     }
                 }
 
-                else if (target.Distance(Me.ServerPosition) <= 300)
-                {
-                    if (Smokescreen.IsReady() && Utils.GameTimeTickCount - LastR >= 1200)
-                        Smokescreen.CastIfHitchanceEquals(target, HitChance.Medium);
-                }
-
                 else if (target.Distance(Me.ServerPosition) <= minqrange)
                 {
                     if (Buckshot.IsReady())
@@ -290,6 +284,12 @@ namespace KurisuGraves
                             CastE(target);
                         }
                     }
+                }
+
+                else if (target.Distance(Me.ServerPosition) <= 300)
+                {
+                    if (Smokescreen.IsReady() && Utils.GameTimeTickCount - LastR >= 1200)
+                        Smokescreen.CastIfHitchanceEquals(target, HitChance.Medium);
                 }
             }
         }
