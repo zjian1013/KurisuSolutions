@@ -89,30 +89,27 @@ namespace Activator
                         }
                     }
 
-                    Utility.DelayAction.Add((int) (endtime - (endtime * 0.5)), () =>
+                    hero.Attacker = caster;
+                    hero.IncomeDamage = (float)Math.Abs(caster.GetSpellDamage(hero.Player, data.SDataName));
+                    hero.HitTypes.Add(HitType.Spell);
+
+                    // spell is important or lethal!
+                    if (data.HitType.Contains(HitType.Ultimate))
+                        hero.HitTypes.Add(HitType.Ultimate);
+
+                    // spell is important but not as fatal
+                    if (data.HitType.Contains(HitType.Danger))
+                        hero.HitTypes.Add(HitType.Danger);
+
+                    // spell has a crowd control effect
+                    if (data.HitType.Contains(HitType.CrowdControl))
+                        hero.HitTypes.Add(HitType.CrowdControl);
+
+                    Utility.DelayAction.Add(1200, () =>
                     {
-                        hero.Attacker = caster;
-                        hero.HitTypes.Add(HitType.Spell);
-                        hero.IncomeDamage = (float) Math.Abs(caster.GetSpellDamage(hero.Player, data.SDataName));
-
-                        // spell is important or lethal!
-                        if (data.HitType.Contains(HitType.Ultimate))
-                            hero.HitTypes.Add(HitType.Ultimate);
-
-                        // spell is important but not as fatal
-                        if (data.HitType.Contains(HitType.Danger))
-                            hero.HitTypes.Add(HitType.Danger);
-
-                        // spell has a crowd control effect
-                        if (data.HitType.Contains(HitType.CrowdControl))
-                            hero.HitTypes.Add(HitType.CrowdControl);
-
-                        Utility.DelayAction.Add((int) (endtime + 1200), () =>
-                        {
-                            hero.Attacker = null;
-                            hero.IncomeDamage = 0;
-                            hero.HitTypes.Clear();
-                        });
+                        hero.Attacker = null;
+                        hero.IncomeDamage = 0;
+                        hero.HitTypes.Clear();
                     });
                 }
             }
