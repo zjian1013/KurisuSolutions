@@ -291,29 +291,6 @@ namespace KurisuGraves
                         }
                     }
                 }
-
-                else if (target.Distance(Me.ServerPosition) <= 300)
-                {
-                    if (Smokescreen.IsReady() && Utils.GameTimeTickCount - LastR >= 1200)
-                        Smokescreen.CastIfHitchanceEquals(target, HitChance.Medium);
-                }
-
-                else if (target.Distance(Me.ServerPosition) <= minqrange)
-                {
-                    if (Buckshot.IsReady())
-                        Buckshot.CastIfHitchanceEquals(target, HitChance.High);
-                }
-
-                else if (target.Distance(Me.ServerPosition) <= minqrange + Quickdraw.Range)
-                {
-                    if (Quickdraw.IsReady() && Utils.GameTimeTickCount - LastR >= 1200)
-                    {
-                        if (target.Distance(Me.ServerPosition) > Me.AttackRange + 100)
-                        {
-                            CastE(target);
-                        }
-                    }
-                }
             }
         }
 
