@@ -23,12 +23,12 @@ namespace Activator.Items.Offensives
 
         internal override MenuType[] Category
         {
-            get { return new[] { MenuType.EnemyLowHP, MenuType.ActiveCheck }; }
+            get { return new[] { MenuType.EnemyLowHP, MenuType.SelfLowMP,  MenuType.ActiveCheck }; }
         }
 
         internal override MapType[] Maps
         {
-            get { return new[] { MapType.SummonersRift, MapType.TwistedTreeline, MapType.HowlingAbyss }; }
+            get { return new[] { MapType.SummonersRift, MapType.HowlingAbyss }; }
         }
 
         internal override int DefaultHP
@@ -50,26 +50,28 @@ namespace Activator.Items.Offensives
 
         public override void OnTick(EventArgs args)
         {
-            if (!muramana)
+            if (muramana)
             {
-                var muramoon = Activator.Player.GetSpellSlot("Muramana");
-                if (muramoon != SpellSlot.Unknown && Activator.Player.HasBuff("Muramana"))
+                if (Menu.Item("mode" + Name).GetValue<StringList>().SelectedIndex != 1 ||
+                    Activator.Origin.Item("usecombo").GetValue<KeyBind>().Active)
                 {
-                    if (Menu.Item("mode" + Name).GetValue<StringList>().SelectedIndex != 1 ||
-                        Activator.Origin.Item("usecombo").GetValue<KeyBind>().Active)
+                    var manamune = Player.GetSpellSlot("Muramana");
+                    if (manamune != SpellSlot.Unknown && !Player.HasBuff("Muramana"))
                     {
-                        Activator.Player.Spellbook.CastSpell(muramoon);
+                        if (Player.Mana / Player.MaxMana * 100 > Menu.Item("SelfLowMP" + Name + "Pct").GetValue<Slider>().Value)
+                            Player.Spellbook.CastSpell(manamune);
+
+                        Utility.DelayAction.Add(400, () => muramana = false);
                     }
                 }
             }
 
-            if (muramana)
+            if (!muramana && !Activator.Origin.Item("usecombo").GetValue<KeyBind>().Active)
             {
-                var muramoon = Activator.Player.GetSpellSlot("Muramana");
-                if (muramoon != SpellSlot.Unknown && !Activator.Player.HasBuff("Muramana"))
+                var manamune = Player.GetSpellSlot("Muramana");
+                if (manamune != SpellSlot.Unknown && Player.HasBuff("Muramana"))
                 {
-                    Activator.Player.Spellbook.CastSpell(muramoon);
-                    Utility.DelayAction.Add(500, () => muramana = false);
+                    Player.Spellbook.CastSpell(manamune);
                 }
             }
         }
@@ -91,15 +93,11 @@ namespace Activator.Items.Offensives
                 {
                     muramana = true;
                 }
+
                 else
                 {
                     Utility.DelayAction.Add(500 + (int)(args.SData.CastFrame / 30), () => muramana = false);
                 }
-            }
-
-            else
-            {
-                Utility.DelayAction.Add(500 + (int)(args.SData.CastFrame / 30), () => muramana = false);
             }
         }
     }
