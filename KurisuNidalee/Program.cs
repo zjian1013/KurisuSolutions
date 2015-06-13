@@ -39,6 +39,10 @@ namespace KurisuNidalee
         private static readonly List<Spell> HumanSpellList = new List<Spell>();
         private static readonly List<Spell> CougarSpellList = new List<Spell>();
         private static readonly IEnumerable<int> NidaItems = new[] { 3128, 3144, 3153, 3092 };
+        private static bool TSCollision()
+        {
+            return _mainMenu.Item("coll").GetValue<bool>();
+        }
 
         private static bool TargetHunted(Obj_AI_Base target)
         {
@@ -131,6 +135,7 @@ namespace KurisuNidalee
             _mainMenu.AddSubMenu(nidaOrb);
 
             var nidaTS = new Menu("Nidalee: Selector", "target selecter");
+            nidaTS.AddItem(new MenuItem("coll", "Check Collision")).SetValue(false);
             TargetSelector.AddToMenu(nidaTS);
             _mainMenu.AddSubMenu(nidaTS);
 
@@ -213,20 +218,11 @@ namespace KurisuNidalee
             nidaD.AddItem(new MenuItem("drawcds", "Draw Cooldowns")).SetValue(true);
             _mainMenu.AddSubMenu(nidaD);
 
-            var nidaK = new Menu("Nidalee: Killsteal", "killsecure");
-            nidaK.AddItem(new MenuItem("humanqks", "Use Javelin")).SetValue(true);
-            nidaK.AddItem(new MenuItem("cougarqks", "Use Takedown")).SetValue(true);
-            nidaK.AddItem(new MenuItem("cougarwks", "Use Pounce")).SetValue(true);
-            nidaK.AddItem(new MenuItem("cougareks", "Use Switpe")).SetValue(true);
-            nidaK.AddItem(new MenuItem("ksform", "Auto Switch Form")).SetValue(true);
-            _mainMenu.AddSubMenu(nidaK);
-
             var nidaM = new Menu("Nidalee: Misc", "misc");
             nidaM.AddItem(new MenuItem("useitems", "Use Items")).SetValue(true);
             nidaM.AddItem(new MenuItem("dash", "Q on Dashing")).SetValue(false);
             nidaM.AddItem(new MenuItem("gapp", "Q Anti-Gapcloser")).SetValue(true);
             nidaM.AddItem(new MenuItem("qimmobile", "Q on Immobile")).SetValue(true);
-            nidaM.AddItem(new MenuItem("wimmobile", "W on Immobile")).SetValue(true);
             nidaM.AddItem(new MenuItem("formimm", "Switch Form Immobile")).SetValue(true);
             _mainMenu.AddSubMenu(nidaM);
 
@@ -283,124 +279,26 @@ namespace KurisuNidalee
 
         #region Nidalee: Auto Spells
         private static void AutoSpells()
-        {
-            if (_mainMenu.Item("humanqks").GetValue<bool>())
-            {
-                if (KillableTarget(Javelin).IsValidTarget())
-                {
-                    if (!_cougarForm && Javelin.IsReady())
-                    {
-                        Javelin.CastIfHitchanceEquals(KillableTarget(Javelin),
-                            (HitChance) _mainMenu.Item("seth").GetValue<Slider>().Value + 2);
-                    }
-
-                    else
-                    {
-                        if (_mainMenu.Item("ksform").GetValue<bool>() && 
-                            Aspectofcougar.IsReady() && HQ == 0)
-                            Aspectofcougar.Cast();             
-                    }
-                }
-            }
-
-            if (_mainMenu.Item("cougarqks").GetValue<bool>())
-            {
-                if (KillableTarget(Takedown, 1).IsValidTarget())
-                {
-                    if (_cougarForm && Takedown.IsReady())
-                    {
-                        Takedown.CastOnUnit(Me);
-                        if (_mainMenu.Item("usecombo").GetValue<KeyBind>().Active)
-                            Me.IssueOrder(GameObjectOrder.AttackUnit, KillableTarget(Takedown, 1));
-                    }
-
-                    else
-                    {
-                        if (_mainMenu.Item("ksform").GetValue<bool>() && 
-                            Aspectofcougar.IsReady() && CQ == 0)
-                            Aspectofcougar.Cast();
-                    }
-                }
-            }
-
-            if (_mainMenu.Item("cougareks").GetValue<bool>())
-            {
-                if (KillableTarget(Swipe, 1).IsValidTarget())
-                {
-                    if (_cougarForm && Swipe.IsReady())
-                    {
-                        Swipe.CastIfHitchanceEquals(KillableTarget(Swipe, 1), HitChance.Medium);
-                    }
-
-                    else
-                    {
-                        if (_mainMenu.Item("ksform").GetValue<bool>() && 
-                            Aspectofcougar.IsReady() && CE == 0)
-                            Aspectofcougar.Cast();
-                    }
-                }              
-            }
-
-            if (_mainMenu.Item("cougarwks").GetValue<bool>())
-            {
-                if (KillableTarget(Pounce, 1).IsValidTarget())
-                {
-                    if (_cougarForm && Pounce.IsReady())
-                    {
-                        Pounce.Cast(KillableTarget(Pounce, 1).ServerPosition);
-                    }
-
-                    else
-                    {
-                        if (_mainMenu.Item("ksform").GetValue<bool>() && 
-                            Aspectofcougar.IsReady() && CW == 0)
-                        {
-                            Aspectofcougar.Cast();
-                        }
-                    }
-                }
-            }
-
-            if (_mainMenu.Item("qimmobile").GetValue<bool>())
+        {      
+            if (_mainMenu.Item("qimmobile").GetValue<bool>() && HQ == 0)
             {
                 foreach (var unit in ObjectManager.Get<Obj_AI_Hero>().Where(h => h.IsValidTarget(Javelin.Range)))
                 {
-                    if (!_cougarForm && Javelin.IsReady())
+                    if (Javelin.GetPrediction(unit).Hitchance == HitChance.Immobile)
                     {
-                        Javelin.CastIfHitchanceEquals(unit, HitChance.Immobile);
-                        if (unit.HasBuffOfType(BuffType.Knockup))
+                        if (!_cougarForm)
                         {
                             Javelin.Cast(unit);
+                            if (unit.HasBuffOfType(BuffType.Knockup))
+                            {
+                                Javelin.Cast(unit);
+                            }
                         }
-                    }
 
-                    else
-                    {
-                        if (Javelin.GetPrediction(unit).Hitchance == HitChance.Immobile)
+                        else
                         {
                             if (_mainMenu.Item("formimm").GetValue<bool>())
-                                if (Aspectofcougar.IsReady() && HQ == 0)
-                                    Aspectofcougar.Cast();
-                        }
-                    }
-                }
-            }
-
-            if (_mainMenu.Item("wimmobile").GetValue<bool>())
-            {
-                foreach (var unit in ObjectManager.Get<Obj_AI_Hero>().Where(h => h.IsValidTarget(Bushwack.Range)))
-                {
-                    if (!_cougarForm && Bushwack.IsReady())
-                    {
-                        Bushwack.CastIfHitchanceEquals(unit, HitChance.Immobile);
-                    }
-
-                    else
-                    {
-                        if (Bushwack.GetPrediction(unit).Hitchance == HitChance.Immobile)
-                        {
-                            if (_mainMenu.Item("formimm").GetValue<bool>())
-                                if (Aspectofcougar.IsReady() && HW == 0)
+                                if (Aspectofcougar.IsReady())
                                     Aspectofcougar.Cast();
                         }
                     }
@@ -411,19 +309,6 @@ namespace KurisuNidalee
         #endregion
 
         #region Nidalee : Misc
-
-        // Killable Target (FirstOrDefault)
-        private static Obj_AI_Hero KillableTarget(Spell spell, int stage = 0)
-        {
-            var target =
-                ObjectManager.Get<Obj_AI_Hero>()
-                    .FirstOrDefault(
-                        h =>
-                            h.Distance(Me.ServerPosition) <= spell.Range && h.IsEnemy &&
-                            h.Health <= spell.GetDamage(h, stage));
-
-            return target;
-        }
 
         private static void UseInventoryItems(IEnumerable<int> items, Obj_AI_Base target)
         {
@@ -667,7 +552,7 @@ namespace KurisuNidalee
                     }
 
                     var prediction = Javelin.GetPrediction(target);
-                    if (prediction.Hitchance >= HitChance.Medium && !Pounce.IsReady())
+                    if (prediction.Hitchance >= HitChance.Medium)
                         Aspectofcougar.Cast();
                 }
 
@@ -690,7 +575,10 @@ namespace KurisuNidalee
             // human Q 
             if (!_cougarForm && target.IsValidTarget(Javelin.Range))
             {
-                var qtarget = TargetSelector.GetTargetNoCollision(Javelin);
+                var qtarget = TSCollision()
+                    ? TargetSelector.GetTargetNoCollision(Javelin)
+                    : TargetSelector.GetTarget(Javelin.Range, TargetSelector.DamageType.Magical);
+
                 if (qtarget.IsValidTarget() && Javelin.IsReady() && _mainMenu.Item("usehumanq").GetValue<bool>())
                 {
                     Javelin.CastIfHitchanceEquals(qtarget,
@@ -729,7 +617,10 @@ namespace KurisuNidalee
         #region Nidalee: Harass
         private static void UseHarass()
         {
-            var qtarget = TargetSelector.GetTargetNoCollision(Javelin);
+            var qtarget = TSCollision()
+                ? TargetSelector.GetTargetNoCollision(Javelin)
+                : TargetSelector.GetTarget(Javelin.Range, TargetSelector.DamageType.Magical);
+
             if (qtarget.IsValidTarget())
             {
                 var actualHeroManaPercent = (int) ((Me.Mana/Me.MaxMana)*100);
