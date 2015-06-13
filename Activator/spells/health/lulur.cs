@@ -54,7 +54,7 @@ namespace Activator.Spells.Health
                                 UseSpellOn(hero.Player);
                         }
 
-                        if (hero.Player.CountEnemiesInRange(Range) >=
+                        if (hero.Player.CountEnemiesInRange(300) >=
                             Menu.Item("SelfCount" + Name).GetValue<Slider>().Value)
                             UseSpellOn(hero.Player);
                     }
