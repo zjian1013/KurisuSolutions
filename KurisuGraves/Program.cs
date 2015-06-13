@@ -405,9 +405,12 @@ namespace KurisuGraves
             {
                 if (Buckshot.IsReady())
                     Buckshot.CastIfHitchanceEquals(target, HitChance.High);
+
+                // dash back
                 else
-                    Quickdraw.Cast(
-                        RotateVector(start, position.MinOrDefault(x => x.Distance(Game.CursorPos)), 180));
+                {
+                    Quickdraw.Cast(Me.ServerPosition.Extend(target.ServerPosition, -Quickdraw.Range));
+                }
             }
         }
 
