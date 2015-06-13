@@ -50,7 +50,7 @@ namespace Activator.Summoners
                     if (hero.IncomeDamage / hero.Player.MaxHealth * 100 >=
                         Menu.Item("SelfMuchHP" + Name + "Pct").GetValue<Slider>().Value)
                     {
-                        if (hero.Player.MaxHealth - hero.Player.Health > (75 + (15 * hero.Player.Level)))
+                        if (hero.Player.MaxHealth - hero.Player.Health > (75 + (15 * Activator.Player.Level)))
                         {
                             if (hero.IncomeDamage > 0 && !hero.Player.IsRecalling() &&
                                 !hero.Player.InFountain())
