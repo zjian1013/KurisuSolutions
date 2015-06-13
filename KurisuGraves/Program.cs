@@ -414,22 +414,6 @@ namespace KurisuGraves
             }
         }
 
-        // Rotates the vector by the angle from the start/end.
-        static Vector2 RotateVector(Vector2 start, Vector2 end, float angle)
-        {
-            angle = angle * ((float) (Math.PI / 180));
-
-            var ret = end;
-
-            ret.X = ((float)Math.Cos(angle) * (end.X - start.X) - 
-                     (float)Math.Sin(angle) * (end.Y - start.Y) + start.X);
-
-            ret.Y = ((float)Math.Sin(angle) * (end.X - start.X) + 
-                     (float)Math.Cos(angle) * (end.Y - start.Y) + start.Y);
-
-            return ret;
-        }
-
         // Instantiates the menu when called.
         static void Menu_OnLoad()
         {
