@@ -2277,7 +2277,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 550f,
                 Delay = 250f,
-                HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate },
+                HitType = new HitType[] { },
                 MissileSpeed = 1450
             });
 

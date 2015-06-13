@@ -89,7 +89,8 @@ namespace Activator
                     // detect danger/cc/ultimates from our db
                     foreach (var item in gametroydata.troydata)
                     {
-                        if (troy.Obj.IsValid && hero.Player.Distance(troy.Obj.Position) <= troy.Obj.BoundingRadius)
+                        var radius = troy.Obj.BoundingRadius > 5000 ? 550 : troy.Obj.BoundingRadius; 
+                        if (troy.Obj.IsValid && hero.Player.Distance(troy.Obj.Position) <= radius)
                         {
                             if (troy.Name == item.Name)
                             {

@@ -24,7 +24,15 @@ namespace Activator
 
         static gametroydata()
         {
-            troydata.Add( new gametroydata
+            troydata.Add(new gametroydata
+            {
+                Name = "katarina_deathLotus_tar",
+                ChampionName = "Katarina",
+                Slot = SpellSlot.R,
+                HitType = new[] { global::Activator.HitType.None }
+            });
+
+            troydata.Add(new gametroydata
             {
                 Name = "Nautilus_R_sequence_impact",
                 ChampionName = "Nautilus",

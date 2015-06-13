@@ -301,7 +301,6 @@ namespace Activator
                                 // target spell dectection
                                 if (hero.Player.Distance(sender.ServerPosition) <= data.CastRange)
                                 {
-                                    // important spelldata shit (hope sdata is accurate)
                                     var distance =
                                         (int) (1000*(sender.Distance(hero.Player.ServerPosition)/data.MissileSpeed));
                                     var endtime = data.Delay - 100 + Game.Ping/2 + distance -
