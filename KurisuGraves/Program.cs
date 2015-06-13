@@ -102,7 +102,7 @@ namespace KurisuGraves
 
             if (mainMenu.Item("combokey").GetValue<KeyBind>().Active)
             {
-                GravesCombo(gtarg);
+                GravesCombo();
             }
 
             if (mainMenu.Item("fleekey").GetValue<KeyBind>().Active)
@@ -248,48 +248,51 @@ namespace KurisuGraves
                 Render.Circle.DrawCircle(Me.Position, mainMenu.Item("minqrange").GetValue<Slider>().Value, mcircle.Color, 3);
         }
 
-        static void GravesCombo(Obj_AI_Hero target)
+        static void GravesCombo()
         {
-            if (target.IsValidTarget(Chargeshot.Range))
+            var minqrange = mainMenu.Item("minqrange").GetValue<Slider>().Value;
+
+            var rtarget = TargetSelector.GetTarget(Chargeshot.Range, TargetSelector.DamageType.Physical);
+            if (rtarget.IsValidTarget(Chargeshot.Range))
             {
                 var user = mainMenu.Item("usercombo").GetValue<bool>();
-                var minqrange = mainMenu.Item("minqrange").GetValue<Slider>().Value;
-                if (target.Distance(Me.ServerPosition) <= Quickdraw.Range + Me.AttackRange)
+                if (rtarget.Distance(Me.ServerPosition) <= Quickdraw.Range + Me.AttackRange)
                 {
                     if (Chargeshot.IsReady())
                     {
                         if (Quickdraw.IsReady() && Buckshot.IsReady() && user)
                         {
-                            if (GetComboDamage(target) >= target.Health)
-                                Chargeshot.CastIfHitchanceEquals(target, HitChance.High);
+                            if (GetComboDamage(rtarget) >= rtarget.Health)
+                                Chargeshot.CastIfHitchanceEquals(rtarget, HitChance.High);
                         }
 
-                        if (GetRDamage(target) >= target.Health && user)
-                            Chargeshot.CastIfHitchanceEquals(target, HitChance.High);
+                        if (GetRDamage(rtarget) >= rtarget.Health && user)
+                            Chargeshot.CastIfHitchanceEquals(rtarget, HitChance.High);
                     }
                 }
+            }
 
-                else if (target.Distance(Me.ServerPosition) <= minqrange)
-                {
-                    if (Buckshot.IsReady())
-                        Buckshot.CastIfHitchanceEquals(target, HitChance.High);
-                }
+            var qtarget = TargetSelector.GetTarget(Buckshot.Range, TargetSelector.DamageType.Physical);
+            if (qtarget.Distance(Me.ServerPosition) <= minqrange)
+            {
+                if (Buckshot.IsReady())
+                    Buckshot.CastIfHitchanceEquals(qtarget, HitChance.High);
+            }
 
-                else if (target.Distance(Me.ServerPosition) <= minqrange + Quickdraw.Range)
+            if (qtarget.Distance(Me.ServerPosition) <= 450)
+            {
+                if (Smokescreen.IsReady() && Utils.GameTimeTickCount - LastR >= 1200)
+                    Smokescreen.CastIfHitchanceEquals(qtarget, HitChance.Medium);
+            }
+
+            if (qtarget.Distance(Me.ServerPosition) > Me.AttackRange + 100)
+            {
+                if (Quickdraw.IsReady() && Utils.GameTimeTickCount - LastR >= 1200)
                 {
-                    if (Quickdraw.IsReady() && Utils.GameTimeTickCount - LastR >= 1200)
+                    if (qtarget.Distance(Me.ServerPosition) > Me.AttackRange + 100)
                     {
-                        if (target.Distance(Me.ServerPosition) > Me.AttackRange + 100)
-                        {
-                            CastE(target);
-                        }
+                        CastE(qtarget);
                     }
-                }
-
-                else if (target.Distance(Me.ServerPosition) <= 300)
-                {
-                    if (Smokescreen.IsReady() && Utils.GameTimeTickCount - LastR >= 1200)
-                        Smokescreen.CastIfHitchanceEquals(target, HitChance.Medium);
                 }
             }
         }
@@ -323,14 +326,13 @@ namespace KurisuGraves
             return irdmg + erdmg;
         }
 
-        // Updates the combo damage dealt to target on tick.
         static float GetComboDamage(Obj_AI_Hero target)
         {
             if (target == null)
                 return 0f;
 
             // atackspeed sterioid
-            var edmg = Quickdraw.IsReady() ? (float) (Me.GetAutoAttackDamage(target) * 5) : 0;
+            var edmg = Quickdraw.IsReady() ? (float) (Me.GetAutoAttackDamage(target) * 3) : 0;
 
             // buckshot damage
             var qdmg = Buckshot.IsReady() ? (float)(Me.GetSpellDamage(target, SpellSlot.Q)) : 0;
@@ -461,10 +463,10 @@ namespace KurisuGraves
 
             //combo.AddItem(new MenuItem("useqcombo", "Use Q in combo")).SetValue(true);
             combo.AddItem(new MenuItem("useqongap", "Use Q on gapclosers")).SetValue(true);
+            combo.AddItem(new MenuItem("usewongap", "Use W on gapclosers")).SetValue(true);
             combo.AddItem(new MenuItem("minqrange", "Minimum Q range")).SetValue(new Slider(595, 0, 950));
             combo.AddItem(new MenuItem("minqongap", "Minimum Q gapclose range")).SetValue(new Slider(375, 0, 950));
             //combo.AddItem(new MenuItem("usewcombo", "Use W in combo")).SetValue(true);
-            combo.AddItem(new MenuItem("usewongap", "Use W on gapclosers")).SetValue(true);
             combo.AddItem(new MenuItem("useecombo", "Use E in combo")).SetValue(true);
             combo.AddItem(new MenuItem("ewherecom", "Use E to"))
                 .SetValue(new StringList(new[] { "Safe Position" } ));
