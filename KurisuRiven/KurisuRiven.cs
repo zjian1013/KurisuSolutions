@@ -321,7 +321,7 @@ namespace KurisuRiven
 
             menu.AddSubMenu(combo);
 
-            var harass = new Menu("Harass [Beta]", "harass");
+            var harass = new Menu("Harass", "harass");
             harass.AddItem(new MenuItem("qtoo", "Use 3rd Q:"))
                 .SetValue(new StringList(new[] {"Away from Target", "To Ally Turret", "To Cursor"}, 1));
             harass.AddItem(new MenuItem("useharassw", "Use W in Harass")).SetValue(true);
@@ -350,9 +350,9 @@ namespace KurisuRiven
             var skinchange = new Menu("Skin Changer", "skinchange");
             skinchange.AddItem(new MenuItem("skinset", ""))
                 .SetValue(
-                    new StringList(new[] { "Classic", "Redeemed", "Crimson", "Battle Bunny", "Championship", "Dragonblade" }, 4));
+                    new StringList(
+                        new[] { "Classic", "Redeemed", "Crimson", "Battle Bunny", "Championship", "Dragonblade" }, 4));
             menu.AddSubMenu(skinchange);
-
             menu.AddToMainMenu();
 
         }
@@ -1154,8 +1154,11 @@ namespace KurisuRiven
             {
                 if (!(didq || didw || dide || didaa))
                 {
-                    canq = false;
-                    player.IssueOrder(GameObjectOrder.AttackUnit, target);
+                    if (target.Distance(player.ServerPosition) <= myhitbox + 50)
+                    {
+                        canq = false;
+                        player.IssueOrder(GameObjectOrder.AttackUnit, target);
+                    }
                 }
             }
         }
@@ -1340,6 +1343,7 @@ namespace KurisuRiven
             {
                 if (!player.IsDead)
                 {
+
                     if (menubool("drawengage"))
                     {
                         Render.Circle.DrawCircle(player.Position,
@@ -1350,7 +1354,7 @@ namespace KurisuRiven
                     {
                         var ee = e.IsReady() ? e.Range : 0f;
                         var ww = w.IsReady() ? w.Range + 10 : myhitbox;
-                        Render.Circle.DrawCircle(player.Position, ee + ww + 300, Color.GreenYellow, 1);
+                        Render.Circle.DrawCircle(player.Position, ee + ww + 300, Color.GreenYellow, 2);
                     }
 
                     if (menubool("drawtarg") && rtarg != null)
