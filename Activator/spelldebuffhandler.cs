@@ -36,9 +36,8 @@ namespace Activator
                     {
                         hero.HitTypes.Add(HitType.Danger);
                         var attacker = args.Buff.Caster as Obj_AI_Hero;
-                        hero.IncomeDamage = 
-                            (float) attacker.GetSummonerSpellDamage(hero.Player, Damage.SummonerSpell.Ignite);
-
+                        if (attacker != null)
+                            hero.IncomeDamage = (50 + (20 * attacker.Level));
                     }
 
                     if (args.Buff.Type == BuffType.SpellImmunity ||
