@@ -32,6 +32,15 @@ namespace Activator
                     if (spelldebuff.excludedbuffs.Any(buff => args.Buff.Name.ToLower() == buff))
                         continue;
 
+                    if (args.Buff.Name.ToLower() == "summonerdot")
+                    {
+                        hero.HitTypes.Add(HitType.Danger);
+                        var attacker = args.Buff.Caster as Obj_AI_Hero;
+                        hero.IncomeDamage = 
+                            (float) attacker.GetSummonerSpellDamage(hero.Player, Damage.SummonerSpell.Ignite);
+
+                    }
+
                     if (args.Buff.Type == BuffType.SpellImmunity ||
                         args.Buff.Type == BuffType.Invulnerability)
                     {
@@ -100,6 +109,12 @@ namespace Activator
                         args.Buff.Type == BuffType.Invulnerability)
                     {
                         hero.Immunity = false;
+                    }
+
+                    if (args.Buff.Name.ToLower() == "summonerdot")
+                    {
+                        hero.IncomeDamage = 0;
+                        hero.HitTypes.Clear();
                     }
 
                     if (hero.QSSBuffCount <= 1)

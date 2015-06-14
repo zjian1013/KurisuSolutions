@@ -853,8 +853,8 @@ namespace Activator
                 SDataName = "dianaorbs",
                 ChampionName = "diana",
                 Slot = SpellSlot.W,
-                CastRange = 0f,
-                Delay = 0f,
+                CastRange = 200f,
+                Delay = 250f,
                 HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
@@ -864,7 +864,7 @@ namespace Activator
                 SDataName = "dianavortex",
                 ChampionName = "diana",
                 Slot = SpellSlot.E,
-                CastRange = 300f,
+                CastRange = 350f,
                 Delay = 250f,
                 HitType = new[] { global::Activator.HitType.CrowdControl, global::Activator.HitType.Danger,  },
                 MissileSpeed = 1500
@@ -877,7 +877,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 800f,
                 Delay = 250f,
-                HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate },
+                HitType = new[] { global::Activator.HitType.Danger },
                 MissileSpeed = 2200
             });
 
@@ -1001,7 +1001,7 @@ namespace Activator
                  SDataName = "ekkor",
                  ChampionName = "ekko",
                  Slot = SpellSlot.R,
-                 CastRange = 250f,
+                 CastRange = 425f,
                  Delay = 250f,
                  HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate },
                  FromObject = new [] { "Ekko_Base_R_TrailEnd" },
