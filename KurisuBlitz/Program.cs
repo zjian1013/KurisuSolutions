@@ -56,6 +56,8 @@ namespace KurisuBlitz
 
             var kkmenu = new Menu("Keybinds", "keybinds");
             kkmenu.AddItem(new MenuItem("combokey", "Combo (active)")).SetValue(new KeyBind(32, KeyBindType.Press));
+            kkmenu.AddItem(new MenuItem("grabkey", "Grab (active)")).SetValue(new KeyBind('T', KeyBindType.Press));
+
             _menu.AddSubMenu(kkmenu);
 
             var spellmenu = new Menu("SpellMenu", "smenu");
@@ -172,6 +174,9 @@ namespace KurisuBlitz
                     Combo(_menu.Item("usecomboq").GetValue<bool>(),
                           _menu.Item("usecomboe").GetValue<bool>());
                 }
+                
+                if (_menu.Item("grabkey").GetValue<KeyBind>().Active)
+                    Combo(true, false);
             }
         }
 
