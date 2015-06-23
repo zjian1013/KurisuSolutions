@@ -133,7 +133,7 @@ namespace Activator
                 Damage = false,
                 EvadeTimer = 0,
                 Cleanse = true,
-                CleanseTimer = 1000,
+                CleanseTimer = 500,
                 Slot = SpellSlot.R
             });
 
