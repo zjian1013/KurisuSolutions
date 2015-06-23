@@ -99,6 +99,14 @@ namespace KurisuGraves
         static void GravesOnUpdate(EventArgs args)
         {
             gtarg = TargetSelector.GetTarget(Chargeshot.Range, TargetSelector.DamageType.Physical);
+            if (gtarg.IsValidTarget() && Chargeshot.IsReady())
+            {
+                if (Kappa(gtarg.ServerPosition, Chargeshot.Width, Chargeshot.Range) >=
+                    mainMenu.Item("rmulti2").GetValue<Slider>().Value)
+                {
+                    Chargeshot.CastIfHitchanceEquals(gtarg, HitChance.Medium);
+                }
+            }
 
             if (mainMenu.Item("combokey").GetValue<KeyBind>().Active)
             {
@@ -120,13 +128,11 @@ namespace KurisuGraves
                 }
             }
 
-            if (gtarg.IsValidTarget() && Chargeshot.IsReady())
+            if (Smokescreen.IsReady() && mainMenu.Item("smokeimmo").GetValue<bool>())
             {
-                if (Kappa(gtarg.ServerPosition, Chargeshot.Width, Chargeshot.Range) >= 
-                    mainMenu.Item("rmulti2").GetValue<Slider>().Value)
-                {
-                    Chargeshot.CastIfHitchanceEquals(gtarg, HitChance.Medium);
-                }
+                ObjectManager.Get<Obj_AI_Hero>()
+                    .FindAll(hero => hero.IsValidTarget(Smokescreen.Range))
+                    .ForEach(unit => Smokescreen.CastIfHitchanceEquals(unit, HitChance.Immobile));
             }
         }
 
@@ -152,7 +158,8 @@ namespace KurisuGraves
 
         static void GravesAfterAttack(AttackableUnit unit, AttackableUnit target)
         {
-            if (mainMenu.Item("combokey").GetValue<KeyBind>().Active)
+            if (mainMenu.Item("combokey").GetValue<KeyBind>().Active &&
+                mainMenu.Item("useecombo").GetValue<bool>())
             {
                 var hero = target as Obj_AI_Hero;
                 if (hero.IsValidTarget())
@@ -289,7 +296,8 @@ namespace KurisuGraves
             {
                 if (Quickdraw.IsReady() && Utils.GameTimeTickCount - LastR >= 1200)
                 {
-                    if (qtarget.Distance(Me.ServerPosition) > Me.AttackRange + 100)
+                    if (qtarget.Distance(Me.ServerPosition) > Me.AttackRange + 100 &&
+                        mainMenu.Item("useecombo").GetValue<bool>())
                     {
                         CastE(qtarget);
                     }
@@ -304,7 +312,6 @@ namespace KurisuGraves
                 
             }
         }
-
 
         static float GetRDamage(Obj_AI_Hero target)
         {
@@ -331,7 +338,7 @@ namespace KurisuGraves
             if (target == null)
                 return 0f;
 
-            // atackspeed sterioid
+            // atackspeed steroid
             var edmg = Quickdraw.IsReady() ? (float) (Me.GetAutoAttackDamage(target) * 3) : 0;
 
             // buckshot damage
@@ -451,6 +458,7 @@ namespace KurisuGraves
             //combo.AddItem(new MenuItem("useqcombo", "Use Q in combo")).SetValue(true);
             combo.AddItem(new MenuItem("useqongap", "Use Q on gapclosers")).SetValue(true);
             combo.AddItem(new MenuItem("usewongap", "Use W on gapclosers")).SetValue(true);
+            combo.AddItem(new MenuItem("smokeimmo", "Auto W on Immobile")).SetValue(true);
             combo.AddItem(new MenuItem("minqrange", "Minimum Q range")).SetValue(new Slider(595, 0, 950));
             combo.AddItem(new MenuItem("minqongap", "Minimum Q gapclose range")).SetValue(new Slider(375, 0, 950));
             //combo.AddItem(new MenuItem("usewcombo", "Use W in combo")).SetValue(true);
