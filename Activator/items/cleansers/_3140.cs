@@ -58,12 +58,13 @@ namespace Activator.Items.Cleansers
                 if (!Menu.Item("use" + Name).GetValue<bool>())
                     return;
 
-                if (hero.Player.NetworkId == Player.NetworkId && hero.Player.Distance(Player.ServerPosition) <= Range)
+                if (hero.Player.NetworkId == Player.NetworkId)
                 {
                     if (hero.ForceQSS)
                     {
                         UseItem();
                         hero.IncomeDamage = 0;
+                        hero.ForceQSS = false;
                     }
 
                     if (hero.QSSBuffCount >= Menu.Item("use" + Name + "Number").GetValue<Slider>().Value &&

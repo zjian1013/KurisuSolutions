@@ -57,10 +57,27 @@ namespace Activator.Summoners
 
             if (Name == "summonerboost")
             {
-                Menu.AddItem(new MenuItem("use" + Name + "Number", "Minimum Spells to Use")).SetValue(new Slider(2, 1, 5));
+                var ccmenu = new Menu(DisplayName + " Debuffs", DisplayName.ToLower() + "cdeb");
+                ccmenu.AddItem(new MenuItem(Name + "cignote", "Ignite")).SetValue(true);
+                ccmenu.AddItem(new MenuItem(Name + "cexhaust", "Exhaust")).SetValue(true);
+                ccmenu.AddItem(new MenuItem(Name + "cstun", "Stuns")).SetValue(true);
+                ccmenu.AddItem(new MenuItem(Name + "ccharm", "Charms")).SetValue(true);
+                ccmenu.AddItem(new MenuItem(Name + "ctaunt", "Taunts")).SetValue(true);
+                ccmenu.AddItem(new MenuItem(Name + "cfear", "Fears")).SetValue(true);
+                ccmenu.AddItem(new MenuItem(Name + "cflee", "Flee")).SetValue(true);
+                ccmenu.AddItem(new MenuItem(Name + "csnare", "Snares")).SetValue(true);
+                ccmenu.AddItem(new MenuItem(Name + "csilence", "Silences")).SetValue(true);
+                ccmenu.AddItem(new MenuItem(Name + "csupp", "Supression")).SetValue(true);
+                ccmenu.AddItem(new MenuItem(Name + "cpolymorph", "Polymorphs")).SetValue(true);
+                ccmenu.AddItem(new MenuItem(Name + "cblind", "Blinds")).SetValue(true);
+                ccmenu.AddItem(new MenuItem(Name + "cslow", "Slows")).SetValue(true);
+                ccmenu.AddItem(new MenuItem(Name + "cpoison", "Poisons")).SetValue(true);
+                Menu.AddSubMenu(ccmenu);
+
+                Menu.AddItem(new MenuItem("use" + Name + "Number", "Minimum Spells to Use")).SetValue(new Slider(1, 1, 5));
                 Menu.AddItem(new MenuItem("use" + Name + "Time", "Minumum Durration to Use")).SetValue(new Slider(2, 1, 5));
                 Menu.AddItem(new MenuItem("use" + Name + "Od", "Use only on Dangerous")).SetValue(false);
-                Menu.AddItem(new MenuItem("mode" + Name, "Mode: ")).SetValue(new StringList(new[] { "Always", "Combo" }, 1));
+                Menu.AddItem(new MenuItem("mode" + Name, "Mode: ")).SetValue(new StringList(new[] { "Always", "Combo" }));
             }
 
             if (Name == "summonerdot")

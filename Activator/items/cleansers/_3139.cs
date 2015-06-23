@@ -67,9 +67,11 @@ namespace Activator.Items.Cleansers
                     {
                         UseItem();
                         hero.IncomeDamage = 0;
+                        hero.ForceQSS = false;
                     }
 
-                    if (hero.QSSBuffCount >= Menu.Item("use" + Name + "Number").GetValue<Slider>().Value)
+                    if (hero.MercurialBuffCount >= Menu.Item("use" + Name + "Number").GetValue<Slider>().Value &&
+                        hero.MercurialHighestBuffTime >= Menu.Item("use" + Name + "Time").GetValue<Slider>().Value)
                     {
                         if (!Menu.Item("use" + Name + "Od").GetValue<bool>())
                         {

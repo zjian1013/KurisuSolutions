@@ -91,14 +91,11 @@ namespace Activator.Spells
 
         public void CastOnBestTarget(Obj_AI_Hero primary, bool nonhero = false)
         {
-            foreach (var hero in champion.Heroes)
-            {
-                if (TargetSelector.GetPriority(primary) >= 2)
-                    UseSpellOn(hero.Attacker);
+            if (TargetSelector.GetPriority(primary) >= 2)
+                UseSpellOn(primary);
 
-                else if (LowTarget != null)
-                    UseSpellOn(LowTarget);
-            }
+            else if (LowTarget != null)
+                UseSpellOn(LowTarget);
         }
 
         public void UseSpell(bool combo = false)

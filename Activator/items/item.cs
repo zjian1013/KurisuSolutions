@@ -40,7 +40,9 @@ namespace Activator.Items
             if (!combo || Activator.Origin.Item("usecombo").GetValue<KeyBind>().Active)
             {
                 if(LeagueSharp.Common.Items.CanUseItem(Id))
-                   LeagueSharp.Common.Items.UseItem(Id);
+                {
+                    LeagueSharp.Common.Items.UseItem(Id);
+                }
             }
         }
 
@@ -49,7 +51,9 @@ namespace Activator.Items
             if (!combo || Activator.Origin.Item("usecombo").GetValue<KeyBind>().Active)
             {
                 if (LeagueSharp.Common.Items.CanUseItem(Id))
+                {
                     LeagueSharp.Common.Items.UseItem(Id, target);
+                }
             }
         }
 
@@ -58,7 +62,9 @@ namespace Activator.Items
             if (!combo || Activator.Origin.Item("usecombo").GetValue<KeyBind>().Active)
             {
                 if (LeagueSharp.Common.Items.CanUseItem(Id))
+                {
                     LeagueSharp.Common.Items.UseItem(Id, pos);
+                }
             }
         }
 
@@ -110,6 +116,23 @@ namespace Activator.Items
 
             if (Category.Any(t => t == MenuType.Cleanse))
             {
+                var ccmenu = new Menu(Name + " Debuffs", Name.ToLower() + "cdeb");
+                ccmenu.AddItem(new MenuItem(Name + "cignote", "Ignite")).SetValue(true);
+                ccmenu.AddItem(new MenuItem(Name + "cexhaust", "Exhaust")).SetValue(true);
+                ccmenu.AddItem(new MenuItem(Name + "cstun", "Stuns")).SetValue(true);
+                ccmenu.AddItem(new MenuItem(Name + "ccharm", "Charms")).SetValue(true);
+                ccmenu.AddItem(new MenuItem(Name + "ctaunt", "Taunts")).SetValue(true);
+                ccmenu.AddItem(new MenuItem(Name + "cfear", "Fears")).SetValue(true);
+                ccmenu.AddItem(new MenuItem(Name + "cflee", "Flee")).SetValue(true);
+                ccmenu.AddItem(new MenuItem(Name + "csnare", "Snares")).SetValue(true);
+                ccmenu.AddItem(new MenuItem(Name + "csilence", "Silences")).SetValue(true);
+                ccmenu.AddItem(new MenuItem(Name + "csupp", "Supression")).SetValue(true);
+                ccmenu.AddItem(new MenuItem(Name + "cpolymorph", "Polymorphs")).SetValue(true);
+                ccmenu.AddItem(new MenuItem(Name + "cblind", "Blinds")).SetValue(true);
+                ccmenu.AddItem(new MenuItem(Name + "cslow", "Slows")).SetValue(true);
+                ccmenu.AddItem(new MenuItem(Name + "cpoison", "Poisons")).SetValue(true);
+                Menu.AddSubMenu(ccmenu);
+
                 Menu.AddItem(new MenuItem("use" + Name + "Number", "Minimum Spells to Use")).SetValue(new Slider(DefaultHP/5, 1, 5));
                 Menu.AddItem(new MenuItem("use" + Name + "Time", "Minumum Durration to Use")).SetValue(new Slider(2, 1, 5)); ;
                 Menu.AddItem(new MenuItem("use" + Name + "Od", "Use Only for Dangerous")).SetValue(false);
@@ -118,6 +141,8 @@ namespace Activator.Items
             if (Category.Any(t => t == MenuType.ActiveCheck))
                 Menu.AddItem(new MenuItem("mode" + Name, "Mode: "))
                     .SetValue(new StringList(new[] { "Always", "Combo" }, Id == 3222 ? 0 : 1));
+
+
 
             root.AddSubMenu(Menu);
             return this;

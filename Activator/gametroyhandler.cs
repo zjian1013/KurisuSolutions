@@ -25,17 +25,14 @@ namespace Activator
 
         private static void GameObject_OnCreate(GameObject obj, EventArgs args)
         {
-            // if no troys dont itterate
+            // if no troys dont loop
             if (!Activator.TroysInGame)
                 return;
 
             foreach (var troy in gametroy.Troys)
             {
-                if (troy.Included)
-                    return;
-
                 // include the troy and start ticking 
-                if (obj.Name.Contains(troy.Name))
+                if (!troy.Included && obj.Name.Contains(troy.Name))
                 {
                     troy.Included = true;
                     troy.Obj = obj;
@@ -49,17 +46,14 @@ namespace Activator
         {
             foreach (var hero in champion.Heroes)
             {
-                // if no troys dont itterate
+                // if no troys dont loop
                 if (!Activator.TroysInGame)
                     return;
 
                 foreach (var troy in gametroy.Troys)
-                {
-                    if (!troy.Included)
-                        return;
-
+                {                   
                     // delete the troy and stop ticking
-                    if (obj.Name.Contains(troy.Name))
+                    if (troy.Included && obj.Name.Contains(troy.Name))
                     {
                         troy.Included = false;
                         troy.Start = 0;
@@ -89,7 +83,7 @@ namespace Activator
                     // detect danger/cc/ultimates from our db
                     foreach (var item in gametroydata.troydata)
                     {
-                        var radius = troy.Obj.BoundingRadius > 5000 ? 550 : troy.Obj.BoundingRadius; 
+                        var radius = troy.Obj.BoundingRadius == null ? item.Radius : troy.Obj.BoundingRadius; 
                         if (troy.Obj.IsValid && hero.Player.Distance(troy.Obj.Position) <= radius)
                         {
                             if (troy.Name == item.Name)

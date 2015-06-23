@@ -38,12 +38,12 @@ namespace Activator.Items.Cleansers
 
         internal override MapType[] Maps
         {
-            get { return new[] { MapType.SummonersRift }; }
+            get { return new[] { MapType.Common }; }
         }
 
         internal override int DefaultHP
         {
-            get { return 10; }
+            get { return 15; }
         }
 
         internal override int DefaultMP
@@ -58,29 +58,37 @@ namespace Activator.Items.Cleansers
                 if (!Menu.Item("use" + Name).GetValue<bool>())
                     return;
 
-                if (hero.Player.NetworkId == Player.NetworkId)
+                if (hero.Player.Distance(Player.ServerPosition) > Range)
+                    return;
+
+                if (hero.ForceQSS)
                 {
-                    if (hero.Player.Distance(Player.ServerPosition) > Range)
-                        return;
+                    UseItem();
+                    hero.IncomeDamage = 0;
+                    hero.ForceQSS = false;
+                }
 
-                    if (hero.ForceQSS)
+                if (hero.MikaelsBuffCount >= Menu.Item("use" + Name + "Number").GetValue<Slider>().Value &&
+                    hero.MikaelsHighestBuffTime >= Menu.Item("use" + Name + "Time").GetValue<Slider>().Value)
+                {
+                    if (!Menu.Item("use" + Name + "Od").GetValue<bool>())
                     {
-                        UseItem();
-                        hero.IncomeDamage = 0;
-                    }
-
-                    if (hero.QSSBuffCount >= Menu.Item("use" + Name + "Number").GetValue<Slider>().Value)
-                    {
-                        if (!Menu.Item("use" + Name + "Od").GetValue<bool>())
+                        Utility.DelayAction.Add(Game.Ping + 80, delegate
                         {
-                            Utility.DelayAction.Add(Game.Ping + 80, delegate
-                            {
-                                UseItem(Menu.Item("mode" + Name).GetValue<StringList>().SelectedIndex == 1);
-                            });
-                        }
+                            UseItem(hero.Player, Menu.Item("mode" + Name).GetValue<StringList>().SelectedIndex == 1);
+                        });
                     }
                 }
-            }
+
+                if (hero.Player.Health / hero.Player.MaxHealth * 100 <=
+                    Menu.Item("SelfLowHP" + Name + "Pct").GetValue<Slider>().Value)
+                {
+                    if (hero.IncomeDamage > 0)
+                    {
+                        UseItem(hero.Player, Menu.Item("mode" + Name).GetValue<StringList>().SelectedIndex == 1);
+                    }
+                }
+            }        
         }
     }
 }

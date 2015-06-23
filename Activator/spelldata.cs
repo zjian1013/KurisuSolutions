@@ -24,6 +24,7 @@ namespace Activator
         public string ChampionName { get; set; }
         public SpellSlot Slot { get; set; }
         public float CastRange { get; set; }
+        public bool Global { get; set; }
         public float Delay { get; set; }
         public string MissileName { get; set; }
         public string[] ExtraMissileNames { get; set; }
@@ -103,7 +104,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 100f,
                 Delay = 250f,
-                HitType = new HitType[] { global::Activator.HitType.Danger },
+                HitType = new [] { global::Activator.HitType.Danger },
                 MissileName = "ahriorbmissile",
                 ExtraMissileNames = new [] { "ahriorbreturn" },
                 MissileSpeed = 1450
@@ -419,6 +420,7 @@ namespace Activator
                 ChampionName = "ashe",
                 Slot = SpellSlot.R,
                 CastRange = 20000f,
+                Global = true,
                 Delay = 250f,
                 HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate, global::Activator.HitType.CrowdControl },
                 MissileName = "enchantedcrystalarrow",
@@ -921,6 +923,7 @@ namespace Activator
                 ChampionName = "draven",
                 Slot = SpellSlot.R,
                 CastRange = 20000f,
+                Global = true,
                 Delay = 250f,
                 HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate },
                 MissileName = "dravenr",
@@ -1206,6 +1209,7 @@ namespace Activator
                 ChampionName = "ezreal",
                 Slot = SpellSlot.R,
                 CastRange = 20000f,
+                Global = true,
                 Delay = 1000f,
                 HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate },
                 MissileName = "ezrealtrueshotbarrage",
@@ -1442,6 +1446,7 @@ namespace Activator
                 ChampionName = "gangplank",
                 Slot = SpellSlot.R,
                 CastRange = 20000f,
+                Global = true,
                 Delay = 250f,
                 HitType = new HitType[] { },
                 MissileSpeed = 500
@@ -2085,6 +2090,7 @@ namespace Activator
                 ChampionName = "jinx",
                 Slot = SpellSlot.R,
                 CastRange = 25000f,
+                Global = true,
                 Delay = 600f,
                 MissileName = "jinxr",
                 ExtraMissileNames = new [] { "jinxrwrapper" },
@@ -2186,7 +2192,8 @@ namespace Activator
                 SDataName = "fallenone",
                 ChampionName = "karthus",
                 Slot = SpellSlot.R,
-                CastRange = float.MaxValue,
+                CastRange = 22000f,
+                Global = true,
                 Delay = 2800f,
                 HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
@@ -3582,7 +3589,8 @@ namespace Activator
                 SDataName = "nocturneparanoia",
                 ChampionName = "nocturne",
                 Slot = SpellSlot.R,
-                CastRange = 2000f,
+                CastRange = 20000f,
+                Global = true,
                 Delay = 250f,
                 HitType = new HitType[] { },
                 MissileSpeed = 500
@@ -5057,7 +5065,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 700f,
                 Delay = 250f,
-                HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate, global::Activator.HitType.CrowdControl },
+                HitType = new HitType[] { },
                 MissileSpeed = 1600
             });
 

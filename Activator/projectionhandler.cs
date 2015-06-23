@@ -75,13 +75,12 @@ namespace Activator
                 // check if hero on segment
                 if (missile.SData.LineWidth + hero.Player.BoundingRadius > projdist)
                 {
-                    // ignore if can evade and using an evade assembly
-                    if (hero.Player.NetworkId == Activator.Player.NetworkId)
+                    if (data.Global)
                     {
-                        if (hero.Player.CanMove && evadetime < endtime)
+                        // ignore if can evade
+                        if (hero.Player.NetworkId == Activator.Player.NetworkId)
                         {
-                            if (Activator.Origin.Item("evadefow").GetValue<bool>() &&
-                               !Activator.Origin.Item("usecombo").GetValue<KeyBind>().Active)
+                            if (hero.Player.CanMove && evadetime < endtime)
                             {
                                 // check next player
                                 continue;
@@ -246,13 +245,12 @@ namespace Activator
                                 if (!islineskillshot && hero.Player.Distance(args.End) <= correctwidth ||
                                      islineskillshot && correctwidth + hero.Player.BoundingRadius > projdist)
                                 {
-                                    // ignore if can evade and using an evade assembly
-                                    if (hero.Player.NetworkId == Activator.Player.NetworkId)
+                                    if (data.Global)
                                     {
-                                        if (hero.Player.CanMove && evadetime < endtime && correctwidth <= 250)
+                                        // ignore if can evade
+                                        if (hero.Player.NetworkId == Activator.Player.NetworkId)
                                         {
-                                            if (Activator.Origin.Item("evadeon").GetValue<bool>() &&
-                                               !Activator.Origin.Item("usecombo").GetValue<KeyBind>().Active)
+                                            if (hero.Player.CanMove && evadetime < endtime)
                                             {
                                                 // check next player
                                                 continue;
@@ -348,12 +346,12 @@ namespace Activator
                     if (args.Target.NetworkId != hero.Player.NetworkId) 
                         continue;
 
+                    if (hero.Immunity)
+                        return;
+
                     if (sender.Distance(hero.Player.ServerPosition) <= 900 &&
                         Activator.Player.Distance(hero.Player.ServerPosition) <= 1000)
                     {
-                        if (hero.Immunity)
-                            continue;
-
                         Utility.DelayAction.Add(500, () =>
                         {
                             hero.HitTypes.Add(HitType.TurretAttack);
@@ -379,6 +377,9 @@ namespace Activator
                 {
                     if (hero.Player.NetworkId != args.Target.NetworkId) 
                         continue;
+
+                    if (hero.Immunity)
+                        return;
 
                     if (hero.Player.Distance(sender.ServerPosition) <= 750 &&
                         Activator.Player.Distance(hero.Player.ServerPosition) <= 1000)

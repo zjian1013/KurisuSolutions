@@ -53,8 +53,11 @@ namespace Activator.Summoners
                     continue;
 
                 if (Menu.Item("use" + Name + "Ulti").GetValue<bool>())
-                    if (hero.IncomeDamage > 0 && hero.HitTypes.Contains(HitType.Ultimate))
-                        UseSpellOn(hero.Attacker);                
+                {
+                    if (hero.IncomeDamage > 0 && 
+                        hero.HitTypes.Contains(HitType.Ultimate))
+                        UseSpellOn(hero.Attacker);    
+                }            
 
                 if (hero.Player.Health/hero.Player.MaxHealth*100 <=
                     Menu.Item("a" + Name + "Pct").GetValue<Slider>().Value)

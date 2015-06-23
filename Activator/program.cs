@@ -54,23 +54,6 @@ namespace Activator
             GetItemGroup("Items.Cleansers").ForEach(t => NewItem((item) NewInstance(t), cmenu));
             cmenu.AddItem(new MenuItem("acdebug", "Debug")).SetValue(false);   
 
-            var ccmenu = new Menu("Cleanse Debuffs", "cdeb");
-            ccmenu.AddItem(new MenuItem("cexhaust", "Exhaust")).SetValue(true);
-            ccmenu.AddItem(new MenuItem("cstun", "Stuns")).SetValue(true);
-            ccmenu.AddItem(new MenuItem("ccharm", "Charms")).SetValue(true);
-            ccmenu.AddItem(new MenuItem("ctaunt", "Taunts")).SetValue(true);
-            ccmenu.AddItem(new MenuItem("cfear", "Fears")).SetValue(true);
-            ccmenu.AddItem(new MenuItem("cflee", "Flee")).SetValue(true);
-            ccmenu.AddItem(new MenuItem("csnare", "Snares")).SetValue(true);
-            ccmenu.AddItem(new MenuItem("csilence", "Silences")).SetValue(true);
-            ccmenu.AddItem(new MenuItem("csupp", "Supression")).SetValue(true);
-            ccmenu.AddItem(new MenuItem("cpolymorph", "Polymorphs")).SetValue(true);
-            ccmenu.AddItem(new MenuItem("cblind", "Blinds")).SetValue(true);
-            ccmenu.AddItem(new MenuItem("cslow", "Slows")).SetValue(true);
-            ccmenu.AddItem(new MenuItem("cpoison", "Poisons")).SetValue(true);
-            cmenu.AddSubMenu(ccmenu);
-
-
             Origin.AddSubMenu(cmenu);
 
             var dmenu = new Menu("Defensives", "dmenu");
@@ -142,20 +125,6 @@ namespace Activator
                     summoner.ExtraNames.Any(
                         x => Player.GetSpellSlot(x) != SpellSlot.Unknown))
                     Game.OnUpdate += summoner.OnTick;
-
-            //Game.OnUpdate += eventArgs =>
-            //{
-            //    foreach (var h in champion.Heroes)
-            //    {
-            //        if (h.Player.ChampionName == Player.ChampionName)
-            //        {
-            //            foreach (var z in h.HitTypes)
-            //            {
-            //                Console.WriteLine(z + " - " + Utils.GameTimeTickCount);
-            //            }
-            //        }
-            //    }
-            //};
         }
 
         private static void Obj_AI_Base_OnPlaceItemInSlot(Obj_AI_Base sender, Obj_AI_BasePlaceItemInSlotEventArgs args)

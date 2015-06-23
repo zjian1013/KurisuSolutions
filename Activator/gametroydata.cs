@@ -18,6 +18,7 @@ namespace Activator
         public string Name { get; set; }
         public string ChampionName { get; set; }
         public SpellSlot Slot { get; set; }
+        public float Radius { get; set; }
         public HitType[] HitType { get; set; }
 
         public static List<gametroydata> troydata = new List<gametroydata>(); 
@@ -28,6 +29,7 @@ namespace Activator
             {
                 Name = "katarina_deathLotus_tar",
                 ChampionName = "Katarina",
+                Radius = 550f,
                 Slot = SpellSlot.R,
                 HitType = new[] { global::Activator.HitType.None }
             });
@@ -36,6 +38,7 @@ namespace Activator
             {
                 Name = "Nautilus_R_sequence_impact",
                 ChampionName = "Nautilus",
+                Radius = 250f,
                 Slot = SpellSlot.R,
                 HitType = new[] { global::Activator.HitType.CrowdControl, global::Activator.HitType.Danger }
             });
@@ -44,6 +47,7 @@ namespace Activator
             {
                 Name = "Acidtrail_buf",
                 ChampionName = "Singed",
+                Radius = 200f,
                 Slot = SpellSlot.Q,
                 HitType = new []{ global::Activator.HitType.None }
             });
@@ -52,6 +56,7 @@ namespace Activator
             {
                 Name = "Tremors_cas",
                 ChampionName = "Rammus",
+                Radius = 450f,
                 Slot = SpellSlot.R,
                 HitType = new[] { global::Activator.HitType.None }
             });
@@ -60,6 +65,7 @@ namespace Activator
             {
                 Name = "Crowstorm",
                 ChampionName = "FiddleSticks",
+                Radius = 450f,
                 Slot = SpellSlot.R,
                 HitType = new []{ global::Activator.HitType.Danger, global::Activator.HitType.Ultimate}
             });
@@ -68,6 +74,7 @@ namespace Activator
             {
                 Name = "caitlyn_Base_yordleTrap_idle",
                 ChampionName = "Caitlyn",
+                Radius = 180f,
                 Slot = SpellSlot.W,
                 HitType = new[] { global::Activator.HitType.CrowdControl }
             });
@@ -76,14 +83,16 @@ namespace Activator
             {
                 Name = "LuxLightstrike_tar",
                 ChampionName = "Lux",
+                Radius = 400f,
                 Slot = SpellSlot.E,
-                HitType = new []{global::Activator.HitType.CrowdControl }
+                HitType = new[] { global::Activator.HitType.None }
             });
 
             troydata.Add(new gametroydata
             {
                 Name = "ViktorChaosStorm",
                 ChampionName = "Viktor",
+                Radius = 425f,
                 Slot = SpellSlot.R,
                 HitType =
                     new[]
@@ -97,6 +106,7 @@ namespace Activator
             {
                 Name = "ViktorCatalyst",
                 ChampionName = "Viktor",
+                Radius = 400f,
                 Slot = SpellSlot.W,
                 HitType = new[] { global::Activator.HitType.CrowdControl }
             });
@@ -105,6 +115,7 @@ namespace Activator
             {
                 Name = "cryo_storm",
                 ChampionName = "Anivia",
+                Radius = 450f,
                 Slot = SpellSlot.R,
                 HitType = new[] { global::Activator.HitType.CrowdControl }
             });
@@ -113,6 +124,7 @@ namespace Activator
             {
                 Name = "ZiggsE",
                 ChampionName = "Ziggs",
+                Radius = 400f,
                 Slot = SpellSlot.E,
                 HitType = new []{ global::Activator.HitType.CrowdControl }
             });
@@ -121,6 +133,7 @@ namespace Activator
             {
                 Name = "ZiggsWRing",
                 ChampionName = "Ziggs",
+                Radius = 350f,
                 Slot = SpellSlot.W,
                 HitType = new []{ global::Activator.HitType.CrowdControl }
             });
@@ -129,6 +142,7 @@ namespace Activator
             {
                 Name = "CassMiasma_tar",
                 ChampionName = "Cassiopeia",
+                Radius = 350f,
                 Slot = SpellSlot.W,
                 HitType = new[] { global::Activator.HitType.CrowdControl, global::Activator.HitType.Spell }
             });
@@ -137,6 +151,7 @@ namespace Activator
             {
                 Name = "Soraka_Base_E_rune",
                 ChampionName = "Soraka",
+                Radius = 375f,
                 Slot = SpellSlot.E,
                 HitType = new[] { global::Activator.HitType.CrowdControl }
             });
@@ -145,6 +160,7 @@ namespace Activator
             {
                 Name = "W_Tar",
                 ChampionName = "Morgana",
+                Radius = 375f,
                 Slot = SpellSlot.W,
                 HitType = new []{ global::Activator.HitType.None }
             });

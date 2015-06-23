@@ -22,8 +22,18 @@ namespace Activator
 
         public bool ForceQSS;
         public bool Immunity;
+
         public int QSSBuffCount;
+        public int CleanseBuffCount;
+        public int DervishBuffCount;
+        public int MercurialBuffCount;
+        public int MikaelsBuffCount;
+
         public int QSSHighestBuffTime;
+        public int CleanseHighestBuffTime;
+        public int DervishHighestBuffTime;
+        public int MercurialHighestBuffTime;
+        public int MikaelsHighestBuffTime;
 
         public List<HitType> HitTypes = new List<HitType>();
 
