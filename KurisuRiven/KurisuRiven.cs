@@ -115,8 +115,6 @@ namespace KurisuRiven
                 {
                     if (player.ChampionName == "Riven")
                     {
-                        KurisuRivenUtils.Initialize();
-
                         w = new Spell(SpellSlot.W, 250f);
                         e = new Spell(SpellSlot.E, 270f);
 
