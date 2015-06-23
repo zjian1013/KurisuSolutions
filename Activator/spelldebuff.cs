@@ -168,7 +168,7 @@ namespace Activator
                 EvadeTimer = 2000,
                 Cleanse = true,
                 CleanseTimer = 0,
-                Slot = SpellSlot.Q
+                Slot = SpellSlot.E
             });
 
             debuffs.Add(new spelldebuff
@@ -179,7 +179,7 @@ namespace Activator
                 EvadeTimer = 2000,
                 Cleanse = true,
                 CleanseTimer = 0,
-                Slot = SpellSlot.Q
+                Slot = SpellSlot.E
             });
 
             debuffs.Add(new spelldebuff

@@ -318,9 +318,6 @@ namespace Activator
                         hero.HitTypes.Clear();
                     }
 
-                    if (hero.QSSBuffCount <= 1)
-                        hero.QSSHighestBuffTime = 0;
-
                     foreach (var buff in spelldebuff.debuffs)
                     {
                         if (buff.Name == args.Buff.Name.ToLower())

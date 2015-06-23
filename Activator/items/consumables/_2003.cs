@@ -56,7 +56,7 @@ namespace Activator.Items.Consumables
                     if (hero.Player.Health/hero.Player.MaxHealth*100 <=
                         Menu.Item("SelfLowHP" + Name + "Pct").GetValue<Slider>().Value)
                     {
-                        if (hero.IncomeDamage > 0 ||hero.MinionDamage > 0)
+                        if (hero.IncomeDamage > 0 || hero.MinionDamage > 0)
                         {
                             if (!hero.Player.IsRecalling() && !hero.Player.InFountain())
                                 UseItem();
