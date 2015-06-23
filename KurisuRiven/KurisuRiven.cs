@@ -215,7 +215,7 @@ namespace KurisuRiven
                 movepos = Game.CursorPos;
 
             // orbwalk movement
-            orbwalker.SetAttack(canmv && canaa);
+            orbwalker.SetAttack(canmv);
             orbwalker.SetMovement(canmv);
 
             // reqs ->
