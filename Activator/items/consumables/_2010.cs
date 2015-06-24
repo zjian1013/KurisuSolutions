@@ -92,11 +92,8 @@ namespace Activator.Items.Consumables
                     if (hero.Player.Mana / hero.Player.MaxMana * 100 <= 
                         Menu.Item("SelfLowMP" + Name + "Pct").GetValue<Slider>().Value)
                     {
-                        if (hero.IncomeDamage > 0 || hero.MinionDamage > 0)
-                        {
-                            if (!hero.Player.IsRecalling() && !hero.Player.InFountain())
-                                UseItem();
-                        }         
+                        if (!hero.Player.IsRecalling() && !hero.Player.InFountain())
+                            UseItem();     
                     }       
                 }
             }
