@@ -11,6 +11,11 @@ namespace Activator.Items.Defensives
             get { return 3048; }
         }
 
+        internal override int Priority
+        {
+            get { return 6; }
+        }
+
         internal override string Name
         {
             get { return "Seraphs"; }
@@ -21,9 +26,9 @@ namespace Activator.Items.Defensives
             get { return "Seraph's Embrace"; }
         }
 
-        internal override int Cooldown
+        internal override int Duration
         {
-            get { return 120000; }
+            get { return 2000; }
         }
 
         internal override float Range

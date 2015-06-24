@@ -10,6 +10,11 @@ namespace Activator.Items.Defensives
             get { return 3143; }
         }
 
+        internal override int Priority
+        {
+            get { return 4; }
+        }
+
         internal override string Name
         {
             get { return "Randuins"; }
@@ -20,9 +25,10 @@ namespace Activator.Items.Defensives
             get { return "Randuin's Omen"; }
         }
 
-        internal override int Cooldown
+
+        internal override int Duration
         {
-            get { return 60000; }
+            get { return 1000; }
         }
 
         internal override float Range

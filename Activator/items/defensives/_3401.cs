@@ -10,6 +10,10 @@ namespace Activator.Items.Defensives
         {
             get { return 3401; }
         }
+        internal override int Priority
+        {
+            get { return 6; }
+        }
 
         internal override string Name
         {
@@ -21,9 +25,9 @@ namespace Activator.Items.Defensives
             get { return "Face of the Mountain"; }
         }
 
-        internal override int Cooldown
+        internal override int Duration
         {
-            get { return 60000; }
+            get { return 2000; }
         }
 
         internal override float Range

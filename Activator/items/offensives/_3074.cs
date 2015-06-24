@@ -10,6 +10,11 @@ namespace Activator.Items.Offensives
             get { return 3074; }
         }
 
+        internal override int Priority
+        {
+            get { return 7; }
+        }
+
         internal override string Name
         {
             get { return "Hydra"; }
@@ -20,9 +25,9 @@ namespace Activator.Items.Offensives
             get { return "Ravenous Hydra"; }
         }
 
-        internal override int Cooldown
+        internal override int Duration
         {
-            get { return 10000; }
+            get { return 100; }
         }
 
         internal override float Range

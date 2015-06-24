@@ -10,6 +10,11 @@ namespace Activator.Items.Offensives
             get { return 3184; }
         }
 
+        internal override int Priority
+        {
+            get { return 7; }
+        }
+
         internal override string Name
         {
             get { return "Guardians"; }
@@ -25,9 +30,9 @@ namespace Activator.Items.Offensives
             get { return new[] { MapType.HowlingAbyss }; }
         }
 
-        internal override int Cooldown
+        internal override int Duration
         {
-            get { return 25000; }
+            get { return 100; }
         }
 
         internal override float Range

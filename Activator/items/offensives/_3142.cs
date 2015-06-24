@@ -10,12 +10,17 @@ namespace Activator.Items.Offensives
             get { return 3142; }
         }
 
+        internal override int Priority
+        {
+            get { return 7; }
+        }
+
         internal override string Name
         {
             get { return "Youmuus"; }
         }
 
-        internal override int Cooldown
+        internal override int Duration
         {
             get { return 45000; }
         }

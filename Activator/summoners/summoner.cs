@@ -10,7 +10,7 @@ namespace Activator.Summoners
         internal virtual string DisplayName { get; set; }
         internal virtual string[] ExtraNames { get; set; }
         internal virtual float Range { get; set; }
-        internal virtual int Cooldown { get; set; }
+        internal virtual int Duration { get; set; }
         internal virtual int DefaultMP { get; set; }
         internal virtual int DefaultHP { get; set; }
 
@@ -22,9 +22,14 @@ namespace Activator.Summoners
         {
             if (!combo || Activator.Origin.Item("usecombo").GetValue<KeyBind>().Active)
             {
-                if (Player.GetSpell(Slot).State == SpellState.Ready)
+                if (Utils.GameTimeTickCount - Activator.LastUsedTimeStamp > Activator.LastUsedDuration)
                 {
-                    Player.Spellbook.CastSpell(Slot);
+                    if (Player.GetSpell(Slot).State == SpellState.Ready)
+                    {
+                        Player.Spellbook.CastSpell(Slot);
+                        Activator.LastUsedTimeStamp = Utils.GameTimeTickCount;
+                        Activator.LastUsedDuration = Duration;
+                    }
                 }
             }
         }
@@ -33,9 +38,14 @@ namespace Activator.Summoners
         {
             if (!combo || Activator.Origin.Item("usecombo").GetValue<KeyBind>().Active)
             {
-                if (Player.GetSpell(Slot).State == SpellState.Ready)
+                if (Utils.GameTimeTickCount - Activator.LastUsedTimeStamp > Activator.LastUsedDuration)
                 {
-                    Player.Spellbook.CastSpell(Slot, target);
+                    if (Player.GetSpell(Slot).State == SpellState.Ready)
+                    {
+                        Player.Spellbook.CastSpell(Slot, target);
+                        Activator.LastUsedTimeStamp = Utils.GameTimeTickCount;
+                        Activator.LastUsedDuration = Duration;
+                    }
                 }
             }
         }

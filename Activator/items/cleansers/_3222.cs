@@ -21,9 +21,14 @@ namespace Activator.Items.Cleansers
             get { return "Mikael's Crucible"; }
         }
 
-        internal override int Cooldown
+        internal override int Priority
         {
-            get { return 180000; }
+            get { return 7; }
+        }
+
+        internal override int Duration
+        {
+            get { return 1000; }
         }
 
         internal override float Range

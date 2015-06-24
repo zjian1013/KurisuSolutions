@@ -10,6 +10,11 @@ namespace Activator.Items.Offensives
             get { return 3153; }
         }
 
+        internal override int Priority
+        {
+            get { return 7; }
+        }
+
         internal override string Name
         {
             get { return "Botrk"; }
@@ -20,9 +25,9 @@ namespace Activator.Items.Offensives
             get { return "Blade of the Ruined King"; }
         }
 
-        internal override int Cooldown
+        internal override int Duration
         {
-            get { return 90000; }
+            get { return 3000; }
         }
 
         internal override float Range

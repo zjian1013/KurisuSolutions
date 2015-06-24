@@ -14,6 +14,22 @@ namespace Activator.Items.Consumables
             get { return "Soon™"; }
         }
 
+        internal override string DisplayName
+        {
+            get { return "Soon™"; }
+        }
+
+
+        internal override int Duration
+        {
+            get { return 100; }
+        }
+
+        internal override int Priority
+        {
+            get { return 3; }
+        }
+
         internal override float Range
         {
             get { return 600f; }

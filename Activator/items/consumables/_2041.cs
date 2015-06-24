@@ -9,10 +9,24 @@ namespace Activator.Items.Consumables
         {
             get { return 2041; }
         }
+        internal override int Priority
+        {
+            get { return 3; }
+        }
 
         internal override string Name
         {
             get { return "Crystalline Flask"; }
+        }
+
+        internal override string DisplayName
+        {
+            get { return "Crystalline Flask"; }
+        }
+
+        internal override int Duration
+        {
+            get { return 100; }
         }
 
         internal override float Range

@@ -10,6 +10,11 @@ namespace Activator.Items.Offensives
             get { return 3092; }
         }
 
+        internal override int Priority
+        {
+            get { return 7; }
+        }
+
         internal override string Name 
         {
             get { return "Queens"; }
@@ -25,9 +30,9 @@ namespace Activator.Items.Offensives
             get { return 850f; }
         }
 
-        internal override int Cooldown
+        internal override int Duration
         {
-            get { return 60000; }
+            get { return 2000; }
         }
 
         internal override int DefaultHP

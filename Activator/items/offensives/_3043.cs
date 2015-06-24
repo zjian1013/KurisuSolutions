@@ -10,10 +10,19 @@ namespace Activator.Items.Offensives
         {
             get { return 3043; }
         }
+        internal override int Priority
+        {
+            get { return 7; }
+        }
 
         internal override string Name
         {
             get { return "Muramana"; }
+        }
+
+        internal override int Duration
+        {
+            get { return 100; }
         }
 
         internal override float Range

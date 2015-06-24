@@ -11,6 +11,10 @@ namespace Activator.Items.Defensives
         {
             get { return 3157; }
         }
+        internal override int Priority
+        {
+            get { return 7; }
+        }
 
         internal override string Name
         {
@@ -22,9 +26,9 @@ namespace Activator.Items.Defensives
             get { return "Zhonay's Hourglass"; }
         }
 
-        internal override int Cooldown
+        internal override int Duration
         {
-            get { return 90000; }
+            get { return 2500; }
         }
 
         internal override float Range

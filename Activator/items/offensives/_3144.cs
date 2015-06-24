@@ -11,6 +11,11 @@ namespace Activator.Items.Offensives
             get { return 3144; }
         }
 
+        internal override int Priority
+        {
+            get { return 7; }
+        }
+
         internal override string Name
         {
             get { return "Cutlass"; }
@@ -21,9 +26,9 @@ namespace Activator.Items.Offensives
             get { return "Bilgewater's Cutlass"; }
         }
 
-        internal override int Cooldown
+        internal override int Duration
         {
-            get { return 90000; }
+            get { return 2000; }
         }
 
         internal override float Range

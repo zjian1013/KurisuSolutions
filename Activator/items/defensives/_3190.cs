@@ -11,6 +11,11 @@ namespace Activator.Items.Defensives
             get { return 3190; }
         }
 
+        internal override int Priority
+        {
+            get { return 4; }
+        }
+
         internal override string Name
         {
             get { return "Locket"; }
@@ -21,9 +26,9 @@ namespace Activator.Items.Defensives
             get { return "Locket of Iron Solari"; }
         }
 
-        internal override int Cooldown
+        internal override int Duration
         {
-            get { return 60000; }
+            get { return 2000; }
         }
 
         internal override float Range

@@ -9,10 +9,24 @@ namespace Activator.Items.Consumables
         {
             get { return 2004; }
         }
+        internal override int Priority
+        {
+            get { return 3; }
+        }
 
         internal override string Name
         {
             get { return "Mana Potion"; }
+        }
+
+        internal override string DisplayName
+        {
+            get { return "Mana Potion"; }
+        }
+
+        internal override int Duration
+        {
+            get { return 100; }
         }
 
         internal override float Range
@@ -58,11 +72,8 @@ namespace Activator.Items.Consumables
                     if (hero.Player.Mana/hero.Player.MaxMana*100 <= 
                         Menu.Item("SelfLowMP" + Name + "Pct").GetValue<Slider>().Value)
                     {
-                        if (hero.IncomeDamage > 0 || hero.MinionDamage > 0)
-                        {
-                            if (!hero.Player.IsRecalling() && !hero.Player.InFountain())
-                                UseItem();
-                        }
+                        if (!hero.Player.IsRecalling() && !hero.Player.InFountain())
+                            UseItem();
                     }
                 }
             }

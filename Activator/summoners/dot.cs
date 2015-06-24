@@ -26,9 +26,9 @@ namespace Activator.Summoners
             get { return 600f; }
         }
 
-        internal override int Cooldown
+        internal override int Duration
         {
-            get { return 210000; }
+            get { return 100; }
         }
 
         private static Spell ignote;

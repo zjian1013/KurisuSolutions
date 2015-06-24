@@ -21,9 +21,14 @@ namespace Activator.Items.Cleansers
             get { return "Mercurial Scimitar"; }
         }
 
-        internal override int Cooldown
+        internal override int Priority
         {
-            get { return 90000; }
+            get { return 6; }
+        }
+
+        internal override int Duration
+        {
+            get { return 1000; }
         }
 
         internal override float Range

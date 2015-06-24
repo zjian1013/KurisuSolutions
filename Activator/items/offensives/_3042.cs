@@ -10,6 +10,10 @@ namespace Activator.Items.Offensives
         {
             get { return 3042; }
         }
+        internal override int Priority
+        {
+            get { return 7; }
+        }
 
         internal override string Name
         {
@@ -19,6 +23,11 @@ namespace Activator.Items.Offensives
         internal override float Range
         {
             get { return float.MaxValue; }
+        }
+
+        internal override int Duration
+        {
+            get { return 100; }
         }
 
         internal override MenuType[] Category

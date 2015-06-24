@@ -11,6 +11,11 @@ namespace Activator.Items.Offensives
             get { return 3800; }
         }
 
+        internal override int Priority
+        {
+            get { return 7; }
+        }
+
         internal override string Name
         {
             get { return "Righteous"; }
@@ -21,9 +26,9 @@ namespace Activator.Items.Offensives
             get { return "Righteous Glory (Broken)"; }
         }
 
-        internal override int Cooldown
+        internal override int Duration
         {
-            get { return 60000; }
+            get { return 100; }
         }
 
         internal override float Range

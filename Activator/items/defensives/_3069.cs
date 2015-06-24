@@ -10,6 +10,10 @@ namespace Activator.Items.Defensives
         {
             get { return 3069; }
         }
+        internal override int Priority
+        {
+            get { return 4; }
+        }
 
         internal override string Name
         {
@@ -21,9 +25,9 @@ namespace Activator.Items.Defensives
             get { return "Talisman of Ascension"; }
         }
 
-        internal override int Cooldown
+        internal override int Duration
         {
-            get { return 40000; }
+            get { return 2000; }
         }
 
         internal override float Range

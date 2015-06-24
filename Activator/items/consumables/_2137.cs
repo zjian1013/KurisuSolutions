@@ -9,16 +9,31 @@ namespace Activator.Items.Consumables
         {
             get { return 2137; }
         }
+        internal override int Priority
+        {
+            get { return 3; }
+        }
 
         internal override string Name
         {
             get { return "Elixir of Ruin"; }
         }
 
+        internal override string DisplayName
+        {
+            get { return "Elixir of Ruin"; }
+        }
+
+        internal override int Duration
+        {
+            get { return 100; }
+        }
+
         internal override float Range
         {
             get { return float.MaxValue; }
         }
+
         internal override MenuType[] Category
         {
             get { return new[] { MenuType.SelfLowHP, MenuType.SelfMuchHP }; }

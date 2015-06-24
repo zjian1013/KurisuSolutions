@@ -25,9 +25,9 @@ namespace Activator.Summoners
             get { return 600f; }
         }
 
-        internal override int Cooldown
+        internal override int Duration
         {
-            get { return 180000; }
+            get { return 1000; }
         }
 
         public override void OnTick(EventArgs args)

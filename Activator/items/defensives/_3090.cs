@@ -17,14 +17,19 @@ namespace Activator.Items.Defensives
             get { return "Wooglets"; }
         }
 
+        internal override int Priority
+        {
+            get { return 7; }
+        }
+
         internal override string DisplayName
         {
             get { return "Wooglet's Witchcap"; }
         }
 
-        internal override int Cooldown
+        internal override int Duration
         {
-            get { return 90000; }
+            get { return 2500; }
         }
 
         internal override float Range

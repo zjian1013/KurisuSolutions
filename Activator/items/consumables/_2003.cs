@@ -11,9 +11,24 @@ namespace Activator.Items.Consumables
             get { return 2003; }
         }
 
+        internal override int Priority
+        {
+            get { return 3; }
+        }
+
         internal override string Name
         {
             get { return "Health Potion"; }
+        }
+
+        internal override string DisplayName
+        {
+            get { return "Health Potion"; }
+        }
+
+        internal override int Duration
+        {
+            get { return 100; }
         }
 
         internal override float Range

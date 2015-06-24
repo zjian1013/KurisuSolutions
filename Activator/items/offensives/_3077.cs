@@ -10,14 +10,19 @@ namespace Activator.Items.Offensives
             get { return 3077; }
         }
 
+        internal override int Priority
+        {
+            get { return 7; }
+        }
+
         internal override string Name
         {
             get { return "Tiamat"; }
         }
 
-        internal override int Cooldown
+        internal override int Duration
         {
-            get { return 10000; }
+            get { return 100; }
         }
 
         internal override float Range

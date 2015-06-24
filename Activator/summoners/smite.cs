@@ -22,6 +22,11 @@ namespace Activator.Summoners
             get { return 500f; }
         }
 
+        internal override int Duration
+        {
+            get { return 100; }
+        }
+
         internal static readonly string[] SmallMinions =
         {
             "SRU_Murkwolf",

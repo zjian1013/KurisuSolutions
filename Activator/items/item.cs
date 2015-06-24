@@ -10,7 +10,9 @@ namespace Activator.Items
     public class item
     {
         internal virtual int Id { get; set; }
-        internal virtual int Cooldown { get; set; }
+        internal virtual int Priority { get; set; }
+        internal virtual int Duration { get; set; }
+        internal virtual bool Craving { get; set; }
         internal virtual string Name { get; set; }
         internal virtual string DisplayName { get; set; }
         internal virtual float Range { get; set; }
@@ -35,37 +37,78 @@ namespace Activator.Items
             }
         }
 
+        public static IEnumerable<item> PriorityList()
+        {
+            var hpi = from ii in spelldata.items
+                      where  ii.Craving && LeagueSharp.Common.Items.CanUseItem(ii.Id)
+                      orderby ii.Menu.Item("prior" + ii.Name).GetValue<Slider>().Value descending 
+                      select ii;
+
+            return hpi;
+        }
+           
         public void UseItem(bool combo = false)
         {
+            Craving = true;
             if (!combo || Activator.Origin.Item("usecombo").GetValue<KeyBind>().Active)
             {
-                if(LeagueSharp.Common.Items.CanUseItem(Id))
+                if (PriorityList().Any())
                 {
-                    LeagueSharp.Common.Items.UseItem(Id);
+                    if (Name == PriorityList().First().Name)
+                    {
+                        if (Utils.GameTimeTickCount - Activator.LastUsedTimeStamp > Duration)
+                        {
+                            LeagueSharp.Common.Items.UseItem(Id);
+                            Activator.LastUsedTimeStamp = Utils.GameTimeTickCount;
+                            Activator.LastUsedDuration = Duration;
+                        }
+                    }
                 }
             }
+
+            Craving = false;
         }
 
         public void UseItem(Obj_AI_Base target, bool combo = false)
         {
+            Craving = true;
             if (!combo || Activator.Origin.Item("usecombo").GetValue<KeyBind>().Active)
             {
-                if (LeagueSharp.Common.Items.CanUseItem(Id))
+                if (PriorityList().Any())
                 {
-                    LeagueSharp.Common.Items.UseItem(Id, target);
+                    if (Name == PriorityList().First().Name)
+                    {
+                        if (Utils.GameTimeTickCount - Activator.LastUsedTimeStamp > Duration)
+                        {
+                            LeagueSharp.Common.Items.UseItem(Id, target);
+                            Activator.LastUsedTimeStamp = Utils.GameTimeTickCount;
+                            Activator.LastUsedDuration = Duration;
+                        }
+                    }
                 }
             }
+
+            Craving = false;
         }
 
         public void UseItem(Vector3 pos, bool combo = false)
         {
+            Craving = true;
             if (!combo || Activator.Origin.Item("usecombo").GetValue<KeyBind>().Active)
             {
-                if (LeagueSharp.Common.Items.CanUseItem(Id))
+
+                if (PriorityList().Any() && Name == PriorityList().First().Name)
                 {
-                    LeagueSharp.Common.Items.UseItem(Id, pos);
+                    if (Utils.GameTimeTickCount - Activator.LastUsedTimeStamp > Duration)
+                    {
+                        LeagueSharp.Common.Items.UseItem(Id, pos);
+                        Activator.LastUsedTimeStamp = Utils.GameTimeTickCount;
+                        Activator.LastUsedDuration = Duration;
+                    }
                 }
             }
+
+            Craving = false;
         }
 
         public item CreateMenu(Menu root)
@@ -74,6 +117,8 @@ namespace Activator.Items
 
             Menu = new Menu(Name, "m" + Name);
             Menu.AddItem(new MenuItem("use" + Name, "Use " + usefname)).SetValue(true);
+
+            Menu.AddItem(new MenuItem("prior" + Name, DisplayName + " Priority")).SetValue(new Slider(Priority, 1, 7));
 
             //if (Category.Any(t => t == MenuType.Stealth))
             //{
@@ -137,6 +182,8 @@ namespace Activator.Items
                 Menu.AddItem(new MenuItem("use" + Name + "Time", "Minumum Durration to Use")).SetValue(new Slider(2, 1, 5)); ;
                 Menu.AddItem(new MenuItem("use" + Name + "Od", "Use Only for Dangerous")).SetValue(false);
             }
+
+
 
             if (Category.Any(t => t == MenuType.ActiveCheck))
                 Menu.AddItem(new MenuItem("mode" + Name, "Mode: "))

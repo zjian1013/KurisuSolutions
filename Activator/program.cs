@@ -27,6 +27,8 @@ namespace Activator
         internal static Obj_AI_Hero Player = ObjectManager.Player;
 
         internal static int MapId;
+        internal static int LastUsedTimeStamp;
+        internal static int LastUsedDuration;
         internal static SpellSlot Smite;
         internal static bool SmiteInGame;
         internal static bool TroysInGame;

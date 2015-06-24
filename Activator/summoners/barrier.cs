@@ -27,17 +27,14 @@ namespace Activator.Summoners
             get { return float.MaxValue; }
         }
 
-        internal override int Cooldown
+        internal override int Duration
         {
-            get { return 210000; }
+            get { return 2000; }
         }
 
         public override void OnTick(EventArgs args)
         {
             if (!Menu.Item("use" + Name).GetValue<bool>())
-                return;
-
-            if (Player.IsRecalling() || Player.InFountain())
                 return;
 
             foreach (var hero in champion.Heroes)
@@ -48,7 +45,7 @@ namespace Activator.Summoners
                 if (hero.Player.Health / hero.Player.MaxHealth * 100 <=
                     Menu.Item("SelfLowHP" + Name + "Pct").GetValue<Slider>().Value)
                 {
-                    if (hero.IncomeDamage > 0)
+                    if (hero.IncomeDamage > 0 && !Player.IsRecalling() && !Player.InFountain())
                     {
                         UseSpell();
                     }
@@ -57,7 +54,7 @@ namespace Activator.Summoners
                 if (hero.IncomeDamage / hero.Player.MaxHealth * 100 >=
                     Menu.Item("SelfMuchHP" + Name + "Pct").GetValue<Slider>().Value)
                 {
-                    if (hero.IncomeDamage > 0)
+                    if (hero.IncomeDamage > 0 && !Player.IsRecalling() && !Player.InFountain())
                     {
                         UseSpell();
                     }

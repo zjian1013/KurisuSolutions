@@ -9,6 +9,10 @@ namespace Activator.Items.Defensives
         {
             get { return 3180; }
         }
+        internal override int Priority
+        {
+            get { return 4; }
+        }
 
         internal override string Name
         {
@@ -20,9 +24,9 @@ namespace Activator.Items.Defensives
             get { return "Odyn's Veil"; }
         }
 
-        internal override int Cooldown
+        internal override int Duration
         {
-            get { return 60000; }
+            get { return 1000; }
         }
 
         internal override float Range
