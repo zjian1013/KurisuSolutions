@@ -51,6 +51,8 @@ namespace Activator.Summoners
                         .Where(target => target.IsValidTarget(600) && !target.IsZombie)
                         .Where(target => !target.HasBuff("summonerdot", true)))
             {
+                if (!Parent.Item(Parent.Name + "allon" + target.ChampionName).GetValue<bool>())
+                    continue;
 
                 var ignotedmg = Player.GetSummonerSpellDamage(target, Damage.SummonerSpell.Ignite);
 

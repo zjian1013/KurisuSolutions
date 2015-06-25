@@ -5144,7 +5144,7 @@ namespace Activator
                 Delay = 250f,
                 HitType = new HitType[] { },
                 MissileName = "slashcast",
-                MissileSpeed = 700
+                MissileSpeed = 1200
             });
 
             spells.Add(new spelldata

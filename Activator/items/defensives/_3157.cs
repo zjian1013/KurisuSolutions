@@ -23,7 +23,7 @@ namespace Activator.Items.Defensives
 
         internal override string DisplayName
         {
-            get { return "Zhonay's Hourglass"; }
+            get { return "Zhonya's Hourglass"; }
         }
 
         internal override int Duration
@@ -67,6 +67,9 @@ namespace Activator.Items.Defensives
             {
                 if (hero.Player.NetworkId == Player.NetworkId)
                 {
+                    if (!Parent.Item(Parent.Name + "useon" + hero.Player.ChampionName).GetValue<bool>())
+                        continue;
+
                     if (Menu.Item("use" + Name + "Norm").GetValue<bool>())
                         if (hero.IncomeDamage > 0 && hero.HitTypes.Contains(HitType.Danger))
                             UseItem();

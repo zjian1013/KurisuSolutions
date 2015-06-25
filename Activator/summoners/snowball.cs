@@ -48,7 +48,8 @@ namespace Activator.Summoners
 
             foreach (var target in ObjectManager.Get<Obj_AI_Hero>().Where(h => h.IsValidTarget(Range)))
             {
-                mark.CastIfHitchanceEquals(target, HitChance.Medium);
+                if (Parent.Item(Parent.Name + "allon" + target.ChampionName).GetValue<bool>())
+                    mark.CastIfHitchanceEquals(target, HitChance.Medium);
             }
         }
     }

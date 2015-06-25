@@ -28,6 +28,9 @@ namespace Activator.Spells.Slows
 
             if (Player.HasBuffOfType(BuffType.Slow) && Menu.Item("use" + Name + "sr").GetValue<bool>())
             {
+                if (!Parent.Item(Parent.Name + "useon" + Player.ChampionName).GetValue<bool>())
+                    return;
+
                 UseSpell(Menu.Item("mode" + Name).GetValue<StringList>().SelectedIndex == 1);
             }
         }

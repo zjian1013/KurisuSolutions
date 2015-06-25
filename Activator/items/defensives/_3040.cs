@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using LeagueSharp;
 using LeagueSharp.Common;
 
 namespace Activator.Items.Defensives
@@ -58,14 +59,15 @@ namespace Activator.Items.Defensives
         public override void OnTick(EventArgs args)
         {
             if (!Menu.Item("use" + Name).GetValue<bool>())
-            {
                 return;
-            }
 
             foreach (var hero in champion.Heroes)
             {
                 if (hero.Player.NetworkId == Player.NetworkId)
                 {
+                    if (!Parent.Item(Parent.Name + "useon" + hero.Player.ChampionName).GetValue<bool>())
+                        continue;
+
                     if (Menu.Item("use" + Name + "Norm").GetValue<bool>() && 
                         hero.IncomeDamage > 0 && hero.HitTypes.Contains(HitType.Danger))
                         UseItem();

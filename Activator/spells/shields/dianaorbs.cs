@@ -50,6 +50,9 @@ namespace Activator.Spells.Shields
             {
                 if (hero.Player.NetworkId == Player.NetworkId)
                 {
+                    if (!Parent.Item(Parent.Name + "useon" + hero.Player.ChampionName).GetValue<bool>())
+                        continue;
+
                     if (hero.IncomeDamage/hero.Player.MaxHealth*100 >=
                         Menu.Item("SelfMuchHP" + Name + "Pct").GetValue<Slider>().Value)
                         UseSpellOn(hero.Player);

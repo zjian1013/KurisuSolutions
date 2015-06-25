@@ -20,6 +20,11 @@ namespace Activator.Items.Offensives
             get { return "Tiamat"; }
         }
 
+        internal override string DisplayName
+        {
+            get { return "Tiamat"; }
+        }
+
         internal override int Duration
         {
             get { return 100; }
@@ -54,6 +59,9 @@ namespace Activator.Items.Offensives
         {
             if (Menu.Item("use" + Name).GetValue<bool>() && Target != null)
             {
+                if (!Parent.Item(Parent.Name + "useon" + Target.ChampionName).GetValue<bool>())
+                    return;
+
                 if (Target.Health / Target.MaxHealth * 100 <= Menu.Item("EnemyLowHP" + Name + "Pct").GetValue<Slider>().Value)
                 {
                     UseItem(true);

@@ -42,9 +42,13 @@ namespace Activator.Spells.Shields
                 return;
 
             foreach (var hero in champion.Heroes)
-            {
+            {                    
+                if (!Parent.Item(Parent.Name + "useon" + hero.Player.ChampionName).GetValue<bool>())
+                        continue;
+
                 if (hero.Player.Distance(Player.ServerPosition) <= hero.Player.BoundingRadius)
                 {
+
                     if (hero.IncomeDamage/hero.Player.MaxHealth*100 >=
                         Menu.Item("SelfMuchHP" + Name + "Pct").GetValue<Slider>().Value)
                     {

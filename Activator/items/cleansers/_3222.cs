@@ -58,13 +58,16 @@ namespace Activator.Items.Cleansers
 
         public override void OnTick(EventArgs args)
         {
+            if (!Menu.Item("use" + Name).GetValue<bool>())
+                return;
+
             foreach (var hero in champion.Heroes)
             {
-                if (!Menu.Item("use" + Name).GetValue<bool>())
-                    return;
+                if (!Parent.Item(Parent.Name + "useon" + hero.Player.ChampionName).GetValue<bool>())
+                    continue;
 
                 if (hero.Player.Distance(Player.ServerPosition) > Range)
-                    return;
+                    continue;
 
                 if (hero.ForceQSS)
                 {

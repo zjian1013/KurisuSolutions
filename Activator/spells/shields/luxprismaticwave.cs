@@ -46,6 +46,9 @@ namespace Activator.Spells.Shields
             {
                 if (hero.Player.Distance(Player.ServerPosition) <= Range)
                 {
+                    if (!Parent.Item(Parent.Name + "useon" + hero.Player.ChampionName).GetValue<bool>())
+                        continue;
+
                     if (hero.IncomeDamage / hero.Player.MaxHealth * 100 >=
                         Menu.Item("SelfMuchHP" + Name + "Pct").GetValue<Slider>().Value)
                         UseSpellTowards(hero.Player.ServerPosition);

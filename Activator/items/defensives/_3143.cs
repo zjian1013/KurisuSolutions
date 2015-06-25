@@ -61,6 +61,9 @@ namespace Activator.Items.Defensives
             if (!Menu.Item("use" + Name).GetValue<bool>())
                 return;
 
+            if (!Parent.Item(Parent.Name + "useon" + Player.ChampionName).GetValue<bool>())
+                return;
+
             if (Player.CountEnemiesInRange(Range) >= Menu.Item("SelfCount" + Name).GetValue<Slider>().Value)
             {
                 UseItem();

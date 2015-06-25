@@ -44,7 +44,10 @@ namespace Activator.Spells.Health
             foreach (var hero in champion.Heroes)
             {
                 if (hero.Player.Distance(Player.ServerPosition) > Range)
-                    return;
+                    continue;
+
+                if (!Parent.Item(Parent.Name + "useon" + hero.Player.ChampionName).GetValue<bool>())
+                    continue;
 
                 if (!Player.HasBuffOfType(BuffType.Invulnerability))
                 {

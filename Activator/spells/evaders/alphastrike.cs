@@ -36,7 +36,10 @@ namespace Activator.Spells.Evaders
                 if (hero.Player.NetworkId == Player.NetworkId)
                 {
                     if (hero.Attacker == null)
-                        return;
+                        continue;
+
+                    if (!Parent.Item(Parent.Name + "useon" + hero.Player.ChampionName).GetValue<bool>())
+                        continue;
 
                     if (hero.Attacker.Distance(hero.Player.ServerPosition) <= Range)
                     {

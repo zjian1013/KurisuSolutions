@@ -44,10 +44,13 @@ namespace Activator.Spells.Health
             foreach (var hero in champion.Heroes)
             {
                 if (hero.Player.NetworkId != Player.NetworkId || Player.InFountain())
-                    return;
+                    continue;
 
                 if (hero.Player.Distance(Player.ServerPosition) <= Range)
                 {
+                    if (!Parent.Item(Parent.Name + "useon" + hero.Player.ChampionName).GetValue<bool>())
+                        continue;
+
                     if (!Player.HasBuffOfType(BuffType.Invulnerability))
                     {
                         if (hero.Player.Health/hero.Player.MaxHealth*100 <=

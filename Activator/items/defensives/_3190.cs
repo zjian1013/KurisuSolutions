@@ -65,6 +65,9 @@ namespace Activator.Items.Defensives
 
             foreach (var hero in champion.Heroes)
             {
+                if (!Parent.Item(Parent.Name + "useon" + hero.Player.ChampionName).GetValue<bool>())
+                    continue;
+
                 if (hero.Player.Distance(Player.ServerPosition) <= Range)
                 {
                     if (Menu.Item("use" + Name + "Norm").GetValue<bool>())

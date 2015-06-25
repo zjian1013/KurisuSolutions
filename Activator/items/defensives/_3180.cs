@@ -59,6 +59,9 @@ namespace Activator.Items.Defensives
             if (!Menu.Item("use" + Name).GetValue<bool>())
                 return;
 
+            if (!Parent.Item(Parent.Name + "useon" + Player.ChampionName).GetValue<bool>())
+                return;
+
             if (Player.Health/Player.MaxHealth*100 <= Menu.Item("SelfLowHP" + Name + "Pct").GetValue<Slider>().Value)
             {
                 UseItem();

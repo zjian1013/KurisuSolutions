@@ -23,9 +23,10 @@ namespace Activator.Items
         internal virtual int DefaultHP { get; set; }
 
         public Menu Menu { get; private set; }
+        public Menu Parent { get { return Menu.Parent; } }
         public Obj_AI_Hero Player { get { return ObjectManager.Player; } }
 
-        public Obj_AI_Base Target
+        public Obj_AI_Hero Target
         {
             get
             {
@@ -50,6 +51,7 @@ namespace Activator.Items
         public void UseItem(bool combo = false)
         {
             Craving = true;
+
             if (!combo || Activator.Origin.Item("usecombo").GetValue<KeyBind>().Active)
             {
                 if (PriorityList().Any())
@@ -72,6 +74,7 @@ namespace Activator.Items
         public void UseItem(Obj_AI_Base target, bool combo = false)
         {
             Craving = true;
+
             if (!combo || Activator.Origin.Item("usecombo").GetValue<KeyBind>().Active)
             {
                 if (PriorityList().Any())
@@ -94,9 +97,9 @@ namespace Activator.Items
         public void UseItem(Vector3 pos, bool combo = false)
         {
             Craving = true;
+
             if (!combo || Activator.Origin.Item("usecombo").GetValue<KeyBind>().Active)
             {
-
                 if (PriorityList().Any() && Name == PriorityList().First().Name)
                 {
                     if (Utils.GameTimeTickCount - Activator.LastUsedTimeStamp > Duration)
@@ -117,19 +120,13 @@ namespace Activator.Items
 
             Menu = new Menu(Name, "m" + Name);
             Menu.AddItem(new MenuItem("use" + Name, "Use " + usefname)).SetValue(true);
-
             Menu.AddItem(new MenuItem("prior" + Name, DisplayName + " Priority")).SetValue(new Slider(Priority, 1, 7));
 
-            //if (Category.Any(t => t == MenuType.Stealth))
-            //{
-            //    Menu.AddItem(new MenuItem("Stealth" + Name + "Ward", "Use on Placed Wards")).SetValue(DefaultHP == 99);
-            //    Menu.AddItem(new MenuItem("Stealth" + Name + "Traps", "Use on Placed Traps (Shrooms etc)")).SetValue(DefaultHP == 99);
-            //    Menu.AddItem(new MenuItem("Stealth" + Name + "Hero", "Use on Enemy Stealth")).SetValue(true);
-            //}
-
             if (Category.Any(t => t == MenuType.EnemyLowHP))
+            {
                 Menu.AddItem(new MenuItem("EnemyLowHP" + Name + "Pct", "Use on Enemy HP % <="))
                     .SetValue(new Slider(DefaultHP));
+            }
 
             if (Category.Any(t => t == MenuType.SelfLowHP))
                 Menu.AddItem(new MenuItem("SelfLowHP" + Name + "Pct", "Use on Hero HP % <="))
@@ -180,7 +177,7 @@ namespace Activator.Items
 
                 Menu.AddItem(new MenuItem("use" + Name + "Number", "Minimum Spells to Use")).SetValue(new Slider(DefaultHP/5, 1, 5));
                 Menu.AddItem(new MenuItem("use" + Name + "Time", "Minumum Durration to Use")).SetValue(new Slider(2, 1, 5)); ;
-                Menu.AddItem(new MenuItem("use" + Name + "Od", "Use Only for Dangerous")).SetValue(false);
+                Menu.AddItem(new MenuItem("use" + Name + "Od", "Only use on Dangerous")).SetValue(false);
             }
 
 

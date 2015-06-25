@@ -65,8 +65,11 @@ namespace Activator.Items.Cleansers
 
                 if (hero.Player.NetworkId == Player.NetworkId)
                 {
+                    if (!Parent.Item(Parent.Name + "useon" + hero.Player.ChampionName).GetValue<bool>())
+                        continue; 
+
                     if (hero.Player.Distance(Player.ServerPosition) > Range)
-                        return;
+                        continue; 
 
                     if (hero.ForceQSS)
                     {

@@ -51,22 +51,26 @@ namespace Activator
             new drawings();
 
             // new menu
-            Origin = new Menu("Activator", "activator", true);
+            Origin = new Menu("Kurisu's Activator", "activator", true);
             var cmenu = new Menu("Cleansers", "cleansers");
+            SubMenu(cmenu, false);
             GetItemGroup("Items.Cleansers").ForEach(t => NewItem((item) NewInstance(t), cmenu));
             cmenu.AddItem(new MenuItem("acdebug", "Debug")).SetValue(false);   
 
             Origin.AddSubMenu(cmenu);
 
             var dmenu = new Menu("Defensives", "dmenu");
+            SubMenu(dmenu, false);
             GetItemGroup("Items.Defensives").ForEach(t => NewItem((item) NewInstance(t), dmenu));
             Origin.AddSubMenu(dmenu);
 
             var smenu = new Menu("Summoners", "smenu");
+            SubMenuEx(smenu);
             GetItemGroup("Summoners").ForEach(t => NewSummoner((summoner) NewInstance(t), smenu));
             Origin.AddSubMenu(smenu);
 
             var omenu = new Menu("Offensives", "omenu");
+            SubMenu(omenu, true);
             GetItemGroup("Items.Offensives").ForEach(t => NewItem((item) NewInstance(t), omenu));
             Origin.AddSubMenu(omenu);
 
@@ -75,6 +79,7 @@ namespace Activator
             Origin.AddSubMenu(imenu);
 
             var amenu = new Menu("Auto Spells", "amenu");
+            SubMenu(amenu, false);
             GetItemGroup("Spells.Evaders").ForEach(t => NewSpell((spell)NewInstance(t), amenu));
             GetItemGroup("Spells.Shields").ForEach(t => NewSpell((spell)NewInstance(t), amenu));
             GetItemGroup("Spells.Health").ForEach(t => NewSpell((spell)NewInstance(t), amenu));
@@ -245,6 +250,33 @@ namespace Activator
                     Console.WriteLine("[A]: " + i.ChampionName + " troy detected/added to table!");
                 }
             }
+        }
+
+        private static void SubMenuEx(Menu parent)
+        {
+            var menu = new Menu("Config", parent.Name + "sub");
+            foreach (var hero in HeroManager.AllHeroes)
+            {
+                var side = hero.Team == Player.Team ? "[Ally]" : "[Enemy]";
+                menu.AddItem(new MenuItem(parent.Name + "allon" + hero.ChampionName,
+                    "Use for " + hero.ChampionName + " " + side)).SetValue(true);
+            }
+
+            parent.AddSubMenu(menu);
+        }
+
+        private static void SubMenu(Menu parent, bool enemy)
+        {
+            var menu = new Menu("Config", parent.Name + "sub");
+            foreach (var hero in enemy ? HeroManager.Enemies : HeroManager.Allies)
+            {
+                var side = hero.Team == Player.Team ? "[Ally]" : "[Enemy]";
+                menu.AddItem(new MenuItem(parent.Name + "useon" + hero.ChampionName,
+                    "Use for " + hero.ChampionName + " " + side)).SetValue(true);
+
+            }
+
+            parent.AddSubMenu(menu);
         }
 
         private static object NewInstance(Type type)

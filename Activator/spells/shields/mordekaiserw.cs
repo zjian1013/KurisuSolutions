@@ -44,11 +44,13 @@ namespace Activator.Spells.Shields
                 Menu.Item("SelfMinHP" + Name + "Pct").GetValue<Slider>().Value)
                 return;
 
-
             foreach (var hero in champion.Heroes)
             {
                 if (hero.Player.Distance(Player.ServerPosition) <= Range)
                 {
+                    if (!Parent.Item(Parent.Name + "useon" + hero.Player.ChampionName).GetValue<bool>())
+                        continue;
+
                     if (hero.IncomeDamage / hero.Player.MaxHealth * 100 >=
                         Menu.Item("SelfMuchHP" + Name + "Pct").GetValue<Slider>().Value)
                         UseSpellOn(hero.Player);

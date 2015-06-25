@@ -15,6 +15,7 @@ namespace Activator.Summoners
         internal virtual int DefaultHP { get; set; }
 
         public Menu Menu { get; private set; }
+        public Menu Parent { get { return Menu.Parent; } }
         public SpellSlot Slot { get { return Player.GetSpellSlot(Name); } }
         public Obj_AI_Hero Player { get { return ObjectManager.Player; } }
 

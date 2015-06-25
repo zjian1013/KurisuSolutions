@@ -43,20 +43,23 @@ namespace Activator.Spells.Evaders
 
             foreach (var hero in champion.Heroes)
             {
-                if (hero.Player.Distance(Player.ServerPosition) <= Range)
+                if (Parent.Item(Parent.Name + "useon" + hero.Player.ChampionName).GetValue<bool>())
                 {
-                    if (hero.Player.Health/hero.Player.MaxHealth*100 <=
-                        Menu.Item("SelfLowHP" + Name + "Pct").GetValue<Slider>().Value)
-                        if (hero.IncomeDamage > 0)
-                            UseSpellOn(hero.Player);
+                    if (hero.Player.Distance(Player.ServerPosition) <= Range)
+                    {
+                        if (hero.Player.Health / hero.Player.MaxHealth * 100 <=
+                            Menu.Item("SelfLowHP" + Name + "Pct").GetValue<Slider>().Value)
+                            if (hero.IncomeDamage > 0)
+                                UseSpellOn(hero.Player);
 
-                    if (Menu.Item("use" + Name + "Norm").GetValue<bool>())
-                        if (hero.IncomeDamage > 0 && hero.HitTypes.Contains(HitType.Danger))
-                            UseSpellOn(hero.Player);
+                        if (Menu.Item("use" + Name + "Norm").GetValue<bool>())
+                            if (hero.IncomeDamage > 0 && hero.HitTypes.Contains(HitType.Danger))
+                                UseSpellOn(hero.Player);
 
-                    if (Menu.Item("use" + Name + "Ulti").GetValue<bool>())
-                        if (hero.IncomeDamage > 0 && hero.HitTypes.Contains(HitType.Ultimate))
-                            UseSpellOn(hero.Player);
+                        if (Menu.Item("use" + Name + "Ulti").GetValue<bool>())
+                            if (hero.IncomeDamage > 0 && hero.HitTypes.Contains(HitType.Ultimate))
+                                UseSpellOn(hero.Player);
+                    }
                 }
             }
         }

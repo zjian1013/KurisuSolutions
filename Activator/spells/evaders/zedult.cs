@@ -34,12 +34,15 @@ namespace Activator.Spells.Evaders
             foreach (var hero in champion.Heroes)
             {
                 if (hero.Player.NetworkId == Player.NetworkId)
-                {
+                { 
+                    if (!Parent.Item(Parent.Name + "useon" + hero.Player.ChampionName).GetValue<bool>())
+                        continue;
+
                     if (hero.Attacker == null)
-                        return;
+                        continue;
 
                     if (hero.Attacker.Distance(hero.Player.ServerPosition) > Range)
-                        return;
+                        continue;
 
                     if (Menu.Item("use" + Name + "Norm").GetValue<bool>())
                         if (hero.IncomeDamage > 0 && hero.HitTypes.Contains(HitType.Danger))

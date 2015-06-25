@@ -48,10 +48,11 @@ namespace Activator.Spells.Evaders
             foreach (var hero in champion.Heroes)
             {
                 if (hero.Attacker == null || hero.Player.NetworkId != Player.NetworkId)
-                    return;
+                    continue;
 
-                if (hero.Attacker.Distance(hero.Player.ServerPosition) > Range)
-                    return;
+                if (!Parent.Item(Parent.Name + "useon" + hero.Player.ChampionName).GetValue<bool>() ||
+                    hero.Attacker.Distance(hero.Player.ServerPosition) > Range)
+                    continue;
 
                 if (Menu.Item("ss" + Name + "All").GetValue<bool>())
                     if (hero.IncomeDamage > 0 && hero.HitTypes.Contains(HitType.Spell))

@@ -42,10 +42,14 @@ namespace Activator.Summoners
                 if (hero.Player.NetworkId != Player.NetworkId)
                     return;
 
+                if (!Parent.Item(Parent.Name + "allon" + hero.Player.ChampionName).GetValue<bool>())
+                    continue;
+
                 if (hero.Player.Health / hero.Player.MaxHealth * 100 <=
                     Menu.Item("SelfLowHP" + Name + "Pct").GetValue<Slider>().Value)
                 {
-                    if (hero.IncomeDamage > 0 && !Player.IsRecalling() && !Player.InFountain())
+                    if (hero.IncomeDamage > 0 && !Player.IsRecalling() && !Player.InFountain() ||
+                        hero.IncomeDamage > hero.Player.Health)
                     {
                         UseSpell();
                     }

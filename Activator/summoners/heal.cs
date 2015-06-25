@@ -37,13 +37,16 @@ namespace Activator.Summoners
 
             foreach (var hero in champion.Heroes)
             {
+                if (!Parent.Item(Parent.Name + "allon" + hero.Player.ChampionName).GetValue<bool>())
+                    continue;
+
                 if (hero.Player.Distance(Player.ServerPosition) <= Range)
                 {
                     if (hero.Player.Health / hero.Player.MaxHealth * 100 <=
                         Menu.Item("SelfLowHP" + Name + "Pct").GetValue<Slider>().Value)
                     {
-                        if (hero.IncomeDamage > 0 && !hero.Player.IsRecalling() && 
-                           !hero.Player.InFountain())
+                        if (hero.IncomeDamage > 0 && !hero.Player.IsRecalling() && !hero.Player.InFountain() ||
+                            hero.IncomeDamage > hero.Player.Health)
                             UseSpell();
                     }
 

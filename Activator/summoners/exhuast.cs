@@ -46,32 +46,40 @@ namespace Activator.Summoners
 
             foreach (var hero in champion.Heroes)
             {
-                if (hero.Attacker == null) 
+                var enemy = hero.Attacker as Obj_AI_Hero;
+                if (enemy == null || highestadinrange == null) 
                     continue;
 
-                if (hero.Attacker.Distance(hero.Player.ServerPosition) > Range) 
+                if (enemy.Distance(hero.Player.ServerPosition) > Range) 
                     continue;
 
                 if (Menu.Item("use" + Name + "Ulti").GetValue<bool>())
                 {
-                    if (hero.IncomeDamage > 0 && 
-                        hero.HitTypes.Contains(HitType.Ultimate))
-                        UseSpellOn(hero.Attacker);    
+                    if (hero.IncomeDamage > 0 && hero.HitTypes.Contains(HitType.Ultimate))
+                    {
+                        if (Parent.Item(Parent.Name + "allon" + enemy.ChampionName).GetValue<bool>())
+                            UseSpellOn(enemy); 
+                    }
                 }            
 
                 if (hero.Player.Health/hero.Player.MaxHealth*100 <=
                     Menu.Item("a" + Name + "Pct").GetValue<Slider>().Value)
                 {
-                    if (!hero.Player.IsFacing(hero.Attacker) &&
-                        hero.Attacker.NetworkId == highestadinrange.NetworkId)
-                        UseSpellOn(hero.Attacker);                      
+                    if (!hero.Player.IsFacing(enemy) && enemy.NetworkId == highestadinrange.NetworkId)
+                    {
+                        if (Parent.Item(Parent.Name + "allon" + enemy.ChampionName).GetValue<bool>())
+                            UseSpellOn(enemy); 
+                    }                     
                 }
 
-                if (hero.Attacker.Health / hero.Attacker.MaxHealth * 100 <=
+                if (enemy.Health / enemy.MaxHealth * 100 <=
                          Menu.Item("e" + Name + "Pct").GetValue<Slider>().Value)
                 {
-                    if (!hero.Attacker.IsFacing(hero.Player))
-                        UseSpellOn(hero.Attacker);                    
+                    if (!enemy.IsFacing(hero.Player))
+                    {
+                        if (Parent.Item(Parent.Name + "allon" + enemy.ChampionName).GetValue<bool>())
+                            UseSpellOn(enemy);  
+                    }          
                 }
             }
         }

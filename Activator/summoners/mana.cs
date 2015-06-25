@@ -36,9 +36,12 @@ namespace Activator.Summoners
                 return;
 
             foreach (var hero in champion.Heroes)
-            { 
+            {
+                if (!Parent.Item(Parent.Name + "allon" + hero.Player.ChampionName).GetValue<bool>())
+                    continue;
+
                 if (hero.Player.MaxMana <= 200 || hero.Player.Distance(Player.ServerPosition) > Range)
-                    return;
+                    continue;
 
                 if (hero.Player.Mana/hero.Player.MaxMana*100 <= Menu.Item("SelfLowMP" + Name + "Pct").GetValue<Slider>().Value)
                 {

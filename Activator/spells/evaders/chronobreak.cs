@@ -45,6 +45,9 @@ namespace Activator.Spells.Evaders
             {
                 if (hero.Player.NetworkId == Activator.Player.NetworkId)
                 {
+                    if (!Parent.Item(Parent.Name + "useon" + hero.Player.ChampionName).GetValue<bool>())
+                        continue;
+
                     if (Menu.Item("use" + Name + "Norm").GetValue<bool>())
                         if (hero.IncomeDamage > 0 && hero.HitTypes.Contains(HitType.Danger))
                             UseSpell();

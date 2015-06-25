@@ -8,12 +8,12 @@ namespace Activator.Spells.Health
     {
         internal override string Name
         {
-            get { return "_sorakar"; }
+            get { return "sorakar"; }
         }
 
         internal override string DisplayName
         {
-            get { return "Wish | R"; }
+            get { return "Wish | R [Global]"; }
         }
 
         internal override float Range
@@ -43,8 +43,11 @@ namespace Activator.Spells.Health
 
             foreach (var hero in champion.Heroes)
             {
-                if (Player.HasBuffOfType(BuffType.Invulnerability))
+                if (!Player.HasBuffOfType(BuffType.Invulnerability))
                 {
+                    if (!Parent.Item(Parent.Name + "useon" + hero.Player.ChampionName).GetValue<bool>())
+                        continue;
+
                     if (hero.Player.Health / hero.Player.MaxHealth*100 <=
                         Menu.Item("SelfLowHP" + Name + "Pct").GetValue<Slider>().Value)
                     {

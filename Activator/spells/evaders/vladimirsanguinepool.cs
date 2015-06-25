@@ -48,42 +48,33 @@ namespace Activator.Spells.Evaders
             foreach (var hero in champion.Heroes)
             {
                 if (hero.Player.NetworkId != Player.NetworkId)
-                    return;
+                    continue;
+
+                if (!Parent.Item(Parent.Name + "useon" + hero.Player.ChampionName).GetValue<bool>())
+                    continue;
 
                 if (Menu.Item("ss" + Name + "All").GetValue<bool>())
                 {
                     if (hero.IncomeDamage > 0 && hero.HitTypes.Contains(HitType.Spell))
-                    {
                         UseSpell();
-                        
-                    }
                 }
 
                 if (Menu.Item("ss" + Name + "CC").GetValue<bool>())
                 {
                     if (hero.IncomeDamage > 0 && hero.HitTypes.Contains(HitType.CrowdControl))
-                    {
                         UseSpell();
-                        
-                    }
                 }
 
                 if (Menu.Item("use" + Name + "Norm").GetValue<bool>())
                 {
                     if (hero.IncomeDamage > 0 && hero.HitTypes.Contains(HitType.Danger))
-                    {
                         UseSpell();
-                        
-                    }
                 }
 
                 if (Menu.Item("use" + Name + "Ulti").GetValue<bool>())
                 {
                     if (hero.IncomeDamage > 0 && hero.HitTypes.Contains(HitType.Ultimate))
-                    {
                         UseSpell();
-                        
-                    }
                 }
             }
         }
