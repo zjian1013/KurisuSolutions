@@ -22,7 +22,7 @@ namespace Activator.Spells.Shields
 
         internal override MenuType[] Category
         {
-            get { return new[] { MenuType.SelfLowHP, MenuType.SelfMuchHP, MenuType.SelfLowMP }; }
+            get { return new[] { MenuType.SelfLowHP, MenuType.SelfMuchHP, MenuType.SelfMinMP }; }
         }
 
         internal override int DefaultHP

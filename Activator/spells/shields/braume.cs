@@ -44,7 +44,7 @@ namespace Activator.Spells.Shields
             foreach (var hero in champion.Heroes)
             {                    
                 if (!Parent.Item(Parent.Name + "useon" + hero.Player.ChampionName).GetValue<bool>())
-                        continue;
+                    continue;
 
                 if (hero.Player.Distance(Player.ServerPosition) <= hero.Player.BoundingRadius)
                 {
