@@ -1052,7 +1052,8 @@ namespace KurisuRiven
 
                 if (args.SData.Name.Contains("Attack"))
                 {
-                    if (menu.Item("combokey").GetValue<KeyBind>().Active)
+                    if (menu.Item("combokey").GetValue<KeyBind>().Active ||
+                        menu.Item("shycombo").GetValue<KeyBind>().Active)
                     {
                         if (cb || !menubool("usecombow") || !menubool("usecomboe"))
                         {
