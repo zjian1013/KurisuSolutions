@@ -1232,13 +1232,10 @@ namespace KurisuRiven
         {
             if (canaa && canmv)
             {
-                if (!(didq || didw || dide || didaa))
+                if (target.Distance(player.ServerPosition) <= truerange + 100)
                 {
-                    if (target.Distance(player.ServerPosition) <= truerange + 50)
-                    {
-                        canq = false;
-                        player.IssueOrder(GameObjectOrder.AttackUnit, target);
-                    }
+                    canq = false;
+                    player.IssueOrder(GameObjectOrder.AttackUnit, target);
                 }
             }
         }
