@@ -67,7 +67,7 @@
     <Compile Include="enumerators.cs" />
     <Compile Include="gametroy.cs" />
     <Compile Include="gametroydata.cs" />
-    <Compile Include="objecthandler.cs" />
+    <Compile Include="gametroyhandler.cs" />
     <Compile Include="items\cleansers\_3137.cs" />
     <Compile Include="items\cleansers\_3139.cs" />
     <Compile Include="items\cleansers\_3140.cs" />
