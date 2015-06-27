@@ -690,7 +690,6 @@ namespace KurisuRiven
             foreach (var unit in minions.Where(m => !m.Name.Contains("Mini")))
             {
                 OrbTo(unit);
-
                 if (q.IsReady() && unit.Distance(player.ServerPosition) <= q.Range + 100)
                 {
                     if (canq && menubool("usejungleq"))
@@ -1237,9 +1236,6 @@ namespace KurisuRiven
                 {
                     if (target.Distance(player.ServerPosition) <= truerange + 50)
                     {
-                        orbwalker.SetAttack(false);
-                        orbwalker.SetMovement(false);
-
                         canq = false;
                         player.IssueOrder(GameObjectOrder.AttackUnit, target);
                     }
