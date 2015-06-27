@@ -251,6 +251,17 @@ namespace KurisuRiven
                 menu.Item("shycombo").GetValue<KeyBind>().Active)
             {
                 TryFlashInitiate(rtarg);
+
+                if (rtarg.Distance(player.ServerPosition) <= truerange)
+                {
+                    if ((Items.HasItem(3077) || Items.HasItem(3074)))
+                    {
+                        if ((Items.CanUseItem(3077) || Items.CanUseItem(3074)))
+                        {
+                            OrbTo(rtarg);
+                        }
+                    }
+                }
             }
 
             if (didhs && rtarg.IsValidTarget())
