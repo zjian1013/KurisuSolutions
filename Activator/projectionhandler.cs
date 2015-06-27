@@ -17,10 +17,10 @@ namespace Activator
 {
     public class projectionhandler
     {
-        public static Obj_AI_Hero Target;
         public static int Last;
+        public static Obj_AI_Hero Target;
 
-        public static void Load()
+        public static void init()
         {
             GameObject.OnCreate += GameObject_OnCreate;
             Obj_AI_Base.OnProcessSpellCast += Obj_AI_Base_OnProcessSpellCast; 
@@ -28,7 +28,7 @@ namespace Activator
 
         private static void GameObject_OnCreate(GameObject sender, EventArgs args)
         {
-            var missile = sender as Obj_SpellMissile;
+            var missile = sender as MissileClient;
             if (missile == null || !missile.IsValid)
                 return;
 

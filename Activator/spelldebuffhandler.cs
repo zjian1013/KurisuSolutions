@@ -17,13 +17,40 @@ namespace Activator
 {
     public class spelldebuffhandler
     {
-        public static void Load()
+        public static void init()
         {
+            Game.OnUpdate += Game_OnUpdate;
             Obj_AI_Base.OnBuffAdd += Obj_AI_Base_OnBuffAdd;
             Obj_AI_Base.OnBuffRemove += Obj_AI_Base_OnBuffRemove;
         }
 
-        private static readonly string[] cleansers = { "Mercurial", "Quicksliver", "Dervish", "Mikaels" };
+        private static void Game_OnUpdate(EventArgs args)
+        {
+            // check buff damage if included on update
+            foreach (var buff in spelldebuffdata.debuffs)
+            {
+                if (buff.Included && buff.Damage)
+                {
+                    var attacker = buff.Sender as Obj_AI_Hero;
+                    if (attacker == null)
+                        return;
+
+                    foreach (var hero in champion.Heroes)
+                    {
+                        if (hero.Player.GetBuff(buff.Name).IsValidBuff() && !hero.Immunity)
+                        {
+                            hero.Attacker = attacker;
+                            hero.IncomeDamage = (float) attacker.GetSpellDamage(hero.Player, buff.Slot);
+                        }
+                    }
+                }     
+            }
+        }
+
+        private static readonly string[] cleansers =
+        {
+            "Mercurial", "Quicksliver", "Dervish", "Mikaels"
+        };
 
         private static void Obj_AI_Base_OnBuffAdd(Obj_AI_Base sender, Obj_AI_BaseBuffAddEventArgs args)
         {
@@ -31,27 +58,22 @@ namespace Activator
             {
                 if (hero.Player.NetworkId == sender.NetworkId)
                 {
-                    if (spelldebuff.excludedbuffs.Any(buff => args.Buff.Name.ToLower() == buff))
-                        continue;
-
-                    if (args.Buff.Name.ToLower() == "summonerdot")
-                    {
-                        hero.HitTypes.Add(HitType.Danger);
-                        var attacker = args.Buff.Caster as Obj_AI_Hero;
-                        if (attacker != null)
-                            hero.IncomeDamage = (50 + (20 * attacker.Level));
-                    }
-
                     if (args.Buff.Type == BuffType.SpellImmunity ||
                         args.Buff.Type == BuffType.Invulnerability)
                     {
                         hero.Immunity = true;
                     }
 
-                    foreach (var buff in spelldebuff.debuffs)
+                    foreach (var buff in spelldebuffdata.debuffs)
                     {
                         if (buff.Name != args.Buff.Name.ToLower())
                             continue;
+
+                        if (buff.Damage)
+                        {
+                            buff.Included = true;
+                            buff.Sender = sender;
+                        }
 
                         if (buff.Evade)
                         {
@@ -78,6 +100,9 @@ namespace Activator
                             }
                         }
                     }
+
+                    if (spelldebuffdata.debuffs.Any(b => b.Name == args.Buff.Name.ToLower() && b.QSSIgnore))
+                        continue;
 
                     #region Boost
 
@@ -303,25 +328,22 @@ namespace Activator
             {
                 if (hero.Player.NetworkId == sender.NetworkId)
                 {
-                    if (spelldebuff.excludedbuffs.Any(buff => args.Buff.Name.ToLower() == buff))
-                        continue;
-
                     if (args.Buff.Type == BuffType.SpellImmunity ||
                         args.Buff.Type == BuffType.Invulnerability)
                     {
                         hero.Immunity = false;
                     }
 
-                    if (args.Buff.Name.ToLower() == "summonerdot")
-                    {
-                        hero.IncomeDamage = 0;
-                        hero.HitTypes.Clear();
-                    }
-
-                    foreach (var buff in spelldebuff.debuffs)
+                    foreach (var buff in spelldebuffdata.debuffs)
                     {
                         if (buff.Name == args.Buff.Name.ToLower())
                         {
+                            if (buff.Damage)
+                            {
+                                buff.Included = false;
+                                buff.Sender = null;
+                            }
+
                             if (buff.Evade)
                             {
                                 Utility.DelayAction.Add(buff.EvadeTimer + 100, delegate
@@ -342,6 +364,8 @@ namespace Activator
                         }
                     }
 
+                    if (spelldebuffdata.debuffs.Any(b => b.Name == args.Buff.Name.ToLower() && b.QSSIgnore))
+                        continue;
 
                     #region Boost
 

@@ -109,11 +109,8 @@ namespace Activator.Summoners
             }
 
             // smite minion
-            foreach (var minion in MinionManager.GetMinions(Player.Position, 500f, MinionTypes.All, MinionTeam.Neutral))
+            foreach (var minion in objecthandler.objectcache.Values.Where(m => m.IsValidTarget(900)))
             {
-                if (!minion.IsValidTarget(500))
-                    return;
-
                 var damage = (float) Player.GetSummonerSpellDamage(minion, Damage.SummonerSpell.Smite);
 
                 if (LargeMinions.Any(name => minion.Name.StartsWith(name) && !minion.Name.Contains("Mini")))

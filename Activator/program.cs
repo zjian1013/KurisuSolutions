@@ -48,9 +48,6 @@ namespace Activator
             GetHeroesInGame();
             GetSlotDamage();
 
-            new drawings();
-
-            // new menu
             Origin = new Menu("Kurisu's Activator", "activator", true);
             var cmenu = new Menu("Cleansers", "cleansers");
             SubMenu(cmenu, false);
@@ -97,26 +94,26 @@ namespace Activator
                 zmenu.AddSubMenu(ddmenu);
             }
 
-            zmenu.AddItem(new MenuItem("evadeon", "Evade Integration")).SetValue(false);
-            zmenu.AddItem(new MenuItem("evadefow", "Evade Integration (FoW)")).SetValue(false);
-            zmenu.AddItem(new MenuItem("usecombo", "Combo Key")).SetValue(new KeyBind(32, KeyBindType.Press, true));
+            zmenu.AddItem(new MenuItem("usecombo", "Combo (active)"))
+                .SetValue(new KeyBind(32, KeyBindType.Press, true));
 
-            Origin.AddSubMenu(zmenu);       
+            Origin.AddSubMenu(zmenu);
             Origin.AddToMainMenu();
 
-            // auras and buffs
-            spelldebuffhandler.Load();
+            // draw hanlder
+            drawings.init();
 
-            // damage prediction 
-            projectionhandler.Load();
+            // auras and debffs
+            spelldebuffhandler.init();
 
-            // ground object spells
-            gametroyhandler.Load();
+            // damage prediction
+            projectionhandler.init();
 
-            // auto level r
+            // object manager
+            objecthandler.init();
+
+
             Obj_AI_Base.OnLevelUp += Obj_AI_Base_OnLevelUp;
-
-            // on item in slot
             Obj_AI_Base.OnPlaceItemInSlot += Obj_AI_Base_OnPlaceItemInSlot;
 
             foreach (var autospell in spelldata.mypells)
@@ -134,6 +131,7 @@ namespace Activator
                     Game.OnUpdate += summoner.OnTick;
         }
 
+
         private static void Obj_AI_Base_OnPlaceItemInSlot(Obj_AI_Base sender, Obj_AI_BasePlaceItemInSlotEventArgs args)
         {
             if (!sender.IsMe)
@@ -142,32 +140,6 @@ namespace Activator
             foreach (var item in spelldata.items)
                 if (item.Id == (int) args.Id) 
                     Game.OnUpdate += item.OnTick;
-        }
-
-        private static void Obj_AI_Base_OnLevelUp(Obj_AI_Base sender, EventArgs args)
-        {
-            var hero = sender as Obj_AI_Hero;
-            if (hero == null)
-                return;
-
-            if (!hero.IsMe)
-                return;
-
-            if (hero.ChampionName == "Jayce" || hero.ChampionName == "Udyr")
-                return;
-
-            switch (Player.Level)
-            {
-                case 6:
-                    Player.Spellbook.LevelSpell(SpellSlot.R);
-                    break;
-                case 11:
-                    Player.Spellbook.LevelSpell(SpellSlot.R);
-                    break;
-                case 16:
-                    Player.Spellbook.LevelSpell(SpellSlot.R);
-                    break;
-            }
         }
 
         private static void NewItem(item item, Menu parent)
@@ -201,21 +173,21 @@ namespace Activator
                     .GetTypes()
                     .FindAll(t => t.IsClass && t.Namespace == "Activator." + nspace &&
                                   t.Name != "item" && t.Name != "spell" && t.Name != "summoner" &&
-                                 !t.Name.Contains("c__")); // wtf
+                                 !t.Name.Contains("c__")); // kek
         }
 
-        public static void GetSlotDamage()
+        private static void GetSlotDamage()
         {
             foreach (
                 var spell in
                     Damage.Spells.Where(entry => entry.Key == Player.ChampionName).SelectMany(entry => entry.Value))
             {
-                spelldata.combod.Add(spell.Damage, spell.Slot);
+                spelldata.damagelib.Add(spell.Damage, spell.Slot);
                 Console.WriteLine("[A]: " + Player.ChampionName + ": " + spell.Slot + " " + spell.Stage + " - dmg added!");
             }
         }
 
-        public static void GetHeroesInGame()
+        private static void GetHeroesInGame()
         {
             foreach (var i in ObjectManager.Get<Obj_AI_Hero>().Where(i => i.Team == Player.Team))
             {
@@ -224,7 +196,7 @@ namespace Activator
             }
         }
 
-        public static void GetSmiteSlot()
+        private static void GetSmiteSlot()
         {
             if (Player.GetSpell(SpellSlot.Summoner1).Name.ToLower().Contains("smite"))
             {
@@ -239,7 +211,7 @@ namespace Activator
             }
         }
 
-        public static void GetTroysInGame()
+        private static void GetTroysInGame()
         {
             foreach (var i in ObjectManager.Get<Obj_AI_Hero>().Where(h => h.Team != Player.Team))
             {
@@ -277,6 +249,31 @@ namespace Activator
             }
 
             parent.AddSubMenu(menu);
+        }
+        private static void Obj_AI_Base_OnLevelUp(Obj_AI_Base sender, EventArgs args)
+        {
+            var hero = sender as Obj_AI_Hero;
+            if (hero == null)
+                return;
+
+            if (!hero.IsMe)
+                return;
+
+            if (hero.ChampionName == "Jayce" || hero.ChampionName == "Udyr")
+                return;
+
+            switch (Player.Level)
+            {
+                case 6:
+                    Player.Spellbook.LevelSpell(SpellSlot.R);
+                    break;
+                case 11:
+                    Player.Spellbook.LevelSpell(SpellSlot.R);
+                    break;
+                case 16:
+                    Player.Spellbook.LevelSpell(SpellSlot.R);
+                    break;
+            }
         }
 
         private static object NewInstance(Type type)

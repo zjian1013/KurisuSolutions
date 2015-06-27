@@ -32,12 +32,6 @@ namespace Activator
         public string[] FromObject { get; set; }
         public HitType[] HitType { get; set; }
 
-        public static List<item> items = new List<item>(); 
-        public static List<spell> mypells = new List<spell>();
-        public static List<summoner> summoners = new List<summoner>();
-        public static List<spelldata> spells = new List<spelldata>();
-        public static Dictionary<SpellDamageDelegate, SpellSlot> combod = new Dictionary<SpellDamageDelegate, SpellSlot>();
-
         static spelldata()
         {
             spells.Add(new spelldata
@@ -6296,6 +6290,13 @@ namespace Activator
                 MissileSpeed = int.MaxValue
             }); 
         }
+
+        public static List<item> items = new List<item>();
+        public static List<spell> mypells = new List<spell>();
+        public static List<summoner> summoners = new List<summoner>();
+        public static List<spelldata> spells = new List<spelldata>();
+
+        public static Dictionary<SpellDamageDelegate, SpellSlot> damagelib = new Dictionary<SpellDamageDelegate, SpellSlot>();
 
         public static spelldata GetByMissileName(string missilename)
         {

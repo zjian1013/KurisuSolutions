@@ -9,12 +9,12 @@ namespace Activator
 {
     class drawings
     {
-        public drawings()
+        public static void init()
         {
             Drawing.OnDraw += Drawing_OnDraw;
         }
 
-        void Drawing_OnDraw(EventArgs args)
+        private static void Drawing_OnDraw(EventArgs args)
         {
             if (Activator.Origin.Item("acdebug").GetValue<bool>())
             {

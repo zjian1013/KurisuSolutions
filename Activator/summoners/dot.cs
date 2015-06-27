@@ -16,6 +16,7 @@ namespace Activator.Summoners
         {
             get { return "Ignite"; }
         }
+
         internal override string[] ExtraNames
         {
             get { return new[] { "" }; }
@@ -75,7 +76,7 @@ namespace Activator.Summoners
                     var totaldmg = 0d;
                     totaldmg += Player.GetAutoAttackDamage(target, true) * 3;
 
-                    totaldmg += (from entry in spelldata.combod
+                    totaldmg += (from entry in spelldata.damagelib
                         let spellLevel = Player.GetSpell(entry.Value).Level
                         select
                             Player.GetSpell(entry.Value).State == SpellState.Ready
