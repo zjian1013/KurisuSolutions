@@ -532,7 +532,7 @@ namespace KurisuRiven
                 useinventoryitems(target);
                 CheckR();
 
-                if (menulist("emode") == 0 || cb)
+                if (menulist("emode") == 0 || (ComboDamage(target) / 1.7) >= target.Health)
                 {
                     if (Items.CanUseItem(3077) || Items.CanUseItem(3074))
                         return;
