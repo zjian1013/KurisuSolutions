@@ -244,8 +244,13 @@ namespace KurisuRiven
             if (rtarg.IsValidTarget() && 
                 menu.Item("combokey").GetValue<KeyBind>().Active)
             {
-                TryFlashInitiate(rtarg);
                 ComboTarget(rtarg);
+            }
+
+            if (rtarg.IsValidTarget() &&
+                menu.Item("shycombo").GetValue<KeyBind>().Active)
+            {
+                TryFlashInitiate(rtarg);
             }
 
             if (didhs && rtarg.IsValidTarget())
@@ -288,6 +293,7 @@ namespace KurisuRiven
             keybinds.AddItem(new MenuItem("harasskey", "Harass")).SetValue(new KeyBind(67, KeyBindType.Press));
             keybinds.AddItem(new MenuItem("clearkey", "Jungle/Laneclear")).SetValue(new KeyBind(86, KeyBindType.Press));
             keybinds.AddItem(new MenuItem("fleekey", "Flee")).SetValue(new KeyBind(65, KeyBindType.Press));
+            keybinds.AddItem(new MenuItem("shycombo", "Shy Burst")).SetValue(new KeyBind(32, KeyBindType.Press));
 
             var mitem = new MenuItem("semiqlane", "Use Semi-Q Laneclear");
             mitem.ValueChanged += (sender, args) =>
@@ -322,7 +328,7 @@ namespace KurisuRiven
             qmenu.AddItem(new MenuItem("qint", "Interrupt with 3rd Q")).SetValue(true);
             qmenu.AddItem(new MenuItem("keepq", "Keep Q Buff Up")).SetValue(true);
             qmenu.AddItem(new MenuItem("usegap", "Gapclose with Q")).SetValue(true);
-            qmenu.AddItem(new MenuItem("gaptime", "Gapclose Q Delay (ms)")).SetValue(new Slider(110, 50, 200));
+            qmenu.AddItem(new MenuItem("gaptimez", "Gapclose Q Delay (ms)")).SetValue(new Slider(80, 50, 200));
             combo.AddSubMenu(qmenu);
 
             var wmenu = new Menu("W Settings", "rivenw");
@@ -337,22 +343,22 @@ namespace KurisuRiven
                 .SetValue(new StringList(new[] { "E -> W/R -> Tiamat -> Q", "E -> Tiamat -> W/R -> Q" } ));
             emenu.AddItem(new MenuItem("erange", "E Only if Target > AARange or Engage")).SetValue(true);
             emenu.AddItem(new MenuItem("vhealth", "Or Use E if HP% <=")).SetValue(new Slider(40));
-            emenu.AddItem(new MenuItem("ashield", "Shield Spells While LastHit")).SetValue(true);
+            emenu.AddItem(new MenuItem("ashield", "Shield While LastHit (Broken)")).SetValue(true);
             combo.AddSubMenu(emenu);
 
             var rmenu = new Menu("R  Settings", "rivenr");
             rmenu.AddItem(new MenuItem("user", "Use R in Combo")).SetValue(true);
             rmenu.AddItem(new MenuItem("useignote", "Use R + Smart Ignite")).SetValue(true);
             rmenu.AddItem(new MenuItem("multib", "Flash -> R/W if Can Burst Target")).SetValue(true);
-            rmenu.AddItem(new MenuItem("multic", "Flash -> R/W if Hit >= ")).SetValue(new Slider(3, 2, 5));
+            rmenu.AddItem(new MenuItem("multic", "Flash -> R/W if Hit >= ")).SetValue(new Slider(4, 2, 5));
+            rmenu.AddItem(new MenuItem("rmulti", "Windslash if enemies hit >=")).SetValue(new Slider(4, 2, 5));
             rmenu.AddItem(new MenuItem("overk", "Dont R if Target HP % <=")).SetValue(new Slider(25, 1, 99));
             rmenu.AddItem(new MenuItem("userq", "Use R Only if Q Count <=")).SetValue(new Slider(1, 1, 3));
             rmenu.AddItem(new MenuItem("ultwhen", "Use R When"))
-                .SetValue(new StringList(new[] {"Normal Kill", "Hard Kill", "Always"}, 1));
+                .SetValue(new StringList(new[] {"Normal Kill", "Hard Kill", "Always"}, 2));
             rmenu.AddItem(new MenuItem("usews", "Use Windslash (R2) in Combo")).SetValue(true);
             rmenu.AddItem(new MenuItem("wsmode", "Windslash (R2) for"))
                 .SetValue(new StringList(new[] {"Kill Only", "Kill Or MaxDamage"}, 1));
-            rmenu.AddItem(new MenuItem("rmulti", "Windslash if enemies hit >=")).SetValue(new Slider(3, 2, 5));
             combo.AddSubMenu(rmenu);
 
             menu.AddSubMenu(combo);
@@ -546,7 +552,7 @@ namespace KurisuRiven
             {
                 if (menubool("usegap"))
                 {
-                    if (!e.IsReady() && Utils.GameTimeTickCount - lastq >= menuslide("gaptime") * 10 && !didaa)
+                    if (!e.IsReady() && Utils.GameTimeTickCount - lastq >= menuslide("gaptimez") * 10 && !didaa)
                     {
                         if (q.IsReady() && Utils.GameTimeTickCount - laste >= 700)
                         {
@@ -995,7 +1001,7 @@ namespace KurisuRiven
 
                             var ww = w.IsReady() ? w.Range + 10 : truerange;
 
-                            if (menu.Item("combokey").GetValue<KeyBind>().Active)
+                            if (menu.Item("shycombo").GetValue<KeyBind>().Active)
                             {
                                 if (rtarg.Distance(player.ServerPosition) > e.Range + ww &&
                                     rtarg.Distance(player.ServerPosition) <= e.Range + ww + 300)
@@ -1023,7 +1029,8 @@ namespace KurisuRiven
 
                         if (menulist("wsmode") == 1 && uo && canws)
                         {
-                            if (menu.Item("combokey").GetValue<KeyBind>().Active)
+                            if (menu.Item("combokey").GetValue<KeyBind>().Active ||
+                                menu.Item("shycombo").GetValue<KeyBind>().Active)
                             {
                                 if (cb && r.GetPrediction(rtarg).Hitchance >= HitChance.Medium &&
                                     rtarg.IsValidTarget() && !rtarg.IsZombie)
