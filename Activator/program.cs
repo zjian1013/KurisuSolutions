@@ -110,8 +110,7 @@ namespace Activator
             projectionhandler.init();
 
             // object manager
-            objecthandler.init();
-
+            gametroyhandler.init();
 
             Obj_AI_Base.OnLevelUp += Obj_AI_Base_OnLevelUp;
             Obj_AI_Base.OnPlaceItemInSlot += Obj_AI_Base_OnPlaceItemInSlot;

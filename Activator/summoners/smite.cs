@@ -109,7 +109,7 @@ namespace Activator.Summoners
             }
 
             // smite minion
-            foreach (var minion in objecthandler.objectcache.Values.Where(m => m.IsValidTarget(900)))
+            foreach (var minion in gametroyhandler.objectcache.Values.Where(m => m.IsValidTarget(900)))
             {
                 var damage = (float) Player.GetSummonerSpellDamage(minion, Damage.SummonerSpell.Smite);
 
