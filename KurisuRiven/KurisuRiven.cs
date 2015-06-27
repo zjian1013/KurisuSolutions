@@ -655,10 +655,10 @@ namespace KurisuRiven
                     if (rtarg.IsZombie)
                         return;
 
-                    var po = r.GetPrediction(rtarg, true);
-                    if (Kappa(po.CastPosition, r.Width, r.Range) >= menuslide("rmulti"))
-                            r.Cast(po.CastPosition);
+                    if (Kappa(rtarg.ServerPosition, r.Width, r.Range) >= menuslide("rmulti"))
+                            r.Cast(rtarg.ServerPosition);
 
+                    var po = r.GetPrediction(rtarg, true);
                     if ((r.GetDamage(rtarg) / rtarg.MaxHealth * 100) >= rtarg.Health / rtarg.MaxHealth * 50)
                     {
                         if (po.Hitchance >= HitChance.VeryHigh && canws)
