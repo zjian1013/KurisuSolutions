@@ -92,7 +92,7 @@ namespace Activator
                 ddmenu.AddItem(new MenuItem("drawsmite", "Draw Smite Range")).SetValue(true);
                 zmenu.AddSubMenu(ddmenu);
             }
-
+            zmenu.AddItem(new MenuItem("version", "Version: 0.9.5.3"));
             zmenu.AddItem(new MenuItem("healthp", "Hero Priority:"))
                 .SetValue(new StringList(new[] { "Low HP", "Most AD/AP", "Most HP" }, 1));
 
