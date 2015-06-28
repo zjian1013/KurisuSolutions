@@ -93,14 +93,15 @@ namespace Activator
                 zmenu.AddSubMenu(ddmenu);
             }
 
-            var vmenu = new Menu("version", "Version: 0.9.5.3");
-            vmenu.AddItem(new MenuItem("m", "new: minion caching"));
-            vmenu.AddItem(new MenuItem("z", "new: ally hero priority"));
-            vmenu.AddItem(new MenuItem("f", "new: fizz ultimate prediction"));
-            vmenu.AddItem(new MenuItem("s", "known issue: cleanse not working"));
+            var vmenu = new Menu("Info (Changelog/Updates)", "info");
+            vmenu.AddItem(new MenuItem("aa", "0.9.5.3: (Paypal xrobinsong@gmail.com)"));
+            vmenu.AddItem(new MenuItem("m", "- new: minion caching"));
+            vmenu.AddItem(new MenuItem("z", "- new: ally hero priority"));
+            vmenu.AddItem(new MenuItem("f", "- new: fizz ultimate prediction"));
+            vmenu.AddItem(new MenuItem("s", "- known issue: cleanse not working"));
             zmenu.AddSubMenu(vmenu);
 
-            zmenu.AddItem(new MenuItem("healthp", "Hero Priority:"))
+            zmenu.AddItem(new MenuItem("healthp", "Ally Priority:"))
                 .SetValue(new StringList(new[] { "Low HP", "Most AD/AP", "Most HP" }, 1));
 
             zmenu.AddItem(new MenuItem("usecombo", "Combo (active)"))

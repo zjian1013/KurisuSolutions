@@ -85,7 +85,7 @@ namespace Activator
             {
                 Name = "caitlyn_Base_yordleTrap_idle",
                 ChampionName = "Caitlyn",
-                Radius = 250f,
+                Radius = 220f,
                 Slot = SpellSlot.W,
                 HitType = new[] { global::Activator.HitType.CrowdControl }
             });
