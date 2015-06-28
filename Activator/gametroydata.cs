@@ -20,11 +20,22 @@ namespace Activator
         public SpellSlot Slot { get; set; }
         public float Radius { get; set; }
         public HitType[] HitType { get; set; }
+        public int DelayFromStart { get; set; }
 
         public static List<gametroydata> troydata = new List<gametroydata>(); 
 
         static gametroydata()
         {
+            troydata.Add(new gametroydata
+            {
+                Name = "Fizz_Ring_Red",
+                ChampionName = "Fizz",
+                Radius = 300f,
+                Slot = SpellSlot.R,
+                DelayFromStart = 800,
+                HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate }
+             });
+
             troydata.Add(new gametroydata
             {
                 Name = "katarina_deathLotus_tar",
@@ -74,7 +85,7 @@ namespace Activator
             {
                 Name = "caitlyn_Base_yordleTrap_idle",
                 ChampionName = "Caitlyn",
-                Radius = 180f,
+                Radius = 250f,
                 Slot = SpellSlot.W,
                 HitType = new[] { global::Activator.HitType.CrowdControl }
             });

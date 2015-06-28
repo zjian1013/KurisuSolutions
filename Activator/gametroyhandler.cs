@@ -36,7 +36,6 @@ namespace Activator
                      objectcache.Add(unit.NetworkId, unit);
             }
 
-            // if no troys dont loop
             if (!Activator.TroysInGame)
                 return;
 
@@ -49,6 +48,7 @@ namespace Activator
                     troy.Obj = obj;
                     troy.Start = Utils.GameTimeTickCount;
                     Game.OnUpdate += Game_OnUpdate;
+                    Console.WriteLine("[A]: " + troy.Name + "object created.");
                 }
             }
         }
@@ -63,7 +63,6 @@ namespace Activator
 
             foreach (var hero in Activator.ChampionPriority())
             {
-                // if no troys dont loop
                 if (!Activator.TroysInGame)
                     return;
 
@@ -78,6 +77,7 @@ namespace Activator
                         hero.IncomeDamage = 0f;
                         hero.HitTypes.Clear();
                         Game.OnUpdate -= Game_OnUpdate;
+                        Console.WriteLine("[A]: " + troy.Name + "object deleted.");
                     }
                 }
             }
@@ -87,7 +87,6 @@ namespace Activator
         {
             foreach (var hero in Activator.ChampionPriority())
             {
-                // if no troys dont tick
                 if (!Activator.TroysInGame)
                     return;
 
@@ -103,23 +102,24 @@ namespace Activator
                         var radius = troy.Obj.BoundingRadius == null ? item.Radius : troy.Obj.BoundingRadius; 
                         if (troy.Obj.IsValid && hero.Player.Distance(troy.Obj.Position) <= radius)
                         {
-                            if (troy.Name == item.Name)
-                            {
-                                hero.Attacker = troy.Owner;
-                                hero.IncomeDamage = (float) troy.Owner.GetSpellDamage(hero.Player, troy.Slot);
+                            if (troy.Name != item.Name || 
+                                Utils.GameTimeTickCount - troy.Start < item.DelayFromStart)
+                                continue;
 
-                                // spell is important or lethal
-                                if (item.HitType.Contains(HitType.Ultimate))
-                                    hero.HitTypes.Add(HitType.Ultimate);
+                            hero.Attacker = troy.Owner;
+                            hero.IncomeDamage = (float) troy.Owner.GetSpellDamage(hero.Player, troy.Slot);
 
-                                // spell is important but not as fatal
-                                if (item.HitType.Contains(HitType.Danger))
-                                    hero.HitTypes.Add(HitType.Danger);
+                            // spell is important or lethal
+                            if (item.HitType.Contains(HitType.Ultimate))
+                                hero.HitTypes.Add(HitType.Ultimate);
 
-                                // spell has a crowd control effect
-                                if (item.HitType.Contains(HitType.CrowdControl))
-                                    hero.HitTypes.Add(HitType.CrowdControl);
-                            }
+                            // spell is important but not as fatal
+                            if (item.HitType.Contains(HitType.Danger))
+                                hero.HitTypes.Add(HitType.Danger);
+
+                            // spell has a crowd control effect
+                            if (item.HitType.Contains(HitType.CrowdControl))
+                                hero.HitTypes.Add(HitType.CrowdControl);
                         }
                     }
                 }

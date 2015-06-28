@@ -327,7 +327,6 @@ namespace Activator
                                         Utility.DelayAction.Add((int) (endtime + 1200), () =>
                                         {
                                             hero.Attacker = null;
-                                            hero.HitTypes.Remove(HitType.Spell);
                                             hero.IncomeDamage = 0;
                                             hero.HitTypes.Clear();
                                         });
@@ -364,7 +363,7 @@ namespace Activator
                             {
                                 hero.Attacker = null;
                                 hero.IncomeDamage = 0;
-                                hero.HitTypes.Clear();
+                                hero.HitTypes.Remove(HitType.TurretAttack);
                             });
                         });
                     }
@@ -384,6 +383,7 @@ namespace Activator
                     if (hero.Player.Distance(sender.ServerPosition) <= 750 &&
                         Activator.Player.Distance(hero.Player.ServerPosition) <= 1000)
                     {
+                        hero.HitTypes.Add(HitType.MinionAttack);
                         hero.MinionDamage =
                             (float) Math.Abs(sender.CalcDamage(hero.Player, Damage.DamageType.Physical,
                                 sender.BaseAttackDamage + sender.FlatPhysicalDamageMod));
@@ -391,6 +391,7 @@ namespace Activator
                         // lazy reset
                         Utility.DelayAction.Add(1000, () =>
                         {
+                            hero.HitTypes.Remove(HitType.MinionAttack);
                             hero.MinionDamage = 0;
                         });
                     }

@@ -1325,10 +1325,21 @@ namespace Activator
                 SDataName = "fizzjump",
                 ChampionName = "fizz",
                 Slot = SpellSlot.E,
-                CastRange = 400f,
-                Delay = 250f,
-                HitType = new HitType[] { },
-                MissileSpeed = 1300
+                CastRange = 450f,
+                Delay = 700f,
+                HitType = new[] { global::Activator.HitType.CrowdControl  },
+                MissileSpeed = int.MaxValue
+            });
+
+            spells.Add(new spelldata
+            {
+                SDataName = "fizzjumpbuffer",
+                ChampionName = "fizz",
+                Slot = SpellSlot.E,
+                CastRange = 450f,
+                Delay = 700f,
+                HitType = new[] { global::Activator.HitType.CrowdControl },
+                MissileSpeed = int.MaxValue
             });
 
             spells.Add(new spelldata
@@ -1336,9 +1347,9 @@ namespace Activator
                 SDataName = "fizzjumptwo",
                 ChampionName = "fizz",
                 Slot = SpellSlot.E,
-                CastRange = 400f,
+                CastRange = 450f,
                 Delay = 250f,
-                HitType = new[] { global::Activator.HitType.CrowdControl },
+                HitType = new[] { global::Activator.HitType.Danger },
                 MissileSpeed = int.MaxValue 
             });
 
@@ -1349,7 +1360,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 1275f,
                 Delay = 250f,
-                HitType = new HitType[] { },
+                HitType = new[] { global::Activator.HitType.CrowdControl },
                 MissileName = "fizzmarinerdoommissile",
                 MissileSpeed = 1200
             });

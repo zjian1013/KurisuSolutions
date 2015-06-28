@@ -92,7 +92,14 @@ namespace Activator
                 ddmenu.AddItem(new MenuItem("drawsmite", "Draw Smite Range")).SetValue(true);
                 zmenu.AddSubMenu(ddmenu);
             }
-            zmenu.AddItem(new MenuItem("version", "Version: 0.9.5.3"));
+
+            var vmenu = new Menu("version", "Version: 0.9.5.3");
+            vmenu.AddItem(new MenuItem("m", "new: minion caching"));
+            vmenu.AddItem(new MenuItem("z", "new: ally hero priority"));
+            vmenu.AddItem(new MenuItem("f", "new: fizz ultimate prediction"));
+            vmenu.AddItem(new MenuItem("s", "known issue: cleanse not working"));
+            zmenu.AddSubMenu(vmenu);
+
             zmenu.AddItem(new MenuItem("healthp", "Hero Priority:"))
                 .SetValue(new StringList(new[] { "Low HP", "Most AD/AP", "Most HP" }, 1));
 
@@ -134,14 +141,15 @@ namespace Activator
 
         public static IEnumerable<champion> ChampionPriority()
         {
-            if (Origin.Item("healthp").GetValue<StringList>().SelectedIndex == 0)
-                return champion.Heroes.OrderBy(h => h.Player.Health / h.Player.MaxHealth * 100);
-
-            if (Origin.Item("healthp").GetValue<StringList>().SelectedIndex == 1)
-                return champion.Heroes.OrderByDescending(h => h.Player.FlatPhysicalDamageMod + h.Player.FlatMagicDamageMod);
-
-            if (Origin.Item("healthp").GetValue<StringList>().SelectedIndex == 2)
-                return champion.Heroes.OrderByDescending(h => h.Player.Health);
+            switch (Origin.Item("healthp").GetValue<StringList>().SelectedIndex)
+            {
+                case 0:
+                    return champion.Heroes.OrderBy(h => h.Player.Health / h.Player.MaxHealth * 100);
+                case 1:
+                    return champion.Heroes.OrderByDescending(h => h.Player.FlatPhysicalDamageMod + h.Player.FlatMagicDamageMod);
+                case 2:
+                    return champion.Heroes.OrderByDescending(h => h.Player.Health);
+            }
 
             return null;
         }
@@ -197,8 +205,7 @@ namespace Activator
                     Damage.Spells.Where(entry => entry.Key == Player.ChampionName).SelectMany(entry => entry.Value))
             {
                 spelldata.damagelib.Add(spell.Damage, spell.Slot);
-                Console.WriteLine("[A]: " + Player.ChampionName + ": " + spell.Slot + " " + spell.Stage +
-                                  " - dmg added!");
+                Console.WriteLine("[A]: " + Player.ChampionName + ": " + spell.Slot + " " + spell.Stage + " - dmg added!");
             }
         }
 
