@@ -19,7 +19,7 @@ namespace Activator
     {
         public static void init()
         {
-            Game.OnUpdate += Game_OnUpdate;
+            //Game.OnUpdate += Game_OnUpdate;
             Obj_AI_Base.OnBuffAdd += Obj_AI_Base_OnBuffAdd;
             Obj_AI_Base.OnBuffRemove += Obj_AI_Base_OnBuffRemove;
         }
@@ -99,10 +99,11 @@ namespace Activator
                                 });
                             }
                         }
-                    }
 
-                    if (spelldebuffdata.debuffs.Any(b => b.Name == args.Buff.Name.ToLower() && b.QSSIgnore))
-                        continue;
+                        if (buff.QSSIgnore)
+                            return;
+
+                    }
 
                     #region Boost
 
@@ -361,11 +362,11 @@ namespace Activator
                                     hero.ForceQSS = false;
                                 });
                             }
+
+                            if (buff.QSSIgnore)
+                                return;
                         }
                     }
-
-                    if (spelldebuffdata.debuffs.Any(b => b.Name == args.Buff.Name.ToLower() && b.QSSIgnore))
-                        continue;
 
                     #region Boost
 
