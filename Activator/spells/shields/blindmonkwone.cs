@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using LeagueSharp.Common;
 
 namespace Activator.Spells.Shields
@@ -44,7 +45,7 @@ namespace Activator.Spells.Shields
                 Menu.Item("SelfMinMP" + Name + "Pct").GetValue<Slider>().Value)
                 return;
 
-            foreach (var hero in champion.Heroes)
+            foreach (var hero in Activator.ChampionPriority())
             {                    
                 if (!Parent.Item(Parent.Name + "useon" + hero.Player.ChampionName).GetValue<bool>())
                         continue;

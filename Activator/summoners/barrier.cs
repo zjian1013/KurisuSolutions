@@ -37,7 +37,7 @@ namespace Activator.Summoners
             if (!Menu.Item("use" + Name).GetValue<bool>())
                 return;
 
-            foreach (var hero in champion.Heroes)
+            foreach (var hero in Activator.ChampionPriority())
             {
                 if (hero.Player.NetworkId != Player.NetworkId)
                     return;

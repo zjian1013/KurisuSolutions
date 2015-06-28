@@ -61,14 +61,14 @@ namespace Activator
                 objectcache.Remove(unit.NetworkId);
             }
 
-            foreach (var hero in champion.Heroes)
+            foreach (var hero in Activator.ChampionPriority())
             {
                 // if no troys dont loop
                 if (!Activator.TroysInGame)
                     return;
 
                 foreach (var troy in gametroy.Troys)
-                {                   
+                {
                     // delete the troy and stop ticking
                     if (troy.Included && obj.Name.Contains(troy.Name))
                     {
@@ -85,7 +85,7 @@ namespace Activator
 
         private static void Game_OnUpdate(EventArgs args)
         {
-            foreach (var hero in champion.Heroes)
+            foreach (var hero in Activator.ChampionPriority())
             {
                 // if no troys dont tick
                 if (!Activator.TroysInGame)

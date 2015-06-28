@@ -1,44 +1,43 @@
 ﻿using System;
 using System.Linq;
-using LeagueSharp;
 using LeagueSharp.Common;
 
 namespace Activator.Items.Defensives
 {
-    class _3157 : item
+    class _3023 : item
     {
         internal override int Id
         {
-            get { return 3157; }
+            get { return 3023; }
         }
         internal override int Priority
         {
-            get { return 7; }
+            get { return 4; }
         }
 
         internal override string Name
         {
-            get { return "Zhonyas"; }
+            get { return "Shadows"; }
         }
 
         internal override string DisplayName
         {
-            get { return "Zhonya's Hourglass"; }
+            get { return "Twin Shadows"; }
         }
 
         internal override int Duration
         {
-            get { return 2500; }
+            get { return 100; }
         }
 
         internal override float Range
         {
-            get { return 750f; }
+            get { return 1600f; }
         }
 
         internal override MenuType[] Category
         {
-            get { return new[] { MenuType.SelfLowHP, MenuType.SelfMuchHP, MenuType.Zhonyas }; }
+            get { return new[] { MenuType.EnemyLowHP, MenuType.SelfLowHP }; }
         }
 
         internal override MapType[] Maps
@@ -48,7 +47,7 @@ namespace Activator.Items.Defensives
 
         internal override int DefaultHP
         {
-            get { return 20; }
+            get { return 45; }
         }
 
         internal override int DefaultMP
@@ -59,31 +58,30 @@ namespace Activator.Items.Defensives
         public override void OnTick(EventArgs args)
         {
             if (!Menu.Item("use" + Name).GetValue<bool>())
-            {
                 return;
-            }
 
             foreach (var hero in Activator.ChampionPriority())
             {
-                if (hero.Player.NetworkId == Player.NetworkId)
+                if (!Parent.Item(Parent.Name + "useon" + hero.Player.ChampionName).GetValue<bool>())
+                    continue;
+
+                if (hero.Player.Distance(Player.ServerPosition) <= Range)
                 {
-                    if (!Parent.Item(Parent.Name + "useon" + hero.Player.ChampionName).GetValue<bool>())
-                        continue;
-
-                    if (Menu.Item("use" + Name + "Norm").GetValue<bool>())
-                        if (hero.IncomeDamage > 0 && hero.HitTypes.Contains(HitType.Danger))
-                            UseItem();
-
-                    if (Menu.Item("use" + Name + "Ulti").GetValue<bool>())
-                        if (hero.IncomeDamage > 0 && hero.HitTypes.Contains(HitType.Ultimate))
-                            UseItem();
-
-                    if (Player.Health/Player.MaxHealth*100 <=
+                    if (hero.Player.Health / hero.Player.MaxHealth * 100 <=
                         Menu.Item("SelfLowHP" + Name + "Pct").GetValue<Slider>().Value)
                     {
-                        if (hero.IncomeDamage > 0 || hero.MinionDamage > hero.Player.Health)
+                        if (hero.IncomeDamage > 0 && hero.Attacker != null &&
+                            hero.Attacker.Distance(hero.Player.ServerPosition) <= 600)
                             UseItem();
                     }
+                }
+            }
+
+            if (Target != null)
+            {
+                if (Target.Health / Target.MaxHealth * 100 <= Menu.Item("EnemyLowHP" + Name + "Pct").GetValue<Slider>().Value)
+                {
+                    UseItem();
                 }
             }
         }

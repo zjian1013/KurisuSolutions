@@ -60,7 +60,7 @@ namespace Activator.Items.Defensives
             if (!Menu.Item("use" + Name).GetValue<bool>())
                 return;
 
-            foreach (var hero in champion.Heroes)
+            foreach (var hero in Activator.ChampionPriority())
             {
                 if (!Parent.Item(Parent.Name + "useon" + hero.Player.ChampionName).GetValue<bool>())
                     continue;

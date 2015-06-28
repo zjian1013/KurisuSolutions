@@ -18,7 +18,7 @@ namespace Activator
         {
             if (Activator.Origin.Item("acdebug").GetValue<bool>())
             {
-                foreach (var hero in champion.Heroes)
+                foreach (var hero in Activator.ChampionPriority())
                 {
                     var mpos = Drawing.WorldToScreen(hero.Player.Position);
 

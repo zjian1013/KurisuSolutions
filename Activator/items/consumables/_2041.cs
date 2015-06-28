@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using LeagueSharp.Common;
 
 namespace Activator.Items.Consumables
@@ -56,7 +57,7 @@ namespace Activator.Items.Consumables
 
         public override void OnTick(EventArgs args)
         {
-            foreach (var hero in champion.Heroes)
+            foreach (var hero in Activator.ChampionPriority())
             {
                 if (hero.Player.NetworkId == Player.NetworkId)
                 {

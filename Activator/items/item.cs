@@ -25,7 +25,6 @@ namespace Activator.Items
         public Menu Menu { get; private set; }
         public Menu Parent { get { return Menu.Parent; } }
         public Obj_AI_Hero Player { get { return ObjectManager.Player; } }
-
         public Obj_AI_Hero Target
         {
             get

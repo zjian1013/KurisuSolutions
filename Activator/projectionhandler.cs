@@ -50,7 +50,7 @@ namespace Activator
             if (startPos.Distance(endPos) > data.CastRange)
                 endPos = startPos + direction*data.CastRange;
 
-            foreach (var hero in champion.Heroes)
+            foreach (var hero in Activator.ChampionPriority())
             {
                 if (hero.Player.IsDead || hero.Player.IsZombie || hero.Immunity)
                 {
@@ -119,7 +119,7 @@ namespace Activator
         {
             if (sender.IsEnemy && sender.Type == GameObjectType.obj_AI_Hero)
             {
-                foreach (var hero in champion.Heroes)
+                foreach (var hero in Activator.ChampionPriority())
                 {
                     if (hero.Player.IsDead || hero.Player.IsZombie || hero.Immunity)
                     {
@@ -341,7 +341,7 @@ namespace Activator
 
             if (sender.IsEnemy && sender.Type == GameObjectType.obj_AI_Turret)
             {
-                foreach (var hero in champion.Heroes)
+                foreach (var hero in Activator.ChampionPriority())
                 {
                     if (args.Target.NetworkId != hero.Player.NetworkId) 
                         continue;
@@ -373,7 +373,7 @@ namespace Activator
 
             if (sender.IsEnemy && sender.Type == GameObjectType.obj_AI_Minion)
             {
-                foreach (var hero in champion.Heroes)
+                foreach (var hero in Activator.ChampionPriority())
                 {
                     if (hero.Player.NetworkId != args.Target.NetworkId) 
                         continue;

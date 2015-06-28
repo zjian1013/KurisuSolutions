@@ -25,7 +25,6 @@ namespace Activator
     {
         internal static Menu Origin;
         internal static Obj_AI_Hero Player = ObjectManager.Player;
-
         internal static int MapId;
         internal static int LastUsedTimeStamp;
         internal static int LastUsedDuration;
@@ -52,7 +51,7 @@ namespace Activator
             var cmenu = new Menu("Cleansers", "cleansers");
             SubMenu(cmenu, false);
             GetItemGroup("Items.Cleansers").ForEach(t => NewItem((item) NewInstance(t), cmenu));
-            cmenu.AddItem(new MenuItem("acdebug", "Debug")).SetValue(false);   
+            cmenu.AddItem(new MenuItem("acdebug", "Debug")).SetValue(false);
 
             Origin.AddSubMenu(cmenu);
 
@@ -77,11 +76,11 @@ namespace Activator
 
             var amenu = new Menu("Auto Spells", "amenu");
             SubMenu(amenu, false);
-            GetItemGroup("Spells.Evaders").ForEach(t => NewSpell((spell)NewInstance(t), amenu));
-            GetItemGroup("Spells.Shields").ForEach(t => NewSpell((spell)NewInstance(t), amenu));
-            GetItemGroup("Spells.Health").ForEach(t => NewSpell((spell)NewInstance(t), amenu));
-            GetItemGroup("Spells.Slows").ForEach(t => NewSpell((spell)NewInstance(t), amenu));
-            GetItemGroup("Spells.Heals").ForEach(t => NewSpell((spell)NewInstance(t), amenu));
+            GetItemGroup("Spells.Evaders").ForEach(t => NewSpell((spell) NewInstance(t), amenu));
+            GetItemGroup("Spells.Shields").ForEach(t => NewSpell((spell) NewInstance(t), amenu));
+            GetItemGroup("Spells.Health").ForEach(t => NewSpell((spell) NewInstance(t), amenu));
+            GetItemGroup("Spells.Slows").ForEach(t => NewSpell((spell) NewInstance(t), amenu));
+            GetItemGroup("Spells.Heals").ForEach(t => NewSpell((spell) NewInstance(t), amenu));
             Origin.AddSubMenu(amenu);
 
             var zmenu = new Menu("Misc/Settings", "settings");
@@ -93,6 +92,9 @@ namespace Activator
                 ddmenu.AddItem(new MenuItem("drawsmite", "Draw Smite Range")).SetValue(true);
                 zmenu.AddSubMenu(ddmenu);
             }
+
+            zmenu.AddItem(new MenuItem("healthp", "Hero Priority:"))
+                .SetValue(new StringList(new[] { "Low HP", "Most AD/AP", "Most HP" }, 1));
 
             zmenu.AddItem(new MenuItem("usecombo", "Combo (active)"))
                 .SetValue(new KeyBind(32, KeyBindType.Press, true));
@@ -130,6 +132,19 @@ namespace Activator
                     Game.OnUpdate += summoner.OnTick;
         }
 
+        public static IEnumerable<champion> ChampionPriority()
+        {
+            if (Origin.Item("healthp").GetValue<StringList>().SelectedIndex == 0)
+                return champion.Heroes.OrderBy(h => h.Player.Health / h.Player.MaxHealth * 100);
+
+            if (Origin.Item("healthp").GetValue<StringList>().SelectedIndex == 1)
+                return champion.Heroes.OrderByDescending(h => h.Player.FlatPhysicalDamageMod + h.Player.FlatMagicDamageMod);
+
+            if (Origin.Item("healthp").GetValue<StringList>().SelectedIndex == 2)
+                return champion.Heroes.OrderByDescending(h => h.Player.Health);
+
+            return null;
+        }
 
         private static void Obj_AI_Base_OnPlaceItemInSlot(Obj_AI_Base sender, Obj_AI_BasePlaceItemInSlotEventArgs args)
         {
@@ -137,7 +152,7 @@ namespace Activator
                 return;
 
             foreach (var item in spelldata.items)
-                if (item.Id == (int) args.Id) 
+                if (item.Id == (int) args.Id)
                     Game.OnUpdate += item.OnTick;
         }
 
@@ -162,7 +177,7 @@ namespace Activator
                 spelldata.summoners.Add(summoner.CreateMenu(parent));
 
             if (summoner.Name.Contains("smite") && SmiteInGame)
-                spelldata.summoners.Add(summoner.CreateMenu(parent));                          
+                spelldata.summoners.Add(summoner.CreateMenu(parent));
         }
 
         private static List<Type> GetItemGroup(string nspace)
@@ -172,7 +187,7 @@ namespace Activator
                     .GetTypes()
                     .FindAll(t => t.IsClass && t.Namespace == "Activator." + nspace &&
                                   t.Name != "item" && t.Name != "spell" && t.Name != "summoner" &&
-                                 !t.Name.Contains("c__")); // kek
+                                  !t.Name.Contains("c__")); // kek
         }
 
         private static void GetSlotDamage()
@@ -182,7 +197,8 @@ namespace Activator
                     Damage.Spells.Where(entry => entry.Key == Player.ChampionName).SelectMany(entry => entry.Value))
             {
                 spelldata.damagelib.Add(spell.Damage, spell.Slot);
-                Console.WriteLine("[A]: " + Player.ChampionName + ": " + spell.Slot + " " + spell.Stage + " - dmg added!");
+                Console.WriteLine("[A]: " + Player.ChampionName + ": " + spell.Slot + " " + spell.Stage +
+                                  " - dmg added!");
             }
         }
 
@@ -244,11 +260,11 @@ namespace Activator
                 var side = hero.Team == Player.Team ? "[Ally]" : "[Enemy]";
                 menu.AddItem(new MenuItem(parent.Name + "useon" + hero.ChampionName,
                     "Use for " + hero.ChampionName + " " + side)).SetValue(true);
-
             }
 
             parent.AddSubMenu(menu);
         }
+
         private static void Obj_AI_Base_OnLevelUp(Obj_AI_Base sender, EventArgs args)
         {
             var hero = sender as Obj_AI_Hero;
@@ -287,7 +303,7 @@ namespace Activator
             il.Emit(OpCodes.Ldloc_0);
             il.Emit(OpCodes.Ret);
 
-            var method = (Func<object>)dynamic.CreateDelegate(typeof(Func<object>));
+            var method = (Func<object>) dynamic.CreateDelegate(typeof (Func<object>));
             return method();
         }
     }

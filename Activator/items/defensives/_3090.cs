@@ -64,7 +64,7 @@ namespace Activator.Items.Defensives
                 return;
             }
 
-            foreach (var hero in champion.Heroes)
+            foreach (var hero in Activator.ChampionPriority())
             {
                 if (hero.Player.NetworkId == Player.NetworkId)
                 {

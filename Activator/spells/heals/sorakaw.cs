@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
 
@@ -46,7 +47,7 @@ namespace Activator.Spells.Heals
                 Menu.Item("SelfMinHP" + Name + "Pct").GetValue<Slider>().Value)
                 return;
 
-            foreach (var hero in champion.Heroes)
+            foreach (var hero in Activator.ChampionPriority())
             {
                 if (hero.Player.Distance(Player.ServerPosition) <= Range)
                 {

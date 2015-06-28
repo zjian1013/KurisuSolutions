@@ -46,7 +46,7 @@ namespace Activator.Spells.Health
                 ObjectManager.Get<Obj_AI_Hero>()
                     .FirstOrDefault(hero => hero.HasBuff("kalistacoopstrikeally", true));
 
-            foreach (var hero in champion.Heroes)
+            foreach (var hero in Activator.ChampionPriority())
             {
                 if (cooptarget != null && hero.Player.NetworkId == cooptarget.NetworkId)
                 {

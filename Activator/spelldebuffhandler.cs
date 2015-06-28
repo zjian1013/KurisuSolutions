@@ -35,7 +35,7 @@ namespace Activator
                     if (attacker == null)
                         return;
 
-                    foreach (var hero in champion.Heroes)
+                    foreach (var hero in Activator.ChampionPriority())
                     {
                         if (hero.Player.GetBuff(buff.Name).IsValidBuff() && !hero.Immunity)
                         {
@@ -54,7 +54,7 @@ namespace Activator
 
         private static void Obj_AI_Base_OnBuffAdd(Obj_AI_Base sender, Obj_AI_BaseBuffAddEventArgs args)
         {
-            foreach (var hero in champion.Heroes)
+            foreach (var hero in Activator.ChampionPriority())
             {
                 if (hero.Player.NetworkId == sender.NetworkId)
                 {
@@ -324,7 +324,7 @@ namespace Activator
 
         private static void Obj_AI_Base_OnBuffRemove(Obj_AI_Base sender, Obj_AI_BaseBuffRemoveEventArgs args)
         {
-            foreach (var hero in champion.Heroes)
+            foreach (var hero in Activator.ChampionPriority())
             {
                 if (hero.Player.NetworkId == sender.NetworkId)
                 {

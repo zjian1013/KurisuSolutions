@@ -4,13 +4,12 @@ using LeagueSharp.Common;
 
 namespace Activator.Items.Defensives
 {
-    class _3190 : item
+    class _30290 : item
     {
         internal override int Id
         {
-            get { return 3190; }
+            get { return 3290; }
         }
-
         internal override int Priority
         {
             get { return 4; }
@@ -18,37 +17,37 @@ namespace Activator.Items.Defensives
 
         internal override string Name
         {
-            get { return "Locket"; }
+            get { return "Shadows"; }
         }
 
         internal override string DisplayName
         {
-            get { return "Locket of Iron Solari"; }
+            get { return "Twin Shadows"; }
         }
 
         internal override int Duration
         {
-            get { return 2000; }
+            get { return 100; }
         }
 
         internal override float Range
         {
-            get { return 600f; }
+            get { return 1600f; }
         }
 
         internal override MenuType[] Category
         {
-            get { return new[] { MenuType.SelfLowHP, MenuType.SelfMuchHP, MenuType.Zhonyas }; }
+            get { return new[] { MenuType.EnemyLowHP, MenuType.SelfLowHP }; }
         }
 
         internal override MapType[] Maps
         {
-            get { return new[] { MapType.Common }; }
+            get { return new[] { MapType.TwistedTreeline, MapType.CrystalScar }; }
         }
 
         internal override int DefaultHP
         {
-            get { return 50; }
+            get { return 45; }
         }
 
         internal override int DefaultMP
@@ -59,9 +58,7 @@ namespace Activator.Items.Defensives
         public override void OnTick(EventArgs args)
         {
             if (!Menu.Item("use" + Name).GetValue<bool>())
-            {
                 return;
-            }
 
             foreach (var hero in Activator.ChampionPriority())
             {
@@ -70,24 +67,21 @@ namespace Activator.Items.Defensives
 
                 if (hero.Player.Distance(Player.ServerPosition) <= Range)
                 {
-                    if (Menu.Item("use" + Name + "Norm").GetValue<bool>())
-                        if (hero.IncomeDamage > 0 && hero.HitTypes.Contains(HitType.Danger))
-                            UseItem();
-
-                    if (Menu.Item("use" + Name + "Ulti").GetValue<bool>())
-                        if (hero.IncomeDamage > 0 && hero.HitTypes.Contains(HitType.Ultimate))
-                            UseItem();
-
-                    if (hero.Player.Health/hero.Player.MaxHealth*100 <=
+                    if (hero.Player.Health / hero.Player.MaxHealth * 100 <=
                         Menu.Item("SelfLowHP" + Name + "Pct").GetValue<Slider>().Value)
                     {
-                        if (hero.IncomeDamage > 0 || hero.MinionDamage > hero.Player.Health)
+                        if (hero.IncomeDamage > 0 && hero.Attacker != null &&
+                            hero.Attacker.Distance(hero.Player.ServerPosition) <= 600)
                             UseItem();
                     }
+                }
+            }
 
-                    if (hero.IncomeDamage / hero.Player.MaxHealth * 100 >=
-                        Menu.Item("SelfMuchHP" + Name + "Pct").GetValue<Slider>().Value)
-                        UseItem();
+            if (Target != null)
+            {
+                if (Target.Health / Target.MaxHealth * 100 <= Menu.Item("EnemyLowHP" + Name + "Pct").GetValue<Slider>().Value)
+                {
+                    UseItem();
                 }
             }
         }

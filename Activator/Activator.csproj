@@ -60,7 +60,9 @@
   <ItemGroup>
     <Compile Include="champion.cs" />
     <Compile Include="drawings.cs" />
+    <Compile Include="items\defensives\_3023.cs" />
     <Compile Include="items\defensives\_3048.cs" />
+    <Compile Include="items\defensives\_3290.cs" />
     <Compile Include="items\offensives\_3043.cs" />
     <Compile Include="items\offensives\_3092.cs" />
     <Compile Include="projectionhandler.cs" />

@@ -44,7 +44,7 @@ namespace Activator.Summoners
                     .OrderByDescending(h => h.FlatPhysicalDamageMod)
                     .FirstOrDefault(x => x.IsEnemy && x.Distance(Player.ServerPosition) <= Range + 250);
 
-            foreach (var hero in champion.Heroes)
+            foreach (var hero in Activator.ChampionPriority())
             {
                 var enemy = hero.Attacker as Obj_AI_Hero;
                 if (enemy == null || highestadinrange == null) 
