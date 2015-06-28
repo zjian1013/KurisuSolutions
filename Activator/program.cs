@@ -48,7 +48,7 @@ namespace Activator
             GetHeroesInGame();
             GetSlotDamage();
 
-            Origin = new Menu("Kurisu's Activator", "activator", true);
+            Origin = new Menu("Activator", "activator", true);
             var cmenu = new Menu("Cleansers", "cleansers");
             SubMenu(cmenu, false);
             GetItemGroup("Items.Cleansers").ForEach(t => NewItem((item) NewInstance(t), cmenu));
