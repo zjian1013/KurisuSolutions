@@ -354,7 +354,7 @@ namespace KurisuRiven
                 .SetValue(new StringList(new[] { "E -> W/R -> Tiamat -> Q", "E -> Tiamat -> W/R -> Q" } ));
             emenu.AddItem(new MenuItem("erange", "E Only if Target > AARange or Engage")).SetValue(true);
             emenu.AddItem(new MenuItem("vhealth", "Or Use E if HP% <=")).SetValue(new Slider(40));
-            emenu.AddItem(new MenuItem("ashield", "Shield While LastHit (Broken)")).SetValue(true);
+            emenu.AddItem(new MenuItem("ashield", "Shield Spells While LastHit")).SetValue(true);
             combo.AddSubMenu(emenu);
 
             var rmenu = new Menu("R  Settings", "rivenr");
