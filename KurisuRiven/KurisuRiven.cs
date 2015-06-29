@@ -217,8 +217,8 @@ namespace KurisuRiven
                 ((ComboDamage(rtarg)/1.6) >= rtarg.Health || rtarg.CountEnemiesInRange(w.Range) >= menuslide("multic"));
 
             // set player skin
-            player.SetSkin(player.CharData.BaseSkinName, menu.Item("skinset").GetValue<StringList>().SelectedIndex);
-
+            player.SetSkin(player.BaseSkinName, menu.Item("skinset").GetValue<StringList>().SelectedIndex);
+ 
             // move behind me
             if (qtarg != player && qtarg.IsFacing(player) && qtarg.Distance(player.ServerPosition) < truerange + 120)
                 movepos = player.ServerPosition + (player.ServerPosition - qtarg.ServerPosition).Normalized()*28;
