@@ -250,8 +250,6 @@ namespace KurisuRiven
             if (rtarg.IsValidTarget() &&
                 menu.Item("shycombo").GetValue<KeyBind>().Active)
             {
-                TryFlashInitiate(rtarg);
-
                 if (rtarg.Distance(player.ServerPosition) <= truerange)
                 {
                     if ((Items.HasItem(3077) || Items.HasItem(3074)))
@@ -262,6 +260,14 @@ namespace KurisuRiven
                         }
                     }
                 }
+
+                if (rtarg.IsValidTarget(w.Range))
+                {
+                    if (w.IsReady())
+                        w.Cast();
+                }
+
+                TryFlashInitiate(rtarg);
             }
 
             if (didhs && rtarg.IsValidTarget())
@@ -421,7 +427,7 @@ namespace KurisuRiven
             if (!menubool("multib"))
                 return;
 
-            if (!menu.Item("combokey").GetValue<KeyBind>().Active ||
+            if (!menu.Item("shycombo").GetValue<KeyBind>().Active ||
                 !target.IsValid<Obj_AI_Hero>() || uo || !menubool("user"))
                 return;
 
@@ -436,6 +442,7 @@ namespace KurisuRiven
                 if (target.Distance(player.ServerPosition) > e.Range + truerange)
                 {
                     e.Cast(target.ServerPosition);
+                    r.Cast();
                 }
             }
 
@@ -957,6 +964,7 @@ namespace KurisuRiven
                 {
                     case "RivenTriCleave":
                         didq = true;
+                        didaa = false;
                         canmv = false;
                         lastq = Utils.GameTimeTickCount;
                         canq = false;
@@ -1251,9 +1259,8 @@ namespace KurisuRiven
         {
             if (canaa && canmv)
             {
-                if (target.Distance(player.ServerPosition) <= truerange + 100)
+                if (target.Distance(player.ServerPosition) <= truerange + 10)
                 {
-                    canq = false;
                     player.IssueOrder(GameObjectOrder.AttackUnit, target);
                 }
             }
@@ -1263,7 +1270,7 @@ namespace KurisuRiven
         {
             if (didhd && canhd && Utils.GameTimeTickCount - lasthd >= 250)
             {
-                 didhd = false;
+                didhd = false;
             }
 
             if (didq)
@@ -1449,7 +1456,7 @@ namespace KurisuRiven
                     if (menubool("drawengage"))
                     {
                         Render.Circle.DrawCircle(player.Position,
-                            player.AttackRange + e.Range + 10, Color.White, 2);
+                            player.AttackRange + e.Range + 35, Color.White, 2);
                     }
 
                     if (menubool("drawburst") && cb && flash.IsReady() && rtarg != null)
