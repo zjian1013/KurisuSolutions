@@ -63,7 +63,7 @@ namespace Activator.Spells.Evaders
 
                     if (hero.IncomeDamage / Player.MaxHealth * 100 >=
                         Menu.Item("SelfMuchHP" + Name + "Pct").GetValue<Slider>().Value)
-                            UseSpellTowards(Game.CursorPos);                
+                            UseSpellTowards(Game.CursorPos);
                 }
             }
         }

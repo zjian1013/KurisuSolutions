@@ -4,7 +4,7 @@
 // without the prior written consent of the copyright owner.
 // 
 // Document:	activator/projectionhandler.cs
-// Date:		06/06/2015
+// Date:		01/07/2015
 // Author:		Robin Kurisu
 #endregion
 
@@ -17,8 +17,8 @@ namespace Activator
 {
     public class projectionhandler
     {
-        public static int Last;
         public static Obj_AI_Hero Target;
+        public static int Casted;
 
         public static void init()
         {
@@ -50,10 +50,12 @@ namespace Activator
             if (startPos.Distance(endPos) > data.CastRange)
                 endPos = startPos + direction*data.CastRange;
 
+            #region FoW Detection
             foreach (var hero in Activator.ChampionPriority())
             {
-                if (hero.Player.IsDead || hero.Player.IsZombie || hero.Immunity)
+                if (!hero.Player.IsValidTarget(float.MaxValue, false) || hero.Player.IsZombie || hero.Immunity)
                 {
+                    hero.Attacker = null;
                     hero.IncomeDamage = 0;
                     hero.HitTypes.Clear();
                     continue;
@@ -73,64 +75,75 @@ namespace Activator
                          hero.Player.MoveSpeed);
 
                 // check if hero on segment
-                if (missile.SData.LineWidth + hero.Player.BoundingRadius > projdist)
+                if (missile.SData.LineWidth + hero.Player.BoundingRadius <= projdist) 
+                    continue;
+
+                if (data.Global)
                 {
-                    if (data.Global)
+                    // ignore if can evade
+                    if (hero.Player.NetworkId == Activator.Player.NetworkId)
                     {
-                        // ignore if can evade
-                        if (hero.Player.NetworkId == Activator.Player.NetworkId)
+                        if (hero.Player.CanMove && evadetime < endtime)
                         {
-                            if (hero.Player.CanMove && evadetime < endtime)
-                            {
-                                // check next player
-                                continue;
-                            }
+                            // check next player
+                            continue;
                         }
                     }
-
-                    hero.Attacker = caster;
-                    hero.IncomeDamage = (float)Math.Abs(caster.GetSpellDamage(hero.Player, data.SDataName));
-                    hero.HitTypes.Add(HitType.Spell);
-
-                    // spell is important or lethal!
-                    if (data.HitType.Contains(HitType.Ultimate))
-                        hero.HitTypes.Add(HitType.Ultimate);
-
-                    // spell is important but not as fatal
-                    if (data.HitType.Contains(HitType.Danger))
-                        hero.HitTypes.Add(HitType.Danger);
-
-                    // spell has a crowd control effect
-                    if (data.HitType.Contains(HitType.CrowdControl))
-                        hero.HitTypes.Add(HitType.CrowdControl);
-
-                    Utility.DelayAction.Add(1200, () =>
-                    {
-                        hero.Attacker = null;
-                        hero.IncomeDamage = 0;
-                        hero.HitTypes.Clear();
-                    });
                 }
+
+                hero.Attacker = caster;
+                hero.IncomeDamage = (float) Math.Abs(caster.GetSpellDamage(hero.Player, data.SDataName));
+                hero.HitTypes.Add(HitType.Spell);
+
+                // spell is important or lethal!
+                if (data.HitType.Contains(HitType.Ultimate))
+                    hero.HitTypes.Add(HitType.Ultimate);
+
+                // spell is important but not as fatal
+                if (data.HitType.Contains(HitType.Danger))
+                    hero.HitTypes.Add(HitType.Danger);
+
+                // spell has a crowd control effect
+                if (data.HitType.Contains(HitType.CrowdControl))
+                    hero.HitTypes.Add(HitType.CrowdControl);
+
+                Utility.DelayAction.Add(800, () =>
+                {
+                    hero.Attacker = null;
+                    hero.IncomeDamage = 0;
+                    hero.HitTypes.Clear();
+                });
             }
+
+            #endregion
         }
 
 
         private static void Obj_AI_Base_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
         {
+            #region Hero Detection
+
             if (sender.IsEnemy && sender.Type == GameObjectType.obj_AI_Hero)
             {
+                Casted = Utils.GameTimeTickCount;
+
                 foreach (var hero in Activator.ChampionPriority())
                 {
-                    if (hero.Player.IsDead || hero.Player.IsZombie || hero.Immunity)
+                    if (!hero.Player.IsValidTarget(float.MaxValue, false) || hero.Player.IsZombie || hero.Immunity)
                     {
+                        hero.Attacker = null;
                         hero.IncomeDamage = 0;
                         hero.HitTypes.Clear();
                         continue;
                     }
 
-                    // auto attack dectection
-                    if (args.SData.IsAutoAttack() && args.Target.NetworkId == hero.Player.NetworkId)
+                    #region auto attack dectection
+
+                    if (args.SData.IsAutoAttack())
                     {
+                        if (args.Target.NetworkId != hero.Player.NetworkId)
+                            continue;
+
                         // delay a little bit before missile endtime
                         Utility.DelayAction.Add(250, () =>
                         {
@@ -139,7 +152,7 @@ namespace Activator
                             hero.IncomeDamage = (float) Math.Abs(sender.GetAutoAttackDamage(hero.Player));
 
                             // lazy reset
-                            Utility.DelayAction.Add(1000, delegate
+                            Utility.DelayAction.Add(700, delegate
                             {
                                 hero.Attacker = null;
                                 hero.HitTypes.Remove(HitType.AutoAttack);
@@ -147,12 +160,13 @@ namespace Activator
                             });
                         });
                     }
+               
+                    #endregion
 
                     foreach (var data in spelldata.spells.Where(x => x.SDataName == args.SData.Name.ToLower()))
                     {
-                        Last = Utils.GameTimeTickCount;
+                        #region self/selfaoe spell detection
 
-                        // self/selfaoe spell detection
                         if (args.SData.TargettingType == SpellDataTargetType.Self ||
                             args.SData.TargettingType == SpellDataTargetType.SelfAoe)
                         {
@@ -163,10 +177,15 @@ namespace Activator
 
                             var correctpos = fromObj != null ? fromObj.Position : sender.ServerPosition;
 
-                            if (hero.Player.Distance(correctpos) <= data.CastRange)
-                            {
+                            if (hero.Player.Distance(correctpos) > data.CastRange)
+                                continue;
+
+                            if (data.SDataName == "kalistaexpungewrapper" &&
+                               !hero.Player.HasBuff("kalistaexpungemarker", true))
+                                continue;
+              
                                 // delay the spell a bit before missile endtime
-                                Utility.DelayAction.Add((int) (data.Delay - (data.Delay*0.3)), () =>
+                                Utility.DelayAction.Add((int) (data.Delay - (data.Delay * 0.3)), () =>
                                 {
                                     hero.Attacker = sender;
                                     hero.HitTypes.Add(HitType.Spell);
@@ -186,18 +205,21 @@ namespace Activator
                                         hero.HitTypes.Add(HitType.CrowdControl);
 
                                     // lazy safe reset
-                                    Utility.DelayAction.Add((int) (data.Delay + 1200), () =>
+                                    Utility.DelayAction.Add((int) (data.Delay + 200), () =>
                                     {
                                         hero.Attacker = null;
                                         hero.IncomeDamage = 0;
                                         hero.HitTypes.Clear();
                                     });
                                 });
-                            }
+
                         }
 
-                        // skillshot detection completerino
-                        if (args.SData.TargettingType == SpellDataTargetType.Cone ||
+                        #endregion
+
+                        #region skillshot detection completerino
+
+                        if (args.SData.TargettingType == SpellDataTargetType.Cone || 
                             args.SData.TargettingType.ToString().Contains("Location"))
                         {
                             var fromObj =
@@ -205,138 +227,149 @@ namespace Activator
                                     .FirstOrDefault(
                                         x => data.FromObject != null && data.FromObject.Any(y => x.Name.Contains(y)));
 
-                            bool islineskillshot = args.SData.LineWidth != 0;
-
+                            // correct datas
+                            var islineskillshot = args.SData.LineWidth != 0;
                             var correctpos = fromObj != null ? fromObj.Position : sender.ServerPosition;
                             var correctwidth = !islineskillshot ? args.SData.CastRadius : args.SData.LineWidth;
 
-                            if (hero.Player.Distance(correctpos) <= data.CastRange)
+                            if (hero.Player.Distance(correctpos) > data.CastRange)
+                                continue;
+
+                            var distance = (int)(1000 * (correctpos.Distance(hero.Player.ServerPosition) / data.MissileSpeed));
+                            var endtime = data.Delay - 100 + Game.Ping/2 + distance - (Utils.GameTimeTickCount - Casted);
+
+                            // get the real end position normalized
+                            var direction = (args.End.To2D() - correctpos.To2D()).Normalized();
+                            var endpos = correctpos.To2D() + direction * data.CastRange;
+
+                            // setup projection
+                            var proj = hero.Player.ServerPosition.To2D().ProjectOn(correctpos.To2D(), endpos);
+                            var projdist = hero.Player.ServerPosition.To2D().Distance(proj.SegmentPoint);
+
+                            // get the evade time 
+                            int evadetime;
+
+                            if (islineskillshot)
                             {
-                                var distance = (int)(1000 * (correctpos.Distance(hero.Player.ServerPosition) / data.MissileSpeed));
-                                var endtime = data.Delay - 100 + Game.Ping/2 + distance - (Utils.GameTimeTickCount - Last);
+                                evadetime =
+                                    (int)
+                                        (1000 * (correctwidth - projdist + hero.Player.BoundingRadius) /
+                                            hero.Player.MoveSpeed);
+                            }
 
-                                // get the real end position normalized
-                                var direction = (args.End.To2D() - correctpos.To2D()).Normalized();
-                                var endpos = correctpos.To2D() + direction * data.CastRange;
+                            else
+                            {
+                                evadetime =
+                                    (int)
+                                        (1000 *
+                                            (correctwidth - hero.Player.Distance(args.End) / hero.Player.MoveSpeed));
+                            }
 
-                                // setup projection
-                                var proj = hero.Player.ServerPosition.To2D().ProjectOn(correctpos.To2D(), endpos);
-                                var projdist = hero.Player.ServerPosition.To2D().Distance(proj.SegmentPoint);
-
-                                int evadetime;
-
-                                // get the evade time 
-                                if (islineskillshot)
+                            if (!islineskillshot && hero.Player.Distance(args.End) <= correctwidth ||
+                                 islineskillshot && correctwidth + hero.Player.BoundingRadius > projdist)
+                            {
+                                if (data.Global)
                                 {
-                                    evadetime =
-                                        (int)
-                                            (1000 * (correctwidth - projdist + hero.Player.BoundingRadius) /
-                                             hero.Player.MoveSpeed);
-                                }
-
-                                else
-                                {
-                                    evadetime =
-                                        (int)
-                                            (1000 *
-                                             (correctwidth - hero.Player.Distance(args.End) / hero.Player.MoveSpeed));
-                                }
-
-                                if (!islineskillshot && hero.Player.Distance(args.End) <= correctwidth ||
-                                     islineskillshot && correctwidth + hero.Player.BoundingRadius > projdist)
-                                {
-                                    if (data.Global)
+                                    // ignore if can evade
+                                    if (hero.Player.NetworkId == Activator.Player.NetworkId)
                                     {
-                                        // ignore if can evade
-                                        if (hero.Player.NetworkId == Activator.Player.NetworkId)
+                                        if (hero.Player.CanMove && evadetime < endtime)
                                         {
-                                            if (hero.Player.CanMove && evadetime < endtime)
-                                            {
-                                                // check next player
-                                                continue;
-                                            }
+                                            // check next player
+                                            continue;
                                         }
                                     }
-
-                                    // delay the action a little bit before endtime
-                                    Utility.DelayAction.Add((int) (endtime - (endtime*0.3)), () =>
-                                    {
-                                        hero.Attacker = sender;
-                                        hero.HitTypes.Add(HitType.Spell);
-                                        hero.IncomeDamage =
-                                            (float) Math.Abs(sender.GetSpellDamage(hero.Player, args.SData.Name));
-
-                                        // spell is important or lethal!
-                                        if (data.HitType.Contains(HitType.Ultimate))
-                                            hero.HitTypes.Add(HitType.Ultimate);
-
-                                        // spell is important but not as fatal
-                                        if (data.HitType.Contains(HitType.Danger))
-                                            hero.HitTypes.Add(HitType.Danger);
-
-                                        // spell has a crowd control effect
-                                        if (data.HitType.Contains(HitType.CrowdControl))
-                                            hero.HitTypes.Add(HitType.CrowdControl);
-
-                                        // lazy safe reset
-                                        Utility.DelayAction.Add((int) (endtime + 1200), () =>
-                                        {
-                                            hero.Attacker = null;
-                                            hero.IncomeDamage = 0;
-                                            hero.HitTypes.Clear();
-                                        });
-                                    });
                                 }
+
+                                // delay the action a little bit before endtime
+                                Utility.DelayAction.Add((int) (endtime - (endtime*0.3)), () =>
+                                {
+                                    hero.Attacker = sender;
+                                    hero.HitTypes.Add(HitType.Spell);
+                                    hero.IncomeDamage =
+                                        (float) Math.Abs(sender.GetSpellDamage(hero.Player, args.SData.Name));
+
+                                    // spell is important or lethal!
+                                    if (data.HitType.Contains(HitType.Ultimate))
+                                        hero.HitTypes.Add(HitType.Ultimate);
+
+                                    // spell is important but not as fatal
+                                    if (data.HitType.Contains(HitType.Danger))
+                                        hero.HitTypes.Add(HitType.Danger);
+
+                                    // spell has a crowd control effect
+                                    if (data.HitType.Contains(HitType.CrowdControl))
+                                        hero.HitTypes.Add(HitType.CrowdControl);
+
+                                    // lazy safe reset
+                                    Utility.DelayAction.Add((int) (endtime + 200), () =>
+                                    {
+                                        hero.Attacker = null;
+                                        hero.IncomeDamage = 0;
+                                        hero.HitTypes.Clear();
+                                    });
+                                });
                             }
+                            
                         }
 
-                        // unit type detection
-                        if (args.SData.TargettingType == SpellDataTargetType.Unit)
+                        #endregion
+
+                        #region unit type detection
+
+                        if (args.SData.TargettingType == SpellDataTargetType.Unit ||
+                            args.SData.TargettingType == SpellDataTargetType.SelfAndUnit)
                         {
                             // check if is targeteting the hero on our table
-                            if (hero.Player.NetworkId == args.Target.NetworkId)
+                            if (hero.Player.NetworkId != args.Target.NetworkId) 
+                                continue;
+
+                            // target spell dectection
+                            if (hero.Player.Distance(sender.ServerPosition) > data.CastRange)
+                                continue;
+
+                            var distance =  (int) (1000 * (sender.Distance(hero.Player.ServerPosition) / data.MissileSpeed));
+                            var endtime = data.Delay - 100 + Game.Ping / 2 + distance - (Utils.GameTimeTickCount - Casted);
+
+                            Utility.DelayAction.Add((int) (endtime - (endtime * 0.3)), () =>
                             {
-                                // target spell dectection
-                                if (hero.Player.Distance(sender.ServerPosition) <= data.CastRange)
+                                hero.Attacker = sender;
+                                hero.HitTypes.Add(HitType.Spell);
+                                hero.IncomeDamage =
+                                    (float) Math.Abs(sender.GetSpellDamage(hero.Player, args.SData.Name));
+
+                                // spell is important or lethal!
+                                if (data.HitType.Contains(HitType.Ultimate))
+                                    hero.HitTypes.Add(HitType.Ultimate);
+
+                                // spell is important but not as fatal
+                                if (data.HitType.Contains(HitType.Danger))
+                                    hero.HitTypes.Add(HitType.Danger);
+
+                                // spell has a crowd control effect
+                                if (data.HitType.Contains(HitType.CrowdControl))
+                                    hero.HitTypes.Add(HitType.CrowdControl);
+
+                                // lazy reset
+                                Utility.DelayAction.Add((int) (endtime + 200), () =>
                                 {
-                                    var distance =
-                                        (int) (1000*(sender.Distance(hero.Player.ServerPosition)/data.MissileSpeed));
-                                    var endtime = data.Delay - 100 + Game.Ping/2 + distance -
-                                                  (Utils.GameTimeTickCount - Last);
-
-                                    Utility.DelayAction.Add((int) (endtime - (endtime*0.3)), () =>
-                                    {
-                                        hero.Attacker = sender;
-                                        hero.HitTypes.Add(HitType.Spell);
-                                        hero.IncomeDamage =
-                                            (float) Math.Abs(sender.GetSpellDamage(hero.Player, args.SData.Name));
-
-                                        // spell is important or lethal!
-                                        if (data.HitType.Contains(HitType.Ultimate))
-                                            hero.HitTypes.Add(HitType.Ultimate);
-
-                                        // spell is important but not as fatal
-                                        if (data.HitType.Contains(HitType.Danger))
-                                            hero.HitTypes.Add(HitType.Danger);
-
-                                        // spell has a crowd control effect
-                                        if (data.HitType.Contains(HitType.CrowdControl))
-                                            hero.HitTypes.Add(HitType.CrowdControl);
-
-                                        // lazy reset
-                                        Utility.DelayAction.Add((int) (endtime + 1200), () =>
-                                        {
-                                            hero.Attacker = null;
-                                            hero.IncomeDamage = 0;
-                                            hero.HitTypes.Clear();
-                                        });
-                                    });
-                                }
-                            }
+                                    hero.Attacker = null;
+                                    hero.IncomeDamage = 0;
+                                    hero.HitTypes.Clear();
+                                });
+                            });
                         }
+
+                        #endregion
+
                     }
                 }
+
             }
+
+            #endregion
+
+            #region Turret Detection
 
             if (sender.IsEnemy && sender.Type == GameObjectType.obj_AI_Turret)
             {
@@ -346,7 +379,7 @@ namespace Activator
                         continue;
 
                     if (hero.Immunity)
-                        return;
+                        continue;
 
                     if (sender.Distance(hero.Player.ServerPosition) <= 900 &&
                         Activator.Player.Distance(hero.Player.ServerPosition) <= 1000)
@@ -359,7 +392,7 @@ namespace Activator
                                     sender.BaseAttackDamage + sender.FlatPhysicalDamageMod));
 
                             // lazy reset
-                            Utility.DelayAction.Add(1200, () =>
+                            Utility.DelayAction.Add(800, () =>
                             {
                                 hero.Attacker = null;
                                 hero.IncomeDamage = 0;
@@ -370,6 +403,10 @@ namespace Activator
                 }
             }
 
+            #endregion
+
+            #region Minion Detection
+
             if (sender.IsEnemy && sender.Type == GameObjectType.obj_AI_Minion)
             {
                 foreach (var hero in Activator.ChampionPriority())
@@ -378,7 +415,7 @@ namespace Activator
                         continue;
 
                     if (hero.Immunity)
-                        return;
+                        continue;
 
                     if (hero.Player.Distance(sender.ServerPosition) <= 750 &&
                         Activator.Player.Distance(hero.Player.ServerPosition) <= 1000)
@@ -389,7 +426,7 @@ namespace Activator
                                 sender.BaseAttackDamage + sender.FlatPhysicalDamageMod));
 
                         // lazy reset
-                        Utility.DelayAction.Add(1000, () =>
+                        Utility.DelayAction.Add(500, () =>
                         {
                             hero.HitTypes.Remove(HitType.MinionAttack);
                             hero.MinionDamage = 0;
@@ -397,6 +434,8 @@ namespace Activator
                     }
                 }
             }
+
+            #endregion
         }
     }
 }

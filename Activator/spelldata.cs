@@ -4,7 +4,7 @@
 // without the prior written consent of the copyright owner.
 // 
 // Document:	activator/spelldata.cs
-// Date:		06/06/2015
+// Date:		01/07/2015
 // Author:		Robin Kurisu
 #endregion
 
@@ -2928,7 +2928,7 @@ namespace Activator
                 Delay = 1750f,
                 HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate },
                 MissileName = "luxmalicecannonmis",
-                MissileSpeed = 3000
+                MissileSpeed = int.MaxValue
             });
 
             spells.Add(new spelldata
@@ -2962,7 +2962,7 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 1200f,
                 Delay = 0f,
-                HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.CrowdControl },
+                HitType = new[] { global::Activator.HitType.Danger },
                 MissileSpeed = int.MaxValue
             });
 

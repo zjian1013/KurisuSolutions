@@ -29,7 +29,7 @@ namespace Activator.Summoners
 
         internal override int Duration
         {
-            get { return 2000; }
+            get { return 1500; }
         }
 
         public override void OnTick(EventArgs args)

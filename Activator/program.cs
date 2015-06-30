@@ -4,7 +4,7 @@
 // without the prior written consent of the copyright owner.
 // 
 // Document:	activator/program.cs
-// Date:		06/06/2015
+// Date:		01/07/2015
 // Author:		Robin Kurisu
 #endregion
 
@@ -51,8 +51,6 @@ namespace Activator
             var cmenu = new Menu("Cleansers", "cleansers");
             SubMenu(cmenu, false);
             GetItemGroup("Items.Cleansers").ForEach(t => NewItem((item) NewInstance(t), cmenu));
-            cmenu.AddItem(new MenuItem("acdebug", "Debug")).SetValue(false);
-
             Origin.AddSubMenu(cmenu);
 
             var dmenu = new Menu("Defensives", "dmenu");
@@ -101,6 +99,7 @@ namespace Activator
             vmenu.AddItem(new MenuItem("s", "- known issue: cleanse not working"));
             zmenu.AddSubMenu(vmenu);
 
+            zmenu.AddItem(new MenuItem("acdebug", "Debug")).SetValue(false);
             zmenu.AddItem(new MenuItem("healthp", "Ally Priority:"))
                 .SetValue(new StringList(new[] { "Low HP", "Most AD/AP", "Most HP" }, 1));
 

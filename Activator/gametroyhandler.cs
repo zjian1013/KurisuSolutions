@@ -4,7 +4,7 @@
 // without the prior written consent of the copyright owner.
 // 
 // Document:	activator/gametroyhandler.cs
-// Date:		06/06/2015
+// Date:		01/07/2015
 // Author:		Robin Kurisu
 #endregion
 

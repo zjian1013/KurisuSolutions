@@ -49,13 +49,16 @@ namespace Activator.Spells.Evaders
                     if (!Parent.Item(Parent.Name + "useon" + hero.Player.ChampionName).GetValue<bool>())
                         continue;
 
-                    if (Menu.Item("use" + Name + "Norm").GetValue<bool>())
-                        if (hero.IncomeDamage > 0 && hero.HitTypes.Contains(HitType.Danger))
-                            UseSpellOn(hero.Player);
-                            
-                    if (Menu.Item("use" + Name + "Ulti").GetValue<bool>())
-                        if (hero.IncomeDamage > 0 && hero.HitTypes.Contains(HitType.Ultimate))
-                            UseSpellOn(hero.Player);
+                    if (hero.Player.CountEnemiesInRange(425) >= 1)
+                    {
+                        if (Menu.Item("use" + Name + "Norm").GetValue<bool>())
+                            if (hero.IncomeDamage > 0 && hero.HitTypes.Contains(HitType.Danger))
+                                UseSpellOn(hero.Player);
+
+                        if (Menu.Item("use" + Name + "Ulti").GetValue<bool>())
+                            if (hero.IncomeDamage > 0 && hero.HitTypes.Contains(HitType.Ultimate))
+                                UseSpellOn(hero.Player);
+                    }
                 }
             }
         }
