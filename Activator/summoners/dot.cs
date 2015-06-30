@@ -47,22 +47,22 @@ namespace Activator.Summoners
                 return;
 
             foreach (
-                var target in
-                    ObjectManager.Get<Obj_AI_Hero>()
-                        .Where(target => target.IsValidTarget(600) && !target.IsZombie)
-                        .Where(target => !target.HasBuff("summonerdot", true)))
+                var tar in
+                    champion.Heroes
+                        .Where(t =>  t.Player.IsValidTarget(600) && !t.Player.IsZombie)
+                        .Where(t => !t.Player.HasBuff("summonerdot", true)))
             {
-                if (!Parent.Item(Parent.Name + "allon" + target.ChampionName).GetValue<bool>())
+                if (!Parent.Item(Parent.Name + "allon" + tar.Player.ChampionName).GetValue<bool>())
                     continue;
 
-                var ignotedmg = Player.GetSummonerSpellDamage(target, Damage.SummonerSpell.Ignite);
+                var ignotedmg = Player.GetSummonerSpellDamage(tar.Player, Damage.SummonerSpell.Ignite);
 
                 // killsteal ignite
                 if (Menu.Item("mode" + Name).GetValue<StringList>().SelectedIndex == 0)
                 {
-                    if (target.Health <= ignotedmg)
+                    if (tar.Player.Health <= ignotedmg)
                     {
-                        UseSpellOn(target);                        
+                        UseSpellOn(tar.Player);                        
                     }
                 }
 
@@ -70,24 +70,24 @@ namespace Activator.Summoners
                 if (Menu.Item("mode" + Name).GetValue<StringList>().SelectedIndex == 1)
                 {
                     if (Player.ChampionName == "Cassiopeia" && 
-                       !target.HasBuffOfType(BuffType.Poison))
+                       !tar.Player.HasBuffOfType(BuffType.Poison))
                         return;
 
                     var totaldmg = 0d;
-                    totaldmg += Player.GetAutoAttackDamage(target, true) * 3;
+                    totaldmg += Player.GetAutoAttackDamage(tar.Player, true) * 3;
 
                     totaldmg += (from entry in spelldata.damagelib
                         let spellLevel = Player.GetSpell(entry.Value).Level
                         select
                             Player.GetSpell(entry.Value).State == SpellState.Ready
-                                ? entry.Key(Player, target, spellLevel - 1)
+                                ? entry.Key(Player, tar.Player, spellLevel - 1)
                                 : 0).Sum();
 
-                    if ((float)(totaldmg + ignotedmg) >= target.Health)
+                    if ((float)(totaldmg + ignotedmg) >= tar.Player.Health)
                     {
-                        if (target.Level <= 3)
+                        if (tar.Player.Level <= 3)
                         {
-                            if (target.InventoryItems.Any(
+                            if (tar.Player.InventoryItems.Any(
                                 item => item.Id == (ItemId) 2003 || 
                                         item.Id == (ItemId) 2010))
                             {
@@ -95,7 +95,7 @@ namespace Activator.Summoners
                             }
                         }
 
-                        UseSpellOn(target, true);
+                        UseSpellOn(tar.Player, true);
                     }
                 }
             }

@@ -24,60 +24,44 @@ namespace Activator
             GameObject.OnDelete += GameObject_OnDelete;
         }
 
-        public static Dictionary<int, Obj_AI_Base> objectcache = new Dictionary<int, Obj_AI_Base>(); 
-
         private static void GameObject_OnCreate(GameObject obj, EventArgs args)
         {
-            if (obj.IsValid<Obj_AI_Base>())
+            if (Activator.TroysInGame)
             {
-                var unit = obj as Obj_AI_Base;
-
-                if (!objectcache.ContainsKey(unit.NetworkId))
-                     objectcache.Add(unit.NetworkId, unit);
-            }
-
-            if (!Activator.TroysInGame)
-                return;
-
-            foreach (var troy in gametroy.Troys)
-            {
-                // include the troy and start ticking 
-                if (!troy.Included && obj.Name.Contains(troy.Name))
+                foreach (var troy in gametroy.Troys)
                 {
-                    troy.Included = true;
-                    troy.Obj = obj;
-                    troy.Start = Utils.GameTimeTickCount;
-                    Game.OnUpdate += Game_OnUpdate;
-                    Console.WriteLine("[A]: " + troy.Name + "object created.");
+                    // include the troy and start ticking 
+                    if (!troy.Included && obj.Name.Contains(troy.Name))
+                    {
+                        troy.Included = true;
+                        troy.Obj = obj;
+                        troy.Start = Utils.GameTimeTickCount;
+                        Game.OnUpdate += Game_OnUpdate;
+                        Console.WriteLine("[A]: " + troy.Name + "object created.");
+                    }
                 }
             }
         }
 
         private static void GameObject_OnDelete(GameObject obj, EventArgs args)
         {
-            if (obj.IsValid<Obj_AI_Base>())
-            {
-                var unit = obj as Obj_AI_Base;
-                objectcache.Remove(unit.NetworkId);
-            }
-
             foreach (var hero in Activator.ChampionPriority())
             {
-                if (!Activator.TroysInGame)
-                    return;
-
-                foreach (var troy in gametroy.Troys)
+                if (Activator.TroysInGame)
                 {
-                    // delete the troy and stop ticking
-                    if (troy.Included && obj.Name.Contains(troy.Name))
+                    foreach (var troy in gametroy.Troys)
                     {
-                        troy.Included = false;
-                        troy.Start = 0;
-                        hero.Attacker = null;
-                        hero.IncomeDamage = 0f;
-                        hero.HitTypes.Clear();
-                        Game.OnUpdate -= Game_OnUpdate;
-                        Console.WriteLine("[A]: " + troy.Name + "object deleted.");
+                        // delete the troy and stop ticking
+                        if (troy.Included && obj.Name.Contains(troy.Name))
+                        {
+                            troy.Included = false;
+                            troy.Start = 0;
+                            hero.Attacker = null;
+                            hero.IncomeDamage = 0f;
+                            hero.HitTypes.Clear();
+                            Game.OnUpdate -= Game_OnUpdate;
+                            Console.WriteLine("[A]: " + troy.Name + "object deleted.");
+                        }
                     }
                 }
             }

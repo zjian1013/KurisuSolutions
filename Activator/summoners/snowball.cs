@@ -46,10 +46,10 @@ namespace Activator.Summoners
             if (Player.GetSpell(mark.Slot).Name.ToLower() != Name)
                 return;
 
-            foreach (var target in ObjectManager.Get<Obj_AI_Hero>().Where(h => h.IsValidTarget(Range)))
+            foreach (var tar in champion.Heroes.Where(hero => hero.Player.IsValidTarget(Range)))
             {
-                if (Parent.Item(Parent.Name + "allon" + target.ChampionName).GetValue<bool>())
-                    mark.CastIfHitchanceEquals(target, HitChance.Medium);
+                if (Parent.Item(Parent.Name + "allon" + tar.Player.ChampionName).GetValue<bool>())
+                    mark.CastIfHitchanceEquals(tar.Player, HitChance.Medium);
             }
         }
     }

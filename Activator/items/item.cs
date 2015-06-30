@@ -25,15 +25,14 @@ namespace Activator.Items
         public Menu Menu { get; private set; }
         public Menu Parent { get { return Menu.Parent; } }
         public Obj_AI_Hero Player { get { return ObjectManager.Player; } }
-        public Obj_AI_Hero Target
+        public champion Tar
         {
             get
             {
                 return
-                    ObjectManager.Get<Obj_AI_Hero>()
-                        .Where(h => h.IsValidTarget(Range) && !h.IsZombie)
-                        .OrderBy(h => h.Distance(Game.CursorPos))
-                        .FirstOrDefault();
+                    champion.Heroes.Where(
+                        hero => hero.Player.IsEnemy && hero.Player.IsValidTarget(Range) &&
+                               !hero.Player.IsZombie).OrderBy(x => x.Player.Distance(Game.CursorPos)).FirstOrDefault();
             }
         }
 

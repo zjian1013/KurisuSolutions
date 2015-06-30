@@ -34,38 +34,45 @@ namespace Activator
 
             if (Activator.SmiteInGame)
             {
-                if (!Activator.Origin.Item("usesmite").GetValue<KeyBind>().Active ||
-                    Activator.Player.IsDead)
-                    return;
-
-                if (Activator.Origin.Item("drawsmite").GetValue<bool>())
+                if (Activator.Origin.Item("drawtext").GetValue<bool>())
                 {
-                    Render.Circle.DrawCircle(Activator.Player.Position, 500f, Color.White, 2);
+                    var mpos = Drawing.WorldToScreen(Activator.Player.Position);
+
+                    if (Activator.Origin.Item("usesmite").GetValue<KeyBind>().Active)
+                        Drawing.DrawText(mpos[0] - 40, mpos[1] + 15, Color.White, "Smite: ON");
+
+                    if (!Activator.Origin.Item("usesmite").GetValue<KeyBind>().Active)                      
+                        Drawing.DrawText(mpos[0] - 40, mpos[1] + 15, Color.Gray, "Smite: OFF");                                  
+                }    
+                 
+                if (Activator.Origin.Item("drawsmite").GetValue<bool>())                        
+                {
+                    if (Activator.Origin.Item("usesmite").GetValue<KeyBind>().Active)
+                        Render.Circle.DrawCircle(Activator.Player.Position, 500f, Color.White, 2); 
+        
+                    if (!Activator.Origin.Item("usesmite").GetValue<KeyBind>().Active)
+                        Render.Circle.DrawCircle(Activator.Player.Position, 500f, Color.Gray, 2);
                 }
 
-                var height = 6;
-                var width = 150;
-                var yoffset = 20;
-                var xoffset = -7;
-
-                if (Activator.Origin.Item("drawfill").GetValue<bool>())
+                if (!Activator.Player.IsDead && Activator.Origin.Item("drawfill").GetValue<bool>())
                 {
+                    var height = 6;
+                    var width = 150;
+                    var yoffset = 20;
+                    var xoffset = -7;
+
                     if (Activator.MapId != (int) MapType.SummonersRift)
                         return;
 
                     foreach (
                         var minion in
-                            ObjectManager.Get<Obj_AI_Minion>()
-                                .Where(
-                                    th =>
-                                        (smite.LargeMinions.Any(x => th.Name.StartsWith(x)) ||
-                                         smite.EpicMinions.Any(e => th.Name.StartsWith(e))) &&
-                                        !th.Name.Contains("Mini")))
+                            MinionManager.GetMinions(Activator.Player.Position, 1200f, MinionTypes.All,MinionTeam.Neutral)
+                                .Where(th => (smite.LargeMinions.Any(x => th.Name.StartsWith(x)) ||
+                                              smite.EpicMinions.Any(e => th.Name.StartsWith(e))) &&
+                                              !th.Name.Contains("Mini")))
                     {
                         if (!minion.IsValidTarget(1000) || !minion.IsHPBarRendered)
-                        {
                             continue;
-                        }
 
                         var barPos = minion.HPBarPosition;
                         var smite = Activator.Player.GetSpell(Activator.Smite).State == SpellState.Ready
@@ -73,18 +80,21 @@ namespace Activator
                             : 0;
 
                         var damage = smite; // + ddmg;
-                        var pctafter = Math.Max(0, minion.Health - damage)/minion.MaxHealth;
+                        var pctafter = Math.Max(0, minion.Health - damage) / minion.MaxHealth;
 
                         var yaxis = barPos.Y + yoffset;
-                        var xaxisdmg = (float) (barPos.X + xoffset + width*pctafter);
-                        var xaxisnow = barPos.X + xoffset + width*minion.Health/minion.MaxHealth;
+                        var xaxisdmg = (float) (barPos.X + xoffset + width * pctafter);
+                        var xaxisnow = barPos.X + xoffset + width * minion.Health / minion.MaxHealth;
 
                         var ana = xaxisnow - xaxisdmg;
-                        var pos = barPos.X + xoffset + 12 + (139*pctafter);
+                        var pos = barPos.X + xoffset + 12 + (139 * pctafter);
 
                         for (var i = 0; i < ana; i++)
                         {
-                            Drawing.DrawLine((float) pos + i, yaxis, (float) pos + i, yaxis + height, 1, Color.White);
+                            if (Activator.Origin.Item("usesmite").GetValue<KeyBind>().Active)
+                                Drawing.DrawLine((float) pos + i, yaxis, (float) pos + i, yaxis + height, 1, Color.White);
+                            if (!Activator.Origin.Item("usesmite").GetValue<KeyBind>().Active)
+                                Drawing.DrawLine((float) pos + i, yaxis, (float) pos + i, yaxis + height, 1, Color.Gray);
                         }
                     }
                 }

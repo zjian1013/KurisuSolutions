@@ -61,7 +61,8 @@ namespace Activator.Items.Consumables
             {
                 if (hero.Player.NetworkId == Player.NetworkId)
                 {
-                    if (!Menu.Item("use" + Name).GetValue<bool>())
+                    if (!Menu.Item("use" + Name).GetValue<bool>() ||
+                        !LeagueSharp.Common.Items.CanUseItem(Id))
                         return;
 
                     if (hero.Player.Health/hero.Player.MaxHealth*100 <= 15 && 

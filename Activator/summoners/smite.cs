@@ -82,10 +82,12 @@ namespace Activator.Summoners
                     {
                         foreach (
                             var hero in
-                                ObjectManager.Get<Obj_AI_Hero>()
-                                    .Where(h => h.IsValidTarget(500) && !h.IsZombie && h.Health <= 20 + 8*Player.Level))
+                                champion.Heroes.Where(
+                                    h =>
+                                        h.Player.IsValidTarget(500) && !h.Player.IsZombie &&
+                                        h.Player.Health <= 20 + 8 * Player.Level))
                         {
-                            Player.Spellbook.CastSpell(Activator.Smite, hero);
+                            Player.Spellbook.CastSpell(Activator.Smite, hero.Player);
                         }
                     }
 
@@ -97,19 +99,19 @@ namespace Activator.Summoners
                         {
                             foreach (
                                 var hero in
-                                    ObjectManager.Get<Obj_AI_Hero>()
-                                        .Where(h => h.IsValidTarget(500) && !h.IsZombie)
-                                        .OrderBy(h => h.Distance(Game.CursorPos)))
+                                    champion.Heroes
+                                        .Where(h => h.Player.IsValidTarget(500) && !h.Player.IsZombie)
+                                        .OrderBy(h => h.Player.Distance(Game.CursorPos)))
                             {
-                                Player.Spellbook.CastSpell(Activator.Smite, hero);
+                                Player.Spellbook.CastSpell(Activator.Smite, hero.Player);
                             }
                         }
                     }
                 }
             }
 
-            // smite minion
-            foreach (var minion in gametroyhandler.objectcache.Values.Where(m => m.IsValidTarget(900)))
+ 
+            foreach (var minion in MinionManager.GetMinions(500f, MinionTypes.All, MinionTeam.Neutral))
             {
                 var damage = (float) Player.GetSummonerSpellDamage(minion, Damage.SummonerSpell.Smite);
 

@@ -39,15 +39,14 @@ namespace Activator.Summoners
             if (Player.IsRecalling() || Player.InFountain())
                 return;
 
-            var highestadinrange =
-                ObjectManager.Get<Obj_AI_Hero>()
-                    .OrderByDescending(h => h.FlatPhysicalDamageMod)
-                    .FirstOrDefault(x => x.IsEnemy && x.Distance(Player.ServerPosition) <= Range + 250);
+            var hid = champion.Heroes
+                    .OrderByDescending(h => h.Player.FlatPhysicalDamageMod)
+                    .FirstOrDefault(h => h.Player.IsValidTarget(Range + 250));
 
             foreach (var hero in Activator.ChampionPriority())
             {
                 var enemy = hero.Attacker as Obj_AI_Hero;
-                if (enemy == null || highestadinrange == null) 
+                if (enemy == null || hid == null) 
                     continue;
 
                 if (enemy.Distance(hero.Player.ServerPosition) > Range) 
@@ -65,7 +64,7 @@ namespace Activator.Summoners
                 if (hero.Player.Health/hero.Player.MaxHealth*100 <=
                     Menu.Item("a" + Name + "Pct").GetValue<Slider>().Value)
                 {
-                    if (!hero.Player.IsFacing(enemy) && enemy.NetworkId == highestadinrange.NetworkId)
+                    if (!hero.Player.IsFacing(enemy) && enemy.NetworkId == hid.Player.NetworkId)
                     {
                         if (Parent.Item(Parent.Name + "allon" + enemy.ChampionName).GetValue<bool>())
                             UseSpellOn(enemy); 

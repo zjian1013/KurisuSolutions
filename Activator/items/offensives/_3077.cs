@@ -57,12 +57,12 @@ namespace Activator.Items.Offensives
 
         public override void OnTick(EventArgs args)
         {
-            if (Menu.Item("use" + Name).GetValue<bool>() && Target != null)
+            if (Menu.Item("use" + Name).GetValue<bool>() && Tar != null)
             {
-                if (!Parent.Item(Parent.Name + "useon" + Target.ChampionName).GetValue<bool>())
+                if (!Parent.Item(Parent.Name + "useon" + Tar.Player.NetworkId).GetValue<bool>())
                     return;
 
-                if (Target.Health / Target.MaxHealth * 100 <= Menu.Item("EnemyLowHP" + Name + "Pct").GetValue<Slider>().Value)
+                if (Tar.Player.Health / Tar.Player.MaxHealth * 100 <= Menu.Item("EnemyLowHP" + Name + "Pct").GetValue<Slider>().Value)
                 {
                     UseItem(true);
                 }

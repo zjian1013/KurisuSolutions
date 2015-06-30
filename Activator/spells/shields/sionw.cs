@@ -49,7 +49,7 @@ namespace Activator.Spells.Shields
             {
                 if (hero.Player.NetworkId == Player.NetworkId)
                 {
-                    if (!Parent.Item(Parent.Name + "useon" + hero.Player.ChampionName).GetValue<bool>())
+                    if (!Parent.Item(Parent.Name + "useon" + hero.Player.NetworkId).GetValue<bool>())
                         continue;
 
                     if (hero.IncomeDamage / hero.Player.MaxHealth * 100 >=

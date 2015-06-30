@@ -57,7 +57,8 @@ namespace Activator.Items.Consumables
 
         public override void OnTick(EventArgs args)
         {
-            if (!Menu.Item("use" + Name).GetValue<bool>())
+            if (!Menu.Item("use" + Name).GetValue<bool>() ||
+                !LeagueSharp.Common.Items.CanUseItem(Id))
                 return;
 
             foreach (var hero in Activator.ChampionPriority())

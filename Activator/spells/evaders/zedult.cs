@@ -36,7 +36,7 @@ namespace Activator.Spells.Evaders
             {
                 if (hero.Player.NetworkId == Player.NetworkId)
                 { 
-                    if (!Parent.Item(Parent.Name + "useon" + hero.Player.ChampionName).GetValue<bool>())
+                    if (!Parent.Item(Parent.Name + "useon" + hero.Player.NetworkId).GetValue<bool>())
                         continue;
 
                     if (hero.Attacker == null)

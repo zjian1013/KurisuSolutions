@@ -24,10 +24,12 @@ namespace Activator
     internal class Activator
     {
         internal static Menu Origin;
-        internal static Obj_AI_Hero Player = ObjectManager.Player;
+        internal static Obj_AI_Hero Player;
+
         internal static int MapId;
         internal static int LastUsedTimeStamp;
         internal static int LastUsedDuration;
+
         internal static SpellSlot Smite;
         internal static bool SmiteInGame;
         internal static bool TroysInGame;
@@ -40,7 +42,10 @@ namespace Activator
 
         private static void Game_OnGameLoad(EventArgs args)
         {
+            Player = ObjectManager.Player;
             MapId = (int) Utility.Map.GetMap().Type;
+
+            Console.WriteLine("[A]: Initializing Activator#");
 
             GetSmiteSlot();
             GetTroysInGame();
@@ -87,16 +92,21 @@ namespace Activator
             {
                 var ddmenu = new Menu("Drawings", "drawings");
                 ddmenu.AddItem(new MenuItem("drawfill", "Draw Smite Fill")).SetValue(true);
+                ddmenu.AddItem(new MenuItem("drawtext", "Draw Smite Text")).SetValue(true);
                 ddmenu.AddItem(new MenuItem("drawsmite", "Draw Smite Range")).SetValue(true);
                 zmenu.AddSubMenu(ddmenu);
             }
 
             var vmenu = new Menu("Info (Changelog/Updates)", "info");
             vmenu.AddItem(new MenuItem("aa", "0.9.5.3: (Paypal xrobinsong@gmail.com)"));
-            vmenu.AddItem(new MenuItem("m", "- new: minion caching"));
+            vmenu.AddItem(new MenuItem("m", "- fixed: smite"));
+            vmenu.AddItem(new MenuItem("m3", "- fixed: lissandrar check enemies near"));
             vmenu.AddItem(new MenuItem("z", "- new: ally hero priority"));
             vmenu.AddItem(new MenuItem("f", "- new: fizz ultimate prediction"));
+            vmenu.AddItem(new MenuItem("m2", "- new: smite text"));
+            vmenu.AddItem(new MenuItem("m1", "- new: smite draw grey on disable"));
             vmenu.AddItem(new MenuItem("s", "- known issue: cleanse not working"));
+
             zmenu.AddSubMenu(vmenu);
 
             zmenu.AddItem(new MenuItem("acdebug", "Debug")).SetValue(false);
@@ -144,11 +154,13 @@ namespace Activator
             switch (Origin.Item("healthp").GetValue<StringList>().SelectedIndex)
             {
                 case 0:
-                    return champion.Heroes.OrderBy(h => h.Player.Health / h.Player.MaxHealth * 100);
+                    return champion.Heroes.Where(h => h.Player.IsAlly).OrderBy(h => h.Player.Health / h.Player.MaxHealth * 100);
                 case 1:
-                    return champion.Heroes.OrderByDescending(h => h.Player.FlatPhysicalDamageMod + h.Player.FlatMagicDamageMod);
+                    return
+                        champion.Heroes.Where(h => h.Player.IsAlly)
+                            .OrderByDescending(h => h.Player.FlatPhysicalDamageMod + h.Player.FlatMagicDamageMod);
                 case 2:
-                    return champion.Heroes.OrderByDescending(h => h.Player.Health);
+                    return champion.Heroes.Where(h => h.Player.IsAlly).OrderByDescending(h => h.Player.Health);
             }
 
             return null;
@@ -216,6 +228,12 @@ namespace Activator
                 champion.Heroes.Add(new champion(i, 0));
                 Console.WriteLine("[A]: " + i.ChampionName + " ally added to table!");
             }
+
+            foreach (var i in ObjectManager.Get<Obj_AI_Hero>().Where(i => i.Team != Player.Team))
+            {
+                champion.Heroes.Add(new champion(i, 0));
+                Console.WriteLine("[A]: " + i.ChampionName + " enemy added to table!");
+            }
         }
 
         private static void GetSmiteSlot()
@@ -252,7 +270,7 @@ namespace Activator
             foreach (var hero in HeroManager.AllHeroes)
             {
                 var side = hero.Team == Player.Team ? "[Ally]" : "[Enemy]";
-                menu.AddItem(new MenuItem(parent.Name + "allon" + hero.ChampionName,
+                menu.AddItem(new MenuItem(parent.Name + "allon" + hero.NetworkId,
                     "Use for " + hero.ChampionName + " " + side)).SetValue(true);
             }
 
@@ -265,7 +283,7 @@ namespace Activator
             foreach (var hero in enemy ? HeroManager.Enemies : HeroManager.Allies)
             {
                 var side = hero.Team == Player.Team ? "[Ally]" : "[Enemy]";
-                menu.AddItem(new MenuItem(parent.Name + "useon" + hero.ChampionName,
+                menu.AddItem(new MenuItem(parent.Name + "useon" + hero.NetworkId,
                     "Use for " + hero.ChampionName + " " + side)).SetValue(true);
             }
 
