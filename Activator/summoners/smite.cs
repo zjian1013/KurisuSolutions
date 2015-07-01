@@ -69,6 +69,35 @@ namespace Activator.Summoners
             if (!Menu.Item("usesmite").GetValue<KeyBind>().Active)
                 return;
 
+            foreach (var minion in MinionManager.GetMinions(500f, MinionTypes.All, MinionTeam.Neutral))
+            {
+                var damage = (float)Player.GetSummonerSpellDamage(minion, Damage.SummonerSpell.Smite);
+
+                if (LargeMinions.Any(name => minion.Name.StartsWith(name) && !minion.Name.Contains("Mini")))
+                {
+                    if (Menu.Item("smitelarge").GetValue<bool>() && minion.Health <= damage)
+                    {
+                        Player.Spellbook.CastSpell(Activator.Smite, minion);
+                    }
+                }
+
+                if (SmallMinions.Any(name => minion.Name.StartsWith(name) && !minion.Name.Contains("Mini")))
+                {
+                    if (Menu.Item("smitesmall").GetValue<bool>() && minion.Health <= damage)
+                    {
+                        Player.Spellbook.CastSpell(Activator.Smite, minion);
+                    }
+                }
+
+                if (EpicMinions.Any(name => minion.Name.StartsWith(name)))
+                {
+                    if (Menu.Item("smitesuper").GetValue<bool>() && minion.Health <= damage)
+                    {
+                        Player.Spellbook.CastSpell(Activator.Smite, minion);
+                    }
+                }
+            }
+
             // smite hero blu/red
             if (Player.GetSpell(Activator.Smite).Name.ToLower() == "s5_summonersmiteduel" ||
                 Player.GetSpell(Activator.Smite).Name.ToLower() == "s5_summonersmiteplayerganker")
@@ -106,36 +135,6 @@ namespace Activator.Summoners
                                 Player.Spellbook.CastSpell(Activator.Smite, hero.Player);
                             }
                         }
-                    }
-                }
-            }
-
- 
-            foreach (var minion in MinionManager.GetMinions(500f, MinionTypes.All, MinionTeam.Neutral))
-            {
-                var damage = (float) Player.GetSummonerSpellDamage(minion, Damage.SummonerSpell.Smite);
-
-                if (LargeMinions.Any(name => minion.Name.StartsWith(name) && !minion.Name.Contains("Mini")))
-                {
-                    if (Menu.Item("smitelarge").GetValue<bool>() && minion.Health <= damage)
-                    {
-                        Player.Spellbook.CastSpell(Activator.Smite, minion);
-                    }
-                }
-
-                else if (SmallMinions.Any(name => minion.Name.StartsWith(name) && !minion.Name.Contains("Mini")))
-                {
-                    if (Menu.Item("smitesmall").GetValue<bool>() && minion.Health <= damage)
-                    {
-                        Player.Spellbook.CastSpell(Activator.Smite, minion);
-                    }
-                }
-
-                else if (EpicMinions.Any(name => minion.Name.StartsWith(name)))
-                {
-                    if (Menu.Item("smitesuper").GetValue<bool>() && minion.Health <= damage)
-                    {
-                        Player.Spellbook.CastSpell(Activator.Smite, minion);
                     }
                 }
             }
