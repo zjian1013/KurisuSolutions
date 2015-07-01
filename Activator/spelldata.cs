@@ -2962,7 +2962,7 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 1200f,
                 Delay = 0f,
-                HitType = new[] { global::Activator.HitType.Danger },
+                HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.CrowdControl },
                 MissileSpeed = int.MaxValue
             });
 

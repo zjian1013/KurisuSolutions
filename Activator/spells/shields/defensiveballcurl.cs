@@ -47,12 +47,12 @@ namespace Activator.Spells.Shields
                 return;
 
             foreach (var hero in Activator.ChampionPriority())
-            {
+            {                   
+                if (!Parent.Item(Parent.Name + "useon" + hero.Player.NetworkId).GetValue<bool>())
+                    continue;
+
                 if (hero.Player.NetworkId == Player.NetworkId)
                 {
-                    if (!Parent.Item(Parent.Name + "useon" + hero.Player.NetworkId).GetValue<bool>())
-                        continue;
-
                     if (hero.IncomeDamage / hero.Player.MaxHealth * 100 >=
                         Menu.Item("SelfMuchHP" + Name + "Pct").GetValue<Slider>().Value)
                         UseSpell();

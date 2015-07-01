@@ -52,6 +52,9 @@ namespace Activator.Spells.Shields
 
                 if (hero.Player.Distance(Player.ServerPosition) <= Range)
                 {
+                    if (Activator.Player.IsRecalling())
+                        continue;
+
                     if (hero.IncomeDamage / hero.Player.MaxHealth * 100 >=
                         Menu.Item("SelfMuchHP" + Name + "Pct").GetValue<Slider>().Value)
                         UseSpellOn(hero.Player);

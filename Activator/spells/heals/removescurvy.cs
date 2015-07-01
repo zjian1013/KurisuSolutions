@@ -48,11 +48,11 @@ namespace Activator.Spells.Heals
 
             foreach (var hero in Activator.ChampionPriority())
             {
+                if (!Parent.Item(Parent.Name + "useon" + hero.Player.NetworkId).GetValue<bool>())
+                    continue; 
+
                 if (hero.Player.Distance(Player.ServerPosition) <= Range)
                 {
-                    if (!Parent.Item(Parent.Name + "useon" + hero.Player.NetworkId).GetValue<bool>())
-                        continue;
-
                     if (hero.Player.Health / hero.Player.MaxHealth * 100 <=
                         Menu.Item("SelfLowHP" + Name + "Pct").GetValue<Slider>().Value)
                         UseSpell();
