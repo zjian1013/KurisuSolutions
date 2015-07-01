@@ -36,7 +36,7 @@ namespace Activator
 
         private static void Main(string[] args)
         {
-            Console.WriteLine("Activator injected!");
+            Console.WriteLine("[A]: Loading Activator#..");
             CustomEvents.Game.OnGameLoad += Game_OnGameLoad;
         }
 
@@ -45,7 +45,7 @@ namespace Activator
             Player = ObjectManager.Player;
             MapId = (int) Utility.Map.GetMap().Type;
 
-            Console.WriteLine("[A]: Initializing Activator#");
+            Console.WriteLine("[A]: Initializing Activator#..");
 
             GetSmiteSlot();
             GetTroysInGame();
@@ -98,15 +98,14 @@ namespace Activator
             }
 
             var vmenu = new Menu("Info (Changelog/Updates)", "info");
-            vmenu.AddItem(new MenuItem("aa", "0.9.5.3: (Paypal xrobinsong@gmail.com)"));
-            vmenu.AddItem(new MenuItem("m", "- fixed: smite"));
+            vmenu.AddItem(new MenuItem("aa", "0.9.5.4: (Paypal xrobinsong@gmail.com)"));
+            vmenu.AddItem(new MenuItem("m", "- fixed: summoners"));
             vmenu.AddItem(new MenuItem("m3", "- fixed: lissandrar check enemies near"));
             vmenu.AddItem(new MenuItem("z", "- new: ally hero priority"));
             vmenu.AddItem(new MenuItem("f", "- new: fizz ultimate prediction"));
             vmenu.AddItem(new MenuItem("m2", "- new: smite text"));
             vmenu.AddItem(new MenuItem("m1", "- new: smite draw grey on disable"));
             vmenu.AddItem(new MenuItem("s", "- known issue: cleanse not working"));
-
             zmenu.AddSubMenu(vmenu);
 
             zmenu.AddItem(new MenuItem("acdebug", "Debug")).SetValue(false);

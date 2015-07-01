@@ -63,7 +63,8 @@ namespace Activator.Items.Consumables
             {
                 if (hero.Player.NetworkId == Player.NetworkId)
                 {
-                    if (!Menu.Item("use" + Name).GetValue<bool>())
+                    if (!Menu.Item("use" + Name).GetValue<bool>() || 
+                        !LeagueSharp.Common.Items.CanUseItem(Id))
                         return;
 
                     if (hero.Player.HasBuff("RegenerationPotion", true))

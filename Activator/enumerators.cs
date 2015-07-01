@@ -20,7 +20,8 @@ namespace Activator
         Danger = 5,
         Ultimate = 6,
         CrowdControl = 7,
-        Stealth = 8
+        Stealth = 8,
+        ForceExhaust = 9
     }
 
     public enum MapType

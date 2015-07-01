@@ -52,7 +52,7 @@ namespace Activator.Summoners
                         .Where(t =>  t.Player.IsValidTarget(600) && !t.Player.IsZombie)
                         .Where(t => !t.Player.HasBuff("summonerdot", true)))
             {
-                if (!Parent.Item(Parent.Name + "allon" + tar.Player.ChampionName).GetValue<bool>())
+                if (!Parent.Item(Parent.Name + "allon" + tar.Player.NetworkId).GetValue<bool>())
                     continue;
 
                 var ignotedmg = Player.GetSummonerSpellDamage(tar.Player, Damage.SummonerSpell.Ignite);

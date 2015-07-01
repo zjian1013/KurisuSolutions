@@ -42,7 +42,7 @@ namespace Activator.Summoners
                 if (hero.Player.NetworkId != Player.NetworkId) 
                     return;
 
-                if (!Parent.Item(Parent.Name + "allon" + hero.Player.ChampionName).GetValue<bool>())
+                if (!Parent.Item(Parent.Name + "allon" + hero.Player.NetworkId).GetValue<bool>())
                     return;
 
                 if (hero.Player.Distance(Player.ServerPosition) > Range)

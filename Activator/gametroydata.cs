@@ -42,7 +42,7 @@ namespace Activator
                 ChampionName = "Katarina",
                 Radius = 550f,
                 Slot = SpellSlot.R,
-                HitType = new[] { global::Activator.HitType.None }
+                HitType = new[] { global::Activator.HitType.ForceExhaust }
             });
 
             troydata.Add(new gametroydata
@@ -78,7 +78,12 @@ namespace Activator
                 ChampionName = "FiddleSticks",
                 Radius = 450f,
                 Slot = SpellSlot.R,
-                HitType = new []{ global::Activator.HitType.Danger, global::Activator.HitType.Ultimate}
+                HitType =
+                    new[]
+                    {
+                        global::Activator.HitType.Danger, global::Activator.HitType.Ultimate,
+                        //global::Activator.HitType.ForceExhaust
+                    }
             });
 
             troydata.Add(new gametroydata

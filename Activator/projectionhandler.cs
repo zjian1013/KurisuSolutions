@@ -95,17 +95,8 @@ namespace Activator
                 hero.IncomeDamage = (float) Math.Abs(caster.GetSpellDamage(hero.Player, data.SDataName));
                 hero.HitTypes.Add(HitType.Spell);
 
-                // spell is important or lethal!
-                if (data.HitType.Contains(HitType.Ultimate))
-                    hero.HitTypes.Add(HitType.Ultimate);
-
-                // spell is important but not as fatal
-                if (data.HitType.Contains(HitType.Danger))
-                    hero.HitTypes.Add(HitType.Danger);
-
-                // spell has a crowd control effect
-                if (data.HitType.Contains(HitType.CrowdControl))
-                    hero.HitTypes.Add(HitType.CrowdControl);
+                foreach (var type in data.HitType)
+                    hero.HitTypes.Add(type);
 
                 Utility.DelayAction.Add(800, () =>
                 {
@@ -192,17 +183,8 @@ namespace Activator
                                     hero.IncomeDamage =
                                         (float) Math.Abs(sender.GetSpellDamage(hero.Player, args.SData.Name));
 
-                                    // spell is important or lethal!
-                                    if (data.HitType.Contains(HitType.Ultimate))
-                                        hero.HitTypes.Add(HitType.Ultimate);
-
-                                    // spell is important but not as fatal
-                                    if (data.HitType.Contains(HitType.Danger))
-                                        hero.HitTypes.Add(HitType.Danger);
-
-                                    // spell has a crowd control effect
-                                    if (data.HitType.Contains(HitType.CrowdControl))
-                                        hero.HitTypes.Add(HitType.CrowdControl);
+                                    foreach (var type in data.HitType)
+                                        hero.HitTypes.Add(type);
 
                                     // lazy safe reset
                                     Utility.DelayAction.Add((int) (data.Delay + 200), () =>
@@ -289,17 +271,8 @@ namespace Activator
                                     hero.IncomeDamage =
                                         (float) Math.Abs(sender.GetSpellDamage(hero.Player, args.SData.Name));
 
-                                    // spell is important or lethal!
-                                    if (data.HitType.Contains(HitType.Ultimate))
-                                        hero.HitTypes.Add(HitType.Ultimate);
-
-                                    // spell is important but not as fatal
-                                    if (data.HitType.Contains(HitType.Danger))
-                                        hero.HitTypes.Add(HitType.Danger);
-
-                                    // spell has a crowd control effect
-                                    if (data.HitType.Contains(HitType.CrowdControl))
-                                        hero.HitTypes.Add(HitType.CrowdControl);
+                                    foreach (var type in data.HitType)
+                                        hero.HitTypes.Add(type);
 
                                     // lazy safe reset
                                     Utility.DelayAction.Add((int) (endtime + 200), () =>
@@ -338,17 +311,8 @@ namespace Activator
                                 hero.IncomeDamage =
                                     (float) Math.Abs(sender.GetSpellDamage(hero.Player, args.SData.Name));
 
-                                // spell is important or lethal!
-                                if (data.HitType.Contains(HitType.Ultimate))
-                                    hero.HitTypes.Add(HitType.Ultimate);
-
-                                // spell is important but not as fatal
-                                if (data.HitType.Contains(HitType.Danger))
-                                    hero.HitTypes.Add(HitType.Danger);
-
-                                // spell has a crowd control effect
-                                if (data.HitType.Contains(HitType.CrowdControl))
-                                    hero.HitTypes.Add(HitType.CrowdControl);
+                                foreach (var type in data.HitType)
+                                    hero.HitTypes.Add(type);
 
                                 // lazy reset
                                 Utility.DelayAction.Add((int) (endtime + 200), () =>

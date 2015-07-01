@@ -1250,7 +1250,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 800f,
                 Delay = 250f,
-                HitType = new HitType[] { },
+                HitType = new[] { global::Activator.HitType.ForceExhaust },
                 MissileSpeed = int.MaxValue
             });
 
@@ -2289,7 +2289,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 550f,
                 Delay = 250f,
-                HitType = new HitType[] { },
+                HitType = new[] { global::Activator.HitType.ForceExhaust },
                 MissileSpeed = 1450
             });
 

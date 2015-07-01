@@ -38,7 +38,7 @@ namespace Activator.Summoners
 
             foreach (var hero in Activator.ChampionPriority())
             {
-                if (!Parent.Item(Parent.Name + "allon" + hero.Player.ChampionName).GetValue<bool>())
+                if (!Parent.Item(Parent.Name + "allon" + hero.Player.NetworkId).GetValue<bool>())
                     continue;
 
                 if (hero.Player.MaxMana <= 200 || hero.Player.Distance(Player.ServerPosition) > Range)

@@ -42,7 +42,7 @@ namespace Activator.Summoners
                 if (hero.Player.NetworkId != Player.NetworkId)
                     return;
 
-                if (!Parent.Item(Parent.Name + "allon" + hero.Player.ChampionName).GetValue<bool>())
+                if (!Parent.Item(Parent.Name + "allon" + hero.Player.NetworkId).GetValue<bool>())
                     continue;
 
                 if (hero.Player.Health / hero.Player.MaxHealth * 100 <=
@@ -66,10 +66,14 @@ namespace Activator.Summoners
 
                 if (Menu.Item("use" + Name + "Ulti").GetValue<bool>())
                 {
-                    if (hero.IncomeDamage > 0 && 
-                        hero.HitTypes.Contains(HitType.Ultimate))
-                    { 
-                        UseSpell();
+                    if (hero.IncomeDamage > 0 && hero.HitTypes.Contains(HitType.Ultimate))
+                    {
+                        if (hero.IncomeDamage / hero.Player.MaxHealth * 100 >= 45 ||
+                            hero.Player.Health / hero.Player.MaxHealth * 100 <= 45 ||
+                            hero.IncomeDamage >= hero.Player.Health)
+                        {
+                            UseSpell();
+                        }
                     }
                 }
             }
