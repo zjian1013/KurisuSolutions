@@ -123,7 +123,7 @@ namespace KurisuRiven
                         q = new Spell(SpellSlot.Q, 260f);
                         q.SetSkillshot(0.25f, 100f, 2200f, false, SkillshotType.SkillshotCircle);
 
-                        r = new Spell(SpellSlot.R, 1100f);
+                        r = new Spell(SpellSlot.R, 900f);
                         r.SetSkillshot(0.25f, 225f, 1600f, false, SkillshotType.SkillshotCone);
 
                         flash = player.GetSpellSlot("summonerflash");
