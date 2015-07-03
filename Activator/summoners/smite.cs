@@ -111,7 +111,7 @@ namespace Activator.Summoners
                     {
                         foreach (
                             var hero in
-                                champion.Heroes.Where(
+                                Activator.Heroes.Where(
                                     h =>
                                         h.Player.IsValidTarget(500) && !h.Player.IsZombie &&
                                         h.Player.Health <= 20 + 8 * Player.Level))
@@ -128,7 +128,7 @@ namespace Activator.Summoners
                         {
                             foreach (
                                 var hero in
-                                    champion.Heroes
+                                    Activator.Heroes
                                         .Where(h => h.Player.IsValidTarget(500) && !h.Player.IsZombie)
                                         .OrderBy(h => h.Player.Distance(Game.CursorPos)))
                             {

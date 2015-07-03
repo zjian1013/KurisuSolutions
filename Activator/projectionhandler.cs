@@ -78,7 +78,7 @@ namespace Activator
                 if (missile.SData.LineWidth + hero.Player.BoundingRadius <= projdist) 
                     continue;
 
-                if (data.Global)
+                if (data.Global || Activator.Origin.Item("evade").GetValue<bool>())
                 {
                     // ignore if can evade
                     if (hero.Player.NetworkId == Activator.Player.NetworkId)
@@ -174,26 +174,42 @@ namespace Activator
                             if (data.SDataName == "kalistaexpungewrapper" &&
                                !hero.Player.HasBuff("kalistaexpungemarker", true))
                                 continue;
-              
-                                // delay the spell a bit before missile endtime
-                                Utility.DelayAction.Add((int) (data.Delay - (data.Delay * 0.3)), () =>
+
+                            var evadetime = 1000 * (data.CastRange - hero.Player.Distance(correctpos) +
+                                                                     hero.Player.BoundingRadius) / hero.Player.MoveSpeed;
+
+                            if (Activator.Origin.Item("evade").GetValue<bool>())
+                            {
+                                // ignore if can evade
+                                if (hero.Player.NetworkId == Activator.Player.NetworkId)
                                 {
-                                    hero.Attacker = sender;
-                                    hero.HitTypes.Add(HitType.Spell);
-                                    hero.IncomeDamage =
-                                        (float) Math.Abs(sender.GetSpellDamage(hero.Player, args.SData.Name));
-
-                                    foreach (var type in data.HitType)
-                                        hero.HitTypes.Add(type);
-
-                                    // lazy safe reset
-                                    Utility.DelayAction.Add((int) (data.Delay + 200), () =>
+                                    if (hero.Player.CanMove && evadetime < data.Delay)
                                     {
-                                        hero.Attacker = null;
-                                        hero.IncomeDamage = 0;
-                                        hero.HitTypes.Clear();
-                                    });
+                                        // check next player
+                                        continue;
+                                    }
+                                }
+                            }
+              
+                            // delay the spell a bit before missile endtime
+                            Utility.DelayAction.Add((int) (data.Delay - (data.Delay * 0.3)), () =>
+                            {
+                                hero.Attacker = sender;
+                                hero.HitTypes.Add(HitType.Spell);
+                                hero.IncomeDamage =
+                                    (float) Math.Abs(sender.GetSpellDamage(hero.Player, args.SData.Name));
+
+                                foreach (var type in data.HitType)
+                                    hero.HitTypes.Add(type);
+
+                                // lazy safe reset
+                                Utility.DelayAction.Add((int) (data.Delay + 200), () =>
+                                {
+                                    hero.Attacker = null;
+                                    hero.IncomeDamage = 0;
+                                    hero.HitTypes.Clear();
                                 });
+                            });
 
                         }
 
@@ -232,25 +248,16 @@ namespace Activator
                             int evadetime;
 
                             if (islineskillshot)
-                            {
-                                evadetime =
-                                    (int)
-                                        (1000 * (correctwidth - projdist + hero.Player.BoundingRadius) /
-                                            hero.Player.MoveSpeed);
-                            }
+                                evadetime = (int) (1000 * (correctwidth - projdist + hero.Player.BoundingRadius) / hero.Player.MoveSpeed);
 
                             else
-                            {
-                                evadetime =
-                                    (int)
-                                        (1000 *
-                                            (correctwidth - hero.Player.Distance(args.End) / hero.Player.MoveSpeed));
-                            }
-
+                                evadetime = (int) (1000 * (correctwidth - hero.Player.Distance(correctpos) +
+                                                                          hero.Player.BoundingRadius) / hero.Player.MoveSpeed);
+     
                             if (!islineskillshot && hero.Player.Distance(args.End) <= correctwidth ||
                                  islineskillshot && correctwidth + hero.Player.BoundingRadius > projdist)
                             {
-                                if (data.Global)
+                                if (data.Global || Activator.Origin.Item("evade").GetValue<bool>())
                                 {
                                     // ignore if can evade
                                     if (hero.Player.NetworkId == Activator.Player.NetworkId)

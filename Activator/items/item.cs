@@ -30,7 +30,7 @@ namespace Activator.Items
             get
             {
                 return
-                    champion.Heroes.Where(
+                    Activator.Heroes.Where(
                         hero => hero.Player.IsEnemy && hero.Player.IsValidTarget(Range) &&
                                !hero.Player.IsZombie).OrderBy(x => x.Player.Distance(Game.CursorPos)).FirstOrDefault();
             }

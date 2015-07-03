@@ -39,7 +39,7 @@ namespace Activator.Summoners
             if (Player.IsRecalling() || Player.InFountain())
                 return;
 
-            var hid = champion.Heroes
+            var hid = Activator.Heroes
                     .OrderByDescending(h => h.Player.FlatPhysicalDamageMod)
                     .FirstOrDefault(h => h.Player.IsValidTarget(Range + 250));
 

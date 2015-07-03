@@ -34,6 +34,8 @@ namespace Activator
         internal static bool SmiteInGame;
         internal static bool TroysInGame;
 
+        public static List<champion> Heroes = new List<champion>(); 
+
         private static void Main(string[] args)
         {
             Console.WriteLine("[A]: Loading Activator#..");
@@ -98,7 +100,8 @@ namespace Activator
             }
 
             var vmenu = new Menu("Info (Changelog/Updates)", "info");
-            vmenu.AddItem(new MenuItem("aa", "0.9.5.4: (Paypal xrobinsong@gmail.com)"));
+            vmenu.AddItem(new MenuItem("aa", "0.9.5.5: (Paypal xrobinsong@gmail.com)"));
+            vmenu.AddItem(new MenuItem("zm", "- new: evade integration (see topic)"));
             vmenu.AddItem(new MenuItem("m", "- fixed: summoners"));
             vmenu.AddItem(new MenuItem("m3", "- fixed: lissandrar check enemies near"));
             vmenu.AddItem(new MenuItem("z", "- new: ally hero priority"));
@@ -109,9 +112,9 @@ namespace Activator
             zmenu.AddSubMenu(vmenu);
 
             zmenu.AddItem(new MenuItem("acdebug", "Debug")).SetValue(false);
+            zmenu.AddItem(new MenuItem("evade", "Evade Integration")).SetValue(true);
             zmenu.AddItem(new MenuItem("healthp", "Ally Priority:"))
                 .SetValue(new StringList(new[] { "Low HP", "Most AD/AP", "Most HP" }, 1));
-
             zmenu.AddItem(new MenuItem("usecombo", "Combo (active)"))
                 .SetValue(new KeyBind(32, KeyBindType.Press, true));
 
@@ -153,13 +156,12 @@ namespace Activator
             switch (Origin.Item("healthp").GetValue<StringList>().SelectedIndex)
             {
                 case 0:
-                    return champion.Heroes.Where(h => h.Player.IsAlly).OrderBy(h => h.Player.Health / h.Player.MaxHealth * 100);
+                    return Heroes.Where(h => h.Player.IsAlly).OrderBy(h => h.Player.Health / h.Player.MaxHealth * 100);
                 case 1:
-                    return
-                        champion.Heroes.Where(h => h.Player.IsAlly)
+                    return Heroes.Where(h => h.Player.IsAlly)
                             .OrderByDescending(h => h.Player.FlatPhysicalDamageMod + h.Player.FlatMagicDamageMod);
                 case 2:
-                    return champion.Heroes.Where(h => h.Player.IsAlly).OrderByDescending(h => h.Player.Health);
+                    return Heroes.Where(h => h.Player.IsAlly).OrderByDescending(h => h.Player.Health);
             }
 
             return null;
@@ -224,13 +226,13 @@ namespace Activator
         {
             foreach (var i in ObjectManager.Get<Obj_AI_Hero>().Where(i => i.Team == Player.Team))
             {
-                champion.Heroes.Add(new champion(i, 0));
+                Heroes.Add(new champion(i, 0));
                 Console.WriteLine("[A]: " + i.ChampionName + " ally added to table!");
             }
 
             foreach (var i in ObjectManager.Get<Obj_AI_Hero>().Where(i => i.Team != Player.Team))
             {
-                champion.Heroes.Add(new champion(i, 0));
+                Heroes.Add(new champion(i, 0));
                 Console.WriteLine("[A]: " + i.ChampionName + " enemy added to table!");
             }
         }

@@ -46,7 +46,7 @@ namespace Activator.Summoners
             if (Player.GetSpell(mark.Slot).Name.ToLower() != Name)
                 return;
 
-            foreach (var tar in champion.Heroes.Where(hero => hero.Player.IsValidTarget(Range)))
+            foreach (var tar in Activator.Heroes.Where(hero => hero.Player.IsValidTarget(Range)))
             {
                 if (Parent.Item(Parent.Name + "allon" + tar.Player.NetworkId).GetValue<bool>())
                     mark.CastIfHitchanceEquals(tar.Player, HitChance.Medium);

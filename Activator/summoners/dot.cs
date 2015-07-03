@@ -48,7 +48,7 @@ namespace Activator.Summoners
 
             foreach (
                 var tar in
-                    champion.Heroes
+                    Activator.Heroes
                         .Where(t =>  t.Player.IsValidTarget(600) && !t.Player.IsZombie)
                         .Where(t => !t.Player.HasBuff("summonerdot", true)))
             {

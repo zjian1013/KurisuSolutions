@@ -267,7 +267,12 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 550f,
                 Delay = 150f,
-                HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate, global::Activator.HitType.CrowdControl },
+                HitType =
+                    new[]
+                    {
+                        global::Activator.HitType.Danger, global::Activator.HitType.Ultimate,
+                        global::Activator.HitType.CrowdControl
+                    },
                 MissileName = "",
                 MissileSpeed = int.MaxValue
             });
@@ -358,7 +363,12 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 600f,
                 Delay = 250f,
-                HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate, global::Activator.HitType.CrowdControl },
+                HitType =
+                    new[]
+                    {
+                        global::Activator.HitType.Danger, global::Activator.HitType.Ultimate,
+                        global::Activator.HitType.CrowdControl
+                    },
                 MissileName = "",
                 MissileSpeed = int.MaxValue
             });
@@ -416,7 +426,12 @@ namespace Activator
                 CastRange = 20000f,
                 Global = true,
                 Delay = 250f,
-                HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate, global::Activator.HitType.CrowdControl },
+                HitType =
+                    new[]
+                    {
+                        global::Activator.HitType.Danger, global::Activator.HitType.Ultimate,
+                        global::Activator.HitType.CrowdControl
+                    },
                 MissileName = "enchantedcrystalarrow",
                 MissileSpeed = 1600
             });
@@ -610,7 +625,12 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 1250f,
                 Delay = 250f,
-                HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate, global::Activator.HitType.CrowdControl },
+                HitType =
+                    new[]
+                    {
+                        global::Activator.HitType.Danger, global::Activator.HitType.Ultimate,
+                        global::Activator.HitType.CrowdControl
+                    },
                 MissileName = "braumrmissile",
                 MissileSpeed = 1200
             });
@@ -690,8 +710,13 @@ namespace Activator
                 ChampionName = "cassiopeia",
                 Slot = SpellSlot.R,
                 CastRange = 875f,
-                Delay = 500f,
-                HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate, global::Activator.HitType.CrowdControl },
+                Delay = 350f,
+                HitType =
+                    new[]
+                    {
+                        global::Activator.HitType.Danger, global::Activator.HitType.Ultimate,
+                        global::Activator.HitType.CrowdControl
+                    },
                 MissileName = "cassiopeiapetrifyinggaze",
                 MissileSpeed = int.MaxValue
             });
@@ -894,7 +919,7 @@ namespace Activator
                 ChampionName = "draven",
                 Slot = SpellSlot.W,
                 CastRange = 0f,
-                Delay = 2147483647f,
+                Delay = 250f,
                 HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
@@ -942,7 +967,7 @@ namespace Activator
                 ChampionName = "drmundo",
                 Slot = SpellSlot.W,
                 CastRange = 225f,
-                Delay = 2147483647f,
+                Delay = 250f,
                 HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
@@ -953,7 +978,7 @@ namespace Activator
                 ChampionName = "drmundo",
                 Slot = SpellSlot.E,
                 CastRange = 0f,
-                Delay = 2147483647f,
+                Delay = 250f,
                 HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
@@ -964,7 +989,7 @@ namespace Activator
                 ChampionName = "drmundo",
                 Slot = SpellSlot.R,
                 CastRange = 0f,
-                Delay = 2147483647f,
+                Delay = 250f,
                 HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
@@ -1012,7 +1037,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 625f,
                 Delay = 550f,
-                HitType = new[] { global::Activator.HitType.Danger },
+                HitType = new HitType[] { },
                 MissileSpeed = 2200
             });
 
@@ -1023,7 +1048,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 375f,
                 Delay = 250f,
-                HitType = new HitType[] { global::Activator.HitType.Danger },
+                HitType = new[] { global::Activator.HitType.Danger },
                 MissileSpeed = int.MaxValue
             });
 
@@ -1044,7 +1069,7 @@ namespace Activator
                 ChampionName = "elise",
                 Slot = SpellSlot.W,
                 CastRange = 0f,
-                Delay = 2147483647f,
+                Delay = 250f,
                 HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
@@ -1067,7 +1092,7 @@ namespace Activator
                 ChampionName = "elise",
                 Slot = SpellSlot.E,
                 CastRange = 975f,
-                Delay = 2147483647f,
+                Delay = 250f,
                 HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
@@ -1078,7 +1103,7 @@ namespace Activator
                 ChampionName = "elise",
                 Slot = SpellSlot.E,
                 CastRange = 975f,
-                Delay = 2147483647f,
+                Delay = 250f,
                 HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
@@ -1089,7 +1114,7 @@ namespace Activator
                 ChampionName = "elise",
                 Slot = SpellSlot.R,
                 CastRange = 0f,
-                Delay = 2147483647f,
+                Delay = 250f,
                 HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
@@ -1100,7 +1125,7 @@ namespace Activator
                 ChampionName = "elise",
                 Slot = SpellSlot.R,
                 CastRange = 0f,
-                Delay = 2147483647f,
+                Delay = 250f,
                 HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
@@ -1122,7 +1147,7 @@ namespace Activator
                 ChampionName = "evelynn",
                 Slot = SpellSlot.W,
                 CastRange = 0f,
-                Delay = 2147483647f,
+                Delay = 250f,
                 HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
@@ -1145,7 +1170,12 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 650f,
                 Delay = 250f,
-                HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate, global::Activator.HitType.CrowdControl },
+                HitType =
+                    new[]
+                    {
+                        global::Activator.HitType.Danger, global::Activator.HitType.Ultimate,
+                        global::Activator.HitType.CrowdControl
+                    },
                 MissileName = "evelynnr",
                 MissileSpeed = int.MaxValue
             });
@@ -1407,7 +1437,12 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 560f,
                 Delay = 250f,
-                HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate, global::Activator.HitType.CrowdControl },
+                HitType =
+                    new[]
+                    {
+                        global::Activator.HitType.Danger, global::Activator.HitType.Ultimate,
+                        global::Activator.HitType.CrowdControl
+                    },
                 MissileName = "",
                 MissileSpeed = int.MaxValue
             });
@@ -1419,7 +1454,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 625f,
                 Delay = 250f,
-                HitType = new HitType[] { global::Activator.HitType.Danger },
+                HitType = new[] { global::Activator.HitType.Danger },
                 MissileSpeed = 2000
             });
 
@@ -1524,7 +1559,12 @@ namespace Activator
                 CastRange = 450f,
                 Slot = SpellSlot.R,
                 Delay = 250f,
-                HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate, global::Activator.HitType.CrowdControl },
+                HitType =
+                    new[]
+                    {
+                        global::Activator.HitType.Danger, global::Activator.HitType.Ultimate,
+                        global::Activator.HitType.CrowdControl
+                    },
                 MissileSpeed = int.MaxValue
             });
 
@@ -1614,7 +1654,12 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 1100f,
                 Delay = 300f,
-                HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate, global::Activator.HitType.CrowdControl },
+                HitType =
+                    new[]
+                    {
+                        global::Activator.HitType.Danger, global::Activator.HitType.Ultimate,
+                        global::Activator.HitType.CrowdControl
+                    },
                 MissileName = "gragasrboom",
                 MissileSpeed = 1000
             });
@@ -1716,7 +1761,12 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 1350f,
                 Delay = 250f,
-                HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate, global::Activator.HitType.CrowdControl },
+                HitType =
+                    new[]
+                    {
+                        global::Activator.HitType.Danger, global::Activator.HitType.Ultimate,
+                        global::Activator.HitType.CrowdControl
+                    },
                 MissileSpeed = 2200
             });
 
@@ -2121,7 +2171,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 1050f,
                 Delay = 250f,
-                HitType = new HitType[] { global::Activator.HitType.Danger, global::Activator.HitType.CrowdControl },
+                HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.CrowdControl },
                 MissileName = "karmaqmissile",
                 MissileSpeed = 1800
             });
@@ -2684,7 +2734,12 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 375f,
                 Delay = 500f,
-                HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate, global::Activator.HitType.CrowdControl },
+                HitType =
+                    new[]
+                    {
+                        global::Activator.HitType.Danger, global::Activator.HitType.Ultimate,
+                        global::Activator.HitType.CrowdControl
+                    },
                 MissileSpeed = int.MaxValue
             });
 
@@ -2729,7 +2784,12 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 1200f,
                 Delay = 450f,
-                HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate, global::Activator.HitType.CrowdControl },
+                HitType =
+                    new[]
+                    {
+                        global::Activator.HitType.Danger, global::Activator.HitType.Ultimate,
+                        global::Activator.HitType.CrowdControl
+                    },
                 MissileName = "leonasolarflare",
                 MissileSpeed = int.MaxValue
             });
@@ -2776,7 +2836,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 550f,
                 Delay = 250f,
-                HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate, global::Activator.HitType.CrowdControl },
+                HitType = new[] { global::Activator.HitType.CrowdControl },
                 MissileSpeed = int.MaxValue
             });
 
@@ -2822,7 +2882,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 1400f,
                 Delay = 250f,
-                HitType = new HitType[] { global::Activator.HitType.Danger },
+                HitType = new[] { global::Activator.HitType.Danger },
                 MissileName  = "lucianrmissileoffhand",
                 ExtraMissileNames = new[] { "lucianrmissile" },
                 MissileSpeed = int.MaxValue
@@ -2869,7 +2929,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 900f,
                 Delay = 250f,
-                HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate, global::Activator.HitType.CrowdControl },
+                HitType = new[] { global::Activator.HitType.CrowdControl },
                 MissileSpeed = int.MaxValue
             });
 
@@ -3006,7 +3066,12 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 1000f,
                 Delay = 250f,
-                HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate, global::Activator.HitType.CrowdControl },
+                HitType =
+                    new[]
+                    {
+                        global::Activator.HitType.Danger, global::Activator.HitType.Ultimate,
+                        global::Activator.HitType.CrowdControl
+                    },
                 MissileName = "ufslash",
                 MissileSpeed = 2200
             });
@@ -3041,7 +3106,7 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 650f,
                 Delay = 250f,
-                HitType = new HitType[] { global::Activator.HitType.Danger },
+                HitType = new[] { global::Activator.HitType.Danger },
                 MissileSpeed = int.MaxValue
             });
 
@@ -3052,7 +3117,12 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 700f,
                 Delay = 250f,
-                HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate, global::Activator.HitType.CrowdControl },
+                HitType =
+                    new[]
+                    {
+                        global::Activator.HitType.Danger, global::Activator.HitType.Ultimate,
+                        global::Activator.HitType.CrowdControl
+                    },
                 MissileSpeed = int.MaxValue
             });
 
@@ -3239,8 +3309,13 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 450f,
                 Delay = 250f,
-                HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate, global::Activator.HitType.CrowdControl },
-                MissileSpeed = int.MaxValue 
+                HitType =
+                    new[]
+                    {
+                        global::Activator.HitType.Danger, global::Activator.HitType.Ultimate,
+                        global::Activator.HitType.CrowdControl
+                    },
+                MissileSpeed = int.MaxValue
             });
 
             spells.Add(new spelldata
@@ -3736,10 +3811,15 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 425f,
                 Delay = 500f,
-                HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate, global::Activator.HitType.CrowdControl },
+                HitType =
+                    new[]
+                    {
+                        global::Activator.HitType.Danger, global::Activator.HitType.Ultimate,
+                        global::Activator.HitType.CrowdControl
+                    },
                 MissileName = "orianadetonatecommand",
-                FromObject = new [] { "yomu_ring" },
-                MissileSpeed = int.MaxValue 
+                FromObject = new[] { "yomu_ring" },
+                MissileSpeed = int.MaxValue
             });
 
             spells.Add(new spelldata
@@ -3749,7 +3829,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 600f,
                 Delay = 250f,
-                HitType = new HitType[] { },
+                HitType = new[] { global::Activator.HitType.Danger },
                 MissileSpeed = 1500
             });
 
@@ -3771,7 +3851,7 @@ namespace Activator
                 Slot = SpellSlot.E,
                 CastRange = 600f,
                 Delay = 250f,
-                HitType = new HitType[] { global::Activator.HitType.Danger },
+                HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
             });
 
@@ -3992,7 +4072,7 @@ namespace Activator
                 Slot = SpellSlot.Q,
                 CastRange = 0f,
                 Delay = 250f,
-                HitType = new HitType[] { global::Activator.HitType.Danger },
+                HitType = new[] { global::Activator.HitType.Danger },
                 MissileSpeed = int.MaxValue
             });
 
@@ -4305,9 +4385,14 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 1200f,
                 Delay = 250f,
-                HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate, global::Activator.HitType.CrowdControl },
+                HitType =
+                    new[]
+                    {
+                        global::Activator.HitType.Danger, global::Activator.HitType.Ultimate,
+                        global::Activator.HitType.CrowdControl
+                    },
                 MissileName = "sejuaniglacialprison",
-                MissileSpeed = 1400
+                MissileSpeed = 1600
             });
 
             spells.Add(new spelldata
@@ -4699,7 +4784,12 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 1000f,
                 Delay = 250f,
-                HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate, global::Activator.HitType.CrowdControl },
+                HitType =
+                    new[]
+                    {
+                        global::Activator.HitType.Danger, global::Activator.HitType.Ultimate,
+                        global::Activator.HitType.CrowdControl
+                    },
                 MissileName = "sonar",
                 MissileSpeed = 2400
             });
@@ -4808,17 +4898,6 @@ namespace Activator
 
             spells.Add(new spelldata
             {
-                SDataName = "syndraw",
-                ChampionName = "syndra",
-                Slot = SpellSlot.W,
-                CastRange = 925f,
-                Delay = 250f,
-                HitType = new HitType[] { },
-                MissileSpeed = 1450
-            });
-
-            spells.Add(new spelldata
-            {
                 SDataName = "syndrawcast",
                 ChampionName = "syndra",
                 Slot = SpellSlot.W,
@@ -4834,11 +4913,11 @@ namespace Activator
                 SDataName = "syndrae",
                 ChampionName = "syndra",
                 Slot = SpellSlot.E,
-                CastRange = 850f,
-                Delay = 250f,
+                CastRange = 950f,
+                Delay = 300f,
                 HitType = new[] { global::Activator.HitType.CrowdControl },
                 MissileName = "syndrae",
-                MissileSpeed = 1500
+                MissileSpeed = 1600
             });
 
             spells.Add(new spelldata
@@ -4849,7 +4928,7 @@ namespace Activator
                 CastRange = 675f,
                 Delay = 250f,
                 HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate },
-                MissileSpeed = 1100
+                MissileSpeed = 1250
             });
 
             spells.Add(new spelldata
@@ -5404,7 +5483,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 850f,
                 Delay = 250f,
-                HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate, global::Activator.HitType.CrowdControl },
+                HitType = new[] {  global::Activator.HitType.CrowdControl },
                 MissileSpeed = 1800
             });
 
@@ -5450,7 +5529,12 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 1300f,
                 Delay = 250f,
-                HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate, global::Activator.HitType.CrowdControl },
+                HitType =
+                    new[]
+                    {
+                        global::Activator.HitType.Danger, global::Activator.HitType.Ultimate,
+                        global::Activator.HitType.CrowdControl
+                    },
                 MissileName = "varusrmissile",
                 MissileSpeed = 1950
             });
@@ -5699,8 +5783,13 @@ namespace Activator
                 ChampionName = "viktor",
                 Slot = SpellSlot.R,
                 CastRange = 700f,
-                Delay = 500f,
-                HitType = new [] { global::Activator.HitType.CrowdControl, global::Activator.HitType.Ultimate, global::Activator.HitType.Danger },
+                Delay = 350f,
+                HitType =
+                    new[]
+                    {
+                        global::Activator.HitType.CrowdControl, global::Activator.HitType.Ultimate,
+                        global::Activator.HitType.Danger
+                    },
                 MissileSpeed = int.MaxValue
             });
 
@@ -5832,10 +5921,15 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 700f,
                 Delay = 250f,
-                HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate, global::Activator.HitType.CrowdControl },
+                HitType =
+                    new[]
+                    {
+                        global::Activator.HitType.Danger, global::Activator.HitType.Ultimate,
+                        global::Activator.HitType.CrowdControl
+                    },
                 MissileSpeed = int.MaxValue
             });
-
+            
             spells.Add(new spelldata
             {
                 SDataName = "xeratharcanopulsechargeup",
@@ -5922,7 +6016,12 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 375f,
                 Delay = 250f,
-                HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate, global::Activator.HitType.CrowdControl },
+                HitType =
+                    new[]
+                    {
+                        global::Activator.HitType.Danger, global::Activator.HitType.Ultimate,
+                        global::Activator.HitType.CrowdControl
+                    },
                 MissileSpeed = 1750
             });
 
@@ -6078,7 +6177,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 850f,
                 Delay = 250f,
-                HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate, global::Activator.HitType.CrowdControl },
+                HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.CrowdControl },
                 MissileSpeed = int.MaxValue
             });
 
@@ -6297,9 +6396,14 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 700f,
                 Delay = 250f,
-                HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate, global::Activator.HitType.CrowdControl },
+                HitType =
+                    new[]
+                    {
+                        global::Activator.HitType.Danger, global::Activator.HitType.Ultimate,
+                        global::Activator.HitType.CrowdControl
+                    },
                 MissileSpeed = int.MaxValue
-            }); 
+            });
         }
 
         public static List<item> items = new List<item>();
