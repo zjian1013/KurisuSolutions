@@ -92,18 +92,22 @@ namespace Activator
                 }
 
                 hero.Attacker = caster;
-                hero.IncomeDamage = (float) Math.Abs(caster.GetSpellDamage(hero.Player, data.SDataName));
                 hero.HitTypes.Add(HitType.Spell);
 
                 foreach (var type in data.HitType)
                     hero.HitTypes.Add(type);
 
-                Utility.DelayAction.Add(800, () =>
-                {
-                    hero.Attacker = null;
-                    hero.IncomeDamage = 0;
-                    hero.HitTypes.Clear();
-                });
+                // lol such bad practice
+                Utility.DelayAction.Add(
+                    (int) (endtime - (endtime * 0.1)), () =>
+                    {
+                        hero.IncomeDamage += 1;
+                        Utility.DelayAction.Add((int)endtime + 350, () =>
+                        {
+                            if (hero.IncomeDamage > 0)
+                                hero.IncomeDamage = 0;
+                        });
+                    });
             }
 
             #endregion
@@ -140,10 +144,10 @@ namespace Activator
                         {
                             hero.Attacker = sender;
                             hero.HitTypes.Add(HitType.AutoAttack);
-                            hero.IncomeDamage = (float) Math.Abs(sender.GetAutoAttackDamage(hero.Player));
+                            hero.IncomeDamage += (float) Math.Abs(sender.GetAutoAttackDamage(hero.Player));
 
                             // lazy reset
-                            Utility.DelayAction.Add(700, delegate
+                            Utility.DelayAction.Add(550, delegate
                             {
                                 hero.Attacker = null;
                                 hero.HitTypes.Remove(HitType.AutoAttack);
@@ -190,27 +194,27 @@ namespace Activator
                                     }
                                 }
                             }
-              
+
                             // delay the spell a bit before missile endtime
                             Utility.DelayAction.Add((int) (data.Delay - (data.Delay * 0.3)), () =>
                             {
                                 hero.Attacker = sender;
                                 hero.HitTypes.Add(HitType.Spell);
-                                hero.IncomeDamage =
+                                hero.IncomeDamage +=
                                     (float) Math.Abs(sender.GetSpellDamage(hero.Player, args.SData.Name));
 
                                 foreach (var type in data.HitType)
                                     hero.HitTypes.Add(type);
 
                                 // lazy safe reset
-                                Utility.DelayAction.Add((int) (data.Delay + 200), () =>
+                                Utility.DelayAction.Add((int) (data.Delay + 300), () =>
                                 {
                                     hero.Attacker = null;
                                     hero.IncomeDamage = 0;
                                     hero.HitTypes.Clear();
                                 });
                             });
-
+                            
                         }
 
                         #endregion
@@ -269,28 +273,27 @@ namespace Activator
                                         }
                                     }
                                 }
-
+                                                            
                                 // delay the action a little bit before endtime
-                                Utility.DelayAction.Add((int) (endtime - (endtime*0.3)), () =>
+                                Utility.DelayAction.Add((int) (endtime - (endtime * 0.3)), () =>
                                 {
                                     hero.Attacker = sender;
                                     hero.HitTypes.Add(HitType.Spell);
-                                    hero.IncomeDamage =
+                                    hero.IncomeDamage +=
                                         (float) Math.Abs(sender.GetSpellDamage(hero.Player, args.SData.Name));
-
+       
                                     foreach (var type in data.HitType)
                                         hero.HitTypes.Add(type);
 
                                     // lazy safe reset
-                                    Utility.DelayAction.Add((int) (endtime + 200), () =>
+                                    Utility.DelayAction.Add((int) (endtime + 300), () =>
                                     {
                                         hero.Attacker = null;
                                         hero.IncomeDamage = 0;
                                         hero.HitTypes.Clear();
                                     });
-                                });
-                            }
-                            
+                                });                               
+                            }                           
                         }
 
                         #endregion
@@ -310,25 +313,25 @@ namespace Activator
 
                             var distance =  (int) (1000 * (sender.Distance(hero.Player.ServerPosition) / data.MissileSpeed));
                             var endtime = data.Delay - 100 + Game.Ping / 2 + distance - (Utils.GameTimeTickCount - Casted);
-
+                                                            
                             Utility.DelayAction.Add((int) (endtime - (endtime * 0.3)), () =>
                             {
                                 hero.Attacker = sender;
                                 hero.HitTypes.Add(HitType.Spell);
-                                hero.IncomeDamage =
+                                hero.IncomeDamage +=
                                     (float) Math.Abs(sender.GetSpellDamage(hero.Player, args.SData.Name));
 
                                 foreach (var type in data.HitType)
                                     hero.HitTypes.Add(type);
 
                                 // lazy reset
-                                Utility.DelayAction.Add((int) (endtime + 200), () =>
+                                Utility.DelayAction.Add((int) (endtime + 300), () =>
                                 {
                                     hero.Attacker = null;
                                     hero.IncomeDamage = 0;
                                     hero.HitTypes.Clear();
                                 });
-                            });
+                            });                          
                         }
 
                         #endregion
