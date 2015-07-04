@@ -72,7 +72,7 @@ namespace Activator.Items.Consumables
                         return;
 
                     if (hero.Player.Mana/hero.Player.MaxMana*100 <= 
-                        Menu.Item("SelfLowMP" + Name + "Pct").GetValue<Slider>().Value)
+                        Menu.Item("selflowmp" + Name + "pct").GetValue<Slider>().Value)
                     {
                         if (!hero.Player.IsRecalling() && !hero.Player.InFountain())
                             UseItem();

@@ -38,36 +38,36 @@ namespace Activator.Spells
             Menu.AddItem(new MenuItem("use" + Name, "Use " + DisplayName)).SetValue(true);
 
             if (Category.Any(t => t == MenuType.Stealth))
-                Menu.AddItem(new MenuItem("Stealth" + Name + "Pct", "Use on Stealth")).SetValue(true);
+                Menu.AddItem(new MenuItem("Stealth" + Name + "pct", "Use on Stealth")).SetValue(true);
 
             if (Category.Any(t => t == MenuType.SlowRemoval))
                 Menu.AddItem(new MenuItem("use" + Name + "sr", "Use on Slows")).SetValue(true);
 
             if (Category.Any(t => t == MenuType.EnemyLowHP))
-                Menu.AddItem(new MenuItem("EnemyLowHP" + Name + "Pct", "Use on Enemy HP % <="))
+                Menu.AddItem(new MenuItem("enemylowhp" + Name + "pct", "Use on Enemy HP % <="))
                     .SetValue(new Slider(DefaultHP));
 
             if (Category.Any(t => t == MenuType.SelfLowHP))
-                Menu.AddItem(new MenuItem("SelfLowHP" + Name + "Pct", "Use on Hero HP % <="))
+                Menu.AddItem(new MenuItem("selflowhp" + Name + "pct", "Use on Hero HP % <="))
                     .SetValue(new Slider(DefaultHP));
 
             if (Category.Any(t => t == MenuType.SelfMuchHP))
-                Menu.AddItem(new MenuItem("SelfMuchHP" + Name + "Pct", "Use on Hero Dmg Dealt % >="))
+                Menu.AddItem(new MenuItem("selfmuchhp" + Name + "pct", "Use on Hero Dmg Dealt % >="))
                     .SetValue(new Slider(55));
 
             if (Category.Any(t => t == MenuType.SelfLowMP))
-                Menu.AddItem(new MenuItem("SelfLowMP" + Name + "Pct", "Use on Hero Mana % <="))
+                Menu.AddItem(new MenuItem("selflowmp" + Name + "pct", "Use on Hero Mana % <="))
                     .SetValue(new Slider(DefaultMP));
 
             if (Category.Any(t => t == MenuType.SelfCount))
-                Menu.AddItem(new MenuItem("SelfCount" + Name, "Use on # Near Hero >="))
-                    .SetValue(new Slider(4, 1, 5));
+                Menu.AddItem(new MenuItem("selfcount" + Name, "Use on # Near Hero >="))
+                    .SetValue(new Slider(3, 1, 5));
 
             if (Category.Any(t => t == MenuType.SelfMinMP))
-                Menu.AddItem(new MenuItem("SelfMinMP" + Name + "Pct", "Minimum Mana/Energy % <=")).SetValue(new Slider(40));
+                Menu.AddItem(new MenuItem("selfminmp" + Name + "pct", "Minimum Mana/Energy % <=")).SetValue(new Slider(40));
 
             if (Category.Any(t => t == MenuType.SelfMinHP))
-                Menu.AddItem(new MenuItem("SelfMinHP" + Name + "Pct", "Minimum HP % <=")).SetValue(new Slider(40));
+                Menu.AddItem(new MenuItem("selfminhp" + Name + "pct", "Minimum HP % <=")).SetValue(new Slider(40));
 
             if (Category.Any(t => t == MenuType.SpellShield))
             {

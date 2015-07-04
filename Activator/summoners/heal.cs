@@ -43,7 +43,7 @@ namespace Activator.Summoners
                 if (hero.Player.Distance(Player.ServerPosition) <= Range)
                 {
                     if (hero.Player.Health / hero.Player.MaxHealth * 100 <=
-                        Menu.Item("SelfLowHP" + Name + "Pct").GetValue<Slider>().Value)
+                        Menu.Item("selflowhp" + Name + "pct").GetValue<Slider>().Value)
                     {
                         if (hero.IncomeDamage > 0 && !hero.Player.IsRecalling() && !hero.Player.InFountain() ||
                             hero.IncomeDamage > hero.Player.Health)
@@ -51,7 +51,7 @@ namespace Activator.Summoners
                     }
 
                     if (hero.IncomeDamage / hero.Player.MaxHealth * 100 >=
-                        Menu.Item("SelfMuchHP" + Name + "Pct").GetValue<Slider>().Value)
+                        Menu.Item("selfmuchhp" + Name + "pct").GetValue<Slider>().Value)
                     {
                         if (hero.Player.MaxHealth - hero.Player.Health > (75 + (15 * Activator.Player.Level)))
                         {

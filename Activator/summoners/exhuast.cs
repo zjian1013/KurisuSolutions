@@ -75,14 +75,14 @@ namespace Activator.Summoners
                 }            
 
                 if (hero.Player.Health/hero.Player.MaxHealth*100 <=
-                    Menu.Item("a" + Name + "Pct").GetValue<Slider>().Value)
+                    Menu.Item("a" + Name + "pct").GetValue<Slider>().Value)
                 {
                     if (!hero.Player.IsFacing(enemy) && enemy.NetworkId == hid.Player.NetworkId)
                         UseSpellOn(enemy);                 
                 }
 
                 if (enemy.Health / enemy.MaxHealth * 100 <=
-                    Menu.Item("e" + Name + "Pct").GetValue<Slider>().Value)
+                    Menu.Item("e" + Name + "pct").GetValue<Slider>().Value)
                 {
                     if (!enemy.IsFacing(hero.Player))
                         UseSpellOn(enemy);       

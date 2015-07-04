@@ -47,7 +47,7 @@ namespace Activator.Items.Consumables
 
         internal override int DefaultHP
         {
-            get { return 55; }
+            get { return 45; }
         }
 
         internal override int DefaultMP
@@ -69,7 +69,7 @@ namespace Activator.Items.Consumables
                         return;
 
                     if (hero.Player.Health/hero.Player.MaxHealth*100 <=
-                        Menu.Item("SelfLowHP" + Name + "Pct").GetValue<Slider>().Value)
+                        Menu.Item("selflowhp" + Name + "pct").GetValue<Slider>().Value)
                     {
                         if (hero.IncomeDamage > 0 || hero.MinionDamage > 0)
                         {
@@ -79,7 +79,7 @@ namespace Activator.Items.Consumables
                     }
 
                     if (hero.IncomeDamage/hero.Player.MaxHealth*100 >=
-                        Menu.Item("SelfMuchHP" + Name + "Pct").GetValue<Slider>().Value)
+                        Menu.Item("selfmuchhp" + Name + "pct").GetValue<Slider>().Value)
                     {
                         if (hero.IncomeDamage > 0 || hero.MinionDamage > 0)
                         {
@@ -92,7 +92,7 @@ namespace Activator.Items.Consumables
                         continue;
 
                     if (hero.Player.Mana / hero.Player.MaxMana * 100 <= 
-                        Menu.Item("SelfLowMP" + Name + "Pct").GetValue<Slider>().Value)
+                        Menu.Item("selflowmp" + Name + "pct").GetValue<Slider>().Value)
                     {
                         if (!hero.Player.IsRecalling() && !hero.Player.InFountain())
                             UseItem();

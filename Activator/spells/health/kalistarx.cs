@@ -58,7 +58,7 @@ namespace Activator.Spells.Health
                         if (!cooptarget.HasBuffOfType(BuffType.Invulnerability))
                         {
                             if (hero.Player.Health/hero.Player.MaxHealth*100 <=
-                                Menu.Item("SelfLowHP" + Name + "Pct").GetValue<Slider>().Value)
+                                Menu.Item("selflowhp" + Name + "pct").GetValue<Slider>().Value)
                             {
                                 if (hero.IncomeDamage > 0)
                                     UseSpell();

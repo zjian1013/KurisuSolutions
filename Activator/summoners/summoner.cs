@@ -60,9 +60,9 @@ namespace Activator.Summoners
 
             if (Name == "summonerheal")
             {
-                Menu.AddItem(new MenuItem("SelfLowHP" + Name + "Pct", "Use on Hero HP % <="))
+                Menu.AddItem(new MenuItem("selflowhp" + Name + "pct", "Use on Hero HP % <="))
                     .SetValue(new Slider(20));
-                Menu.AddItem(new MenuItem("SelfMuchHP" + Name + "Pct", "Use on Hero Dmg Dealt % >="))
+                Menu.AddItem(new MenuItem("selfmuchhp" + Name + "pct", "Use on Hero Dmg Dealt % >="))
                     .SetValue(new Slider(45));
             }
 
@@ -96,19 +96,19 @@ namespace Activator.Summoners
                     .SetValue(new StringList(new[] { "Killsteal", "Combo" }, 1));
 
             if (Name == "summonermana")
-                Menu.AddItem(new MenuItem("SelfLowMP" + Name + "Pct", "Minimum Mana % <=")).SetValue(new Slider(40));
+                Menu.AddItem(new MenuItem("selflowmp" + Name + "pct", "Minimum Mana % <=")).SetValue(new Slider(40));
 
             if (Name == "summonerbarrier")
             {
-                Menu.AddItem(new MenuItem("SelfLowHP" + Name + "Pct", "Use on Hero HP % <=")).SetValue(new Slider(20));
-                Menu.AddItem(new MenuItem("SelfMuchHP" + Name + "Pct", "Use on Hero Dmg Dealt % >=")).SetValue(new Slider(45));
+                Menu.AddItem(new MenuItem("selflowhp" + Name + "pct", "Use on Hero HP % <=")).SetValue(new Slider(20));
+                Menu.AddItem(new MenuItem("selfmuchhp" + Name + "pct", "Use on Hero Dmg Dealt % >=")).SetValue(new Slider(45));
                 Menu.AddItem(new MenuItem("use" + Name + "Ulti", "Use on Dangerous (Ultimates Only)")).SetValue(true);
             }
 
             if (Name == "summonerexhaust")
             {
-                Menu.AddItem(new MenuItem("a" + Name + "Pct", "Exhaust on ally HP %")).SetValue(new Slider(35));
-                Menu.AddItem(new MenuItem("e" + Name + "Pct", "Exhaust on enemy HP %")).SetValue(new Slider(35));
+                Menu.AddItem(new MenuItem("a" + Name + "pct", "Exhaust on ally HP %")).SetValue(new Slider(35));
+                Menu.AddItem(new MenuItem("e" + Name + "pct", "Exhaust on enemy HP %")).SetValue(new Slider(35));
                 Menu.AddItem(new MenuItem("use" + Name + "Ulti", "Use on Dangerous")).SetValue(true);
                 Menu.AddItem(new MenuItem("mode" + Name, "Mode: ")).SetValue(new StringList(new[] { "Always", "Combo" }));
             }

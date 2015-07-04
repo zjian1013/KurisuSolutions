@@ -49,7 +49,7 @@ namespace Activator.Items.Cleansers
 
         internal override int DefaultHP
         {
-            get { return 15; }
+            get { return 10; }
         }
 
         internal override int DefaultMP
@@ -90,7 +90,7 @@ namespace Activator.Items.Cleansers
                 }
 
                 if (hero.Player.Health / hero.Player.MaxHealth * 100 <=
-                    Menu.Item("SelfLowHP" + Name + "Pct").GetValue<Slider>().Value)
+                    Menu.Item("selflowhp" + Name + "pct").GetValue<Slider>().Value)
                 {
                     if (hero.IncomeDamage > 0)
                     {

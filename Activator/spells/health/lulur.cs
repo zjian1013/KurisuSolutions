@@ -52,14 +52,14 @@ namespace Activator.Spells.Health
                     if (!Player.HasBuffOfType(BuffType.Invulnerability))
                     {
                         if (hero.Player.Health/hero.Player.MaxHealth*100 <=
-                            Menu.Item("SelfLowHP" + Name + "Pct").GetValue<Slider>().Value)
+                            Menu.Item("selflowhp" + Name + "pct").GetValue<Slider>().Value)
                         {
                             if (hero.IncomeDamage > 0)
                                 UseSpellOn(hero.Player);
                         }
 
                         if (hero.Player.CountEnemiesInRange(300) >=
-                            Menu.Item("SelfCount" + Name).GetValue<Slider>().Value)
+                            Menu.Item("selfcount" + Name).GetValue<Slider>().Value)
                             UseSpellOn(hero.Player);
                     }
                 }

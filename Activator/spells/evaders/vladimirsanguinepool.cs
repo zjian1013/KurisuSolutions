@@ -43,7 +43,7 @@ namespace Activator.Spells.Evaders
                 return;
 
             if (Player.Mana / Player.MaxMana * 100 <
-                Menu.Item("SelfMinHP" + Name + "Pct").GetValue<Slider>().Value)
+                Menu.Item("selfminhp" + Name + "pct").GetValue<Slider>().Value)
                 return;
 
             foreach (var hero in Activator.ChampionPriority())

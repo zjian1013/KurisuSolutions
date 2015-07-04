@@ -66,7 +66,7 @@ namespace Activator.Spells.Evaders
                     }
 
                     if (hero.Player.Health/hero.Player.MaxHealth*100 <=
-                        Menu.Item("SelfLowHP" + Name + "Pct").GetValue<Slider>().Value)
+                        Menu.Item("selflowhp" + Name + "pct").GetValue<Slider>().Value)
                     {
                         if (hero.IncomeDamage > 0 && hero.HitTypes.Contains(HitType.Ultimate))
                                 CastOnBestTarget((Obj_AI_Hero)hero.Attacker);

@@ -46,7 +46,7 @@ namespace Activator.Summoners
                     continue;
 
                 if (hero.Player.Health / hero.Player.MaxHealth * 100 <=
-                    Menu.Item("SelfLowHP" + Name + "Pct").GetValue<Slider>().Value)
+                    Menu.Item("selflowhp" + Name + "pct").GetValue<Slider>().Value)
                 {
                     if (hero.IncomeDamage > 0 && !Player.IsRecalling() && !Player.InFountain() ||
                         hero.IncomeDamage > hero.Player.Health)
@@ -56,7 +56,7 @@ namespace Activator.Summoners
                 }
 
                 if (hero.IncomeDamage / hero.Player.MaxHealth * 100 >=
-                    Menu.Item("SelfMuchHP" + Name + "Pct").GetValue<Slider>().Value)
+                    Menu.Item("selfmuchhp" + Name + "pct").GetValue<Slider>().Value)
                 {
                     if (hero.IncomeDamage > 0 && !Player.IsRecalling() && !Player.InFountain())
                     {

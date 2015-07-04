@@ -22,6 +22,7 @@ namespace Activator.Items
         internal virtual int DefaultMP { get; set; }
         internal virtual int DefaultHP { get; set; }
 
+
         public Menu Menu { get; private set; }
         public Menu Parent { get { return Menu.Parent; } }
         public Obj_AI_Hero Player { get { return ObjectManager.Player; } }
@@ -122,31 +123,31 @@ namespace Activator.Items
 
             if (Category.Any(t => t == MenuType.EnemyLowHP))
             {
-                Menu.AddItem(new MenuItem("EnemyLowHP" + Name + "Pct", "Use on Enemy HP % <="))
+                Menu.AddItem(new MenuItem("enemylowhp" + Name + "pct", "Use on Enemy HP % <="))
                     .SetValue(new Slider(DefaultHP));
             }
 
             if (Category.Any(t => t == MenuType.SelfLowHP))
-                Menu.AddItem(new MenuItem("SelfLowHP" + Name + "Pct", "Use on Hero HP % <="))
-                    .SetValue(new Slider(Name == "Botrk" ? 70 : DefaultHP/2));
+                Menu.AddItem(new MenuItem("selflowhp" + Name + "pct", "Use on Hero HP % <="))
+                    .SetValue(new Slider(DefaultHP <= 50 ? DefaultHP : 25));
 
             if (Category.Any(t => t == MenuType.SelfMuchHP))
-                Menu.AddItem(new MenuItem("SelfMuchHP" + Name + "Pct", "Use on Hero Dmg Dealt % >="))
-                    .SetValue(new Slider(45));
+                Menu.AddItem(new MenuItem("selfmuchhp" + Name + "pct", "Use on Hero Dmg Dealt % >="))
+                    .SetValue(new Slider(DefaultHP > 45 ? 55 : DefaultHP < 35 ? 55 : 45));
 
             if (Category.Any(t => t == MenuType.SelfLowMP))
-                Menu.AddItem(new MenuItem("SelfLowMP" + Name + "Pct", "Use on Hero Mana % <="))
+                Menu.AddItem(new MenuItem("selflowmp" + Name + "pct", "Use on Hero Mana % <="))
                     .SetValue(new Slider(DefaultMP));
 
             if (Category.Any(t => t == MenuType.SelfCount))
-                Menu.AddItem(new MenuItem("SelfCount" + Name, "Use On Enemy Count >="))
-                    .SetValue(new Slider(3, 1, 5));
+                Menu.AddItem(new MenuItem("selfcount" + Name, "Use On Enemy Count >="))
+                    .SetValue(new Slider(2, 1, 5));
 
             if (Category.Any(t => t == MenuType.SelfMinMP))
-                Menu.AddItem(new MenuItem("SelfMinMP" + Name + "Pct", "Minimum Mana %")).SetValue(new Slider(40));
+                Menu.AddItem(new MenuItem("selfminmp" + Name + "pct", "Minimum Mana %")).SetValue(new Slider(55));
 
             if (Category.Any(t => t == MenuType.SelfMinHP))
-                Menu.AddItem(new MenuItem("SelfMinHP" + Name + "Pct", "Minimum HP %")).SetValue(new Slider(40));
+                Menu.AddItem(new MenuItem("selfminhp" + Name + "pct", "Minimum HP %")).SetValue(new Slider(55));
 
             if (Category.Any(t => t == MenuType.Zhonyas))
             {
@@ -174,7 +175,7 @@ namespace Activator.Items
                 Menu.AddSubMenu(ccmenu);
 
                 Menu.AddItem(new MenuItem("use" + Name + "Number", "Minimum Spells to Use")).SetValue(new Slider(DefaultHP/5, 1, 5));
-                Menu.AddItem(new MenuItem("use" + Name + "Time", "Minumum Durration to Use")).SetValue(new Slider(2, 1, 5)); ;
+                Menu.AddItem(new MenuItem("use" + Name + "Time", "Minumum Durration to Use")).SetValue(new Slider(2, 1, 5)); 
                 Menu.AddItem(new MenuItem("use" + Name + "Od", "Only use on Dangerous")).SetValue(false);
             }
 

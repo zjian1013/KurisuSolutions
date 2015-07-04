@@ -67,7 +67,7 @@ namespace Activator.Items.Offensives
                     var manamune = Player.GetSpellSlot("Muramana");
                     if (manamune != SpellSlot.Unknown && !Player.HasBuff("Muramana"))
                     {
-                        if (Player.Mana / Player.MaxMana * 100 > Menu.Item("SelfLowMP" + Name + "Pct").GetValue<Slider>().Value)
+                        if (Player.Mana / Player.MaxMana * 100 > Menu.Item("selflowmp" + Name + "pct").GetValue<Slider>().Value)
                             Player.Spellbook.CastSpell(manamune);
 
                         Utility.DelayAction.Add(400, () => muramana = false);

@@ -42,7 +42,7 @@ namespace Activator.Spells.Shields
                 return;
 
             if (Player.Health / Player.MaxHealth * 100 <
-                Menu.Item("SelfMinHP" + Name + "Pct").GetValue<Slider>().Value)
+                Menu.Item("selfminhp" + Name + "pct").GetValue<Slider>().Value)
                 return;
 
             foreach (var hero in Activator.ChampionPriority())
@@ -53,11 +53,11 @@ namespace Activator.Spells.Shields
                 if (hero.Player.Distance(Player.ServerPosition) <= Range)
                 {
                     if (hero.IncomeDamage / hero.Player.MaxHealth * 100 >=
-                        Menu.Item("SelfMuchHP" + Name + "Pct").GetValue<Slider>().Value)
+                        Menu.Item("selfmuchhp" + Name + "pct").GetValue<Slider>().Value)
                         UseSpellOn(hero.Player);
 
                     if (hero.Player.Health / hero.Player.MaxHealth * 100 <=
-                        Menu.Item("SelfLowHP" + Name + "Pct").GetValue<Slider>().Value)
+                        Menu.Item("selflowhp" + Name + "pct").GetValue<Slider>().Value)
                     {
                         if (hero.IncomeDamage > 0 || hero.MinionDamage > hero.Player.Health)
                             UseSpellOn(hero.Player);

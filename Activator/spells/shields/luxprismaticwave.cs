@@ -50,11 +50,11 @@ namespace Activator.Spells.Shields
                 if (hero.Player.Distance(Player.ServerPosition) <= Range)
                 {
                     if (hero.IncomeDamage / hero.Player.MaxHealth * 100 >=
-                        Menu.Item("SelfMuchHP" + Name + "Pct").GetValue<Slider>().Value)
+                        Menu.Item("selfmuchhp" + Name + "pct").GetValue<Slider>().Value)
                         UseSpellTowards(hero.Player.ServerPosition);
 
                     if (hero.Player.Health/hero.Player.MaxHealth*100 <=
-                        Menu.Item("SelfLowHP" + Name + "Pct").GetValue<Slider>().Value)
+                        Menu.Item("selflowhp" + Name + "pct").GetValue<Slider>().Value)
                     {
                         if (hero.IncomeDamage > 0 || hero.MinionDamage > hero.Player.Health)
                             UseSpellTowards(hero.Player.ServerPosition);
