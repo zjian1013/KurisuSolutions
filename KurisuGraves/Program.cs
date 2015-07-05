@@ -99,19 +99,19 @@ namespace KurisuGraves
         static void GravesOnUpdate(EventArgs args)
         {
             gtarg = TargetSelector.GetTarget(Chargeshot.Range, TargetSelector.DamageType.Physical);
+
             if (gtarg.IsValidTarget() && Chargeshot.IsReady())
             {
                 if (Kappa(gtarg.ServerPosition, Chargeshot.Width, Chargeshot.Range) >=
                     mainMenu.Item("rmulti2").GetValue<Slider>().Value)
                 {
-                    Chargeshot.CastIfHitchanceEquals(gtarg, HitChance.Medium);
+                    if (gtarg.CountAlliesInRange(700) >= 2)
+                        Chargeshot.CastIfHitchanceEquals(gtarg, HitChance.Medium);
                 }
             }
 
             if (mainMenu.Item("combokey").GetValue<KeyBind>().Active)
-            {
                 GravesCombo();
-            }
 
             if (mainMenu.Item("fleekey").GetValue<KeyBind>().Active)
             {
@@ -126,14 +126,7 @@ namespace KurisuGraves
                     if (Utils.GameTimeTickCount - LastE > 500)
                         Quickdraw.Cast(Game.CursorPos);
                 }
-            }
-
-            if (Smokescreen.IsReady() && mainMenu.Item("smokeimmo").GetValue<bool>())
-            {
-                ObjectManager.Get<Obj_AI_Hero>()
-                    .FindAll(hero => hero.IsValidTarget(Smokescreen.Range))
-                    .ForEach(unit => Smokescreen.CastIfHitchanceEquals(unit, HitChance.Immobile));
-            }
+            }         
         }
 
         static void GravesReverseGapclose(ActiveGapcloser gapcloser)
@@ -158,19 +151,42 @@ namespace KurisuGraves
 
         static void GravesAfterAttack(AttackableUnit unit, AttackableUnit target)
         {
+            var minqrange = mainMenu.Item("minqrange").GetValue<Slider>().Value;
+
             if (mainMenu.Item("combokey").GetValue<KeyBind>().Active &&
                 mainMenu.Item("useecombo").GetValue<bool>())
             {
                 var hero = target as Obj_AI_Hero;
                 if (hero.IsValidTarget())
                 {
-                    CastE(hero);
+                    if (Buckshot.IsReady() && hero.Distance(Me.ServerPosition) <= minqrange)
+                    {
+                        if (!Quickdraw.IsReady(1500))
+                            Buckshot.CastIfHitchanceEquals(hero, HitChance.High);
+                    }
+
+                    else if(!Buckshot.IsReady())
+                    {
+                        CastE(hero);
+                    }
                 }
             }
         }
 
         static void GravesOnCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
         {
+            if (sender.IsEnemy && sender.Type == Me.Type && mainMenu.Item("usewl3").GetValue<bool>())
+            {
+                if (sender.Distance(Me.ServerPosition) <= Smokescreen.Range)
+                {
+                    if ((args.SData.CastFrame / 30) > 500)
+                    {
+                        Smokescreen.Cast(sender.ServerPosition);
+                    }
+                }
+            }
+
+
             if (!sender.IsMe)
                 return;
 
@@ -224,7 +240,7 @@ namespace KurisuGraves
                         {
                             Utility.DelayAction.Add(Game.Ping + 250, () =>
                             {
-                                if (gtarg.Distance(Me.ServerPosition) > Quickdraw.Range)
+                                if (gtarg.Distance(Me.ServerPosition) > Quickdraw.Range/2f + 50f)
                                     Quickdraw.Cast(gtarg.ServerPosition);
                                 else
                                     CastE(gtarg);
@@ -257,8 +273,6 @@ namespace KurisuGraves
 
         static void GravesCombo()
         {
-            var minqrange = mainMenu.Item("minqrange").GetValue<Slider>().Value;
-
             var rtarget = TargetSelector.GetTarget(Chargeshot.Range, TargetSelector.DamageType.Physical);
             if (rtarget.IsValidTarget(Chargeshot.Range))
             {
@@ -280,26 +294,29 @@ namespace KurisuGraves
             }
 
             var qtarget = TargetSelector.GetTarget(Buckshot.Range, TargetSelector.DamageType.Physical);
-            if (qtarget.Distance(Me.ServerPosition) <= minqrange)
-            {
-                if (Buckshot.IsReady())
-                    Buckshot.CastIfHitchanceEquals(qtarget, HitChance.High);
-            }
 
             if (qtarget.Distance(Me.ServerPosition) <= 450)
             {
                 if (Smokescreen.IsReady() && Utils.GameTimeTickCount - LastR >= 1200)
-                    Smokescreen.CastIfHitchanceEquals(qtarget, HitChance.Medium);
+                {
+                    if (Me.GetAutoAttackDamage(qtarget) * 3 < qtarget.Health)
+                        Smokescreen.CastIfHitchanceEquals(qtarget, HitChance.Medium);
+                }
             }
 
             if (qtarget.Distance(Me.ServerPosition) > Me.AttackRange + 100)
             {
-                if (Quickdraw.IsReady() && Utils.GameTimeTickCount - LastR >= 1200)
+                if (qtarget.Distance(Me.ServerPosition) <= Me.AttackRange + 350)
                 {
-                    if (qtarget.Distance(Me.ServerPosition) > Me.AttackRange + 100 &&
-                        mainMenu.Item("useecombo").GetValue<bool>())
+                    if (Quickdraw.IsReady() && Utils.GameTimeTickCount - LastR >= 1200)
                     {
-                        CastE(qtarget);
+                        if (Me.GetAutoAttackDamage(qtarget) * 3 >= qtarget.Health)
+                        {
+                            if (mainMenu.Item("useecombo").GetValue<bool>())
+                            {
+                                CastE(qtarget);
+                            }
+                        }
                     }
                 }
             }
@@ -319,13 +336,13 @@ namespace KurisuGraves
                 return 0f;
 
             // impact physical damage
-            var irdmg = Chargeshot.IsReady() && KappaHD(target.ServerPosition, Chargeshot.Width, Chargeshot.Range) < 1
+            var irdmg = Chargeshot.IsReady() && KappaHD(target.ServerPosition, Chargeshot.Width, Chargeshot.Range) <= 1
                 ? (float)Me.CalcDamage(target, Damage.DamageType.Physical,
                     new double[] { 250, 400, 550 }[Chargeshot.Level - 1] + 1.5 * Me.FlatPhysicalDamageMod)
                 : 0;
 
             // explosion damage
-            var erdmg = Chargeshot.IsReady() && KappaHD(target.ServerPosition, Chargeshot.Width, Chargeshot.Range) >= 1
+            var erdmg = Chargeshot.IsReady() && KappaHD(target.ServerPosition, Chargeshot.Width, Chargeshot.Range) > 1
                 ? (float)Me.CalcDamage(target, Damage.DamageType.Physical,
                     new double[] { 200, 320, 440 }[Chargeshot.Level - 1] + 1.2 * Me.FlatPhysicalDamageMod)
                 : 0;
@@ -348,18 +365,23 @@ namespace KurisuGraves
             var wdmg = Smokescreen.IsReady() ? (float)(Me.GetSpellDamage(target, SpellSlot.W)) : 0;
 
             // impact physical damage
-            var irdmg = Chargeshot.IsReady() && KappaHD(target.ServerPosition, Chargeshot.Width, Chargeshot.Range) < 1
+            var irdmg = Chargeshot.IsReady() && KappaHD(target.ServerPosition, Chargeshot.Width, Chargeshot.Range) <= 1
                 ? (float) Me.CalcDamage(target, Damage.DamageType.Physical,
                     new double[] { 250, 400, 550 }[Chargeshot.Level - 1] + 1.5 * Me.FlatPhysicalDamageMod)
                 : 0;
                 
             // explosion damage
-            var erdmg = Chargeshot.IsReady() && KappaHD(target.ServerPosition, Chargeshot.Width, Chargeshot.Range) >= 1
+            var erdmg = Chargeshot.IsReady() && KappaHD(target.ServerPosition, Chargeshot.Width, Chargeshot.Range) > 1
                 ? (float) Me.CalcDamage(target, Damage.DamageType.Physical,
                     new double[] { 200, 320, 440 }[Chargeshot.Level - 1] + 1.2 * Me.FlatPhysicalDamageMod)
                 : 0;
 
             return qdmg + edmg + wdmg + irdmg + erdmg;
+        }
+
+        static float Modi(Obj_AI_Base target)
+        {
+            return 0f;
         }
 
         // Counts the number of enemy objects in path of player and the spell.
@@ -412,12 +434,9 @@ namespace KurisuGraves
             {
                 if (Buckshot.IsReady())
                     Buckshot.CastIfHitchanceEquals(target, HitChance.High);
-
-                // dash back
-                else
-                {
+       
+                else // dash back
                     Quickdraw.Cast(Me.ServerPosition.Extend(target.ServerPosition, -Quickdraw.Range));
-                }
             }
         }
 
@@ -455,19 +474,30 @@ namespace KurisuGraves
 
             var combo = new Menu("Combo", "combo");
 
-            //combo.AddItem(new MenuItem("useqcombo", "Use Q in combo")).SetValue(true);
-            combo.AddItem(new MenuItem("useqongap", "Use Q on gapclosers")).SetValue(true);
-            combo.AddItem(new MenuItem("usewongap", "Use W on gapclosers")).SetValue(true);
-            combo.AddItem(new MenuItem("smokeimmo", "Auto W on Immobile")).SetValue(true);
-            combo.AddItem(new MenuItem("minqrange", "Minimum Q range")).SetValue(new Slider(595, 0, 950));
-            combo.AddItem(new MenuItem("minqongap", "Minimum Q gapclose range")).SetValue(new Slider(375, 0, 950));
-            //combo.AddItem(new MenuItem("usewcombo", "Use W in combo")).SetValue(true);
-            combo.AddItem(new MenuItem("useecombo", "Use E in combo")).SetValue(true);
-            combo.AddItem(new MenuItem("ewherecom", "Use E to"))
-                .SetValue(new StringList(new[] { "Safe Position" } ));
-            combo.AddItem(new MenuItem("usercombo", "Use R in combo")).SetValue(true);
-            combo.AddItem(new MenuItem("rmulti", "Use R in combo if hit >=")).SetValue(new Slider(1, 1, 5));
-            combo.AddItem(new MenuItem("rmulti2", "Use R auto if hit >=")).SetValue(new Slider(4, 1, 5));
+            var qmenu = new Menu("Q  Settings", "qmenu");
+            qmenu.AddItem(new MenuItem("useqongap", "Use Q on gapclosers")).SetValue(true);
+            qmenu.AddItem(new MenuItem("minqrange", "Minimum Q range")).SetValue(new Slider(595, 0, 950));
+            qmenu.AddItem(new MenuItem("minqongap", "Minimum Q gapclose range")).SetValue(new Slider(375, 0, 950));
+            combo.AddSubMenu(qmenu);
+
+            var wmenu = new Menu("W Settings", "wmenu");
+            wmenu.AddItem(new MenuItem("usewl3", "Use W L33T")).SetValue(true);
+            wmenu.AddItem(new MenuItem("usewongap", "Use W on gapclosers")).SetValue(true);
+            combo.AddSubMenu(wmenu);
+
+            var emenu = new Menu("E  Settings", "emenu");
+            emenu.AddItem(new MenuItem("useecombo", "Use E in combo")).SetValue(true);
+            emenu.AddItem(new MenuItem("ewherecom", "Use E to"))
+                .SetValue(new StringList(new[] { "Safe Position" }));
+            combo.AddSubMenu(emenu);
+
+            var rmenu = new Menu("R Settings", "rmenu");
+            rmenu.AddItem(new MenuItem("usercombo", "Use R in combo")).SetValue(true);
+            rmenu.AddItem(new MenuItem("rmulti", "Use R in combo if hit >=")).SetValue(new Slider(1, 1, 5));
+            rmenu.AddItem(new MenuItem("rmulti2", "Use R auto if hit >=")).SetValue(new Slider(3, 1, 5));
+            combo.AddSubMenu(rmenu);
+
+
             //rmenu.AddItem(new MenuItem("usersteald", "Use R Steal Drake")).SetValue(true);
             //rmenu.AddItem(new MenuItem("userstealb", "Use R Steal Nashor")).SetValue(true);
             mainMenu.AddSubMenu(combo);
