@@ -44,7 +44,7 @@ namespace Activator.Spells.Evaders
 
             foreach (var hero in Activator.ChampionPriority())
             {
-                if (Parent.Item(Parent.Name + "useon" + hero.Player.ChampionName).GetValue<bool>())
+                if (Parent.Item(Parent.Name + "useon" + hero.Player.NetworkId).GetValue<bool>())
                 {
                     if (hero.Player.Distance(Player.ServerPosition) <= Range)
                     {
