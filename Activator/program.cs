@@ -81,6 +81,7 @@ namespace Activator
 
             var amenu = new Menu("Auto Spells", "amenu");
             SubMenu(amenu, false);
+            amenu.AddItem(new MenuItem("al6", "Auto Level Ult (Level 6)")).SetValue(true);
             GetItemGroup("Spells.Evaders").ForEach(t => NewSpell((spell) NewInstance(t), amenu));
             GetItemGroup("Spells.Shields").ForEach(t => NewSpell((spell) NewInstance(t), amenu));
             GetItemGroup("Spells.Health").ForEach(t => NewSpell((spell) NewInstance(t), amenu));
@@ -297,10 +298,11 @@ namespace Activator
             if (hero == null)
                 return;
 
-            if (!hero.IsMe)
+            if (!hero.IsMe || !Origin.Item("al6").GetValue<bool>())
                 return;
 
-            if (hero.ChampionName == "Jayce" || hero.ChampionName == "Udyr")
+            if (hero.ChampionName == "Jayce" || hero.ChampionName == "Udyr" ||
+                hero.ChampionName == "Azir"  || hero.ChampionName == "Elise")
                 return;
 
             switch (Player.Level)
