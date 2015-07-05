@@ -308,12 +308,6 @@ namespace Activator
                 case 6:
                     Player.Spellbook.LevelSpell(SpellSlot.R);
                     break;
-                case 11:
-                    Player.Spellbook.LevelSpell(SpellSlot.R);
-                    break;
-                case 16:
-                    Player.Spellbook.LevelSpell(SpellSlot.R);
-                    break;
             }
         }
 

@@ -59,7 +59,7 @@ namespace Activator.Items.Defensives
             if (!Menu.Item("use" + Name).GetValue<bool>())
                 return;
 
-            if (!Parent.Item(Parent.Name + "useon" + Player.ChampionName).GetValue<bool>())
+            if (!Parent.Item(Parent.Name + "useon" + Player.NetworkId).GetValue<bool>())
                 return;
 
             if (Player.Health/Player.MaxHealth*100 <= Menu.Item("selflowhp" + Name + "pct").GetValue<Slider>().Value)

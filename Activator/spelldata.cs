@@ -1654,12 +1654,7 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 1100f,
                 Delay = 300f,
-                HitType =
-                    new[]
-                    {
-                        global::Activator.HitType.Danger, global::Activator.HitType.Ultimate,
-                        global::Activator.HitType.CrowdControl
-                    },
+                HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.CrowdControl },
                 MissileName = "gragasrboom",
                 MissileSpeed = 1000
             });
@@ -4558,7 +4553,12 @@ namespace Activator
                 Slot = SpellSlot.R,
                 CastRange = 1000f,
                 Delay = 100f,
-                HitType = new[] {global::Activator.HitType.Danger, global::Activator.HitType.CrowdControl, global::Activator.HitType.Ultimate },
+                HitType =
+                    new[]
+                    {
+                        global::Activator.HitType.Danger, global::Activator.HitType.CrowdControl,
+                        global::Activator.HitType.Ultimate
+                    },
                 MissileName = "shyvanatransformcast",
                 MissileSpeed = 1100
             });
@@ -4739,8 +4739,8 @@ namespace Activator
                 ChampionName = "skarner",
                 Slot = SpellSlot.R,
                 CastRange = 350f,
-                Delay = 500f,
-                HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.Ultimate, global::Activator.HitType.CrowdControl },
+                Delay = 350f,
+                HitType = new[] { global::Activator.HitType.Danger, global::Activator.HitType.CrowdControl },
                 MissileSpeed = int.MaxValue
             });
 
