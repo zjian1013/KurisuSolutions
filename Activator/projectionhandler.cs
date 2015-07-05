@@ -252,11 +252,21 @@ namespace Activator
                             int evadetime;
 
                             if (islineskillshot)
-                                evadetime = (int) (1000 * (correctwidth - projdist + hero.Player.BoundingRadius) / hero.Player.MoveSpeed);
+                            {
+                                evadetime =
+                                    (int)
+                                        (1000 * (correctwidth - projdist + hero.Player.BoundingRadius) /
+                                         hero.Player.MoveSpeed);
+                            }
 
                             else
-                                evadetime = (int) (1000 * (correctwidth - hero.Player.Distance(correctpos) +
-                                                                          hero.Player.BoundingRadius) / hero.Player.MoveSpeed);
+                            {
+                                evadetime =
+                                    (int)
+                                        (1000 *
+                                         (correctwidth - hero.Player.Distance(correctpos) + hero.Player.BoundingRadius) /
+                                         hero.Player.MoveSpeed);
+                            }
      
                             if (!islineskillshot && hero.Player.Distance(args.End) <= correctwidth ||
                                  islineskillshot && correctwidth + hero.Player.BoundingRadius > projdist)
