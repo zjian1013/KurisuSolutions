@@ -59,6 +59,8 @@ namespace Activator.Items.Cleansers
 
         public override void OnTick(EventArgs args)
         {
+            return;
+
             if (!Menu.Item("use" + Name).GetValue<bool>())
                 return;
 

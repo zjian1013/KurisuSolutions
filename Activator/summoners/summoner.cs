@@ -66,8 +66,9 @@ namespace Activator.Summoners
                     .SetValue(new Slider(45));
             }
 
-            if (Name == "summonerboost")
+            if (Name == "summonerboost(disabled)")
             {
+
                 var ccmenu = new Menu(DisplayName + " Debuffs", DisplayName.ToLower() + "cdeb");
                 ccmenu.AddItem(new MenuItem(Name + "cignote", "Ignite")).SetValue(true);
                 ccmenu.AddItem(new MenuItem(Name + "cexhaust", "Exhaust")).SetValue(true);
