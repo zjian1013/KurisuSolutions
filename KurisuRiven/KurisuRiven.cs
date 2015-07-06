@@ -44,8 +44,6 @@ namespace KurisuRiven
 
         private static Obj_AI_Base qtarg; // semi q target
         private static Obj_AI_Hero rtarg; // ultimate target
-        private static Obj_AI_Hero ctarg; // combo range target;
-        private static Obj_AI_Hero btarg; // best target
 
         private static bool uo;
         private static bool cb;
@@ -54,6 +52,7 @@ namespace KurisuRiven
         private static int pc;
         private static SpellSlot flash;
 
+        private static float wrange;
         private static float truerange;
         private static Vector3 movepos;
 
@@ -79,6 +78,28 @@ namespace KurisuRiven
         private static float xtra(float dmg)
         {
            return r.IsReady() ? (float) (dmg + (dmg*0.2)) : dmg;
+        }
+
+        private static void TryIgnote(Obj_AI_Base target)
+        {
+            var ignote = player.GetSpellSlot("summonerdot");
+            if (player.Spellbook.CanUseSpell(ignote) == SpellState.Ready)
+            {
+                if (target.Distance(player.ServerPosition) <= 600)
+                {
+                    if (cc <= menuslide("userq") && q.IsReady() && menubool("useignote"))
+                    {
+                        if (ComboDamage(target) >= target.Health &&
+                            target.Health / target.MaxHealth * 100 > menuslide("overk"))
+                        {
+                            if (r.IsReady() && uo)
+                            {
+                                player.Spellbook.CastSpell(ignote, target);
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         private static void useinventoryitems(Obj_AI_Base target)
@@ -185,8 +206,8 @@ namespace KurisuRiven
                     if (didq)
                     {
                         didq = false;
-                        canaa = true;
                         canmv = true;
+                        canaa = true;
                     }
                 }
             };
@@ -207,29 +228,22 @@ namespace KurisuRiven
             canhd = !didaa && (Items.CanUseItem(3077) || Items.CanUseItem(3074));
 
             // main target (riven targ)
-            rtarg = TargetSelector.GetTarget(900, TargetSelector.DamageType.Physical);
-            ctarg = TargetSelector.GetTarget(q.Range + w.Range, TargetSelector.DamageType.Physical);
+            rtarg = TargetSelector.GetTarget(1100, TargetSelector.DamageType.Physical);
 
-            btarg = rtarg != null && ctarg != null &&
-                    TargetSelector.GetPriority(rtarg) > TargetSelector.GetPriority(ctarg)
-                ? rtarg
-                : ctarg;
-
+            // my radius
             truerange = player.AttackRange + player.Distance(player.BBox.Minimum) + 1;
-
-
 
             // if no valid target cancel to cursor pos
             if (!qtarg.IsValidTarget(truerange + 100))
                  qtarg = player;
 
+            // riven w range
+            wrange = uo ? w.Range + 25 : w.Range;
+
             // can we burst?
             cb = rtarg != null && r.IsReady() && q.IsReady() &&
                 ((ComboDamage(rtarg)/1.6) >= rtarg.Health || rtarg.CountEnemiesInRange(w.Range) >= menuslide("multic"));
 
-            // set player skin
-            player.SetSkin(player.BaseSkinName, menu.Item("skinset").GetValue<StringList>().SelectedIndex);
- 
             // move behind me
             if (qtarg != player && qtarg.IsFacing(player) && qtarg.Distance(player.ServerPosition) < truerange + 120)
                 movepos = player.ServerPosition + (player.ServerPosition - qtarg.ServerPosition).Normalized()*28;
@@ -252,38 +266,44 @@ namespace KurisuRiven
             CombatCore();
             Windslash();
 
-            if (btarg.IsValidTarget() && 
+            if (rtarg.IsValidTarget() && 
                 menu.Item("combokey").GetValue<KeyBind>().Active)
             {
-                ComboTarget(btarg);
+                ComboTarget(rtarg);
+                TryIgnote(rtarg);
             }
 
             if (rtarg.IsValidTarget() &&
                 menu.Item("shycombo").GetValue<KeyBind>().Active)
             {
-                if (rtarg.Distance(player.ServerPosition) <= truerange)
+                if (rtarg.Distance(player.ServerPosition) <= wrange)
                 {
-                    if ((Items.HasItem(3077) || Items.HasItem(3074)))
-                    {
-                        if ((Items.CanUseItem(3077) || Items.CanUseItem(3074)))
-                        {
-                            OrbTo(rtarg);
-                        }
-                    }
+                    w.Cast();
                 }
 
-                if (rtarg.IsValidTarget(w.Range))
-                {
-                    if (w.IsReady())
-                        w.Cast();
-                }
-
+                OrbTo(rtarg, 350);
                 TryFlashInitiate(rtarg);
+                TryIgnote(rtarg);
+
+                if (q.IsReady() && rtarg.Distance(player.ServerPosition) <= q.Range + 30)
+                {
+                    useinventoryitems(rtarg);
+                    CheckR();
+
+                    if (menulist("emode") == 0 || (ComboDamage(rtarg) / 1.7) >= rtarg.Health)
+                    {
+                        if (Items.CanUseItem(3077) || Items.CanUseItem(3074))
+                            return;
+                    }
+
+                    if (canq)
+                        q.Cast(rtarg.ServerPosition);
+                }
             }
 
-            if (didhs && ctarg.IsValidTarget())
+            if (didhs && rtarg.IsValidTarget())
             {
-                HarassTarget(ctarg);
+                HarassTarget(rtarg);
             }
 
             if (player.IsValid &&
@@ -356,7 +376,7 @@ namespace KurisuRiven
             qmenu.AddItem(new MenuItem("qint", "Interrupt with 3rd Q")).SetValue(true);
             qmenu.AddItem(new MenuItem("keepq", "Keep Q Buff Up")).SetValue(true);
             qmenu.AddItem(new MenuItem("usegap", "Gapclose with Q")).SetValue(true);
-            qmenu.AddItem(new MenuItem("gaptimez", "Gapclose Q Delay (ms)")).SetValue(new Slider(80, 50, 200));
+            qmenu.AddItem(new MenuItem("gaptimez", "Gapclose Q Delay (ms)")).SetValue(new Slider(50, 0, 200));
             combo.AddSubMenu(qmenu);
 
             var wmenu = new Menu("W Settings", "rivenw");
@@ -415,13 +435,6 @@ namespace KurisuRiven
             farming.AddSubMenu(wc);
 
             menu.AddSubMenu(farming);
-
-            var skinchange = new Menu("Skin Changer", "skinchange");
-            skinchange.AddItem(new MenuItem("skinset", ""))
-                .SetValue(
-                    new StringList(
-                        new[] { "Classic", "Redeemed", "Crimson", "Battle Bunny", "Championship", "Dragonblade" }, 4));
-            menu.AddSubMenu(skinchange);
             menu.AddToMainMenu();
 
         }
@@ -476,24 +489,7 @@ namespace KurisuRiven
             OrbTo(target);
 
             // ignite ->
-            var ignote = player.GetSpellSlot("summonerdot");
-            if (player.Spellbook.CanUseSpell(ignote) == SpellState.Ready)
-            {
-                if (target.Distance(player.ServerPosition) <= 600)
-                {
-                    if (cc <= menuslide("userq") && q.IsReady() && menubool("useignote"))
-                    {
-                        if (ComboDamage(target) >= target.Health &&
-                            target.Health / target.MaxHealth * 100 > menuslide("overk"))
-                        {
-                            if (r.IsReady() && uo)
-                            {
-                                player.Spellbook.CastSpell(ignote, target);
-                            }
-                        }
-                    }
-                }
-            }
+            TryIgnote(target);
 
             if (e.IsReady() && cane && menubool("usecomboe") &&
                (player.Health / player.MaxHealth * 100 <= menuslide("vhealth") || 
@@ -526,7 +522,7 @@ namespace KurisuRiven
             }
 
             else if (w.IsReady() && canw && menubool("usecombow") &&
-                     target.Distance(player.ServerPosition) <= w.Range + 25)
+                     target.Distance(player.ServerPosition) <= wrange)
             {
                 useinventoryitems(target);
                 CheckR();
@@ -581,15 +577,16 @@ namespace KurisuRiven
             {
                 if (menubool("usegap"))
                 {
-                    if (!e.IsReady() && Utils.GameTimeTickCount - lastq >= menuslide("gaptimez") * 10 && !didaa)
+                    if (Utils.GameTimeTickCount - lastq >= menuslide("gaptimez") * 10)
                     {
-                        if (q.IsReady() && Utils.GameTimeTickCount - laste >= 700)
+                        if (q.IsReady() && Utils.GameTimeTickCount - laste >= 500)
                         {
                             q.Cast(target.ServerPosition);
                         }
                     }
                 }
             }
+
         }
 
         #endregion
@@ -725,6 +722,7 @@ namespace KurisuRiven
             foreach (var unit in minions.Where(m => !m.Name.Contains("Mini")))
             {
                 OrbTo(unit);
+
                 if (q.IsReady() && unit.Distance(player.ServerPosition) <= q.Range + 100)
                 {
                     if (canq && menubool("usejungleq"))
@@ -749,8 +747,14 @@ namespace KurisuRiven
         private static void Wave()
         {
             var minions = MinionManager.GetMinions(player.Position, 600f);
+
             foreach (var unit in minions)
             {
+                if (player.GetAutoAttackDamage(unit, true) >= unit.Health)
+                {
+                    OrbTo(unit);
+                }
+
                 if (q.IsReady() && unit.Distance(player.ServerPosition) <= truerange + 100)
                 {
                     if (canq && menubool("uselaneq") && minions.Count >= 2 &&
@@ -844,7 +848,8 @@ namespace KurisuRiven
                     if (qtarg.IsValidTarget(q.Range + 100) &&
                        !menu.Item("clearkey").GetValue<KeyBind>().Active &&
                        !menu.Item("harasskey").GetValue<KeyBind>().Active &&
-                       !menu.Item("combokey").GetValue<KeyBind>().Active)
+                       !menu.Item("combokey").GetValue<KeyBind>().Active &&
+                       !menu.Item("shycombo").GetValue<KeyBind>().Active)
                     {
                         if (qtarg.IsValid<Obj_AI_Hero>())
                             q.Cast(qtarg.ServerPosition);
@@ -984,9 +989,9 @@ namespace KurisuRiven
                             ssfl = false;
 
                         // cancel q animation
-                        if (qtarg.IsValid && qtarg.Distance(player.ServerPosition) <= e.Range + q.Range)
+                        if (qtarg.IsValidTarget(q.Range + 250))
                         {
-                            Utility.DelayAction.Add(100 + 100 - Game.Ping/2,
+                            Utility.DelayAction.Add(100 + (100 - Game.Ping/2),
                                 () => player.IssueOrder(GameObjectOrder.MoveTo, movepos));
                         }
 
@@ -1008,8 +1013,7 @@ namespace KurisuRiven
                         {
                             if (uo && r.IsReady() && cc == 2 && q.IsReady())
                             {
-                                if (rtarg == null || rtarg.Distance(player.ServerPosition) > r.Range)
-                                    r.Cast(Game.CursorPos);
+                                r.Cast(Game.CursorPos);
                             }
                         }
 
@@ -1058,17 +1062,21 @@ namespace KurisuRiven
                         didhd = true;
                         canws = true;
                         canhd = false;
+                        canaa = true;
 
                         if (menulist("wsmode") == 1 && uo && canws)
                         {
                             if (menu.Item("combokey").GetValue<KeyBind>().Active ||
                                 menu.Item("shycombo").GetValue<KeyBind>().Active)
                             {
-                                if (cb && r.GetPrediction(rtarg).Hitchance >= HitChance.Medium &&
-                                    rtarg.IsValidTarget() && !rtarg.IsZombie)
+                                if ((cb || menu.Item("shycombo").GetValue<KeyBind>().Active) &&
+                                    r.GetPrediction(rtarg).Hitchance >= HitChance.Medium)
                                 {
-                                    Utility.DelayAction.Add(150, 
-                                        () => r.Cast(r.GetPrediction(rtarg).CastPosition));
+                                    if (rtarg.IsValidTarget() && !rtarg.IsZombie)
+                                    {
+                                        Utility.DelayAction.Add(150,
+                                            () => r.Cast(r.GetPrediction(rtarg).CastPosition));
+                                    }
                                 }
                             }
                         }
@@ -1087,11 +1095,13 @@ namespace KurisuRiven
                     if (menu.Item("combokey").GetValue<KeyBind>().Active ||
                         menu.Item("shycombo").GetValue<KeyBind>().Active)
                     {
-                        if (cb || !menubool("usecombow") || !menubool("usecomboe"))
+                        if ((cb || menu.Item("shycombo").GetValue<KeyBind>().Active) || 
+                            !menubool("usecombow") ||
+                            !menubool("usecomboe"))
                         {
                             // delay till after aa
                             Utility.DelayAction.Add(
-                                50 + (int) (player.AttackDelay*100) + Game.Ping/2 + menuslide("autoaq"), delegate
+                                50 + (int) (player.AttackDelay * 100) + Game.Ping / 2 + menuslide("autoaq"), delegate
                                 {
                                     if (Items.CanUseItem(3077))
                                         Items.UseItem(3077);
@@ -1268,12 +1278,46 @@ namespace KurisuRiven
         #endregion
 
         #region Riven : Combat/Orbwalk
-        private static void OrbTo(Obj_AI_Base target)
+
+        private static bool IsOrbwalkKey(uint key)
+        {
+            if (menu.Item("Farm").GetValue<KeyBind>().Key == key ||
+                menu.Item("Orbwalk").GetValue<KeyBind>().Key == key ||
+                menu.Item("LaneClear").GetValue<KeyBind>().Key == key)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        private static void OrbTo(Obj_AI_Base target, float rangeoverride = 0f)
         {
             if (canaa && canmv)
             {
-                if (target.Distance(player.ServerPosition) <= truerange + 10)
+                if (target.IsValidTarget(truerange + 50 + rangeoverride))
                 {
+                    if (IsOrbwalkKey(menu.Item("combokey").GetValue<KeyBind>().Key) &&
+                        menu.Item("combokey").GetValue<KeyBind>().Active)
+                    {
+                        orbwalker.SetAttack(false);
+                        orbwalker.SetMovement(false);
+                    }
+
+                    if (IsOrbwalkKey(menu.Item("harasskey").GetValue<KeyBind>().Key) &&
+                        menu.Item("harasskey").GetValue<KeyBind>().Active)
+                    {
+                        orbwalker.SetAttack(false);
+                        orbwalker.SetMovement(false);
+                    }
+
+                    if (IsOrbwalkKey(menu.Item("clearkey").GetValue<KeyBind>().Key) &&
+                        menu.Item("clearkey").GetValue<KeyBind>().Active)
+                    {
+                        orbwalker.SetAttack(false);
+                        orbwalker.SetMovement(false);
+                    }
+
                     player.IssueOrder(GameObjectOrder.AttackUnit, target);
                 }
             }
@@ -1288,7 +1332,7 @@ namespace KurisuRiven
 
             if (didq)
             {
-                if (Utils.GameTimeTickCount - lastq >= (int)(player.AttackCastDelay * 1000) + 310)
+                if (Utils.GameTimeTickCount - lastq >= (int)(player.AttackCastDelay * 1000) - Game.Ping/2)
                 {
                     didq = false;
                     canmv = true;
@@ -1312,12 +1356,13 @@ namespace KurisuRiven
                 {
                     dide = false;
                     canmv = true;
+                    canaa = true;
                 }             
             }
 
             if (didaa)
             {
-                if (Utils.GameTimeTickCount - lastaa >= (player.AttackDelay * 100) + 100 - Game.Ping + menuslide("autoaq"))
+                if (Utils.GameTimeTickCount - lastaa >= (player.AttackDelay *100) + (100 - Game.Ping) + menuslide("autoaq"))
                 {
                     didaa = false;
                     canmv = true;
