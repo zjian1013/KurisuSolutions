@@ -81,7 +81,7 @@ namespace Activator
 
             var amenu = new Menu("Auto Spells", "amenu");
             SubMenu(amenu, false);
-            amenu.AddItem(new MenuItem("al6", "Auto Level Ult (Level 6)")).SetValue(true);
+            amenu.AddItem(new MenuItem("al6", "Auto Lvl 6")).SetValue(true);
             GetItemGroup("Spells.Evaders").ForEach(t => NewSpell((spell) NewInstance(t), amenu));
             GetItemGroup("Spells.Shields").ForEach(t => NewSpell((spell) NewInstance(t), amenu));
             GetItemGroup("Spells.Health").ForEach(t => NewSpell((spell) NewInstance(t), amenu));

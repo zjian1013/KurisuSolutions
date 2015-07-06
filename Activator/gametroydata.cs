@@ -28,6 +28,15 @@ namespace Activator
         {
             troydata.Add(new gametroydata
             {
+                Name = "LeBlanc_Base_P",
+                ChampionName = "Leblanc",
+                Radius = 1000f,
+                Slot = SpellSlot.Unknown,
+                HitType = new[] { global::Activator.HitType.Stealth }
+            });
+
+            troydata.Add(new gametroydata
+            {
                 Name = "Fizz_Ring_Red",
                 ChampionName = "Fizz",
                 Radius = 300f,

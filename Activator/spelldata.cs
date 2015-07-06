@@ -154,7 +154,7 @@ namespace Activator
                 SDataName = "akalismokebomb",
                 ChampionName = "akali",
                 Slot = SpellSlot.W,
-                CastRange = 700f,
+                CastRange = 1000f,
                 Delay = 250f,
                 HitType = new[] { global::Activator.HitType.Stealth },
                 MissileSpeed = int.MaxValue
@@ -2500,9 +2500,9 @@ namespace Activator
                 SDataName = "khazixr",
                 ChampionName = "khazix",
                 Slot = SpellSlot.R,
-                CastRange = 0f,
+                CastRange = 1000f,
                 Delay = 0f,
-                HitType = new HitType[] { },
+                HitType = new [] { global::Activator.HitType.Stealth },
                 MissileSpeed = int.MaxValue
             });
 
@@ -2511,9 +2511,9 @@ namespace Activator
                 SDataName = "khazixrlong",
                 ChampionName = "khazix",
                 Slot = SpellSlot.R,
-                CastRange = 0f,
+                CastRange = 1000f,
                 Delay = 0f,
-                HitType = new HitType[] { },
+                HitType = new[] { global::Activator.HitType.Stealth },
                 MissileSpeed = int.MaxValue
             });
 
@@ -3269,7 +3269,7 @@ namespace Activator
                 SDataName = "monkeykingdecoy",
                 ChampionName = "monkeyking",
                 Slot = SpellSlot.W,
-                CastRange = 0f,
+                CastRange = 1000f,
                 Delay = 250f,
                 HitType = new[] { global::Activator.HitType.Stealth },
                 MissileSpeed = int.MaxValue
@@ -4395,7 +4395,7 @@ namespace Activator
                 SDataName = "deceive",
                 ChampionName = "shaco",
                 Slot = SpellSlot.Q,
-                CastRange = 400f,
+                CastRange = 1000f,
                 Delay = 250f,
                 HitType = new[] { global::Activator.HitType.Stealth },
                 MissileSpeed = int.MaxValue
@@ -4970,7 +4970,7 @@ namespace Activator
                 SDataName = "talonshadowassault",
                 ChampionName = "talon",
                 Slot = SpellSlot.R,
-                CastRange = 550f,
+                CastRange = 750f,
                 Delay = 260f,
                 HitType = new[] { global::Activator.HitType.Stealth },
                 MissileSpeed = int.MaxValue
@@ -5247,7 +5247,7 @@ namespace Activator
                 SDataName = "hideinshadows",
                 ChampionName = "twich",
                 Slot = SpellSlot.Q,
-                CastRange = 0f,
+                CastRange = 1000f,
                 Delay = 250f,
                 HitType = new[] { global::Activator.HitType.Stealth },
                 MissileSpeed = int.MaxValue
