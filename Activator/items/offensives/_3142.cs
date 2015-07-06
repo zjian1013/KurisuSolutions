@@ -59,17 +59,17 @@ namespace Activator.Items.Offensives
         {
             if (Menu.Item("use" + Name).GetValue<bool>() && Tar != null)
             {
+                if (Player.Health / Player.MaxHealth * 100 <= Menu.Item("selflowhp" + Name + "pct").GetValue<Slider>().Value)
+                {
+                    UseItem(Tar.Player);
+                }
+
                 if (!Parent.Item(Parent.Name + "useon" + Tar.Player.NetworkId).GetValue<bool>())
                     return;
 
                 if (Tar.Player.Health / Tar.Player.MaxHealth * 100 <= Menu.Item("enemylowhp" + Name + "pct").GetValue<Slider>().Value)
                 {
                     UseItem(Tar.Player, true);
-                }
-
-                if (Player.Health / Player.MaxHealth * 100 <= Menu.Item("selflowhp" + Name + "pct").GetValue<Slider>().Value)
-                {
-                    UseItem(Tar.Player);
                 }
             }
         }

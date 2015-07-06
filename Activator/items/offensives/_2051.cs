@@ -58,8 +58,18 @@ namespace Activator.Items.Offensives
 
         public override void OnTick(EventArgs args)
         {
+            if (Player.CountEnemiesInRange(Range) > Menu.Item("selfcount" + Name).GetValue<Slider>().Value)
+            {
+                UseItem();
+            }
+
             if (Menu.Item("use" + Name).GetValue<bool>() && Tar != null)
             {
+                if ((Player.Health / Player.MaxHealth * 100) <= Menu.Item("selflowhp" + Name + "pct").GetValue<Slider>().Value)
+                {
+                    UseItem(Tar.Player);
+                }
+
                 if (!Parent.Item(Parent.Name + "useon" + Tar.Player.NetworkId).GetValue<bool>())
                     return;
 
@@ -68,15 +78,6 @@ namespace Activator.Items.Offensives
                     UseItem(Tar.Player, true);  
                 }
 
-                if ((Player.Health / Player.MaxHealth * 100) <= Menu.Item("selflowhp" + Name + "pct").GetValue<Slider>().Value)
-                {
-                    UseItem(Tar.Player);
-                }
-            }
-
-            if (Player.CountEnemiesInRange(Range) > Menu.Item("selfcount" + Name).GetValue<Slider>().Value)
-            {
-                UseItem();
             }
         }
     }

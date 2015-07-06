@@ -283,7 +283,11 @@ namespace Activator
                                         }
                                     }
                                 }
-                                                            
+
+                                // vayne invis check
+                                if (data.SDataName == "vaynetumble" && sender.HasBuff("VayneInquisition", true))
+                                    hero.HitTypes.Add(HitType.Stealth);
+                          
                                 // delay the action a little bit before endtime
                                 Utility.DelayAction.Add((int) (endtime - (endtime * 0.3)), () =>
                                 {

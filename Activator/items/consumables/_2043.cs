@@ -1,4 +1,5 @@
 ﻿using System;
+using LeagueSharp.Common;
 
 namespace Activator.Items.Consumables
 {
@@ -11,12 +12,12 @@ namespace Activator.Items.Consumables
 
         internal override string Name
         {
-            get { return "Soon™"; }
+            get { return "Vision Ward"; }
         }
 
         internal override string DisplayName
         {
-            get { return "Soon™"; }
+            get { return "Vision Ward"; }
         }
 
 
@@ -27,7 +28,7 @@ namespace Activator.Items.Consumables
 
         internal override int Priority
         {
-            get { return 3; }
+            get { return 5; }
         }
 
         internal override float Range
@@ -57,7 +58,22 @@ namespace Activator.Items.Consumables
 
         public override void OnTick(EventArgs args)
         {
+            if (!Menu.Item("use" + Name).GetValue<bool>())
+                return;
 
+            foreach (var hero in Activator.ChampionPriority())
+            {
+                if (!Parent.Item(Parent.Name + "useon" + hero.Player.NetworkId).GetValue<bool>())
+                    continue;
+
+                if (hero.Player.Distance(Player.ServerPosition) > Range)
+                    continue;
+
+                if (hero.HitTypes.Contains(HitType.Stealth) || hero.Player.HasBuff("rengarralertsound", true))
+                {
+                    UseItem(hero.Player.ServerPosition, Menu.Item("mode" + Name).GetValue<StringList>().SelectedIndex == 1);
+                }
+            }
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using LeagueSharp.Common;
 
 namespace Activator.Items.Defensives
 {
@@ -11,7 +12,7 @@ namespace Activator.Items.Defensives
 
         internal override int Priority
         {
-            get { return 4; }
+            get { return 5; }
         }
 
         internal override string Name
@@ -21,7 +22,7 @@ namespace Activator.Items.Defensives
 
         internal override string DisplayName
         {
-            get { return "Oracle's Lens (Broken)"; }
+            get { return "Oracle's Lens"; }
         }
 
         internal override int Duration
@@ -51,7 +52,22 @@ namespace Activator.Items.Defensives
 
         public override void OnTick(EventArgs args)
         {
+            if (!Menu.Item("use" + Name).GetValue<bool>())
+                return;
 
+            foreach (var hero in Activator.ChampionPriority())
+            {
+                if (!Parent.Item(Parent.Name + "useon" + hero.Player.NetworkId).GetValue<bool>())
+                    continue;
+
+                if (hero.Player.Distance(Player.ServerPosition) > Range)
+                    continue;
+
+                if (hero.HitTypes.Contains(HitType.Stealth) || hero.Player.HasBuff("rengarralertsound", true))
+                {
+                    UseItem(hero.Player.ServerPosition, Menu.Item("mode" + Name).GetValue<StringList>().SelectedIndex == 1);
+                }
+            }
         }
     }
 }

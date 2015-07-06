@@ -101,14 +101,11 @@ namespace Activator
             }
 
             var vmenu = new Menu("Info (Changelog/Updates)", "info");
-            vmenu.AddItem(new MenuItem("aa", "0.9.5.5: (Paypal xrobinsong@gmail.com)"));
+            vmenu.AddItem(new MenuItem("aa", "0.9.5.6: (Paypal xrobinsong@gmail.com)"));
+            vmenu.AddItem(new MenuItem("zx", "- new: righteous glory"));
+            vmenu.AddItem(new MenuItem("yy", "- new: anti vayne stealth and more"));
+            vmenu.AddItem(new MenuItem("zz", "- new: vision ward/oracle's lens"));
             vmenu.AddItem(new MenuItem("zm", "- new: evade integration (see topic)"));
-            vmenu.AddItem(new MenuItem("m", "- fixed: summoners"));
-            vmenu.AddItem(new MenuItem("m3", "- fixed: lissandrar check enemies near"));
-            vmenu.AddItem(new MenuItem("z", "- new: ally hero priority"));
-            vmenu.AddItem(new MenuItem("f", "- new: fizz ultimate prediction"));
-            vmenu.AddItem(new MenuItem("m2", "- new: smite text"));
-            vmenu.AddItem(new MenuItem("m1", "- new: smite draw grey on disable"));
             vmenu.AddItem(new MenuItem("s", "- known issue: cleanse not working"));
             zmenu.AddSubMenu(vmenu);
 
