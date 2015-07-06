@@ -5544,7 +5544,7 @@ namespace Activator
                 SDataName = "vaynetumble",
                 ChampionName = "vayne",
                 Slot = SpellSlot.Q,
-                CastRange = 250f,
+                CastRange = 750f,
                 Delay = 250f,
                 HitType = new HitType[] { },
                 MissileSpeed = int.MaxValue
