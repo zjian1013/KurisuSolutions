@@ -668,42 +668,47 @@ namespace KurisuRiven
         {
             if (uo && menubool("usews") && r.IsReady())
             {
-                foreach (var target in ObjectManager.Get<Obj_AI_Hero>().Where(h => h.IsValidTarget(r.Range)))
+                foreach (var t in ObjectManager.Get<Obj_AI_Hero>().Where(h => h.IsValidTarget(r.Range)))
                 {
-                    if (target.IsZombie)
-                        return;
-
-                    // only kill or killsteal etc ->
-                    if (r.GetDamage(target) >= target.Health && canws)
+                    if (r.GetDamage(t) >= t.Health && canws && !t.IsZombie)
                     {
-                        if (r.GetPrediction(target, true).Hitchance == HitChance.VeryHigh)
-                            r.Cast(r.GetPrediction(target, true).CastPosition);
+                        if (r.GetPrediction(t, true).Hitchance == HitChance.VeryHigh)
+                            r.Cast(r.GetPrediction(t, true).CastPosition);
                     }
                 }
 
-                // kill or maxdamage ->
-                if (menulist("wsmode") == 1 && rtarg.IsValidTarget(r.Range + 100))
+                if (menulist("wsmode") == 1 && rtarg.IsValidTarget(r.Range) && !rtarg.IsZombie)
                 {
-                    if (rtarg.IsZombie)
-                        return;
-
-                    if (Kappa(rtarg.ServerPosition, r.Width, r.Range) >= menuslide("rmulti"))
-                            r.Cast(rtarg.ServerPosition);
+                    if (menu.Item("shycombo").GetValue<KeyBind>().Active && cb)
+                        if (Items.CanUseItem(3077) || Items.CanUseItem(3074))
+                            return;
 
                     var po = r.GetPrediction(rtarg, true);
-                    if ((r.GetDamage(rtarg) / rtarg.MaxHealth * 100) >= rtarg.Health / rtarg.MaxHealth * 50)
+                    var cx = 4 - cc;
+
+                    if (Kappa(rtarg.ServerPosition, r.Width, r.Range) >= menuslide("rmulti"))
+                    {
+                        r.Cast(rtarg.ServerPosition);
+                    }
+
+                    if (r.GetDamage(rtarg) / rtarg.MaxHealth * 100 >= 55)
                     {
                         if (po.Hitchance >= HitChance.VeryHigh && canws)
                             r.Cast(po.CastPosition);
                     }
 
-                    if (q.IsReady() && rtarg.Health <= xtra((float) 
-                       (r.GetDamage(rtarg) + player.GetAutoAttackDamage(rtarg)*2 + Qdmg(rtarg)* 2)))
+                    if (q.IsReady())
                     {
-                        if (rtarg.Distance(player.ServerPosition) <= truerange + 100)
+                        var cy = r.GetDamage(rtarg) + 
+                                player.GetAutoAttackDamage(rtarg) * 2 + Qdmg(rtarg) * cx;
+
+                        if (rtarg.Health <= xtra((float) cy))
                         {
-                            if (po.Hitchance >= HitChance.VeryHigh && canws)
-                                r.Cast(po.CastPosition);
+                            if (rtarg.Distance(player.ServerPosition) <= truerange + q.Range * cx)
+                            {
+                                if (po.Hitchance >= HitChance.VeryHigh && canws)
+                                    r.Cast(po.CastPosition);
+                            }
                         }
                     }
                 }
@@ -857,7 +862,8 @@ namespace KurisuRiven
 
                     if (!menu.Item("harasskey").GetValue<KeyBind>().Active &&
                         !menu.Item("clearkey").GetValue<KeyBind>().Active &&
-                        !menu.Item("combokey").GetValue<KeyBind>().Active)
+                        !menu.Item("combokey").GetValue<KeyBind>().Active &&
+                        !menu.Item("shycombo").GetValue<KeyBind>().Active)
                     {
                         if (qtarg.IsValidTarget(q.Range + 100) && !qtarg.Name.Contains("Mini"))
                         {
@@ -1052,6 +1058,9 @@ namespace KurisuRiven
                         ssfl = false;
                         didws = true;
                         canws = false;
+
+                        if (w.IsReady() && rtarg.IsValidTarget(wrange))
+                            w.Cast();
 
                         if (q.IsReady() && rtarg.IsValidTarget())
                             q.Cast(rtarg.ServerPosition);
