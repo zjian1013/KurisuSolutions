@@ -34,7 +34,8 @@ namespace Activator.Summoners
 
         public override void OnTick(EventArgs args)
         {
-            return;
+            if (!Game.Version.Contains("5.13"))
+                return;
 
             foreach (var hero in Activator.ChampionPriority())
             {
