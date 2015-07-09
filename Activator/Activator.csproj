@@ -60,6 +60,7 @@
   <ItemGroup>
     <Compile Include="champion.cs" />
     <Compile Include="drawings.cs" />
+    <Compile Include="items\consumables\_2047.cs" />
     <Compile Include="items\defensives\_3023.cs" />
     <Compile Include="items\defensives\_3048.cs" />
     <Compile Include="items\defensives\_3290.cs" />

@@ -56,8 +56,12 @@ namespace Activator
 
             Origin = new Menu("Activator", "activator", true);
             var cmenu = new Menu("Cleansers", "cleansers");
-            //SubMenu(cmenu, false);
-            //GetItemGroup("Items.Cleansers").ForEach(t => NewItem((item) NewInstance(t), cmenu));
+            if (Game.Version.Contains("5.13"))
+            {
+                SubMenu(cmenu, false);
+                GetItemGroup("Items.Cleansers").ForEach(t => NewItem((item) NewInstance(t), cmenu));        
+            }
+
             Origin.AddSubMenu(cmenu);
 
             var dmenu = new Menu("Defensives", "dmenu");

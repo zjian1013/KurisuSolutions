@@ -59,7 +59,8 @@ namespace Activator.Items.Cleansers
 
         public override void OnTick(EventArgs args)
         {
-            return;
+            if (!Game.Version.Contains("5.13"))
+                return;
 
             if (!Menu.Item("use" + Name).GetValue<bool>())
                 return;
